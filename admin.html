@@ -193,6 +193,7 @@ dd { margin: 0; overflow-wrap: anywhere; }
       <h3>Suivi</h3>
       <div style="display:flex;flex-direction:column;gap:10px">
         <div class="field"><label for="dStatut">Statut</label><select id="dStatut"></select></div>
+        <div class="field" id="dEmailWrap"><label for="dEmail">E-mail du vendeur</label><input id="dEmail" type="email" inputmode="email" autocomplete="off"><span class="notice">Doit être exactement l’adresse avec laquelle le vendeur se connecte à son espace.</span></div>
         <div class="field" id="dNoteWrap"><label for="dNote">Note interne</label><textarea id="dNote" rows="3"></textarea></div>
         <p class="err" id="dErr"></p><p class="ok-msg" id="dOk"></p>
         <button class="btn btn-orange" type="button" id="dSave">Enregistrer</button>
@@ -392,7 +393,8 @@ dd { margin: 0; overflow-wrap: anywhere; }
     var body = $("dBody"); body.textContent = "";
     $("dTitle").textContent = tab === "produits" ? r.nom : (r.boutique || r.nom);
     $("dSub").textContent = (tab === "dossiers" ? "Dossier vendeur · " + PLAN[r.formule] : tab === "produits" ? "Produit · " + r.boutique : "Essai gratuit") + " · reçu le " + fmtDate(r.created_at, true);
-    $("dNoteWrap").hidden = tab === "produits";
+    $("dNoteWrap").hidden = tab === "produits"; $("dEmailWrap").hidden = tab === "produits";
+    $("dEmail").value = r.email || "";
     if (tab === "produits") {
       var pics = el("div", "group"); pics.appendChild(el("h3", null, "Photos"));
       var pw = el("div", "docs"); (r.photos || []).forEach(function (ph) { var im = el("img"); im.src = PUB + ph.split("/").map(encodeURIComponent).join("/"); im.alt = ""; im.style.width = "96px"; im.style.height = "96px"; im.style.objectFit = "cover"; pw.appendChild(im); });
@@ -431,11 +433,16 @@ dd { margin: 0; overflow-wrap: anywhere; }
     if (!current) return;
     var btn = $("dSave"); btn.disabled = true; $("dErr").textContent = ""; $("dOk").textContent = "";
     var patch = current.table === "produits" ? { masque_admin: $("dStatut").value === "masque" } : { statut: $("dStatut").value, note_admin: $("dNote").value.trim() || null };
+    if (current.table !== "produits") {
+      var em = $("dEmail").value.trim().toLowerCase();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)) { btn.disabled = false; $("dErr").textContent = "Adresse e-mail invalide."; return; }
+      patch.email = em;
+    }
     var r = await sb.from(current.table).update(patch).eq("id", current.row.id);
     btn.disabled = false;
     if (r.error) { $("dErr").textContent = "Enregistrement impossible : " + r.error.message; return; }
     if (current.table === "produits") { current.row.masque_admin = patch.masque_admin; current.row.statut = patch.masque_admin ? "masque" : "visible"; }
-    else { current.row.statut = patch.statut; current.row.note_admin = patch.note_admin; }
+    else { current.row.statut = patch.statut; current.row.note_admin = patch.note_admin; current.row.email = patch.email; }
     $("dOk").textContent = "Enregistré."; renderKpis(); renderTable();
   });
 
