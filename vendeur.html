@@ -294,7 +294,12 @@ main { padding-block: 24px 48px; display: flex; flex-direction: column; gap: 20p
     if (!s.data.session) { view("vAuth"); form("fLogin"); return; }
     st.user = s.data.session.user;
     var f = await sb.rpc("vendeur_formule");
-    if (f.error || !f.data) { $("inactiveMail").textContent = "Compte : " + st.user.email; view("vInactive"); return; }
+    if (f.error || !f.data) {
+      $("inactiveMail").textContent = f.error
+        ? "Compte : " + st.user.email + " · La base Yiriclick n’est pas à jour (script v3 manquant) : préviens l’équipe Yiriclick."
+        : "Compte : " + st.user.email + " · Aucune inscription validée n’a été trouvée pour cette adresse e-mail. Vérifie que c’est bien celle utilisée lors de ton inscription.";
+      view("vInactive"); return;
+    }
     st.plan = f.data; view("vApp"); await loadAll();
   }
   sb.auth.onAuthStateChange(function (ev) { if (ev === "PASSWORD_RECOVERY") { view("vAuth"); form("fNewPass"); } });
