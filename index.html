@@ -1016,7 +1016,7 @@ h1 span { display: block; }
 
 
   /* Sign-up form. To save sign-ups, paste your Supabase project URL and anon key here (see supabase/inscriptions.sql). */
-  var SUPABASE = { url: "", anonKey: "" };
+  var SUPABASE = { url: "https://vtiakxfnechkoomagddl.supabase.co", anonKey: "sb_publishable_415c2KQSDRx0SMofnkHKQA_PJ2IrzBA" };
   var PLAN_KEYS = ["essai", "basique", "pro", "entreprise"];
   var su = { plan: "essai", zone: state.zone, last: null };
   var modal = document.getElementById("signup"), form = document.getElementById("suForm"), done = document.getElementById("suDone");
@@ -1109,7 +1109,7 @@ h1 span { display: block; }
     var btn = document.getElementById("suSubmit"); btn.disabled = true; btn.textContent = t.fSending;
     fetch(SUPABASE.url.replace(/\/$/, "") + "/rest/v1/inscriptions", {
       method: "POST",
-      headers: { "apikey": SUPABASE.anonKey, "Authorization": "Bearer " + SUPABASE.anonKey, "Content-Type": "application/json", "Prefer": "return=minimal" },
+      headers: (function () { var h = { "apikey": SUPABASE.anonKey, "Content-Type": "application/json", "Prefer": "return=minimal" }; if (/^eyJ/.test(SUPABASE.anonKey)) h.Authorization = "Bearer " + SUPABASE.anonKey; return h; })(),
       body: JSON.stringify(row)
     }).then(function (r) {
       if (!r.ok) throw new Error(r.status);

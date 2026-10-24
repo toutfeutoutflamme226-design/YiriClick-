@@ -20,6 +20,10 @@ create table if not exists public.inscriptions (
 -- Toi, tu les consultes dans Supabase > Table Editor > inscriptions.
 alter table public.inscriptions enable row level security;
 
+-- Le projet n'expose pas automatiquement les nouvelles tables :
+-- on autorise uniquement l'ajout pour les visiteurs du site.
+grant insert on table public.inscriptions to anon;
+
 drop policy if exists "Inscription publique" on public.inscriptions;
 create policy "Inscription publique"
   on public.inscriptions
