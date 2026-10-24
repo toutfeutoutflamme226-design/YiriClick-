@@ -404,6 +404,7 @@ h1 span { display: block; }
     <nav class="nav">
       <a class="link" href="#comment" data-t="nav1">Fonctionnement</a>
       <a class="link" href="#tarifs" data-t="nav2">Tarifs</a>
+      <a class="link" href="vitrine.html" data-t="nav3">Vitrine</a>
       <div class="lang">
         <button type="button" class="lang-btn" id="langBtn" aria-haspopup="true" aria-expanded="false">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4FC7CF" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg>
@@ -506,6 +507,7 @@ h1 span { display: block; }
   <div class="wrap">
     <span class="word"><span class="a">yiri</span><span class="b">click</span></span>
     <span data-t="contact">Contact : [ADRESSE E-MAIL]</span>
+    <span><a href="vitrine.html" data-t="nav3" style="color:var(--teal)">Vitrine</a> · <a href="vendeur.html" data-t="nav4" style="color:var(--teal)">Espace vendeur</a></span>
     <span>© 2026 Yiriclick · <span data-t="legal">Conditions · Confidentialité</span></span>
   </div>
 </footer>
@@ -548,7 +550,7 @@ h1 span { display: block; }
 (function () {
   var T = {
     fr: {
-      nav1: "Fonctionnement", nav2: "Tarifs", start: "Démarrer",
+      nav1: "Fonctionnement", nav2: "Tarifs", nav3: "Vitrine", nav4: "Espace vendeur", start: "Démarrer",
       kicker: "La place de marché mondiale des petits vendeurs",
       h1a: "Vends plus.", h1b: "Vends partout.",
       lead: "Ta boutique en ligne, visible par des acheteurs sur plusieurs continents. Paiement Mobile Money ou carte, dans la langue et la monnaie de chacun.",
@@ -563,7 +565,7 @@ h1 span { display: block; }
       then: function (p) { return "puis " + p + " après 4 mois"; },
       names: ["Essai", "Basique", "Pro", "Entreprise"],
       ctas: ["Essayer gratuitement", "Choisir Basique", "Choisir Pro", "Choisir Entreprise"],
-      feats: [["Jusqu’à 15 produits", "Boutique avec lien à partager", "Réception des commandes", "Bouton « Commander sur WhatsApp »"], ["Boutique personnalisée", "Paiement Mobile Money et carte", "Avis clients", "Présence sur la vitrine Yiriclick"], ["Tout le Basique", "Produits illimités", "Espace administrateur : stock, finances, factures", "Statistiques de ventes"], ["Tout le Pro", "Analyse du marché et des tendances", "Publicité et promotion gérées par Yiriclick", "Plusieurs comptes employés", "Support prioritaire"]],
+      feats: [["Jusqu’à 15 produits, 4 photos chacun", "Boutique avec lien à partager", "Réception des commandes", "Bouton « Commander sur WhatsApp »"], ["Jusqu’à 100 produits, 4 photos chacun", "Boutique personnalisée", "Paiement Mobile Money et carte", "Avis clients", "Présence sur la vitrine Yiriclick"], ["Tout le Basique", "Jusqu’à 500 produits, 6 photos chacun", "Espace administrateur : stock, finances, factures", "Statistiques de ventes"], ["Tout le Pro", "Produits illimités, 10 photos chacun", "Analyse du marché et des tendances", "Publicité et promotion gérées par Yiriclick", "Plusieurs comptes employés", "Support prioritaire"]],
       contact: "Contact : [ADRESSE E-MAIL]", legal: "Conditions · Confidentialité", langAria: "Changer de langue",
       suTitle: "Créer ma boutique", suSub: "Remplis ce formulaire. L’équipe Yiriclick te contacte pour activer ta boutique.",
       fName: "Ton nom complet", fShop: "Nom de ta boutique", fCountry: "Pays", fPhone: "Numéro WhatsApp", fEmail: "Adresse e-mail",
@@ -590,7 +592,7 @@ h1 span { display: block; }
       ]
     },
     en: {
-      nav1: "How it works", nav2: "Pricing", start: "Get started",
+      nav1: "How it works", nav2: "Pricing", nav3: "Showcase", nav4: "Seller space", start: "Get started",
       kicker: "The global marketplace for small sellers",
       h1a: "Sell more.", h1b: "Sell everywhere.",
       lead: "Your online shop, seen by buyers on several continents. Payment by Mobile Money or card, in each customer’s language and currency.",
@@ -605,7 +607,7 @@ h1 span { display: block; }
       then: function (p) { return "then " + p + " after 4 months"; },
       names: ["Trial", "Basic", "Pro", "Business"],
       ctas: ["Try for free", "Choose Basic", "Choose Pro", "Choose Business"],
-      feats: [["Up to 15 products", "Shop with a shareable link", "Order management", "“Order on WhatsApp” button"], ["Custom shop", "Mobile Money and card payments", "Customer reviews", "Listed on the Yiriclick showcase"], ["Everything in Basic", "Unlimited products", "Admin space: stock, finances, invoices", "Sales statistics"], ["Everything in Pro", "Market and trend analysis", "Ads and promotion managed by Yiriclick", "Multiple staff accounts", "Priority support"]],
+      feats: [["Up to 15 products, 4 photos each", "Shop with a shareable link", "Order management", "“Order on WhatsApp” button"], ["Up to 100 products, 4 photos each", "Custom shop", "Mobile Money and card payments", "Customer reviews", "Listed on the Yiriclick showcase"], ["Everything in Basic", "Up to 500 products, 6 photos each", "Admin space: stock, finances, invoices", "Sales statistics"], ["Everything in Pro", "Unlimited products, 10 photos each", "Market and trend analysis", "Ads and promotion managed by Yiriclick", "Multiple staff accounts", "Priority support"]],
       contact: "Contact: [EMAIL ADDRESS]", legal: "Terms · Privacy", langAria: "Change language",
       suTitle: "Create my shop", suSub: "Fill in this form. The Yiriclick team will contact you to activate your shop.",
       fName: "Your full name", fShop: "Shop name", fCountry: "Country", fPhone: "WhatsApp number", fEmail: "Email address",
@@ -632,7 +634,7 @@ h1 span { display: block; }
       ]
     },
     es: {
-      nav1: "Cómo funciona", nav2: "Precios", start: "Empezar",
+      nav1: "Cómo funciona", nav2: "Precios", nav3: "Escaparate", nav4: "Espacio vendedor", start: "Empezar",
       kicker: "El mercado mundial de los pequeños vendedores",
       h1a: "Vende más.", h1b: "Vende en todas partes.",
       lead: "Tu tienda en línea, vista por compradores de varios continentes. Pago con Mobile Money o tarjeta, en el idioma y la moneda de cada cliente.",
@@ -647,7 +649,7 @@ h1 span { display: block; }
       then: function (p) { return "luego " + p + " después de 4 meses"; },
       names: ["Prueba", "Básico", "Pro", "Empresa"],
       ctas: ["Probar gratis", "Elegir Básico", "Elegir Pro", "Elegir Empresa"],
-      feats: [["Hasta 15 productos", "Tienda con enlace para compartir", "Recepción de pedidos", "Botón «Pedir por WhatsApp»"], ["Tienda personalizada", "Pago con Mobile Money y tarjeta", "Opiniones de clientes", "Presencia en el escaparate Yiriclick"], ["Todo lo del Básico", "Productos ilimitados", "Espacio de administración: stock, finanzas, facturas", "Estadísticas de ventas"], ["Todo lo del Pro", "Análisis del mercado y tendencias", "Publicidad y promoción gestionadas por Yiriclick", "Varias cuentas de empleados", "Soporte prioritario"]],
+      feats: [["Hasta 15 productos, 4 fotos cada uno", "Tienda con enlace para compartir", "Recepción de pedidos", "Botón «Pedir por WhatsApp»"], ["Hasta 100 productos, 4 fotos cada uno", "Tienda personalizada", "Pago con Mobile Money y tarjeta", "Opiniones de clientes", "Presencia en el escaparate Yiriclick"], ["Todo lo del Básico", "Hasta 500 productos, 6 fotos cada uno", "Espacio de administración: stock, finanzas, facturas", "Estadísticas de ventas"], ["Todo lo del Pro", "Productos ilimitados, 10 fotos cada uno", "Análisis del mercado y tendencias", "Publicidad y promoción gestionadas por Yiriclick", "Varias cuentas de empleados", "Soporte prioritario"]],
       contact: "Contacto: [CORREO ELECTRÓNICO]", legal: "Condiciones · Privacidad", langAria: "Cambiar idioma",
       suTitle: "Crear mi tienda", suSub: "Rellena este formulario. El equipo de Yiriclick te contactará para activar tu tienda.",
       fName: "Tu nombre completo", fShop: "Nombre de tu tienda", fCountry: "País", fPhone: "Número de WhatsApp", fEmail: "Correo electrónico",

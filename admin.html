@@ -86,8 +86,8 @@ td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
 .pill { display: inline-block; font-size: 12px; font-weight: 800; padding: 3px 8px; white-space: nowrap; }
 .p-nouveau, .p-en_attente { background: #FFF1E0; color: var(--warn); }
 .p-contacte, .p-verifie { background: var(--tint); color: var(--teal-deep); }
-.p-actif { background: #E3F4EA; color: var(--ok); }
-.p-refuse { background: #FCE8E6; color: var(--bad); }
+.p-actif, .p-visible { background: #E3F4EA; color: var(--ok); }
+.p-refuse, .p-masque { background: #FCE8E6; color: var(--bad); }
 .empty { padding: 28px 12px; text-align: center; color: var(--soft); }
 
 /* Detail drawer */
@@ -172,6 +172,7 @@ dd { margin: 0; overflow-wrap: anywhere; }
     <div class="tabs" role="tablist">
       <button type="button" role="tab" id="tabD" aria-selected="true">Dossiers vendeurs<span class="count" id="cD"></span></button>
       <button type="button" role="tab" id="tabE" aria-selected="false">Essais gratuits<span class="count" id="cE"></span></button>
+      <button type="button" role="tab" id="tabP" aria-selected="false">Produits<span class="count" id="cP"></span></button>
     </div>
     <div class="tools">
       <label class="vh" for="q" style="position:absolute;left:-9999px">Rechercher</label>
@@ -192,7 +193,7 @@ dd { margin: 0; overflow-wrap: anywhere; }
       <h3>Suivi</h3>
       <div style="display:flex;flex-direction:column;gap:10px">
         <div class="field"><label for="dStatut">Statut</label><select id="dStatut"></select></div>
-        <div class="field"><label for="dNote">Note interne</label><textarea id="dNote" rows="3"></textarea></div>
+        <div class="field" id="dNoteWrap"><label for="dNote">Note interne</label><textarea id="dNote" rows="3"></textarea></div>
         <p class="err" id="dErr"></p><p class="ok-msg" id="dOk"></p>
         <button class="btn btn-orange" type="button" id="dSave">Enregistrer</button>
       </div>
@@ -209,14 +210,17 @@ dd { margin: 0; overflow-wrap: anywhere; }
 
   var ST = {
     dossiers: [["en_attente", "En attente"], ["verifie", "Vérifié"], ["actif", "Actif"], ["refuse", "Refusé"]],
-    inscriptions: [["nouveau", "Nouveau"], ["contacte", "Contacté"], ["actif", "Client actif"], ["refuse", "Refusé"]]
+    inscriptions: [["nouveau", "Nouveau"], ["contacte", "Contacté"], ["actif", "Client actif"], ["refuse", "Refusé"]],
+    produits: [["visible", "En ligne"], ["masque", "Masqué par Yiriclick"]]
   };
+  var PUB = SUPABASE_URL + "/storage/v1/object/public/boutiques/";
+  function money(v, d) { try { return new Intl.NumberFormat("fr-FR", { style: "currency", currency: d, maximumFractionDigits: d === "XOF" ? 0 : 2 }).format(v); } catch (e) { return v + " " + d; } }
   var PLAN = { essai: "Essai", basique: "Basique", pro: "Pro", entreprise: "Entreprise" };
   var ZONE = { af: "Afrique · FCFA", eu: "Europe · €", am: "Amériques & Asie · $" };
   var JUR = { ei: "Entrepreneur individuel", soc: "Société", coop: "Coopérative ou association", none: "Pas encore immatriculé" };
   var PIECE = { cni: "Carte nationale d’identité", passport: "Passeport", residence: "Titre de séjour", license: "Permis de conduire" };
   var OP = { om: "Orange Money", moov: "Moov Money", wave: "Wave", other: "Autre" };
-  var data = { dossiers: [], inscriptions: [], visites: [] }, tab = "dossiers", current = null;
+  var data = { dossiers: [], inscriptions: [], visites: [], produits: [] }, tab = "dossiers", current = null;
 
   function $(id) { return document.getElementById(id); }
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
@@ -259,11 +263,13 @@ dd { margin: 0; overflow-wrap: anywhere; }
     var r = await Promise.all([
       sb.from("dossiers").select("*").order("created_at", { ascending: false }).limit(1000),
       sb.from("inscriptions").select("*").order("created_at", { ascending: false }).limit(1000),
-      sb.from("visites").select("type,created_at,source,detail").gte("created_at", since.toISOString()).order("created_at", { ascending: false }).limit(20000)
+      sb.from("visites").select("type,created_at,source,detail").gte("created_at", since.toISOString()).order("created_at", { ascending: false }).limit(20000),
+      sb.from("produits").select("id,nom,description,prix,devise,categorie,stock,photos,visible,masque_admin,created_at,boutiques(nom,slug)").order("created_at", { ascending: false }).limit(2000)
     ]);
     var bad = r.filter(function (x) { return x.error; });
     if (bad.length) { $("loadErr").textContent = "Impossible de charger certaines données. Vérifie que le script schema-v2.sql a bien été exécuté. (" + bad[0].error.message + ")"; }
     data.dossiers = r[0].data || []; data.inscriptions = r[1].data || []; data.visites = r[2].data || [];
+    data.produits = (r[3].data || []).map(function (p) { p.statut = p.masque_admin ? "masque" : "visible"; p.boutique = p.boutiques ? p.boutiques.nom : ""; return p; });
     $("updated").textContent = "Mis à jour le " + fmtDate(new Date(), true);
     renderKpis(); renderChart(); renderBreakdowns(); renderTable();
   }
@@ -279,7 +285,7 @@ dd { margin: 0; overflow-wrap: anywhere; }
     var active = data.dossiers.filter(function (x) { return x.statut === "actif"; }).length + data.inscriptions.filter(function (x) { return x.statut === "actif"; }).length;
     var conv = visits7 ? Math.round((v.filter(function (x) { return (x.type === "essai" || x.type === "dossier") && inLastDays(x.created_at, 7); }).length / visits7) * 1000) / 10 : 0;
     [["Visites", visits7, "7 derniers jours"], ["Formulaires ouverts", forms7, "7 derniers jours"], ["Essais gratuits", trials, trials7 + " cette semaine"],
-     ["Dossiers à vérifier", pending, "en attente", pending > 0], ["Partenaires actifs", active, "essais et abonnés"], ["Taux d’inscription", String(conv).replace(".", ",") + " %", "inscriptions / visites, 7 jours"]
+     ["Dossiers à vérifier", pending, "en attente", pending > 0], ["Partenaires actifs", active, "essais et abonnés"], ["Produits en ligne", data.produits.filter(function (p) { return p.visible && !p.masque_admin; }).length, data.produits.length + " au total"], ["Taux d’inscription", String(conv).replace(".", ",") + " %", "inscriptions / visites, 7 jours"]
     ].forEach(function (k) { var d = el("div", "kpi" + (k[3] ? " alert" : "")); d.appendChild(el("span", null, k[0])); d.appendChild(el("b", null, String(k[1]))); d.appendChild(el("small", null, k[2])); box.appendChild(d); });
   }
 
@@ -335,29 +341,32 @@ dd { margin: 0; overflow-wrap: anywhere; }
     dossiers: [["Date", function (r) { return fmtDate(r.created_at); }, "num"], ["Boutique", function (r) { return r.boutique; }], ["Nom", function (r) { return r.nom; }],
       ["Formule", function (r) { return PLAN[r.formule]; }], ["Pays", function (r) { return r.pays; }], ["Catégorie", function (r) { return r.categorie; }], ["Statut", null]],
     inscriptions: [["Date", function (r) { return fmtDate(r.created_at); }, "num"], ["Boutique", function (r) { return r.boutique; }], ["Nom", function (r) { return r.nom; }],
-      ["Pays", function (r) { return r.pays; }], ["WhatsApp", function (r) { return r.whatsapp; }, "num"], ["E-mail", function (r) { return r.email; }], ["Statut", null]]
+      ["Pays", function (r) { return r.pays; }], ["WhatsApp", function (r) { return r.whatsapp; }, "num"], ["E-mail", function (r) { return r.email; }], ["Statut", null]],
+    produits: [["Date", function (r) { return fmtDate(r.created_at); }, "num"], ["Produit", function (r) { return r.nom; }], ["Boutique", function (r) { return r.boutique; }],
+      ["Prix", function (r) { return money(r.prix, r.devise); }, "num"], ["Affiché par le vendeur", function (r) { return r.visible ? "Oui" : "Non"; }], ["Statut", null]]
   };
   function setTab(t) {
-    tab = t; $("tabD").setAttribute("aria-selected", String(t === "dossiers")); $("tabE").setAttribute("aria-selected", String(t === "inscriptions"));
+    tab = t; $("tabD").setAttribute("aria-selected", String(t === "dossiers")); $("tabE").setAttribute("aria-selected", String(t === "inscriptions")); $("tabP").setAttribute("aria-selected", String(t === "produits"));
     var f = $("fStatut"); f.textContent = ""; var o = el("option", null, "Tous les statuts"); o.value = ""; f.appendChild(o);
     ST[t].forEach(function (s) { var op = el("option", null, s[1]); op.value = s[0]; f.appendChild(op); });
     renderTable();
   }
   $("tabD").addEventListener("click", function () { setTab("dossiers"); });
   $("tabE").addEventListener("click", function () { setTab("inscriptions"); });
+  $("tabP").addEventListener("click", function () { setTab("produits"); });
   $("q").addEventListener("input", renderTable);
   $("fStatut").addEventListener("change", renderTable);
   function renderTable() {
-    $("cD").textContent = "(" + data.dossiers.length + ")"; $("cE").textContent = "(" + data.inscriptions.length + ")";
+    $("cD").textContent = "(" + data.dossiers.length + ")"; $("cE").textContent = "(" + data.inscriptions.length + ")"; $("cP").textContent = "(" + data.produits.length + ")";
     var cols = COLS[tab], q = norm($("q").value.trim()), fs = $("fStatut").value;
     var rows = data[tab].filter(function (r) {
       if (fs && r.statut !== fs) return false;
       if (!q) return true;
-      return norm([r.nom, r.boutique, r.email, r.pays, r.ville, r.whatsapp, r.categorie].join(" ")).indexOf(q) >= 0;
+      return norm([r.nom, r.boutique, r.email, r.pays, r.ville, r.whatsapp, r.categorie, r.description].join(" ")).indexOf(q) >= 0;
     });
     var th = $("thead"); th.textContent = ""; var tr = el("tr"); cols.forEach(function (c) { tr.appendChild(el("th", null, c[0])); }); th.appendChild(tr);
     var tb = $("tbody"); tb.textContent = "";
-    if (!rows.length) { var e = el("tr"), td = el("td", "empty", data[tab].length ? "Aucun résultat pour ce filtre." : (tab === "dossiers" ? "Aucun dossier vendeur pour l’instant." : "Aucun essai gratuit pour l’instant.")); td.colSpan = cols.length; e.appendChild(td); tb.appendChild(e); return; }
+    if (!rows.length) { var e = el("tr"), td = el("td", "empty", data[tab].length ? "Aucun résultat pour ce filtre." : (tab === "dossiers" ? "Aucun dossier vendeur pour l’instant." : tab === "produits" ? "Aucun produit publié pour l’instant." : "Aucun essai gratuit pour l’instant.")); td.colSpan = cols.length; e.appendChild(td); tb.appendChild(e); return; }
     rows.forEach(function (r) {
       var row = el("tr"); row.tabIndex = 0;
       cols.forEach(function (c) {
@@ -381,9 +390,18 @@ dd { margin: 0; overflow-wrap: anywhere; }
   async function openDetail(r) {
     current = { table: tab, row: r };
     var body = $("dBody"); body.textContent = "";
-    $("dTitle").textContent = r.boutique || r.nom;
-    $("dSub").textContent = (tab === "dossiers" ? "Dossier vendeur · " + PLAN[r.formule] : "Essai gratuit") + " · reçu le " + fmtDate(r.created_at, true);
-    if (tab === "dossiers") {
+    $("dTitle").textContent = tab === "produits" ? r.nom : (r.boutique || r.nom);
+    $("dSub").textContent = (tab === "dossiers" ? "Dossier vendeur · " + PLAN[r.formule] : tab === "produits" ? "Produit · " + r.boutique : "Essai gratuit") + " · reçu le " + fmtDate(r.created_at, true);
+    $("dNoteWrap").hidden = tab === "produits";
+    if (tab === "produits") {
+      var pics = el("div", "group"); pics.appendChild(el("h3", null, "Photos"));
+      var pw = el("div", "docs"); (r.photos || []).forEach(function (ph) { var im = el("img"); im.src = PUB + ph.split("/").map(encodeURIComponent).join("/"); im.alt = ""; im.style.width = "96px"; im.style.height = "96px"; im.style.objectFit = "cover"; pw.appendChild(im); });
+      if (!(r.photos || []).length) pw.appendChild(el("span", "notice", "Aucune photo."));
+      pics.appendChild(pw); body.appendChild(pics);
+      body.appendChild(group("Produit", [["Prix", money(r.prix, r.devise)], ["Catégorie", r.categorie], ["Stock", r.stock], ["Affiché par le vendeur", r.visible ? "Oui" : "Non"], ["Description", r.description]]));
+      if (r.boutiques && r.boutiques.slug) { var lk = el("a", null, "Ouvrir la boutique"); lk.href = "boutique.html?b=" + encodeURIComponent(r.boutiques.slug); lk.target = "_blank"; lk.rel = "noopener"; lk.style.color = "var(--teal-deep)"; lk.style.fontWeight = "700"; body.appendChild(lk); }
+      body.appendChild(el("p", "notice", "« Masqué par Yiriclick » retire le produit de la boutique et de la vitrine, même si le vendeur l’affiche."));
+    } else if (tab === "dossiers") {
       body.appendChild(group("Compte", [["Nom", r.nom], ["E-mail", r.email], ["WhatsApp", r.whatsapp], ["Pays", r.pays], ["Formule", PLAN[r.formule]], ["Région de tarif", ZONE[r.zone]], ["Langue", r.langue]]));
       body.appendChild(group("Activité", [["Statut juridique", JUR[r.statut_juridique] || r.statut_juridique], ["Nom légal", r.nom_legal], ["Boutique", r.boutique], ["Catégorie", r.categorie], ["Produits", r.produits], ["Immatriculation", r.immatriculation], ["Numéro fiscal", r.numero_fiscal], ["Adresse", r.adresse], ["Ville", r.ville]]));
       body.appendChild(group("Identité", [["Nom sur la pièce", r.representant], ["Date de naissance", fmtDate(r.date_naissance)], ["Nationalité", r.nationalite], ["Type de pièce", PIECE[r.piece_type] || r.piece_type], ["Numéro", r.piece_numero], ["Expiration", fmtDate(r.piece_expiration)]]));
@@ -412,11 +430,12 @@ dd { margin: 0; overflow-wrap: anywhere; }
   $("dSave").addEventListener("click", async function () {
     if (!current) return;
     var btn = $("dSave"); btn.disabled = true; $("dErr").textContent = ""; $("dOk").textContent = "";
-    var patch = { statut: $("dStatut").value, note_admin: $("dNote").value.trim() || null };
+    var patch = current.table === "produits" ? { masque_admin: $("dStatut").value === "masque" } : { statut: $("dStatut").value, note_admin: $("dNote").value.trim() || null };
     var r = await sb.from(current.table).update(patch).eq("id", current.row.id);
     btn.disabled = false;
     if (r.error) { $("dErr").textContent = "Enregistrement impossible : " + r.error.message; return; }
-    current.row.statut = patch.statut; current.row.note_admin = patch.note_admin;
+    if (current.table === "produits") { current.row.masque_admin = patch.masque_admin; current.row.statut = patch.masque_admin ? "masque" : "visible"; }
+    else { current.row.statut = patch.statut; current.row.note_admin = patch.note_admin; }
     $("dOk").textContent = "Enregistré."; renderKpis(); renderTable();
   });
 

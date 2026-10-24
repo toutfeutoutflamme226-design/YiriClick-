@@ -67,6 +67,23 @@ Ce que fait la base v2 :
 
 Le paiement des abonnements n'est pas encore branché : il le sera avec ton prestataire de paiement.
 
+## Espace vendeur, boutiques et vitrine (base v3)
+
+1. Dans Supabase, **SQL Editor › New query** : colle `supabase/schema-v3.sql`, puis **Run**.
+2. **Authentication › URL Configuration** :
+   - **Site URL** : `https://toutfeutoutflamme226-design.github.io/YiriClick-/vendeur.html`
+   - **Redirect URLs** : ajoute la même adresse.
+3. **Authentication › Sign In / Providers › Email** : laisse « Confirm email » activé (obligatoire pour la sécurité).
+
+Fonctionnement :
+- Dans l'admin, passe un dossier en **Actif** (ou un essai en **Client actif**).
+- Le vendeur ouvre `vendeur.html`, crée son mot de passe avec **le même e-mail** que son inscription,
+  confirme son e-mail, puis crée sa boutique et ses produits.
+- Page publique de chaque boutique : `boutique.html?b=nom-de-la-boutique`. Vitrine de tous les produits : `vitrine.html`.
+- Limites appliquées par la base : Essai 15 produits / 4 photos, Basique 100 / 4, Pro 500 / 6, Entreprise illimité / 10.
+- Les e-mails de confirmation partent du service d'e-mail intégré de Supabase, limité à un petit nombre
+  d'e-mails par heure : avant le vrai lancement, configure ton propre service d'envoi (Authentication › Emails › SMTP).
+
 ## À modifier avant le lancement
 
 - Remplacer `[ADRESSE E-MAIL]` (et ses traductions) par ton adresse de contact,

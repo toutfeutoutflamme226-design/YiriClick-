@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vitrine Yiriclick</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800;900&display=swap">
+<link rel="stylesheet" href="assets/shop.css">
+<style>
+.hero { background: var(--navy); color: var(--white); }
+.hero .wrap { padding-block: 28px 32px; }
+.hero h1 { margin: 0; font-size: clamp(30px, 7vw, 54px); font-weight: 900; letter-spacing: -1.5px; line-height: 1; text-wrap: balance; }
+.hero p { margin: 10px 0 0; color: #C9D8DB; font-size: 17px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./" aria-label="Yiriclick">
+      <svg width="28" height="28" viewBox="0 0 160 160" aria-hidden="true"><path d="M76 146 V92 L34 40" fill="none" stroke="#4FC7CF" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/><path d="M76 92 L124 34" fill="none" stroke="#FF7A2E" stroke-width="22" stroke-linecap="round"/><path d="M96 30 H128 V62" fill="none" stroke="#FF7A2E" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="word"><span class="a">yiri</span><span class="b">click</span></span>
+    </a>
+    <div class="prefs">
+      <a href="vendeur.html" data-t="sellers">Espace vendeur</a>
+      <select id="prefLang" data-ta="lang"><option value="fr">FR</option><option value="en">EN</option><option value="es">ES</option></select>
+      <select id="prefCur" data-ta="cur"><option value="">—</option><option value="XOF">FCFA</option><option value="EUR">€</option><option value="USD">$</option></select>
+    </div>
+  </div>
+</header>
+<section class="hero"><div class="wrap"><h1 data-t="vitrineT">La vitrine Yiriclick</h1><p data-t="latest"></p></div></section>
+<main class="wrap">
+  <div class="tools">
+    <label for="q" style="position:absolute;left:-9999px" data-t="search"></label>
+    <input id="q" type="search" data-tp="search">
+    <label for="fCat" style="position:absolute;left:-9999px" data-t="allCats"></label>
+    <select id="fCat"></select>
+  </div>
+  <div class="grid" id="grid"><div class="empty" data-t="loading">Chargement…</div></div>
+</main>
+<footer><div class="wrap"><span>© 2026 Yiriclick</span><a href="./" data-t="openShop">Ouvrir ma boutique sur Yiriclick</a></div></footer>
+
+<div class="modal" id="pmodal" hidden>
+  <div class="modal-bg"></div>
+  <div class="mbox" role="dialog" aria-modal="true"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="assets/shop.js"></script>
+<script>
+(function () {
+  var Y = window.YC, items = [], loaded = false;
+  function render() {
+    Y.labels();
+    if (!loaded) return;
+    Y.catOptions(document.getElementById("fCat"), items.map(function (p) { return p.categorie; }));
+    var q = Y.norm(document.getElementById("q").value.trim()), c = document.getElementById("fCat").value;
+    var list = items.filter(function (p) {
+      return (!c || p.categorie === c) && (!q || Y.norm(p.nom + " " + (p.description || "") + " " + (p.boutiques ? p.boutiques.nom + " " + (p.boutiques.ville || "") + " " + (p.boutiques.pays || "") : "")).indexOf(q) >= 0);
+    });
+    var g = document.getElementById("grid"); g.textContent = "";
+    if (!list.length) { g.appendChild(Y.el("div", "empty", items.length ? Y.t("noMatch") : Y.t("noProducts"))); return; }
+    list.forEach(function (p) { g.appendChild(Y.card(p, p.boutiques, true, function (pp, s) { Y.openProduct(pp, s, { showShop: true }); })); });
+  }
+  async function start() {
+    Y.wirePrefs(render); Y.labels();
+    var r = await Y.sb.from("produits")
+      .select("id,nom,description,prix,devise,categorie,stock,photos,created_at,boutiques!inner(nom,slug,ville,pays,whatsapp,visible,masque_admin)")
+      .order("created_at", { ascending: false }).limit(120);
+    items = r.data || []; loaded = true;
+    document.getElementById("q").addEventListener("input", render);
+    document.getElementById("fCat").addEventListener("change", render);
+    render();
+  }
+  start();
+})();
+</script>
+</body>
+</html>
