@@ -1,0 +1,1581 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Yiriclick</title>
+<meta name="description" content="Yiriclick, la place de marché mondiale des petits vendeurs.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800;900&display=swap">
+<style>
+/* Layout: dark navy bands (hero, avantages, footer) alternate with white bands (étapes, tarifs); one 1200px column. Single look by design. */
+:root {
+  --navy: #10232A;
+  --navy-line: #2A3B42;
+  --navy-2: #172F37;
+  --teal: #4FC7CF;
+  --teal-deep: #0E6E78;
+  --orange: #FF7A2E;
+  --white: #FFFFFF;
+  --mist: #C9D8DB;
+  --mist-2: #B9CDD1;
+  --ink-soft: #3D4A4E;
+  --rule: #D5DEE0;
+  --tint: #E6F4F5;
+  --font: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { background: var(--white); color: var(--navy); font-family: var(--font); font-size: 16px; line-height: 1.5; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--navy); }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
+.wrap { max-width: 1200px; margin: 0 auto; padding-left: max(24px, env(safe-area-inset-left, 0px)); padding-right: max(24px, env(safe-area-inset-right, 0px)); }
+@media (max-width: 480px) { .wrap { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); } }
+.dark { background: var(--navy); color: var(--white); }
+
+/* Header */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--navy); border-bottom: 1px solid var(--navy-line); }
+.top .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; padding-block: 14px; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.word { font-size: 26px; font-weight: 900; letter-spacing: -1px; }
+.word .a { color: var(--orange); } .word .b { color: var(--teal); }
+.nav { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; font-size: 15px; font-weight: 500; }
+.nav > a.link { color: var(--white); text-decoration: none; padding-block: 10px; }
+.nav > a.link:hover { color: var(--teal); }
+.btn { display: inline-flex; align-items: center; justify-content: center; font-family: var(--font); font-weight: 700; text-decoration: none; padding: 14px 22px; min-height: 48px; border: 2px solid transparent; cursor: pointer; transition: transform .15s ease, background .15s ease; }
+.btn:hover { transform: translateY(-1px); }
+@media (prefers-reduced-motion: reduce) { .btn { transition: none; } .btn:hover { transform: none; } }
+.btn-orange { background: var(--orange); color: var(--navy); }
+.btn-ghost { border-color: var(--white); color: var(--white); background: transparent; }
+.btn-navy { background: var(--navy); color: var(--white); }
+.btn-sm { padding: 10px 18px; min-height: 44px; font-size: 15px; }
+@media (max-width: 560px) { .nav > a.link { display: none; } }
+
+/* Language menu */
+.lang { position: relative; }
+.lang-btn { font-family: var(--font); font-size: 15px; font-weight: 700; color: var(--white); background: transparent; border: 1px solid #3A4E56; min-height: 44px; padding: 0 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.lang-btn:hover { border-color: var(--teal); }
+.lang-menu { position: absolute; top: calc(100% + 6px); right: 0; z-index: 40; min-width: 170px; background: var(--white); border: 1px solid var(--rule); box-shadow: 0 10px 28px rgba(16,35,42,.28); padding: 6px; display: flex; flex-direction: column; }
+.lang-menu button { font-family: var(--font); font-size: 15px; text-align: left; min-height: 44px; padding: 0 14px; border: 0; background: var(--white); color: var(--navy); cursor: pointer; font-weight: 500; }
+.lang-menu button:hover { background: var(--tint); }
+.lang-menu button[aria-checked="true"] { background: var(--tint); font-weight: 800; }
+
+/* Hero */
+.hero .wrap { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 40px; padding-block: 72px 96px; }
+.hero-copy { flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 26px; }
+.kicker { margin: 0; font-size: 14px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--teal); }
+h1 { margin: 0; font-size: clamp(46px, 11vw, 100px); line-height: .95; font-weight: 900; letter-spacing: -0.03em; overflow-wrap: break-word; text-wrap: balance; }
+h1 .accent { color: var(--teal); display: block; }
+.lead { margin: 0; font-size: clamp(18px, 2.2vw, 21px); color: var(--mist); max-width: 38em; }
+.ctas { display: flex; flex-wrap: wrap; gap: 12px; }
+.ctas .btn { font-size: 18px; }
+.fine { margin: 0; font-size: 15px; color: var(--mist-2); }
+.hero-mark { flex: 1 1 220px; display: flex; justify-content: center; }
+.hero-mark svg { width: min(280px, 60vw); height: auto; }
+@media (max-width: 640px) { .hero-mark { display: none; } .hero .wrap { padding-block: 48px 64px; } }
+
+/* Sections */
+section { scroll-margin-top: 80px; }
+.sec { padding-block: 88px; }
+@media (max-width: 640px) { .sec { padding-block: 60px; } }
+h2 { margin: 0; font-size: clamp(34px, 5vw, 50px); font-weight: 900; letter-spacing: -0.03em; line-height: 1.05; text-wrap: balance; }
+
+/* How it works: clickable steps + live phone demo */
+.how { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 56px; align-items: start; margin-top: 32px; }
+@media (max-width: 860px) { .how { grid-template-columns: minmax(0, 1fr); gap: 32px; } .phone-col { order: -1; justify-self: center; } }
+.steps { display: flex; flex-direction: column; border-bottom: 1px solid var(--rule); min-width: 0; }
+.step { position: relative; display: grid; grid-template-columns: 88px minmax(0, 1fr); column-gap: 20px; row-gap: 6px; align-items: baseline; width: 100%; padding-block: 24px; background: none; border: 0; color: inherit; font-family: var(--font); text-align: left; cursor: pointer; }
+.step::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: var(--rule); transform-origin: left center; }
+.step::after { content: ""; position: absolute; top: -1px; left: 0; right: 0; height: 3px; background: var(--orange); transform: scaleX(0); transform-origin: left center; }
+.step.active::after { transform: scaleX(1); }
+.step.active.playing::after { animation: stepProgress var(--dur, 5s) linear forwards; }
+@keyframes stepProgress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.step .n { grid-row: span 2; font-size: clamp(44px, 6vw, 64px); font-weight: 900; line-height: 1; color: var(--rule); font-variant-numeric: tabular-nums; transition: color .3s ease, transform .25s ease; }
+.step .t { font-size: clamp(22px, 2.6vw, 28px); font-weight: 800; color: var(--ink-soft); transition: color .3s ease; }
+.step .d { font-size: 18px; color: var(--ink-soft); opacity: .7; transition: opacity .3s ease; }
+.step.active .n { color: var(--teal-deep); }
+.step.active .t { color: var(--navy); }
+.step.active .d { opacity: 1; }
+.step:hover .t { color: var(--navy); }
+
+.phone-col { position: sticky; top: 96px; }
+@media (max-width: 860px) { .phone-col { position: static; } }
+.phone { width: 300px; max-width: 100%; aspect-ratio: 300 / 600; background: var(--navy); border-radius: 46px; padding: 10px; position: relative; box-shadow: 0 30px 60px rgba(16, 35, 42, .28), inset 0 0 0 2px var(--navy-line); }
+.notch { position: absolute; top: 20px; left: 50%; width: 88px; height: 24px; margin-left: -44px; background: var(--navy); border-radius: 14px; z-index: 3; }
+.screen { position: relative; height: 100%; border-radius: 36px; overflow: hidden; background: #F3F7F8; }
+.app-bar { height: 76px; padding: 40px 18px 0; display: flex; align-items: center; justify-content: space-between; background: var(--white); border-bottom: 1px solid var(--rule); }
+.app-bar { background: var(--navy); border-bottom-color: var(--navy); }
+.app-brand { display: flex; align-items: center; gap: 6px; }
+.app-bar .word { font-size: 17px; }
+.app-bar .demo-tag { background: rgba(79, 199, 207, .16); color: var(--teal); }
+.demo-tag { font-size: 10px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--teal-deep); background: var(--tint); padding: 4px 8px; }
+.scr { position: absolute; inset: 76px 0 0; padding: 18px; display: flex; flex-direction: column; gap: 12px; opacity: 0; transform: translateX(36px); transition: opacity .45s ease, transform .5s cubic-bezier(.2,.75,.2,1); pointer-events: none; }
+.scr.on { opacity: 1; transform: none; }
+.scr.gone { transform: translateX(-36px); }
+.cover { height: 92px; background: var(--teal-deep); position: relative; overflow: hidden; }
+.cover::after { content: ""; position: absolute; right: -20px; top: -20px; width: 120px; height: 120px; border: 18px solid rgba(255,255,255,.12); border-radius: 50%; }
+.avatar { width: 64px; height: 64px; margin: -44px 0 0 14px; background: var(--orange); color: var(--navy); border: 4px solid #F3F7F8; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 22px; border-radius: 50%; position: relative; }
+.shop-name { font-size: 24px; font-weight: 900; letter-spacing: -0.5px; min-height: 30px; }
+.caret { display: inline-block; width: 2px; height: 22px; background: var(--orange); margin-left: 2px; vertical-align: -3px; animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.shop-link { font-size: 13px; color: var(--teal-deep); font-weight: 700; background: var(--white); border: 1px dashed var(--teal); padding: 8px 10px; overflow-wrap: anywhere; }
+.skel { height: 10px; background: #DDE6E8; }
+.skel.w1 { width: 85%; } .skel.w2 { width: 60%; }
+.mini-btn { margin-top: auto; text-align: center; font-weight: 800; font-size: 14px; padding: 13px; background: var(--navy); color: var(--white); }
+.mini-btn.orange { background: var(--orange); color: var(--navy); }
+.scr.on .mini-btn.pop { animation: pop .5s cubic-bezier(.2,.8,.2,1.4) 1.3s backwards; }
+@keyframes pop { from { transform: scale(.85); opacity: 0; } }
+.prod { background: var(--white); border: 1px solid var(--rule); }
+.prod-img { height: 150px; background: #FCE9DA; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 18px; }
+.jar { position: relative; width: 74px; }
+.jar .lid { height: 18px; background: var(--orange); margin: 0 6px; }
+.jar .body { height: 74px; background: #FFF8EC; border: 3px solid var(--navy); border-top: 0; display: flex; align-items: center; justify-content: center; }
+.jar .label { width: 70%; height: 26px; background: var(--teal-deep); }
+.scr.on .jar { animation: drop .6s cubic-bezier(.2,.8,.2,1.3) .15s backwards; }
+@keyframes drop { from { transform: translateY(-40px); opacity: 0; } }
+.prod-info { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 6px; }
+.prod-name { font-size: 15px; font-weight: 700; }
+.prod-price { font-size: 24px; font-weight: 900; font-variant-numeric: tabular-nums; height: 30px; overflow: hidden; }
+.prod-price span { display: block; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips span { font-size: 11px; font-weight: 700; padding: 5px 8px; background: var(--tint); color: var(--teal-deep); }
+.scr.on .chips span { animation: pop .4s ease backwards; }
+.scr.on .chips span:nth-child(1) { animation-delay: .5s; } .scr.on .chips span:nth-child(2) { animation-delay: .62s; } .scr.on .chips span:nth-child(3) { animation-delay: .74s; }
+.orders-h { font-size: 13px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--ink-soft); }
+.notif { display: flex; gap: 10px; align-items: center; background: var(--white); border: 1px solid var(--rule); padding: 12px; box-shadow: 0 6px 16px rgba(16,35,42,.08); }
+.notif .ic { flex: none; width: 36px; height: 36px; border-radius: 50%; background: var(--navy); color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; }
+.notif b { display: block; font-size: 13px; }
+.notif small { display: block; font-size: 12px; color: var(--ink-soft); }
+.scr.on .notif { animation: slideIn .55s cubic-bezier(.2,.8,.2,1.2) backwards; }
+.scr.on .notif:nth-of-type(2) { animation-delay: .25s; } .scr.on .notif:nth-of-type(3) { animation-delay: 1s; } .scr.on .notif:nth-of-type(4) { animation-delay: 1.75s; }
+@keyframes slideIn { from { transform: translateY(-24px) scale(.96); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .scr, .step .n, .step .t, .step .d { transition: none; }
+  .caret, .scr.on .notif, .scr.on .chips span, .scr.on .jar, .scr.on .mini-btn.pop, .step.active.playing::after { animation: none; }
+}
+
+/* Feature explorer: list of topics, one open panel with a small live demo */
+.adv-sub { margin: 12px 0 0; font-size: 17px; color: var(--mist); }
+.feat { display: grid; grid-template-columns: minmax(0, 1fr); margin-top: 32px; border-top: 1px solid var(--navy-line); }
+@media (min-width: 900px) {
+  .feat { grid-template-columns: 360px minmax(0, 1fr); column-gap: 48px; align-items: start; }
+  .feat-btn { grid-column: 1; }
+  .feat-panel { grid-column: 2; grid-row: 1 / span 5; margin-top: 24px; }
+  .feat-btn .fc svg { transform: rotate(-90deg); }
+  .feat-btn[aria-expanded="true"] .fc svg { transform: rotate(-90deg) translateY(4px); }
+}
+.feat-btn { display: grid; grid-template-columns: 46px minmax(0, 1fr) 20px; gap: 14px; align-items: center; width: 100%; padding: 16px 10px; background: transparent; border: 0; border-bottom: 1px solid var(--navy-line); color: var(--white); font-family: var(--font); text-align: left; cursor: pointer; transition: background .2s ease; }
+.feat-btn:hover { background: rgba(255, 255, 255, .04); }
+.feat-btn[aria-expanded="true"] { background: rgba(79, 199, 207, .09); }
+.fi { width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--navy-line); color: var(--teal); transition: background .2s ease, color .2s ease, border-color .2s ease; }
+.feat-btn[aria-expanded="true"] .fi { background: var(--teal); border-color: var(--teal); color: var(--navy); }
+.ft { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.fn { font-size: 19px; font-weight: 800; }
+.fs { font-size: 14px; color: var(--mist-2); }
+.fc { color: var(--mist-2); display: flex; }
+.fc svg { transition: transform .25s ease; }
+.feat-btn[aria-expanded="true"] .fc svg { transform: rotate(180deg); }
+.feat-panel { background: var(--navy-2); border: 1px solid var(--navy-line); padding: 28px; display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+@media (max-width: 899px) { .feat-panel { padding: 20px; border-top: 0; } }
+.fh { margin: 0; font-size: 19px; line-height: 1.45; font-weight: 500; }
+.fnote { margin: 0; font-size: 14px; color: var(--mist-2); }
+.pchips { display: flex; flex-wrap: wrap; gap: 8px; }
+.pchips span { font-size: 14px; font-weight: 700; padding: 9px 12px; border: 1px solid var(--navy-line); background: var(--navy); }
+.dd { align-self: flex-start; }
+.pm-card { background: var(--white); color: var(--navy); padding: 20px; display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 6px 16px; align-items: start; max-width: 540px; }
+.logo-slot { grid-row: span 3; width: 76px; height: 76px; border: 2px dashed #9FB3B8; display: flex; align-items: center; justify-content: center; text-align: center; padding: 6px; font-size: 10px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase; color: var(--ink-soft); }
+.logo-slot.has-img { border: 1px solid var(--rule); padding: 8px; }
+.logo-slot img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+.pm-name { font-size: 22px; font-weight: 900; }
+.pm-type { justify-self: start; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--teal-deep); background: var(--tint); padding: 4px 8px; }
+.pm-desc { font-size: 14px; color: var(--ink-soft); }
+.pm-how { grid-column: 1 / -1; border-top: 1px solid var(--rule); margin-top: 10px; padding-top: 12px; }
+.pm-how-h { font-size: 13px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+.pm-how ol { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; font-size: 15px; }
+.conv { display: flex; flex-direction: column; gap: 6px; }
+.conv-l { font-size: 14px; font-weight: 700; color: var(--mist); }
+.ccy-menu { max-height: 280px; overflow-y: auto; min-width: 240px !important; }
+.big { background: var(--white); color: var(--navy); padding: 16px 18px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 16px; }
+.big span { font-size: 14px; font-weight: 700; color: var(--ink-soft); }
+.big b { font-size: 30px; font-weight: 900; font-variant-numeric: tabular-nums; }
+.ccy-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1px; background: var(--navy-line); border: 1px solid var(--navy-line); }
+.ccy-grid button { font-family: var(--font); text-align: left; background: var(--navy-2); color: var(--white); border: 0; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; cursor: pointer; min-width: 0; transition: background .2s ease; }
+.ccy-grid button:hover { background: #1E3A43; }
+.ccy-grid button[aria-pressed="true"] { background: var(--teal); color: var(--navy); }
+.ccy-grid .cc { font-size: 12px; font-weight: 800; letter-spacing: 1px; opacity: .8; }
+.ccy-grid b { font-size: 16px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.ccy-grid .cn { font-size: 12px; opacity: .75; overflow-wrap: anywhere; }
+.dd .lang-btn { border-color: var(--teal); min-width: 190px; justify-content: space-between; font-size: 16px; }
+.dd .lang-btn svg:first-child { color: var(--teal); }
+.dd .ddl { flex: 1; text-align: left; }
+.dd .lang-menu { left: 0; right: auto; min-width: 190px; transform-origin: top left; }
+.seg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; max-width: 420px; }
+.seg button { font-family: var(--font); font-size: 14px; font-weight: 700; min-height: 44px; border: 1px solid var(--teal); background: transparent; color: var(--white); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--teal); color: var(--navy); }
+.sample { background: var(--white); color: var(--navy); padding: 18px; display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 4px 16px; align-items: center; max-width: 460px; }
+.sample .thumb { grid-row: span 4; width: 64px; height: 64px; background: #FCE9DA; display: flex; align-items: center; justify-content: center; }
+.sample .thumb i { display: block; width: 30px; height: 34px; background: #FFF8EC; border: 3px solid var(--navy); border-top: 8px solid var(--orange); }
+.sm-tag { font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--teal-deep); }
+.sm-name { font-size: 17px; font-weight: 800; }
+.sm-desc { font-size: 14px; color: var(--ink-soft); }
+.sm-price { font-size: 16px; font-weight: 900; font-variant-numeric: tabular-nums; }
+.conv label { display: block; font-size: 14px; font-weight: 700; color: var(--mist); margin-bottom: 6px; }
+.conv input { font-family: var(--font); font-size: 24px; font-weight: 800; width: 100%; max-width: 260px; padding: 10px 14px; border: 2px solid var(--teal); background: var(--white); color: var(--navy); font-variant-numeric: tabular-nums; }
+.rows { display: flex; flex-direction: column; border-top: 1px solid var(--navy-line); }
+.rows div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 16px; padding-block: 12px; border-bottom: 1px solid var(--navy-line); }
+.rows span { color: var(--mist); font-size: 15px; }
+.rows b { font-size: 20px; font-variant-numeric: tabular-nums; }
+.rows b.soft { font-size: 15px; font-weight: 500; color: var(--mist-2); }
+.chat { display: flex; flex-direction: column; gap: 8px; max-width: 460px; }
+.bub { max-width: 82%; padding: 10px 14px; font-size: 15px; line-height: 1.4; }
+.bub.in { align-self: flex-start; background: #23414A; }
+.bub.out { align-self: flex-end; background: var(--teal); color: var(--navy); }
+.wa-cta { align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; font-weight: 800; font-size: 15px; padding: 12px 16px; background: var(--orange); color: var(--navy); }
+.checks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.checks li { display: flex; align-items: center; gap: 12px; font-size: 16px; }
+.checks .ck { flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--teal); color: var(--navy); display: flex; align-items: center; justify-content: center; }
+.vbadge { align-self: flex-start; display: inline-flex; align-items: center; gap: 10px; padding: 10px 16px; background: var(--white); color: var(--navy); font-weight: 900; font-size: 16px; }
+.vbadge svg { color: var(--teal-deep); }
+
+/* Pricing */
+.price-head { display: flex; flex-direction: column; gap: 10px; }
+.price-head p { margin: 0; font-size: 18px; color: var(--ink-soft); }
+.zones { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; max-width: 560px; margin-top: 28px; }
+.zones button { font-family: var(--font); padding: 10px 6px; min-height: 54px; cursor: pointer; border: 2px solid var(--navy); background: var(--white); color: var(--navy); text-align: center; }
+.zones button[aria-pressed="true"] { background: var(--navy); color: var(--white); }
+.zones .r { display: block; font-size: 14px; font-weight: 800; }
+.zones .c { display: block; font-size: 13px; font-weight: 500; margin-top: 2px; }
+.plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 28px; }
+.plan { padding: 28px; display: flex; flex-direction: column; gap: 14px; background: var(--white); color: var(--navy); border: 1px solid var(--rule); }
+.plan.hi { background: var(--navy); color: var(--white); border-color: var(--navy); }
+.badge { align-self: flex-start; background: var(--orange); color: var(--navy); font-size: 12px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; padding: 6px 10px; }
+.plan h3 { margin: 0; font-size: 21px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+.amount { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; }
+.amount .p { font-size: 36px; font-weight: 900; letter-spacing: -1px; font-variant-numeric: tabular-nums; }
+.amount .per { font-size: 16px; }
+.after { margin: 0; font-size: 14px; color: var(--ink-soft); }
+.plan.hi .after { color: var(--mist); }
+.plan ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; font-size: 15px; line-height: 1.4; flex-grow: 1; }
+.plan .btn { width: 100%; }
+
+/* Footer */
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px 24px; padding-block: 32px; font-size: 15px; color: var(--mist); }
+footer .word { font-size: 20px; }
+
+/* Motion: micro-interactions */
+.top { transition: box-shadow .25s ease, background .25s ease; }
+.top.scrolled { box-shadow: 0 8px 24px rgba(0, 0, 0, .28); }
+h1 span { display: block; }
+.brand .arrow { transition: transform .25s cubic-bezier(.2,.8,.2,1); transform-origin: 110px 46px; }
+.brand:hover .arrow, .brand:focus-visible .arrow { transform: translate(6px, -6px); }
+.btn:active { transform: scale(.97); }
+.ctas .btn-orange::after, .plan.hi .btn::after { content: "→"; margin-left: 10px; display: inline-block; transition: transform .2s ease; }
+.ctas .btn-orange:hover::after, .plan.hi .btn:hover::after { transform: translateX(4px); }
+.btn-ghost:hover { background: rgba(255, 255, 255, .08); }
+.nav > a.link { position: relative; }
+.nav > a.link::after { content: ""; position: absolute; left: 0; right: 0; bottom: 4px; height: 2px; background: var(--teal); transform: scaleX(0); transform-origin: left; transition: transform .25s ease; }
+.nav > a.link:hover::after { transform: scaleX(1); }
+.lang-btn svg:last-child { transition: transform .2s ease; }
+.lang-btn[aria-expanded="true"] svg:last-child { transform: rotate(180deg); }
+.lang-menu { transform-origin: top right; animation: menuIn .18s cubic-bezier(.2,.8,.2,1); }
+@keyframes menuIn { from { opacity: 0; transform: translateY(-6px) scale(.96); } }
+.zones button { transition: background .2s ease, color .2s ease, transform .15s ease; }
+.zones button:active { transform: scale(.97); }
+.plan { transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s ease; }
+.plan:hover { transform: translateY(-6px); box-shadow: 0 18px 36px rgba(16, 35, 42, .14); }
+.plan.hi:hover { box-shadow: 0 18px 40px rgba(16, 35, 42, .35); }
+.adv div h3 { transition: color .2s ease; }
+.adv div:hover h3 { color: var(--teal); }
+.step .n { transition: transform .25s ease; }
+.step:hover .n { transform: translateX(6px); }
+@media (prefers-reduced-motion: reduce) {
+  .top, .brand .arrow, .btn, .plan, .zones button, .lang-btn svg:last-child, .nav > a.link::after, .step .n { transition: none !important; }
+  .lang-menu { animation: none; }
+  .plan:hover, .step:hover .n, .brand:hover .arrow { transform: none; }
+}
+/* Sign-up sheet */
+.modal { position: fixed; inset: 0; z-index: 60; display: flex; align-items: flex-end; justify-content: center; }
+@media (min-width: 700px) { .modal { align-items: center; padding: 24px; } }
+.modal-bg { position: absolute; inset: 0; background: rgba(16, 35, 42, .66); }
+.sheet { position: relative; width: 100%; max-width: 580px; max-height: calc(100% - env(safe-area-inset-top, 0px) - 16px); overflow-y: auto; background: var(--white); color: var(--navy); padding-top: 22px; padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); box-shadow: 0 -10px 40px rgba(0, 0, 0, .3); }
+.sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
+.sheet-head h2 { font-size: clamp(26px, 6vw, 32px); }
+.x { width: 44px; height: 44px; flex: none; display: flex; align-items: center; justify-content: center; background: var(--tint); color: var(--navy); border: 0; cursor: pointer; }
+#suForm { display: flex; flex-direction: column; gap: 14px; }
+.su-sub { margin: 0; font-size: 15px; color: var(--ink-soft); }
+.sum { display: flex; flex-direction: column; gap: 2px; background: var(--tint); padding: 12px 14px; }
+.sum span { font-size: 12px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--teal-deep); }
+.sum b { font-size: 16px; }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.field > label { font-size: 14px; font-weight: 700; }
+.field input:not([type="checkbox"]), .field select { font-family: var(--font); font-size: 16px; padding: 12px; border: 2px solid var(--rule); background: var(--white); color: var(--navy); width: 100%; min-height: 48px; }
+.field input:focus, .field select:focus { border-color: var(--teal-deep); outline: none; box-shadow: 0 0 0 3px rgba(14, 110, 120, .2); }
+.field input[aria-invalid="true"] { border-color: #B3261E; }
+.check { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.4; cursor: pointer; }
+.check input { width: 22px; height: 22px; flex: none; margin: 0; accent-color: var(--teal-deep); }
+.err { margin: 0; font-size: 13px; color: #B3261E; min-height: 0; }
+.err:empty { display: none; }
+.su-submit { width: 100%; font-size: 17px; }
+.su-submit:disabled { opacity: .6; cursor: wait; }
+.done { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; padding-block: 12px; }
+.done-ic { width: 64px; height: 64px; border-radius: 50%; background: var(--teal); color: var(--navy); display: flex; align-items: center; justify-content: center; }
+.done h3 { margin: 0; font-size: 24px; font-weight: 900; }
+.done p { margin: 0; font-size: 16px; color: var(--ink-soft); }
+/* Seller file (paid plans) */
+#proForm { display: flex; flex-direction: column; gap: 14px; }
+.pbar { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.pb-it { display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; color: var(--ink-soft); min-width: 0; overflow-wrap: anywhere; }
+.pb-it::before { content: ""; height: 4px; background: var(--rule); }
+.pb-it.done::before, .pb-it.on::before { background: var(--teal-deep); }
+.pb-it.on { color: var(--navy); }
+.pstep-of { margin: 0; font-size: 13px; color: var(--ink-soft); }
+.pbody { display: flex; flex-direction: column; gap: 14px; }
+.pstep-h { margin: 0; font-size: 22px; font-weight: 900; }
+.field textarea { font-family: var(--font); font-size: 16px; padding: 12px; border: 2px solid var(--rule); background: var(--white); color: var(--navy); width: 100%; resize: vertical; }
+.field textarea:focus { border-color: var(--teal-deep); outline: none; box-shadow: 0 0 0 3px rgba(14, 110, 120, .2); }
+.field textarea[aria-invalid="true"], .field select[aria-invalid="true"] { border-color: #B3261E; }
+.hint { font-size: 13px; color: var(--ink-soft); }
+.info { background: var(--tint); padding: 14px; font-size: 14px; line-height: 1.45; }
+.info b { display: block; margin-bottom: 4px; }
+.info p { margin: 0; }
+.vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.file-drop { position: relative; display: flex; gap: 12px; align-items: center; border: 2px dashed var(--rule); padding: 12px 14px; cursor: pointer; min-height: 72px; transition: border-color .2s ease; }
+.file-drop:hover { border-color: var(--teal-deep); }
+.file-drop:focus-within { outline: 3px solid var(--orange); outline-offset: 2px; }
+.file-drop.has { border-style: solid; border-color: var(--teal-deep); }
+.fd-ic { width: 44px; height: 44px; flex: none; display: flex; align-items: center; justify-content: center; background: var(--tint); color: var(--teal-deep); }
+.fd-thumb { width: 56px; height: 56px; flex: none; object-fit: cover; }
+.fd-t { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.fd-t b { font-size: 15px; }
+.fd-t span { font-size: 13px; color: var(--ink-soft); overflow-wrap: anywhere; }
+.pnav { display: flex; gap: 10px; }
+.pnav .btn { flex: 1; font-size: 16px; }
+.btn-line { background: transparent; border-color: var(--navy); color: var(--navy); }
+/* Country picker */
+.cc-wrap { position: relative; }
+.cc-flag { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 22px; line-height: 1; color: var(--teal-deep); pointer-events: none; display: flex; }
+.field input.cc-in { padding-left: 46px; }
+.cc-list { position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 6; max-height: 264px; overflow-y: auto; margin: 0; padding: 4px; list-style: none; background: var(--white); border: 1px solid var(--rule); box-shadow: 0 12px 28px rgba(16, 35, 42, .22); }
+.cc-list li { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 8px 10px; font-size: 15px; cursor: pointer; }
+.cc-list li[aria-selected="true"], .cc-list li:hover { background: var(--tint); }
+.cc-list .cc-f { font-size: 22px; line-height: 1; width: 28px; text-align: center; }
+.cc-list .cc-empty { color: var(--ink-soft); cursor: default; }
+.cc-list .cc-empty:hover { background: none; }
+/* City detected from the address */
+.addr-sugg { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--ink-soft); }
+.addr-sugg:empty { display: none; }
+.addr-sugg .ok { color: var(--teal-deep); }
+.addr-sugg button { font-family: var(--font); font-size: 14px; font-weight: 700; min-height: 40px; padding: 0 14px; border: 1px solid var(--teal-deep); background: var(--tint); color: var(--navy); cursor: pointer; }
+.addr-sugg button:hover { background: var(--teal); }
+/* Commitments: read before accepting */
+.read-link { align-self: flex-start; margin-left: 32px; min-height: 36px; padding: 4px 0; background: none; border: 0; font-family: var(--font); font-size: 14px; font-weight: 700; color: var(--teal-deep); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.doc { display: flex; flex-direction: column; gap: 14px; }
+.doc-back { align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0; background: none; border: 0; font-family: var(--font); font-size: 14px; font-weight: 700; color: var(--teal-deep); cursor: pointer; }
+.doc-back svg { transform: rotate(90deg); }
+.doc-h { margin: 0; font-size: 24px; font-weight: 900; line-height: 1.15; text-wrap: balance; }
+.doc-h:focus { outline: none; }
+.doc-note { margin: 0; padding: 10px 12px; font-size: 13px; background: #FFF4E5; color: #6B3A00; }
+.doc-sec h4 { margin: 0 0 4px; font-size: 16px; font-weight: 800; }
+.doc-sec p { margin: 0; font-size: 15px; line-height: 1.55; color: var(--ink-soft); }
+.doc-upd { margin: 0; font-size: 13px; color: var(--ink-soft); }
+.doc-actions { display: flex; flex-direction: column; gap: 10px; }
+.doc-actions .btn { width: 100%; font-size: 16px; }
+</style>
+
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Yiriclick">
+      <svg width="36" height="36" viewBox="0 0 160 160" aria-hidden="true">
+        <path d="M76 146 V92 L34 40" fill="none" stroke="#4FC7CF" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+        <g class="arrow">
+          <path d="M76 92 L124 34" fill="none" stroke="#FF7A2E" stroke-width="22" stroke-linecap="round"/>
+          <path d="M96 30 H128 V62" fill="none" stroke="#FF7A2E" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+        </g>
+      </svg>
+      <span class="word"><span class="a">yiri</span><span class="b">click</span></span>
+    </a>
+    <nav class="nav">
+      <a class="link" href="#comment" data-t="nav1">Fonctionnement</a>
+      <a class="link" href="#tarifs" data-t="nav2">Tarifs</a>
+      <div class="lang">
+        <button type="button" class="lang-btn" id="langBtn" aria-haspopup="true" aria-expanded="false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4FC7CF" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg>
+          <span id="langCur">FR</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="lang-menu" id="langMenu" role="menu" hidden>
+          <button type="button" role="menuitemradio" data-lang="fr">Français</button>
+          <button type="button" role="menuitemradio" data-lang="en">English</button>
+          <button type="button" role="menuitemradio" data-lang="es">Español</button>
+        </div>
+      </div>
+      <a class="btn btn-orange btn-sm" href="#inscription" data-signup="essai" data-t="start">Démarrer</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero dark">
+    <div class="wrap">
+      <div class="hero-copy">
+        <p class="kicker" data-t="kicker">La place de marché mondiale des petits vendeurs</p>
+        <h1><span data-t="h1a">Vends plus.</span><span class="accent" data-t="h1b">Vends partout.</span></h1>
+        <p class="lead" data-t="lead">Ta boutique en ligne, visible par des acheteurs sur plusieurs continents. Paiement Mobile Money ou carte, dans la langue et la monnaie de chacun.</p>
+        <div class="ctas">
+          <a class="btn btn-orange" href="#inscription" data-signup="essai" data-t="cta1">Essai gratuit 14 jours</a>
+          <a class="btn btn-ghost" href="#tarifs" data-t="cta2">Voir les tarifs</a>
+        </div>
+        <p class="fine" data-t="small">Sans carte bancaire · Sans engagement</p>
+      </div>
+      <div class="hero-mark">
+        <svg id="heroY" viewBox="0 0 160 160" aria-hidden="true">
+          <path d="M76 146 V92 L34 40" fill="none" stroke="#4FC7CF" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M76 92 L124 34" fill="none" stroke="#FF7A2E" stroke-width="20" stroke-linecap="round"/>
+          <path d="M96 30 H128 V62" fill="none" stroke="#FF7A2E" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <section id="comment" class="sec">
+    <div class="wrap">
+      <h2 data-t="stepsTitle">En trois temps</h2>
+      <div class="how">
+        <div class="steps" id="steps"></div>
+        <div class="phone-col">
+          <div class="phone" role="img" id="phone">
+            <div class="notch"></div>
+            <div class="screen">
+              <div class="app-bar"><span class="app-brand"><svg width="22" height="22" viewBox="0 0 160 160" aria-hidden="true"><path d="M76 146 V92 L34 40" fill="none" stroke="#4FC7CF" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/><path d="M76 92 L124 34" fill="none" stroke="#FF7A2E" stroke-width="22" stroke-linecap="round"/><path d="M96 30 H128 V62" fill="none" stroke="#FF7A2E" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="word"><span class="a">yiri</span><span class="b">click</span></span></span><span class="demo-tag" data-t="demo">Exemple</span></div>
+              <div class="scr" data-s="0">
+                <div class="cover"></div>
+                <div class="avatar">AK</div>
+                <div class="shop-name"><span id="typed"></span><span class="caret"></span></div>
+                <div class="shop-link">yiriclick.com/chez-awa</div>
+                <div class="skel w1"></div>
+                <div class="skel w2"></div>
+                <div class="mini-btn pop" data-t="pOpen">Boutique ouverte</div>
+              </div>
+              <div class="scr" data-s="1">
+                <div class="prod">
+                  <div class="prod-img"><div class="jar"><div class="lid"></div><div class="body"><div class="label"></div></div></div></div>
+                  <div class="prod-info">
+                    <div class="prod-name" data-t="pProduct">Beurre de karité bio · 250 g</div>
+                    <div class="prod-price" id="price"><span>2 500 FCFA</span></div>
+                    <div class="chips" id="chips"></div>
+                  </div>
+                </div>
+                <div class="mini-btn orange pop" data-t="pPublish">Publier</div>
+              </div>
+              <div class="scr" data-s="2" id="orders"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec dark">
+    <div class="wrap">
+      <h2 data-t="advTitle">Ce qui fait monter tes ventes</h2>
+      <p class="adv-sub" data-t="advSub">Touche un point pour en savoir plus.</p>
+      <div class="feat" id="feat"></div>
+    </div>
+  </section>
+
+  <section id="tarifs" class="sec">
+    <div class="wrap">
+      <div class="price-head">
+        <h2 data-t="priceTitle">Tarifs</h2>
+        <p data-t="priceSub">Prix de lancement les 4 premiers mois · 2 mois offerts en paiement annuel</p>
+      </div>
+      <div class="zones" id="zones"></div>
+      <div class="plans" id="plans"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="dark">
+  <div class="wrap">
+    <span class="word"><span class="a">yiri</span><span class="b">click</span></span>
+    <span data-t="contact">Contact : [ADRESSE E-MAIL]</span>
+    <span>© 2026 Yiriclick · <span data-t="legal">Conditions · Confidentialité</span></span>
+  </div>
+</footer>
+
+<div class="modal" id="signup" hidden>
+  <div class="modal-bg" data-close></div>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="suTitle">
+    <div class="sheet-head">
+      <h2 id="suTitle" data-t="suTitle">Créer ma boutique</h2>
+      <button type="button" class="x" data-close id="suClose"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <form id="suForm" novalidate>
+      <p class="su-sub" data-t="suSub"></p>
+      <div class="sum" id="suSum"><span data-t="sumLabel">Ton choix</span><b id="suSumV"></b></div>
+      <div class="two">
+        <div class="field"><label for="suPlan" data-t="fPlan">Formule</label><select id="suPlan" name="formule"></select></div>
+        <div class="field"><label for="suZone" data-t="fZone">Région de tarif</label><select id="suZone" name="zone"></select></div>
+      </div>
+      <div class="field"><label for="suName" data-t="fName">Ton nom complet</label><input id="suName" name="nom" autocomplete="name" required><span class="err" id="suName-err"></span></div>
+      <div class="field"><label for="suShop" data-t="fShop">Nom de ta boutique</label><input id="suShop" name="boutique" autocomplete="organization" required><span class="err" id="suShop-err"></span></div>
+      <div class="field"><label for="suCountry" data-t="fCountry">Pays</label><input id="suCountry" name="pays" autocomplete="country-name" data-tp="phCountry" required><span class="err" id="suCountry-err"></span></div>
+      <div class="field"><label for="suPhone" data-t="fPhone">Numéro WhatsApp</label><input id="suPhone" name="whatsapp" type="tel" inputmode="tel" autocomplete="tel" data-tp="phPhone" required><span class="err" id="suPhone-err"></span></div>
+      <div class="field"><label for="suEmail" data-t="fEmail">Adresse e-mail</label><input id="suEmail" name="email" type="email" inputmode="email" autocomplete="email" data-tp="phEmail" required><span class="err" id="suEmail-err"></span></div>
+      <div class="field"><label class="check"><input type="checkbox" id="suConsent" name="consentement"><span data-t="fConsent"></span></label><span class="err" id="suConsent-err"></span></div>
+      <p class="err" id="suSend-err"></p>
+      <button type="submit" class="btn btn-orange su-submit" id="suSubmit" data-t="fSubmit">Envoyer mon inscription</button>
+    </form>
+    <form id="proForm" novalidate hidden></form>
+    <div id="docView" class="doc" hidden></div>
+    <div id="suDone" class="done" hidden>
+      <div class="done-ic" aria-hidden="true"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+      <h3 id="suDoneT"></h3>
+      <p id="suDoneP"></p>
+      <button type="button" class="btn btn-navy" data-close data-t="close">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var T = {
+    fr: {
+      nav1: "Fonctionnement", nav2: "Tarifs", start: "Démarrer",
+      kicker: "La place de marché mondiale des petits vendeurs",
+      h1a: "Vends plus.", h1b: "Vends partout.",
+      lead: "Ta boutique en ligne, visible par des acheteurs sur plusieurs continents. Paiement Mobile Money ou carte, dans la langue et la monnaie de chacun.",
+      cta1: "Essai gratuit 14 jours", cta2: "Voir les tarifs", small: "Sans carte bancaire · Sans engagement",
+      stepsTitle: "En trois temps",
+      steps: [["Crée ta boutique", "Nom, logo, lien à partager. Prêt en quelques minutes, depuis ton téléphone."], ["Publie tes produits", "Photo, prix, description. Le prix s’affiche dans la monnaie de chaque client."], ["Vends au monde", "Tes produits sont visibles sur la vitrine Yiriclick, en Afrique, en Europe et au-delà."]],
+      advTitle: "Ce qui fait monter tes ventes",
+      adv: [["Mobile Money et carte", "Orange Money, Moov, Wave en Afrique, carte bancaire partout ailleurs."], ["Langues et monnaies", "Français, anglais, espagnol. FCFA, euro, dollar."], ["Commande sur WhatsApp", "Un bouton pour que le client te parle avant d’acheter."], ["Vendeurs vérifiés", "Un badge de confiance pour chaque vendeur contrôlé."]],
+      priceTitle: "Tarifs", priceSub: "Prix de lancement les 4 premiers mois · 2 mois offerts en paiement annuel",
+      regions: ["Afrique", "Europe", "Amériques & Asie"],
+      badge: "Recommandé", per: "/ mois", free: "Gratuit", days: "14 jours", noCard: "Sans carte bancaire", fixed: "Prix fixe",
+      then: function (p) { return "puis " + p + " après 4 mois"; },
+      names: ["Essai", "Basique", "Pro", "Entreprise"],
+      ctas: ["Essayer gratuitement", "Choisir Basique", "Choisir Pro", "Choisir Entreprise"],
+      feats: [["Jusqu’à 15 produits", "Boutique avec lien à partager", "Réception des commandes", "Bouton « Commander sur WhatsApp »"], ["Boutique personnalisée", "Paiement Mobile Money et carte", "Avis clients", "Présence sur la vitrine Yiriclick"], ["Tout le Basique", "Produits illimités", "Espace administrateur : stock, finances, factures", "Statistiques de ventes"], ["Tout le Pro", "Analyse du marché et des tendances", "Publicité et promotion gérées par Yiriclick", "Plusieurs comptes employés", "Support prioritaire"]],
+      contact: "Contact : [ADRESSE E-MAIL]", legal: "Conditions · Confidentialité", langAria: "Changer de langue",
+      suTitle: "Créer ma boutique", suSub: "Remplis ce formulaire. L’équipe Yiriclick te contacte pour activer ta boutique.",
+      fName: "Ton nom complet", fShop: "Nom de ta boutique", fCountry: "Pays", fPhone: "Numéro WhatsApp", fEmail: "Adresse e-mail",
+      fPlan: "Formule", fZone: "Région de tarif", fConsent: "J’accepte que Yiriclick me contacte au sujet de mon inscription.",
+      fSubmit: "Envoyer mon inscription", fSending: "Envoi…", close: "Fermer", sumLabel: "Ton choix",
+      perMonth: "/ mois", launch: "prix de lancement", trialSum: "Gratuit pendant 14 jours, sans carte bancaire",
+      phCountry: "Choisis ou écris ton pays", phPhone: "+226 70 00 00 00", phEmail: "nom@exemple.com", ccEmpty: "Aucun pays trouvé. Tu peux garder ce que tu as écrit.",
+      eReq: "Ce champ est obligatoire.", eEmail: "Entre une adresse e-mail valide, par exemple nom@exemple.com.",
+      ePhone: "Entre ton numéro avec l’indicatif du pays, par exemple +226 70 00 00 00.", eConsent: "Coche la case pour continuer.",
+      eSend: "L’envoi n’a pas fonctionné. Vérifie ta connexion et réessaie.",
+      okTitle: "Inscription envoyée", okText: "Merci ! L’équipe Yiriclick te contacte sur WhatsApp ou par e-mail pour activer ta boutique.",
+      pvTitle: "Formulaire prêt", pvText: "Les inscriptions seront enregistrées dès que le site sera relié à Supabase. Pour l’instant, rien n’a été envoyé.",
+      demo: "Exemple", pOpen: "✓ Boutique ouverte", pProduct: "Beurre de karité bio · 250 g", pPublish: "Publier le produit",
+      pChips: ["Mobile Money", "Carte", "WhatsApp"], pOrders: "Nouvelles commandes", pEur: "3,81 €",
+      pOrdersList: [["NL", "Amsterdam, Pays-Bas", "3,81 € · Carte"], ["BF", "Ouagadougou, Burkina Faso", "2 500 FCFA · Orange Money"], ["FR", "Paris, France", "3,81 € · Carte"]],
+      phoneAria: "Exemple animé : une vendeuse crée sa boutique, publie un produit et reçoit des commandes de plusieurs pays.",
+      advSub: "Touche un point pour en savoir plus.",
+      feat: [
+        { id: "pay", title: "Paiements", short: "Mobile Money et carte bancaire", head: "Tes clients paient comme ils en ont l’habitude, en Afrique comme ailleurs.", note: "L’argent de tes ventes arrive sur ton espace Yiriclick, puis sur ton Mobile Money ou ton compte bancaire.", pick: "Moyen de paiement", logo: "Logo officiel", how: "Comment payer", types: { mm: "Paiement mobile", card: "Carte bancaire" }, desc: { om: "Le service de paiement mobile de l’opérateur Orange, très utilisé en Afrique de l’Ouest.", moov: "Le service de paiement mobile de l’opérateur Moov Africa.", wave: "Une application de paiement mobile répandue en Afrique de l’Ouest.", visa: "Une carte bancaire acceptée dans le monde entier.", mc: "Une carte bancaire acceptée dans le monde entier." }, stepsMM: ["Choisis {n} au moment de payer.", "Entre ton numéro de téléphone.", "Confirme le paiement sur ton téléphone avec ton code secret."], stepsCard: ["Choisis la carte {n} au moment de payer.", "Entre les informations de ta carte.", "Ta banque peut te demander une confirmation."] },
+        { id: "lang", title: "Langues", short: "Français, anglais, espagnol", head: "Ta fiche produit s’affiche dans la langue de chaque client. Essaie :", tag: "Aperçu côté client" },
+        { id: "cur", title: "Monnaies", short: "FCFA, euro, dollar", head: "Tu fixes ton prix une seule fois. Chaque client le voit dans sa monnaie.", label: "Ton prix en FCFA", ccy: "Monnaie du client", ccyAll: "Le même prix dans d’autres monnaies", note: "Taux de référence de la Banque centrale européenne du 23 octobre 2026. Le franc CFA est fixé à l’euro : 1 € = 655,957 FCFA." },
+        { id: "chat", title: "WhatsApp", short: "Le client te parle avant d’acheter", head: "Un bouton sur chaque produit ouvre une discussion avec toi.", msgs: [["in", "Bonjour, le beurre de karité est disponible ?"], ["out", "Oui ! Je peux l’envoyer demain."], ["in", "Parfait, je commande."]], btn: "Commander sur WhatsApp" },
+        { id: "shield", title: "Vendeurs vérifiés", short: "Un badge de confiance", head: "Chaque vendeur passe trois contrôles avant de recevoir son badge.", checks: ["Pièce d’identité vérifiée", "Numéro de téléphone confirmé", "Adresse de la boutique confirmée"], badge: "Vendeur vérifié" }
+      ]
+    },
+    en: {
+      nav1: "How it works", nav2: "Pricing", start: "Get started",
+      kicker: "The global marketplace for small sellers",
+      h1a: "Sell more.", h1b: "Sell everywhere.",
+      lead: "Your online shop, seen by buyers on several continents. Payment by Mobile Money or card, in each customer’s language and currency.",
+      cta1: "Free 14-day trial", cta2: "See pricing", small: "No credit card · No commitment",
+      stepsTitle: "In three steps",
+      steps: [["Create your shop", "Name, logo, shareable link. Ready in minutes, from your phone."], ["List your products", "Photo, price, description. Prices show in each customer’s currency."], ["Sell worldwide", "Your products appear on the Yiriclick showcase, in Africa, Europe and beyond."]],
+      advTitle: "What grows your sales",
+      adv: [["Mobile Money and card", "Orange Money, Moov, Wave in Africa, bank cards everywhere else."], ["Languages and currencies", "French, English, Spanish. CFA franc, euro, dollar."], ["Order on WhatsApp", "One button so customers can talk to you before buying."], ["Verified sellers", "A trust badge for every verified seller."]],
+      priceTitle: "Pricing", priceSub: "Launch price for the first 4 months · 2 months free with annual billing",
+      regions: ["Africa", "Europe", "Americas & Asia"],
+      badge: "Recommended", per: "/ month", free: "Free", days: "14 days", noCard: "No credit card", fixed: "Fixed price",
+      then: function (p) { return "then " + p + " after 4 months"; },
+      names: ["Trial", "Basic", "Pro", "Business"],
+      ctas: ["Try for free", "Choose Basic", "Choose Pro", "Choose Business"],
+      feats: [["Up to 15 products", "Shop with a shareable link", "Order management", "“Order on WhatsApp” button"], ["Custom shop", "Mobile Money and card payments", "Customer reviews", "Listed on the Yiriclick showcase"], ["Everything in Basic", "Unlimited products", "Admin space: stock, finances, invoices", "Sales statistics"], ["Everything in Pro", "Market and trend analysis", "Ads and promotion managed by Yiriclick", "Multiple staff accounts", "Priority support"]],
+      contact: "Contact: [EMAIL ADDRESS]", legal: "Terms · Privacy", langAria: "Change language",
+      suTitle: "Create my shop", suSub: "Fill in this form. The Yiriclick team will contact you to activate your shop.",
+      fName: "Your full name", fShop: "Shop name", fCountry: "Country", fPhone: "WhatsApp number", fEmail: "Email address",
+      fPlan: "Plan", fZone: "Pricing region", fConsent: "I agree that Yiriclick may contact me about my sign-up.",
+      fSubmit: "Send my sign-up", fSending: "Sending…", close: "Close", sumLabel: "Your choice",
+      perMonth: "/ month", launch: "launch price", trialSum: "Free for 14 days, no credit card",
+      phCountry: "Choose or type your country", phPhone: "+226 70 00 00 00", phEmail: "name@example.com", ccEmpty: "No country found. You can keep what you typed.",
+      eReq: "This field is required.", eEmail: "Enter a valid email address, for example name@example.com.",
+      ePhone: "Enter your number with the country code, for example +226 70 00 00 00.", eConsent: "Tick the box to continue.",
+      eSend: "Sending didn’t work. Check your connection and try again.",
+      okTitle: "Sign-up sent", okText: "Thank you! The Yiriclick team will contact you on WhatsApp or by email to activate your shop.",
+      pvTitle: "Form ready", pvText: "Sign-ups will be saved once the site is connected to Supabase. Nothing has been sent yet.",
+      demo: "Example", pOpen: "✓ Shop is live", pProduct: "Organic shea butter · 250 g", pPublish: "Publish product",
+      pChips: ["Mobile Money", "Card", "WhatsApp"], pOrders: "New orders", pEur: "€3.81",
+      pOrdersList: [["NL", "Amsterdam, Netherlands", "€3.81 · Card"], ["BF", "Ouagadougou, Burkina Faso", "2,500 FCFA · Orange Money"], ["FR", "Paris, France", "€3.81 · Card"]],
+      phoneAria: "Animated example: a seller creates her shop, lists a product and receives orders from several countries.",
+      advSub: "Tap an item to learn more.",
+      feat: [
+        { id: "pay", title: "Payments", short: "Mobile Money and bank card", head: "Customers pay the way they’re used to, in Africa and everywhere else.", note: "Your sales go to your Yiriclick account, then to your Mobile Money or bank account.", pick: "Payment method", logo: "Official logo", how: "How to pay", types: { mm: "Mobile payment", card: "Bank card" }, desc: { om: "The mobile payment service of the Orange network, widely used in West Africa.", moov: "The mobile payment service of the Moov Africa network.", wave: "A mobile payment app widely used in West Africa.", visa: "A bank card accepted worldwide.", mc: "A bank card accepted worldwide." }, stepsMM: ["Choose {n} at checkout.", "Enter your phone number.", "Confirm the payment on your phone with your PIN."], stepsCard: ["Choose your {n} card at checkout.", "Enter your card details.", "Your bank may ask you to confirm."] },
+        { id: "lang", title: "Languages", short: "French, English, Spanish", head: "Your product page appears in each customer’s language. Try it:", tag: "Customer view" },
+        { id: "cur", title: "Currencies", short: "CFA franc, euro, dollar", head: "Set your price once. Each customer sees it in their own currency.", label: "Your price in FCFA", ccy: "Customer’s currency", ccyAll: "The same price in other currencies", note: "European Central Bank reference rates of 23 October 2026. The CFA franc is pegged to the euro: €1 = 655.957 FCFA." },
+        { id: "chat", title: "WhatsApp", short: "Customers talk to you before buying", head: "A button on every product opens a chat with you.", msgs: [["in", "Hello, is the shea butter available?"], ["out", "Yes! I can ship it tomorrow."], ["in", "Great, I’ll order."]], btn: "Order on WhatsApp" },
+        { id: "shield", title: "Verified sellers", short: "A trust badge", head: "Every seller passes three checks before getting the badge.", checks: ["ID document verified", "Phone number confirmed", "Shop address confirmed"], badge: "Verified seller" }
+      ]
+    },
+    es: {
+      nav1: "Cómo funciona", nav2: "Precios", start: "Empezar",
+      kicker: "El mercado mundial de los pequeños vendedores",
+      h1a: "Vende más.", h1b: "Vende en todas partes.",
+      lead: "Tu tienda en línea, vista por compradores de varios continentes. Pago con Mobile Money o tarjeta, en el idioma y la moneda de cada cliente.",
+      cta1: "Prueba gratis 14 días", cta2: "Ver precios", small: "Sin tarjeta bancaria · Sin compromiso",
+      stepsTitle: "En tres pasos",
+      steps: [["Crea tu tienda", "Nombre, logo, enlace para compartir. Lista en minutos, desde tu teléfono."], ["Publica tus productos", "Foto, precio, descripción. El precio aparece en la moneda de cada cliente."], ["Vende al mundo", "Tus productos aparecen en el escaparate de Yiriclick, en África, Europa y más allá."]],
+      advTitle: "Lo que impulsa tus ventas",
+      adv: [["Mobile Money y tarjeta", "Orange Money, Moov, Wave en África, tarjeta bancaria en el resto del mundo."], ["Idiomas y monedas", "Francés, inglés, español. Franco CFA, euro, dólar."], ["Pedidos por WhatsApp", "Un botón para que el cliente te hable antes de comprar."], ["Vendedores verificados", "Una insignia de confianza para cada vendedor verificado."]],
+      priceTitle: "Precios", priceSub: "Precio de lanzamiento los 4 primeros meses · 2 meses gratis con pago anual",
+      regions: ["África", "Europa", "Américas y Asia"],
+      badge: "Recomendado", per: "/ mes", free: "Gratis", days: "14 días", noCard: "Sin tarjeta bancaria", fixed: "Precio fijo",
+      then: function (p) { return "luego " + p + " después de 4 meses"; },
+      names: ["Prueba", "Básico", "Pro", "Empresa"],
+      ctas: ["Probar gratis", "Elegir Básico", "Elegir Pro", "Elegir Empresa"],
+      feats: [["Hasta 15 productos", "Tienda con enlace para compartir", "Recepción de pedidos", "Botón «Pedir por WhatsApp»"], ["Tienda personalizada", "Pago con Mobile Money y tarjeta", "Opiniones de clientes", "Presencia en el escaparate Yiriclick"], ["Todo lo del Básico", "Productos ilimitados", "Espacio de administración: stock, finanzas, facturas", "Estadísticas de ventas"], ["Todo lo del Pro", "Análisis del mercado y tendencias", "Publicidad y promoción gestionadas por Yiriclick", "Varias cuentas de empleados", "Soporte prioritario"]],
+      contact: "Contacto: [CORREO ELECTRÓNICO]", legal: "Condiciones · Privacidad", langAria: "Cambiar idioma",
+      suTitle: "Crear mi tienda", suSub: "Rellena este formulario. El equipo de Yiriclick te contactará para activar tu tienda.",
+      fName: "Tu nombre completo", fShop: "Nombre de tu tienda", fCountry: "País", fPhone: "Número de WhatsApp", fEmail: "Correo electrónico",
+      fPlan: "Plan", fZone: "Región de precios", fConsent: "Acepto que Yiriclick me contacte sobre mi inscripción.",
+      fSubmit: "Enviar mi inscripción", fSending: "Enviando…", close: "Cerrar", sumLabel: "Tu elección",
+      perMonth: "/ mes", launch: "precio de lanzamiento", trialSum: "Gratis durante 14 días, sin tarjeta bancaria",
+      phCountry: "Elige o escribe tu país", phPhone: "+226 70 00 00 00", phEmail: "nombre@ejemplo.com", ccEmpty: "Ningún país encontrado. Puedes dejar lo que escribiste.",
+      eReq: "Este campo es obligatorio.", eEmail: "Introduce un correo válido, por ejemplo nombre@ejemplo.com.",
+      ePhone: "Introduce tu número con el prefijo del país, por ejemplo +226 70 00 00 00.", eConsent: "Marca la casilla para continuar.",
+      eSend: "El envío no funcionó. Revisa tu conexión e inténtalo de nuevo.",
+      okTitle: "Inscripción enviada", okText: "¡Gracias! El equipo de Yiriclick te contactará por WhatsApp o por correo para activar tu tienda.",
+      pvTitle: "Formulario listo", pvText: "Las inscripciones se guardarán cuando el sitio esté conectado a Supabase. Por ahora no se ha enviado nada.",
+      demo: "Ejemplo", pOpen: "✓ Tienda abierta", pProduct: "Manteca de karité bio · 250 g", pPublish: "Publicar producto",
+      pChips: ["Mobile Money", "Tarjeta", "WhatsApp"], pOrders: "Nuevos pedidos", pEur: "3,81 €",
+      pOrdersList: [["NL", "Ámsterdam, Países Bajos", "3,81 € · Tarjeta"], ["BF", "Uagadugú, Burkina Faso", "2 500 FCFA · Orange Money"], ["FR", "París, Francia", "3,81 € · Tarjeta"]],
+      phoneAria: "Ejemplo animado: una vendedora crea su tienda, publica un producto y recibe pedidos de varios países.",
+      advSub: "Toca un punto para saber más.",
+      feat: [
+        { id: "pay", title: "Pagos", short: "Mobile Money y tarjeta bancaria", head: "Tus clientes pagan como están acostumbrados, en África y en todas partes.", note: "El dinero de tus ventas llega a tu cuenta Yiriclick y luego a tu Mobile Money o cuenta bancaria.", pick: "Medio de pago", logo: "Logo oficial", how: "Cómo pagar", types: { mm: "Pago móvil", card: "Tarjeta bancaria" }, desc: { om: "El servicio de pago móvil del operador Orange, muy usado en África Occidental.", moov: "El servicio de pago móvil del operador Moov Africa.", wave: "Una aplicación de pago móvil muy extendida en África Occidental.", visa: "Una tarjeta bancaria aceptada en todo el mundo.", mc: "Una tarjeta bancaria aceptada en todo el mundo." }, stepsMM: ["Elige {n} al momento de pagar.", "Introduce tu número de teléfono.", "Confirma el pago en tu teléfono con tu código secreto."], stepsCard: ["Elige la tarjeta {n} al momento de pagar.", "Introduce los datos de tu tarjeta.", "Tu banco puede pedirte una confirmación."] },
+        { id: "lang", title: "Idiomas", short: "Francés, inglés, español", head: "Tu ficha de producto aparece en el idioma de cada cliente. Pruébalo:", tag: "Vista del cliente" },
+        { id: "cur", title: "Monedas", short: "Franco CFA, euro, dólar", head: "Fijas tu precio una sola vez. Cada cliente lo ve en su moneda.", label: "Tu precio en FCFA", ccy: "Moneda del cliente", ccyAll: "El mismo precio en otras monedas", note: "Tipos de referencia del Banco Central Europeo del 23 de octubre de 2026. El franco CFA está ligado al euro: 1 € = 655,957 FCFA." },
+        { id: "chat", title: "WhatsApp", short: "El cliente te habla antes de comprar", head: "Un botón en cada producto abre una conversación contigo.", msgs: [["in", "Hola, ¿la manteca de karité está disponible?"], ["out", "¡Sí! Puedo enviarla mañana."], ["in", "Perfecto, hago el pedido."]], btn: "Pedir por WhatsApp" },
+        { id: "shield", title: "Vendedores verificados", short: "Una insignia de confianza", head: "Cada vendedor pasa tres controles antes de recibir su insignia.", checks: ["Documento de identidad verificado", "Número de teléfono confirmado", "Dirección de la tienda confirmada"], badge: "Vendedor verificado" }
+      ]
+    }
+  };
+  var PRICES = { af: [7500, 19900, 25000, 49900, 59000], eu: [15, 29, 35, 69, 79], am: [15, 29, 35, 69, 79] };
+  var CURS = ["FCFA", "€", "$"];
+
+  function load(k, d) { try { return localStorage.getItem(k) || d; } catch (e) { return d; } }
+  function save(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+
+  var nav = (navigator.language || "fr").slice(0, 2);
+  var state = {
+    lang: load("yc-lang", T[nav] ? nav : "fr"),
+    zone: load("yc-zone", "af")
+  };
+  if (!T[state.lang]) state.lang = "fr";
+  if (!PRICES[state.zone]) state.zone = "af";
+
+  function fmtZ(n, z) {
+    if (z === "af") return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, "\u202F") + " FCFA";
+    var sym = z === "eu" ? "\u20AC" : "$";
+    return state.lang === "en" ? sym + n : n + "\u00A0" + sym;
+  }
+  function fmt(n) { return fmtZ(n, state.zone); }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+
+  function render(why) {
+    var t = T[state.lang];
+    document.documentElement.lang = state.lang;
+    document.querySelectorAll("[data-t]").forEach(function (n) { var v = t[n.getAttribute("data-t")]; if (typeof v === "string") n.textContent = v; });
+    document.querySelectorAll("[data-tp]").forEach(function (n) { var v = t[n.getAttribute("data-tp")]; if (typeof v === "string") n.placeholder = v; });
+    document.getElementById("suClose").setAttribute("aria-label", t.close);
+    if (typeof suRefresh === "function") suRefresh();
+    document.getElementById("langCur").textContent = state.lang.toUpperCase();
+    document.getElementById("langBtn").setAttribute("aria-label", t.langAria + " (" + state.lang.toUpperCase() + ")");
+    document.querySelectorAll("#langMenu button").forEach(function (b) { b.setAttribute("aria-checked", String(b.getAttribute("data-lang") === state.lang)); });
+
+    var steps = document.getElementById("steps"); steps.textContent = "";
+    t.steps.forEach(function (s, i) {
+      var d = el("button", "step"); d.type = "button"; d.style.setProperty("--dur", DUR + "ms");
+      d.appendChild(el("span", "n", "0" + (i + 1))); d.appendChild(el("span", "t", s[0])); d.appendChild(el("span", "d", s[1]));
+      d.addEventListener("click", function () { userPick(i); });
+      steps.appendChild(d);
+    });
+    document.getElementById("phone").setAttribute("aria-label", t.phoneAria);
+    var chips = document.getElementById("chips"); chips.textContent = "";
+    t.pChips.forEach(function (c) { chips.appendChild(el("span", null, c)); });
+    var orders = document.getElementById("orders"); orders.textContent = "";
+    orders.appendChild(el("div", "orders-h", t.pOrders));
+    t.pOrdersList.forEach(function (o) {
+      var n = el("div", "notif"); n.appendChild(el("span", "ic", o[0]));
+      var tx = el("div"); tx.appendChild(el("b", null, o[1])); tx.appendChild(el("small", null, o[2])); n.appendChild(tx);
+      orders.appendChild(n);
+    });
+    setStep(state.step);
+    renderFeat(false);
+
+    var zones = document.getElementById("zones"); zones.textContent = "";
+    ["af", "eu", "am"].forEach(function (id, i) {
+      var b = el("button"); b.type = "button"; b.setAttribute("aria-pressed", String(id === state.zone));
+      b.appendChild(el("span", "r", t.regions[i])); b.appendChild(el("span", "c", CURS[i]));
+      b.addEventListener("click", function () { if (state.zone === id) return; state.zone = id; save("yc-zone", id); render("zone"); });
+      zones.appendChild(b);
+    });
+
+    var N = PRICES[state.zone];
+    var plans = [
+      { price: t.free, per: t.days, after: t.noCard },
+      { price: fmt(N[0]), per: t.per, after: t.fixed },
+      { price: fmt(N[1]), per: t.per, after: t.then(fmt(N[2])), hi: true },
+      { price: fmt(N[3]), per: t.per, after: t.then(fmt(N[4])) }
+    ];
+    var box = document.getElementById("plans"); box.textContent = "";
+    plans.forEach(function (p, i) {
+      var c = el("article", "plan" + (p.hi ? " hi" : ""));
+      if (p.hi) c.appendChild(el("span", "badge", t.badge));
+      c.appendChild(el("h3", null, t.names[i]));
+      var am = el("div", "amount"); am.appendChild(el("span", "p", p.price)); am.appendChild(el("span", "per", p.per)); c.appendChild(am);
+      c.appendChild(el("p", "after", p.after));
+      var ul = el("ul"); t.feats[i].forEach(function (f) { ul.appendChild(el("li", null, f)); }); c.appendChild(ul);
+      var a = el("a", "btn " + (p.hi ? "btn-orange" : "btn-navy"), t.ctas[i]); a.href = "#inscription"; a.setAttribute("data-signup", PLAN_KEYS[i]); c.appendChild(a);
+      box.appendChild(c);
+    });
+
+    if (why === "zone") {
+      box.querySelectorAll(".amount, .after").forEach(function (n, i) {
+        anim(n, [{ opacity: 0, transform: "translateY(10px)" }, { opacity: 1, transform: "none" }], { duration: 380, delay: Math.floor(i / 2) * 50 });
+      });
+    } else if (why === "lang") {
+      anim(document.querySelector("main"), [{ opacity: .35 }, { opacity: 1 }], { duration: 320, easing: "ease-out" });
+    }
+  }
+
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var EASE = "cubic-bezier(.2,.75,.2,1)";
+  function anim(n, kf, o) {
+    if (reduce || !n || !n.animate) return null;
+    var opts = { duration: 650, easing: EASE, fill: "backwards" };
+    for (var k in o) opts[k] = o[k];
+    try { return n.animate(kf, opts); } catch (e) { return null; }
+  }
+  var RISE = [{ opacity: 0, transform: "translateY(28px)" }, { opacity: 1, transform: "none" }];
+
+  /* Phone demo: steps play one after another until the visitor picks one */
+  var DUR = 5000, demoTimer = null, priceTimer = null, typeTimer = null, autoplay = !reduce, demoStarted = false;
+  state.step = 0;
+  function setStep(i) {
+    state.step = i;
+    var t = T[state.lang];
+    document.querySelectorAll("#steps .step").forEach(function (b, k) {
+      var on = k === i;
+      b.classList.toggle("active", on);
+      b.setAttribute("aria-pressed", String(on));
+      b.classList.remove("playing");
+      if (on && autoplay && demoStarted) { void b.offsetWidth; b.classList.add("playing"); }
+    });
+    document.querySelectorAll("#phone .scr").forEach(function (s) {
+      var k = +s.getAttribute("data-s");
+      s.classList.remove("on");
+      s.classList.toggle("gone", k < i);
+    });
+    var cur = document.querySelector('#phone .scr[data-s="' + i + '"]');
+    void cur.offsetWidth; cur.classList.add("on");
+
+    clearInterval(typeTimer); clearInterval(priceTimer);
+    var typed = document.getElementById("typed"), name = "Chez Awa";
+    if (i === 0 && !reduce) {
+      var c = 0; typed.textContent = "";
+      typeTimer = setInterval(function () { c++; typed.textContent = name.slice(0, c); if (c >= name.length) clearInterval(typeTimer); }, 95);
+    } else { typed.textContent = name; }
+
+    var sp = document.querySelector("#price span");
+    var vals = [state.lang === "en" ? "2,500 FCFA" : "2 500 FCFA", t.pEur], pi = 0;
+    sp.textContent = vals[0];
+    if (i === 1 && !reduce) {
+      priceTimer = setInterval(function () {
+        pi = 1 - pi; sp.textContent = vals[pi];
+        anim(sp, [{ transform: "translateY(100%)", opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 420 });
+      }, 1700);
+    }
+
+    clearTimeout(demoTimer);
+    if (autoplay && demoStarted) demoTimer = setTimeout(function () { setStep((i + 1) % 3); }, DUR);
+  }
+  function userPick(i) { autoplay = false; clearTimeout(demoTimer); setStep(i); }
+  function startDemo() { if (demoStarted) return; demoStarted = true; setStep(state.step); }
+
+  /* Feature explorer */
+  state.feat = 0; state.demoLang = null; state.fcfa = 2500;
+  var ICONS = {
+    pay: '<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18M7 15h4"/>',
+    lang: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/>',
+    cur: '<path d="M7 7h11M15 4l3 3-3 3M17 17H6M9 14l-3 3 3 3"/>',
+    chat: '<path d="M4 5h16v11H9l-5 4z"/>',
+    shield: '<path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
+    chev: '<path d="M6 9l6 6 6-6"/>',
+    up: '<path d="M12 15V4M7 9l5-5 5 5"/><path d="M4 15v5h16v-5"/>',
+    pin: '<path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+    check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>'
+  };
+  function svg(name, size, sw) { return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="' + (sw || 2) + '" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICONS[name] + '</svg>'; }
+  var SAMPLE = { fr: ["Beurre de karité bio · 250 g", "Pur, fait à la main au Burkina Faso."], en: ["Organic shea butter · 250 g", "Pure, handmade in Burkina Faso."], es: ["Manteca de karité bio · 250 g", "Pura, hecha a mano en Burkina Faso."] };
+  /* Official logo files go in logos/<file>.svg or logos/<file>.png; the dashed slot shows until a file is found. */
+  var PMS = [{ id: "om", name: "Orange Money", type: "mm", file: "orange-money" }, { id: "moov", name: "Moov Money", type: "mm", file: "moov-money" }, { id: "wave", name: "Wave", type: "mm", file: "wave" }, { id: "visa", name: "Visa", type: "card", file: "visa" }, { id: "mc", name: "Mastercard", type: "card", file: "mastercard" }];
+  function fillLogo(slot, m, label) {
+    slot.textContent = label; slot.classList.remove("has-img");
+    var exts = ["svg", "png"], k = 0;
+    var img = new Image(); img.alt = m.name;
+    img.addEventListener("load", function () { if (state.pm !== m.id) return; slot.textContent = ""; slot.appendChild(img); slot.classList.add("has-img"); });
+    img.addEventListener("error", function () { k++; if (k < exts.length) img.src = "logos/" + m.file + "." + exts[k]; });
+    img.src = "logos/" + m.file + "." + exts[0];
+  }
+  state.pm = "om";
+  var LNAMES = { fr: "Français", en: "English", es: "Español" };
+  var LOCALE = { fr: "fr-FR", en: "en-GB", es: "es-ES" };
+  function fcfaTxt(n, lang) { try { return new Intl.NumberFormat(LOCALE[lang]).format(n) + " FCFA"; } catch (e) { return n + " FCFA"; } }
+  /* ECB euro reference rates, 23 October 2026 (1 EUR = x). XAF is pegged like the FCFA (XOF). */
+  var RATES = { EUR: 1, USD: 1.1193, GBP: 0.83728, CAD: 1.5665, CHF: 0.9227, CNY: 7.4660, JPY: 175.51, AUD: 1.5939, BRL: 5.6485, INR: 106.2720, ZAR: 18.5777, XAF: 655.957 };
+  var CCYS = ["EUR", "USD", "GBP", "CAD", "CHF", "CNY", "JPY", "AUD", "BRL", "INR", "ZAR", "XAF"];
+  state.ccy = "EUR";
+  function ccyName(code) {
+    try { var s = new Intl.DisplayNames([LOCALE[state.lang]], { type: "currency" }).of(code); return s.charAt(0).toUpperCase() + s.slice(1); } catch (e) { return code; }
+  }
+  function money(fcfa, code) {
+    var v = fcfa / 655.957 * RATES[code];
+    var whole = code === "JPY" || code === "XAF";
+    try { return new Intl.NumberFormat(LOCALE[state.lang], { style: "currency", currency: code, minimumFractionDigits: whole ? 0 : 2, maximumFractionDigits: whole ? 0 : 2 }).format(v); } catch (e) { return v.toFixed(whole ? 0 : 2) + " " + code; }
+  }
+  function eurTxt(n) { var v = n / 655.957; try { return new Intl.NumberFormat(LOCALE[state.lang], { style: "currency", currency: "EUR" }).format(v); } catch (e) { return v.toFixed(2) + " €"; } }
+
+  function buildPanel(p, f) {
+    p.appendChild(el("p", "fh", f.head));
+    if (f.id === "pay") {
+      var pbox = el("div", "conv"); pbox.appendChild(el("span", "conv-l", f.pick));
+      var pdd = el("div", "lang dd");
+      var pdb = el("button", "lang-btn"); pdb.type = "button"; pdb.setAttribute("aria-haspopup", "true"); pdb.setAttribute("aria-expanded", "false");
+      pdb.innerHTML = svg("pay", 18) + '<span class="ddl"></span>' + svg("chev", 14, 3);
+      var pdm = el("div", "lang-menu dd-menu"); pdm.setAttribute("role", "menu"); pdm.hidden = true;
+      var payOpen = function (o) { pdm.hidden = !o; pdb.setAttribute("aria-expanded", String(o)); if (o) { var c = pdm.querySelector('[aria-checked="true"]'); if (c) c.focus(); } };
+      pdb.addEventListener("click", function (e) { e.stopPropagation(); payOpen(pdm.hidden); });
+      PMS.forEach(function (m) {
+        var b = el("button", null, m.name); b.type = "button"; b.setAttribute("role", "menuitemradio"); b.setAttribute("data-m", m.id);
+        b.addEventListener("click", function (e) { e.stopPropagation(); payOpen(false); pdb.focus(); if (state.pm === m.id) return; state.pm = m.id; showPm(true); });
+        pdm.appendChild(b);
+      });
+      pdd.appendChild(pdb); pdd.appendChild(pdm); pbox.appendChild(pdd); p.appendChild(pbox);
+
+      var card = el("div", "pm-card");
+      var slot = el("div", "logo-slot", f.logo);
+      var nm = el("div", "pm-name"), tp = el("span", "pm-type"), ds = el("div", "pm-desc");
+      var how = el("div", "pm-how"); var hh = el("div", "pm-how-h", f.how); var ol = el("ol"); how.appendChild(hh); how.appendChild(ol);
+      card.appendChild(slot); card.appendChild(nm); card.appendChild(tp); card.appendChild(ds); card.appendChild(how);
+      p.appendChild(card);
+      p.appendChild(el("p", "fnote", f.note));
+      var showPm = function (animate) {
+        var m = PMS.filter(function (x) { return x.id === state.pm; })[0] || PMS[0];
+        pdb.querySelector(".ddl").textContent = m.name;
+        pdm.querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-checked", String(b.getAttribute("data-m") === m.id)); });
+        fillLogo(slot, m, f.logo);
+        nm.textContent = m.name; tp.textContent = f.types[m.type]; ds.textContent = f.desc[m.id];
+        ol.textContent = "";
+        (m.type === "mm" ? f.stepsMM : f.stepsCard).forEach(function (s) { ol.appendChild(el("li", null, s.replace("{n}", m.name))); });
+        if (animate) anim(card, [{ opacity: 0, transform: "translateY(10px)" }, { opacity: 1, transform: "none" }], { duration: 380 });
+      };
+      showPm(false);
+    } else if (f.id === "lang") {
+      var dl = state.demoLang || state.lang;
+      var dd = el("div", "lang dd");
+      var db = el("button", "lang-btn"); db.type = "button"; db.setAttribute("aria-haspopup", "true"); db.setAttribute("aria-expanded", "false");
+      db.innerHTML = svg("lang", 18) + '<span class="ddl"></span>' + svg("chev", 14, 3);
+      var dm = el("div", "lang-menu dd-menu"); dm.setAttribute("role", "menu"); dm.hidden = true;
+      function ddOpen(o) { dm.hidden = !o; db.setAttribute("aria-expanded", String(o)); if (o) { var c = dm.querySelector('[aria-checked="true"]'); if (c) c.focus(); } }
+      db.addEventListener("click", function (e) { e.stopPropagation(); ddOpen(dm.hidden); });
+      dd.appendChild(db); dd.appendChild(dm);
+      var card = el("div", "sample");
+      var th = el("div", "thumb"); th.appendChild(el("i")); card.appendChild(th);
+      var tag = el("div", "sm-tag", f.tag), nm = el("div", "sm-name"), ds = el("div", "sm-desc"), pr = el("div", "sm-price");
+      card.appendChild(tag); card.appendChild(nm); card.appendChild(ds); card.appendChild(pr);
+      function fill(code, animate) {
+        nm.textContent = SAMPLE[code][0]; ds.textContent = SAMPLE[code][1]; pr.textContent = fcfaTxt(2500, code);
+        db.querySelector(".ddl").textContent = LNAMES[code];
+        dm.querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-checked", String(b.getAttribute("data-l") === code)); });
+        if (animate) [nm, ds, pr].forEach(function (n, i) { anim(n, [{ opacity: 0, transform: "translateX(14px)" }, { opacity: 1, transform: "none" }], { duration: 360, delay: i * 60 }); });
+      }
+      ["fr", "en", "es"].forEach(function (code) {
+        var b = el("button", null, LNAMES[code]); b.type = "button"; b.setAttribute("role", "menuitemradio"); b.setAttribute("data-l", code); b.lang = code;
+        b.addEventListener("click", function (e) { e.stopPropagation(); ddOpen(false); db.focus(); if (state.demoLang === code) return; state.demoLang = code; fill(code, true); });
+        dm.appendChild(b);
+      });
+      p.appendChild(dd); p.appendChild(card);
+      fill(dl, false);
+    } else if (f.id === "cur") {
+      var box = el("div", "conv");
+      var lab = el("label", null, f.label); lab.setAttribute("for", "fcfaIn");
+      var inp = el("input"); inp.id = "fcfaIn"; inp.type = "number"; inp.inputMode = "numeric"; inp.min = "0"; inp.step = "50"; inp.value = state.fcfa;
+      box.appendChild(lab); box.appendChild(inp); p.appendChild(box);
+      /* currency picker, same pattern as the language menu */
+      var cbox = el("div", "conv"); cbox.appendChild(el("span", "conv-l", f.ccy));
+      var dd = el("div", "lang dd");
+      var db = el("button", "lang-btn"); db.type = "button"; db.setAttribute("aria-haspopup", "true"); db.setAttribute("aria-expanded", "false");
+      db.innerHTML = svg("cur", 18) + '<span class="ddl"></span>' + svg("chev", 14, 3);
+      var dm = el("div", "lang-menu dd-menu ccy-menu"); dm.setAttribute("role", "menu"); dm.hidden = true;
+      function ccyOpen(o) { dm.hidden = !o; db.setAttribute("aria-expanded", String(o)); if (o) { var c = dm.querySelector('[aria-checked="true"]'); if (c) c.focus(); } }
+      db.addEventListener("click", function (e) { e.stopPropagation(); ccyOpen(dm.hidden); });
+      CCYS.forEach(function (code) {
+        var b = el("button", null, code + " · " + ccyName(code)); b.type = "button"; b.setAttribute("role", "menuitemradio"); b.setAttribute("data-c", code);
+        b.addEventListener("click", function (e) { e.stopPropagation(); ccyOpen(false); db.focus(); pick(code); });
+        dm.appendChild(b);
+      });
+      dd.appendChild(db); dd.appendChild(dm); cbox.appendChild(dd); p.appendChild(cbox);
+
+      var big = el("div", "big"); var bigV = el("b"); var bigL = el("span"); bigV.setAttribute("aria-live", "polite");
+      big.appendChild(bigL); big.appendChild(bigV); p.appendChild(big);
+
+      p.appendChild(el("span", "conv-l", f.ccyAll));
+      var grid = el("div", "ccy-grid");
+      var cells = {};
+      CCYS.forEach(function (code) {
+        var c = el("button"); c.type = "button";
+        var top = el("span", "cc", code); var v = el("b"); var nm = el("span", "cn", ccyName(code));
+        c.appendChild(top); c.appendChild(v); c.appendChild(nm);
+        c.addEventListener("click", function () { pick(code); });
+        grid.appendChild(c); cells[code] = { btn: c, v: v };
+      });
+      p.appendChild(grid);
+
+      function update(animate) {
+        var code = state.ccy;
+        db.querySelector(".ddl").textContent = code + " · " + ccyName(code);
+        dm.querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-checked", String(b.getAttribute("data-c") === code)); });
+        bigL.textContent = ccyName(code);
+        bigV.textContent = (code === "EUR" || code === "XAF" ? "" : "≈ ") + money(state.fcfa, code);
+        CCYS.forEach(function (k) { cells[k].v.textContent = money(state.fcfa, k); cells[k].btn.setAttribute("aria-pressed", String(k === code)); });
+        if (animate) anim(bigV, [{ opacity: 0, transform: "translateY(8px)" }, { opacity: 1, transform: "none" }], { duration: 320 });
+      }
+      function pick(code) { if (state.ccy === code) return; state.ccy = code; update(true); }
+      inp.addEventListener("input", function () { var v = parseFloat(inp.value); state.fcfa = isFinite(v) && v >= 0 ? v : 0; update(false); });
+      update(false);
+      p.appendChild(el("p", "fnote", f.note));
+    } else if (f.id === "chat") {
+      var chat = el("div", "chat");
+      f.msgs.forEach(function (m, i) { var b = el("div", "bub " + m[0], m[1]); chat.appendChild(b); anim(b, [{ opacity: 0, transform: "translateY(10px) scale(.96)" }, { opacity: 1, transform: "none" }], { duration: 420, delay: 200 + i * 650 }); });
+      p.appendChild(chat);
+      var cta = el("span", "wa-cta"); cta.innerHTML = svg("chat", 18); cta.appendChild(document.createTextNode(f.btn)); p.appendChild(cta);
+      anim(cta, [{ opacity: 0 }, { opacity: 1 }], { duration: 400, delay: 200 + f.msgs.length * 650 });
+    } else if (f.id === "shield") {
+      var ul = el("ul", "checks");
+      f.checks.forEach(function (c, i) {
+        var li = el("li"); var ck = el("span", "ck"); ck.innerHTML = svg("check", 16, 3); li.appendChild(ck); li.appendChild(el("span", null, c)); ul.appendChild(li);
+        anim(li, [{ opacity: 0, transform: "translateX(-10px)" }, { opacity: 1, transform: "none" }], { duration: 380, delay: 150 + i * 350 });
+        anim(ck, [{ transform: "scale(0)" }, { transform: "scale(1.2)", offset: .7 }, { transform: "none" }], { duration: 420, delay: 250 + i * 350 });
+      });
+      p.appendChild(ul);
+      var bd = el("div", "vbadge"); bd.innerHTML = svg("shield", 22); bd.appendChild(document.createTextNode(f.badge)); p.appendChild(bd);
+      anim(bd, [{ opacity: 0, transform: "scale(.8)" }, { opacity: 1, transform: "scale(1.05)", offset: .7 }, { opacity: 1, transform: "none" }], { duration: 500, delay: 250 + f.checks.length * 350 });
+    }
+  }
+
+  function renderFeat(animate) {
+    var t = T[state.lang];
+    var box = document.getElementById("feat"); box.textContent = "";
+    t.feat.forEach(function (f, i) {
+      var on = i === state.feat;
+      var b = el("button", "feat-btn"); b.type = "button"; b.id = "fb" + i;
+      b.setAttribute("aria-expanded", String(on)); b.setAttribute("aria-controls", "fp" + i);
+      var ic = el("span", "fi"); ic.innerHTML = svg(f.id, 22); b.appendChild(ic);
+      var tx = el("span", "ft"); tx.appendChild(el("span", "fn", f.title)); tx.appendChild(el("span", "fs", f.short)); b.appendChild(tx);
+      var cv = el("span", "fc"); cv.innerHTML = svg("chev", 18); b.appendChild(cv);
+      b.addEventListener("click", function () {
+        if (state.feat === i) return;
+        state.feat = i; renderFeat(true);
+        var nb = document.getElementById("fb" + i); if (nb) nb.focus({ preventScroll: true });
+      });
+      box.appendChild(b);
+      var p = el("div", "feat-panel"); p.id = "fp" + i; p.setAttribute("role", "region"); p.setAttribute("aria-labelledby", "fb" + i);
+      p.hidden = !on;
+      if (on) {
+        buildPanel(p, f);
+        if (animate) anim(p, [{ opacity: 0, transform: "translateY(12px)" }, { opacity: 1, transform: "none" }], { duration: 420 });
+      }
+      box.appendChild(p);
+    });
+  }
+
+
+  /* Sign-up form. To save sign-ups, paste your Supabase project URL and anon key here (see supabase/inscriptions.sql). */
+  var SUPABASE = { url: "", anonKey: "" };
+  var PLAN_KEYS = ["essai", "basique", "pro", "entreprise"];
+  var su = { plan: "essai", zone: state.zone, last: null };
+  var modal = document.getElementById("signup"), form = document.getElementById("suForm"), done = document.getElementById("suDone");
+  var suPlan = document.getElementById("suPlan"), suZone = document.getElementById("suZone");
+
+  function suRefresh() {
+    var t = T[state.lang];
+    suPlan.textContent = ""; suZone.textContent = "";
+    PLAN_KEYS.forEach(function (k, i) { var o = el("option", null, t.names[i]); o.value = k; suPlan.appendChild(o); });
+    ["af", "eu", "am"].forEach(function (z, i) { var o = el("option", null, t.regions[i] + " · " + CURS[i]); o.value = z; suZone.appendChild(o); });
+    suPlan.value = su.plan; suZone.value = su.zone;
+    suSummary();
+    if (proForm && !proForm.hidden) buildPro(false);
+    else if (docView && !docView.hidden) { docView.hidden = true; proForm.hidden = false; buildPro(false); }
+  }
+  function planSummary() {
+    var t = T[state.lang], i = PLAN_KEYS.indexOf(su.plan), N = PRICES[su.zone];
+    if (i === 0) return t.names[0] + " · " + t.trialSum;
+    if (i === 1) return t.names[1] + " · " + fmtZ(N[0], su.zone) + " " + t.perMonth;
+    return t.names[i] + " · " + fmtZ(N[i === 2 ? 1 : 3], su.zone) + " " + t.perMonth + " (" + t.launch + ")";
+  }
+  function suSummary() { document.getElementById("suSumV").textContent = planSummary(); }
+  suPlan.addEventListener("change", function () { su.plan = suPlan.value; if (su.plan !== "essai") { pstep = 0; showMode(); focusFirst(); } else suSummary(); });
+  suZone.addEventListener("change", function () { su.zone = suZone.value; suSummary(); });
+
+  function openSignup(plan) {
+    su.plan = PLAN_KEYS.indexOf(plan) >= 0 ? plan : "essai"; su.zone = state.zone; su.last = document.activeElement;
+    suRefresh();
+    pstep = 0; done.hidden = true; showMode();
+    document.getElementById("suSend-err").textContent = "";
+    modal.hidden = false; document.body.style.overflow = "hidden";
+    anim(modal.querySelector(".modal-bg"), [{ opacity: 0 }, { opacity: 1 }], { duration: 250, easing: "ease-out" });
+    anim(modal.querySelector(".sheet"), [{ opacity: 0, transform: "translateY(40px)" }, { opacity: 1, transform: "none" }], { duration: 380 });
+    setTimeout(function () { if (su.plan === "essai") document.getElementById("suName").focus(); else focusFirst(); }, 60);
+  }
+  function closeSignup() {
+    if (modal.hidden) return;
+    modal.hidden = true; document.body.style.overflow = "";
+    if (su.last && su.last.focus) su.last.focus();
+  }
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest("[data-signup]");
+    if (a) { e.preventDefault(); openSignup(a.getAttribute("data-signup")); return; }
+    if (e.target.closest("[data-close]") && !modal.hidden) closeSignup();
+  });
+  document.addEventListener("keydown", function (e) {
+    if (modal.hidden) return;
+    if (e.key === "Escape") { closeSignup(); return; }
+    if (e.key === "Tab") {
+      var f = Array.prototype.filter.call(modal.querySelectorAll("button, input, select, a[href]"), function (n) { return n.offsetParent !== null; });
+      if (!f.length) return;
+      if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
+      else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
+    }
+  });
+  if (location.hash === "#inscription") setTimeout(function () { openSignup("essai"); }, 300);
+
+  function setErr(id, msg) {
+    var inp = document.getElementById(id), e = document.getElementById(id + "-err");
+    e.textContent = msg || "";
+    if (inp) { if (msg) inp.setAttribute("aria-invalid", "true"); else inp.removeAttribute("aria-invalid"); }
+    return !msg;
+  }
+  ["suName", "suShop", "suCountry", "suPhone", "suEmail", "suConsent"].forEach(function (id) {
+    document.getElementById(id).addEventListener("input", function () { setErr(id, ""); });
+    document.getElementById(id).addEventListener("change", function () { setErr(id, ""); });
+  });
+  function showDone(title, text) {
+    form.hidden = true; proForm.hidden = true; docView.hidden = true; done.hidden = false;
+    document.getElementById("suDoneT").textContent = title;
+    document.getElementById("suDoneP").textContent = text;
+    anim(done, [{ opacity: 0, transform: "scale(.96)" }, { opacity: 1, transform: "none" }], { duration: 380 });
+    anim(done.querySelector(".done-ic"), [{ transform: "scale(0)" }, { transform: "scale(1.15)", offset: .7 }, { transform: "none" }], { duration: 500, delay: 120 });
+    done.querySelector("button").focus();
+  }
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var t = T[state.lang], ok = true, first = null;
+    function need(id, test, msg) { var v = document.getElementById(id).value.trim(); var good = v && (!test || test(v)); if (!setErr(id, good ? "" : (v ? msg : t.eReq))) { ok = false; first = first || id; } return v; }
+    var row = {
+      nom: need("suName"), boutique: need("suShop"), pays: need("suCountry"),
+      whatsapp: need("suPhone", function (v) { return /^\+?[0-9 ().-]{8,20}$/.test(v) && v.replace(/\D/g, "").length >= 8; }, t.ePhone),
+      email: need("suEmail", function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); }, t.eEmail),
+      formule: su.plan, zone: su.zone, langue: state.lang, consentement: document.getElementById("suConsent").checked
+    };
+    if (!setErr("suConsent", row.consentement ? "" : t.eConsent)) { ok = false; first = first || "suConsent"; }
+    if (!ok) { document.getElementById(first).focus(); return; }
+    var sendErr = document.getElementById("suSend-err"); sendErr.textContent = "";
+    if (!SUPABASE.url || !SUPABASE.anonKey) { showDone(t.pvTitle, t.pvText); return; }
+    var btn = document.getElementById("suSubmit"); btn.disabled = true; btn.textContent = t.fSending;
+    fetch(SUPABASE.url.replace(/\/$/, "") + "/rest/v1/inscriptions", {
+      method: "POST",
+      headers: { "apikey": SUPABASE.anonKey, "Authorization": "Bearer " + SUPABASE.anonKey, "Content-Type": "application/json", "Prefer": "return=minimal" },
+      body: JSON.stringify(row)
+    }).then(function (r) {
+      if (!r.ok) throw new Error(r.status);
+      form.reset(); showDone(t.okTitle, t.okText);
+    }).catch(function () { sendErr.textContent = t.eSend; })
+      .then(function () { btn.disabled = false; btn.textContent = t.fSubmit; });
+  });
+
+  /* Seller file for paid plans: 4 steps aligned with marketplace trader-traceability rules */
+  var pv = {}, pstep = 0, proForm = document.getElementById("proForm");
+  var K = {
+    fr: {
+      steps: ["Compte", "Activité", "Identité", "Paiement"],
+      titles: ["Ton compte", "Ton activité", "Vérification d’identité", "Paiements et engagements"],
+      stepOf: "Étape {n} sur 4", back: "Retour", next: "Continuer", submit: "Envoyer mon dossier", choose: "Choisis…", other: "Autre",
+      f: { plan: "Formule", zone: "Région de tarif", name: "Nom complet", email: "Adresse e-mail", phone: "Numéro WhatsApp", country: "Pays de résidence",
+        status: "Statut juridique", legalName: "Nom légal de l’entreprise", shopName: "Nom de la boutique", category: "Catégorie principale", products: "Ce que tu vends", reg: "Numéro d’immatriculation", tax: "Numéro d’identification fiscale", address: "Adresse de l’activité", city: "Ville",
+        repName: "Nom et prénoms, comme sur la pièce", dob: "Date de naissance", nationality: "Nationalité", idType: "Type de pièce d’identité", idNumber: "Numéro de la pièce", idExpiry: "Date d’expiration", front: "Photo du recto de la pièce", back: "Photo du verso de la pièce", selfie: "Selfie en tenant ta pièce",
+        payout: "Recevoir mes ventes par", operator: "Opérateur", mmNumber: "Numéro Mobile Money", holder: "Titulaire du compte", iban: "IBAN ou RIB",
+        cTerms: "J’accepte les conditions générales de vente pour les vendeurs Yiriclick.", cPrivacy: "J’ai lu la politique de confidentialité et j’accepte que mes documents servent à vérifier mon identité.", cTrue: "Je certifie que les informations fournies sont exactes et à jour.", cLaw: "Je m’engage à ne vendre que des produits et services conformes à la loi des pays où je vends." },
+      statusOpts: [["ei", "Entrepreneur individuel"], ["soc", "Société (SARL, SAS, SA, BV…)"], ["coop", "Coopérative ou association"], ["none", "Pas encore immatriculé"]],
+      cats: [["mode", "Mode et vêtements"], ["chaussures", "Chaussures et maroquinerie"], ["bijoux", "Bijoux et accessoires"], ["textile", "Tissus et pagnes"], ["beaute", "Beauté et cosmétiques"], ["sante", "Santé et bien-être"], ["alim", "Alimentation et épicerie"], ["boissons", "Boissons"], ["agri", "Produits agricoles et élevage"], ["artisanat", "Artisanat et art"], ["deco", "Décoration et maison"], ["meubles", "Meubles"], ["electromenager", "Électroménager"], ["tech", "Téléphones et électronique"], ["info", "Informatique"], ["auto", "Auto et moto"], ["btp", "Bâtiment et matériaux"], ["bebe", "Bébé et enfants"], ["jouets", "Jouets et jeux"], ["sport", "Sport et loisirs"], ["livres", "Livres et fournitures scolaires"], ["musique", "Musique et instruments"], ["animaux", "Animaux"], ["numerique", "Produits numériques"], ["services", "Services"], ["autre", "Autre"]],
+      idTypes: [["cni", "Carte nationale d’identité"], ["passport", "Passeport"], ["residence", "Titre de séjour"], ["license", "Permis de conduire"]],
+      payoutOpts: [["mm", "Mobile Money"], ["bank", "Compte bancaire"]],
+      productsHint: "Par exemple : beurre de karité, savons artisanaux, pagnes tissés.",
+      regHint: "RCCM, SIRET, KvK… selon ton pays.", taxHint: "IFU, NIF, numéro de TVA… selon ton pays.", taxHintOpt: "Facultatif si tu n’es pas encore immatriculé.",
+      ibanHint: "Le compte doit être à ton nom ou à celui de ton entreprise.",
+      fileHint: "JPG, PNG ou PDF, 10 Mo maximum", cityHint: "Villes : {c}. Choisis dans la liste ou écris ta ville.", cityFree: "Écris le nom de ta ville.", cityEmpty: "Ville absente de la liste. Tu peux garder ce que tu as écrit.", addrHint: "Rue, numéro et ville : la ville est reconnue automatiquement.", addrFound: "Ville reconnue dans ton adresse : {c}.", addrPick: "Quelle est ta ville ?", chosen: "Choisi :",
+      whyT: "Pourquoi ces informations ?", whyP: "Comme toute place de marché, Yiriclick doit savoir qui vend sur son site : c’est une obligation légale, notamment dans l’Union européenne, et une protection contre la fraude. Tes documents servent uniquement à vérifier ton identité et ne sont jamais montrés aux acheteurs.",
+      eAge: "Tu dois avoir au moins 18 ans pour vendre sur Yiriclick.", eExpired: "Cette pièce est expirée. Utilise une pièce en cours de validité.", eFile: "Format ou taille non accepté : JPG, PNG ou PDF, 10 Mo maximum.", eFileReq: "Ajoute cette photo pour continuer.", eCheck: "Coche cette case pour continuer.",
+      pvTitle: "Dossier prêt", pvText: "Ton dossier vendeur sera transmis dès que les comptes vendeurs Yiriclick seront ouverts. Pour l’instant, rien n’a été envoyé, ni tes informations ni tes photos."
+    },
+    en: {
+      steps: ["Account", "Business", "Identity", "Payouts"],
+      titles: ["Your account", "Your business", "Identity check", "Payouts and commitments"],
+      stepOf: "Step {n} of 4", back: "Back", next: "Continue", submit: "Send my application", choose: "Choose…", other: "Other",
+      f: { plan: "Plan", zone: "Pricing region", name: "Full name", email: "Email address", phone: "WhatsApp number", country: "Country of residence",
+        status: "Legal status", legalName: "Legal business name", shopName: "Shop name", category: "Main category", products: "What you sell", reg: "Registration number", tax: "Tax identification number", address: "Business address", city: "City",
+        repName: "Full name, as on the ID", dob: "Date of birth", nationality: "Nationality", idType: "ID document type", idNumber: "Document number", idExpiry: "Expiry date", front: "Photo of the front of the ID", back: "Photo of the back of the ID", selfie: "Selfie holding your ID",
+        payout: "Receive my sales by", operator: "Operator", mmNumber: "Mobile Money number", holder: "Account holder", iban: "IBAN or bank details",
+        cTerms: "I accept the Yiriclick terms and conditions for sellers.", cPrivacy: "I have read the privacy policy and agree that my documents are used to verify my identity.", cTrue: "I certify that the information provided is accurate and up to date.", cLaw: "I commit to only selling products and services that comply with the law of the countries where I sell." },
+      statusOpts: [["ei", "Sole trader"], ["soc", "Company (Ltd, BV, SARL…)"], ["coop", "Cooperative or association"], ["none", "Not registered yet"]],
+      cats: [["mode", "Fashion and clothing"], ["chaussures", "Shoes and leather goods"], ["bijoux", "Jewellery and accessories"], ["textile", "Fabrics and wax prints"], ["beaute", "Beauty and cosmetics"], ["sante", "Health and wellness"], ["alim", "Food and groceries"], ["boissons", "Drinks"], ["agri", "Farm products and livestock"], ["artisanat", "Crafts and art"], ["deco", "Home and decor"], ["meubles", "Furniture"], ["electromenager", "Home appliances"], ["tech", "Phones and electronics"], ["info", "Computers"], ["auto", "Cars and motorbikes"], ["btp", "Building and materials"], ["bebe", "Baby and kids"], ["jouets", "Toys and games"], ["sport", "Sports and leisure"], ["livres", "Books and school supplies"], ["musique", "Music and instruments"], ["animaux", "Pets and animals"], ["numerique", "Digital products"], ["services", "Services"], ["autre", "Other"]],
+      idTypes: [["cni", "National ID card"], ["passport", "Passport"], ["residence", "Residence permit"], ["license", "Driving licence"]],
+      payoutOpts: [["mm", "Mobile Money"], ["bank", "Bank account"]],
+      productsHint: "For example: shea butter, handmade soaps, woven fabrics.",
+      regHint: "RCCM, SIRET, KvK… depending on your country.", taxHint: "IFU, NIF, VAT number… depending on your country.", taxHintOpt: "Optional if you are not registered yet.",
+      ibanHint: "The account must be in your name or your business’s name.",
+      fileHint: "JPG, PNG or PDF, 10 MB maximum", cityHint: "Cities: {c}. Pick one from the list or type your city.", cityFree: "Type the name of your city.", cityEmpty: "City not in the list. You can keep what you typed.", addrHint: "Street, number and city: the city is recognised automatically.", addrFound: "City recognised in your address: {c}.", addrPick: "Which is your city?", chosen: "Selected:",
+      whyT: "Why do we ask for this?", whyP: "Like every marketplace, Yiriclick must know who sells on its site: it is a legal requirement, especially in the European Union, and a protection against fraud. Your documents are only used to verify your identity and are never shown to buyers.",
+      eAge: "You must be at least 18 to sell on Yiriclick.", eExpired: "This document has expired. Use a valid document.", eFile: "Format or size not accepted: JPG, PNG or PDF, 10 MB maximum.", eFileReq: "Add this photo to continue.", eCheck: "Tick this box to continue.",
+      pvTitle: "Application ready", pvText: "Your seller application will be sent as soon as Yiriclick seller accounts open. Nothing has been sent yet, neither your details nor your photos."
+    },
+    es: {
+      steps: ["Cuenta", "Actividad", "Identidad", "Pagos"],
+      titles: ["Tu cuenta", "Tu actividad", "Verificación de identidad", "Pagos y compromisos"],
+      stepOf: "Paso {n} de 4", back: "Atrás", next: "Continuar", submit: "Enviar mi solicitud", choose: "Elige…", other: "Otro",
+      f: { plan: "Plan", zone: "Región de precios", name: "Nombre completo", email: "Correo electrónico", phone: "Número de WhatsApp", country: "País de residencia",
+        status: "Forma jurídica", legalName: "Nombre legal de la empresa", shopName: "Nombre de la tienda", category: "Categoría principal", products: "Lo que vendes", reg: "Número de registro", tax: "Número de identificación fiscal", address: "Dirección de la actividad", city: "Ciudad",
+        repName: "Nombre y apellidos, como en el documento", dob: "Fecha de nacimiento", nationality: "Nacionalidad", idType: "Tipo de documento", idNumber: "Número del documento", idExpiry: "Fecha de caducidad", front: "Foto del anverso del documento", back: "Foto del reverso del documento", selfie: "Selfi sosteniendo tu documento",
+        payout: "Recibir mis ventas por", operator: "Operador", mmNumber: "Número de Mobile Money", holder: "Titular de la cuenta", iban: "IBAN o datos bancarios",
+        cTerms: "Acepto las condiciones generales para vendedores de Yiriclick.", cPrivacy: "He leído la política de privacidad y acepto que mis documentos se usen para verificar mi identidad.", cTrue: "Certifico que la información proporcionada es exacta y está actualizada.", cLaw: "Me comprometo a vender solo productos y servicios conformes a la ley de los países donde vendo." },
+      statusOpts: [["ei", "Autónomo"], ["soc", "Sociedad (SL, SA, SARL, BV…)"], ["coop", "Cooperativa o asociación"], ["none", "Aún sin registrar"]],
+      cats: [["mode", "Moda y ropa"], ["chaussures", "Calzado y marroquinería"], ["bijoux", "Joyas y accesorios"], ["textile", "Telas y wax"], ["beaute", "Belleza y cosmética"], ["sante", "Salud y bienestar"], ["alim", "Alimentación y supermercado"], ["boissons", "Bebidas"], ["agri", "Productos agrícolas y ganadería"], ["artisanat", "Artesanía y arte"], ["deco", "Hogar y decoración"], ["meubles", "Muebles"], ["electromenager", "Electrodomésticos"], ["tech", "Teléfonos y electrónica"], ["info", "Informática"], ["auto", "Coches y motos"], ["btp", "Construcción y materiales"], ["bebe", "Bebés y niños"], ["jouets", "Juguetes y juegos"], ["sport", "Deporte y ocio"], ["livres", "Libros y material escolar"], ["musique", "Música e instrumentos"], ["animaux", "Animales"], ["numerique", "Productos digitales"], ["services", "Servicios"], ["autre", "Otro"]],
+      idTypes: [["cni", "Documento nacional de identidad"], ["passport", "Pasaporte"], ["residence", "Permiso de residencia"], ["license", "Permiso de conducir"]],
+      payoutOpts: [["mm", "Mobile Money"], ["bank", "Cuenta bancaria"]],
+      productsHint: "Por ejemplo: manteca de karité, jabones artesanales, telas tejidas.",
+      regHint: "RCCM, SIRET, KvK… según tu país.", taxHint: "IFU, NIF, número de IVA… según tu país.", taxHintOpt: "Opcional si aún no estás registrado.",
+      ibanHint: "La cuenta debe estar a tu nombre o al de tu empresa.",
+      fileHint: "JPG, PNG o PDF, 10 MB como máximo", cityHint: "Ciudades: {c}. Elige una de la lista o escribe tu ciudad.", cityFree: "Escribe el nombre de tu ciudad.", cityEmpty: "Ciudad no incluida en la lista. Puedes dejar lo que escribiste.", addrHint: "Calle, número y ciudad: la ciudad se reconoce automáticamente.", addrFound: "Ciudad reconocida en tu dirección: {c}.", addrPick: "¿Cuál es tu ciudad?", chosen: "Elegido:",
+      whyT: "¿Por qué pedimos esta información?", whyP: "Como todo mercado en línea, Yiriclick debe saber quién vende en su sitio: es una obligación legal, sobre todo en la Unión Europea, y una protección contra el fraude. Tus documentos solo sirven para verificar tu identidad y nunca se muestran a los compradores.",
+      eAge: "Debes tener al menos 18 años para vender en Yiriclick.", eExpired: "Este documento está caducado. Usa un documento válido.", eFile: "Formato o tamaño no aceptado: JPG, PNG o PDF, 10 MB como máximo.", eFileReq: "Añade esta foto para continuar.", eCheck: "Marca esta casilla para continuar.",
+      pvTitle: "Solicitud lista", pvText: "Tu solicitud de vendedor se enviará en cuanto se abran las cuentas de vendedor de Yiriclick. Por ahora no se ha enviado nada, ni tus datos ni tus fotos."
+    }
+  };
+
+  function showMode() {
+    var trial = su.plan === "essai";
+    form.hidden = !trial; proForm.hidden = trial; docView.hidden = true;
+    if (!trial) buildPro(false);
+  }
+  function fid(key) { return "pf-" + key; }
+  function errSpan(f, key) { var e = el("span", "err"); e.id = fid(key) + "-err"; f.appendChild(e); }
+  function field(parent, key, k, o) {
+    o = o || {};
+    var f = el("div", "field"), lab = el("label", null, k.f[key]), inp;
+    lab.setAttribute("for", fid(key)); f.appendChild(lab);
+    if (o.options) {
+      inp = el("select");
+      if (o.placeholder) { var p0 = el("option", null, o.placeholder); p0.value = ""; inp.appendChild(p0); }
+      o.options.forEach(function (x) { var op = el("option", null, x[1]); op.value = x[0]; inp.appendChild(op); });
+    } else if (o.area) { inp = el("textarea"); inp.rows = 3; }
+    else { inp = el("input"); inp.type = o.type || "text"; }
+    inp.id = fid(key);
+    if (o.ac) inp.setAttribute("autocomplete", o.ac);
+    if (o.im) inp.setAttribute("inputmode", o.im);
+    if (o.ph) inp.placeholder = o.ph;
+    if (pv[key] != null) inp.value = pv[key];
+    if (o.options && !o.placeholder && pv[key] == null) pv[key] = inp.value;
+    inp.addEventListener("input", function () { pv[key] = inp.value; setErr(fid(key), ""); });
+    inp.addEventListener("change", function () {
+      pv[key] = inp.value; setErr(fid(key), "");
+      if (o.rebuild) { buildPro(false); var n = document.getElementById(fid(key)); if (n) n.focus({ preventScroll: true }); }
+    });
+    f.appendChild(inp);
+    if (o.hint) f.appendChild(el("span", "hint", o.hint));
+    errSpan(f, key); parent.appendChild(f);
+    return inp;
+  }
+  function fileField(parent, key, k) {
+    var f = el("div", "field"), file = pv[key];
+    var lab = el("label", "file-drop" + (file ? " has" : ""));
+    var inp = el("input", "vh"); inp.type = "file"; inp.id = fid(key); inp.accept = "image/jpeg,image/png,application/pdf";
+    lab.appendChild(inp);
+    if (file && /^image\//.test(file.type)) { var im = el("img", "fd-thumb"); im.alt = ""; try { im.src = URL.createObjectURL(file); } catch (e) {} lab.appendChild(im); }
+    else { var ic = el("span", "fd-ic"); ic.innerHTML = svg(file ? "check" : "up", 20, 2.5); lab.appendChild(ic); }
+    var tx = el("span", "fd-t"); tx.appendChild(el("b", null, k.f[key])); tx.appendChild(el("span", null, file ? k.chosen + " " + file.name : k.fileHint)); lab.appendChild(tx);
+    inp.addEventListener("change", function () {
+      var fl = inp.files && inp.files[0]; if (!fl) return;
+      if (fl.size > 10 * 1024 * 1024 || !/^(image\/(jpeg|png)|application\/pdf)$/.test(fl.type)) { inp.value = ""; setErr(fid(key), k.eFile); return; }
+      pv[key] = fl; buildPro(false);
+      var n = document.getElementById(fid(key)); if (n) n.focus({ preventScroll: true });
+    });
+    f.appendChild(lab); errSpan(f, key); parent.appendChild(f);
+  }
+  function checkField(parent, key, k) {
+    var f = el("div", "field"), lab = el("label", "check"), inp = el("input");
+    inp.type = "checkbox"; inp.id = fid(key); inp.checked = !!pv[key];
+    inp.addEventListener("change", function () { pv[key] = inp.checked; setErr(fid(key), ""); });
+    lab.appendChild(inp); lab.appendChild(el("span", null, k.f[key])); f.appendChild(lab);
+    var dk = DOCMAP[key];
+    if (dk) {
+      var rd = el("button", "read-link", DOCS[state.lang][dk].link); rd.type = "button";
+      rd.addEventListener("click", function () { openDoc(dk, key); });
+      f.appendChild(rd);
+    }
+    errSpan(f, key); parent.appendChild(f);
+  }
+  /* Full text of each commitment, readable before accepting */
+  var DOCS = {"fr": {"note": "Version provisoire : ce texte doit être validé par un juriste avant le lancement. Les éléments entre crochets restent à compléter.", "back": "Retour au formulaire", "accept": "J’ai lu et j’accepte", "updated": "Dernière mise à jour : [DATE]", "terms": {"link": "Lire les conditions générales", "t": "Conditions générales de vente pour les vendeurs", "s": [["1. Objet", "Ces conditions encadrent l’utilisation de Yiriclick par les vendeurs : création d’une boutique, mise en vente de produits et réception des paiements des clients."], ["2. Abonnement", "L’abonnement Basique, Pro ou Entreprise est payé chaque mois ou chaque année, au prix affiché pour ta région. Le prix de lancement s’applique pendant les 4 premiers mois. Tu peux résilier à tout moment : l’abonnement reste actif jusqu’à la fin de la période déjà payée."], ["3. Tes obligations", "Tu décris tes produits de façon exacte, tu respectes les prix affichés, tu livres dans les délais annoncés et tu respectes la loi des pays où tu vends, notamment sur les produits interdits et les droits des consommateurs."], ["4. Paiements et versements", "Les paiements des clients passent par Yiriclick et ses partenaires de paiement, puis sont versés sur ton Mobile Money ou ton compte bancaire. Frais et délais de versement : [À COMPLÉTER]."], ["5. Suspension", "Yiriclick peut suspendre une boutique si les informations fournies sont fausses ou incomplètes, en cas de fraude ou de vente de produits illégaux, après t’avoir demandé de corriger la situation lorsque c’est possible."], ["6. Litiges et contact", "Droit applicable et juridiction compétente : [À COMPLÉTER]. Contact : [ADRESSE E-MAIL]."]]}, "privacy": {"link": "Lire la politique de confidentialité", "t": "Politique de confidentialité : vérification des vendeurs", "s": [["1. Données collectées", "Ton identité et tes coordonnées, les informations sur ton activité (statut, numéros d’immatriculation et fiscal, adresse), ta pièce d’identité, ton selfie et tes coordonnées de versement."], ["2. Pourquoi", "Pour vérifier l’identité des vendeurs, respecter les obligations légales des places de marché (traçabilité des vendeurs dans l’Union européenne, obligations fiscales), prévenir la fraude et te verser l’argent de tes ventes."], ["3. Qui y a accès", "Uniquement l’équipe de vérification de Yiriclick et, le cas échéant, son prestataire de vérification d’identité. Tes documents ne sont jamais montrés aux acheteurs."], ["4. Durée de conservation", "[DURÉE À DÉFINIR], puis tes documents sont supprimés."], ["5. Tes droits", "Tu peux demander à accéder à tes données, les corriger ou les supprimer, et t’opposer à certains traitements. Tu peux aussi saisir l’autorité de protection des données de ton pays. Contact : [ADRESSE E-MAIL]."]]}, "truth": {"link": "Lire l’attestation", "t": "Attestation d’exactitude des informations", "s": [["Ce que tu certifies", "Toutes les informations et tous les documents que tu fournis sont exacts, complets et à jour."], ["Mises à jour", "Tu t’engages à mettre à jour tes informations dès qu’elles changent : adresse, statut, numéros, compte de versement."], ["Ta responsabilité", "Le vendeur est responsable de l’exactitude des informations qu’il fournit. Si une information est fausse ou incomplète, Yiriclick te demande de la corriger et peut suspendre ta boutique tant qu’elle ne l’est pas."]]}, "law": {"link": "Lire l’engagement", "t": "Engagement de conformité des produits", "s": [["Ce que tu t’engages à faire", "Ne proposer que des produits et services conformes à la loi des pays où tu vends : sécurité des produits, étiquetage, droits des consommateurs et propriété intellectuelle."], ["Exemples de produits interdits", "Contrefaçons, médicaments sans autorisation, armes, produits dangereux ou périmés, espèces animales ou végétales protégées. La liste complète dépend des pays de vente : [À COMPLÉTER]."], ["En cas de doute", "Contacte Yiriclick avant de mettre un produit en vente : [ADRESSE E-MAIL]."]]}}, "en": {"note": "Draft version: this text must be reviewed by a lawyer before launch. Items in square brackets are still to be completed.", "back": "Back to the form", "accept": "I have read and accept", "updated": "Last updated: [DATE]", "terms": {"link": "Read the terms and conditions", "t": "Terms and conditions for sellers", "s": [["1. Purpose", "These terms govern how sellers use Yiriclick: creating a shop, listing products and receiving customer payments."], ["2. Subscription", "The Basic, Pro or Business subscription is paid monthly or yearly at the price shown for your region. The launch price applies for the first 4 months. You can cancel at any time: the subscription stays active until the end of the period already paid."], ["3. Your obligations", "You describe your products accurately, honour the prices shown, deliver within the stated times and comply with the law of the countries where you sell, in particular on prohibited products and consumer rights."], ["4. Payments and payouts", "Customer payments go through Yiriclick and its payment partners, then are paid out to your Mobile Money or bank account. Payout fees and times: [TO BE COMPLETED]."], ["5. Suspension", "Yiriclick may suspend a shop if the information provided is false or incomplete, in case of fraud or the sale of illegal products, after asking you to fix the situation where possible."], ["6. Disputes and contact", "Governing law and competent court: [TO BE COMPLETED]. Contact: [EMAIL ADDRESS]."]]}, "privacy": {"link": "Read the privacy policy", "t": "Privacy policy: seller verification", "s": [["1. Data collected", "Your identity and contact details, information about your business (status, registration and tax numbers, address), your ID document, your selfie and your payout details."], ["2. Why", "To verify sellers’ identity, meet the legal obligations of marketplaces (trader traceability in the European Union, tax obligations), prevent fraud and pay out your sales."], ["3. Who can access it", "Only the Yiriclick verification team and, where applicable, its identity verification provider. Your documents are never shown to buyers."], ["4. Retention period", "[PERIOD TO BE DEFINED], after which your documents are deleted."], ["5. Your rights", "You can ask to access, correct or delete your data and object to some processing. You can also contact the data protection authority in your country. Contact: [EMAIL ADDRESS]."]]}, "truth": {"link": "Read the declaration", "t": "Declaration of accuracy", "s": [["What you certify", "All the information and documents you provide are accurate, complete and up to date."], ["Updates", "You commit to updating your information as soon as it changes: address, status, numbers, payout account."], ["Your responsibility", "Sellers are responsible for the accuracy of the information they provide. If something is false or incomplete, Yiriclick asks you to correct it and may suspend your shop until it is."]]}, "law": {"link": "Read the commitment", "t": "Product compliance commitment", "s": [["What you commit to", "Only offering products and services that comply with the law of the countries where you sell: product safety, labelling, consumer rights and intellectual property."], ["Examples of prohibited products", "Counterfeits, unauthorised medicines, weapons, dangerous or expired products, protected animal or plant species. The full list depends on the countries of sale: [TO BE COMPLETED]."], ["If in doubt", "Contact Yiriclick before listing a product: [EMAIL ADDRESS]."]]}}, "es": {"note": "Versión provisional: este texto debe ser revisado por un abogado antes del lanzamiento. Los elementos entre corchetes están por completar.", "back": "Volver al formulario", "accept": "He leído y acepto", "updated": "Última actualización: [FECHA]", "terms": {"link": "Leer las condiciones generales", "t": "Condiciones generales para vendedores", "s": [["1. Objeto", "Estas condiciones regulan el uso de Yiriclick por parte de los vendedores: creación de una tienda, venta de productos y cobro de los pagos de los clientes."], ["2. Suscripción", "La suscripción Básico, Pro o Empresa se paga cada mes o cada año, al precio indicado para tu región. El precio de lanzamiento se aplica durante los 4 primeros meses. Puedes cancelar en cualquier momento: la suscripción sigue activa hasta el final del periodo ya pagado."], ["3. Tus obligaciones", "Describes tus productos con exactitud, respetas los precios indicados, entregas en los plazos anunciados y cumples la ley de los países donde vendes, sobre todo en productos prohibidos y derechos de los consumidores."], ["4. Pagos y abonos", "Los pagos de los clientes pasan por Yiriclick y sus socios de pago, y luego se abonan en tu Mobile Money o cuenta bancaria. Comisiones y plazos de abono: [POR COMPLETAR]."], ["5. Suspensión", "Yiriclick puede suspender una tienda si la información facilitada es falsa o incompleta, en caso de fraude o de venta de productos ilegales, después de pedirte que corrijas la situación cuando sea posible."], ["6. Litigios y contacto", "Ley aplicable y tribunal competente: [POR COMPLETAR]. Contacto: [CORREO ELECTRÓNICO]."]]}, "privacy": {"link": "Leer la política de privacidad", "t": "Política de privacidad: verificación de vendedores", "s": [["1. Datos recogidos", "Tu identidad y datos de contacto, la información de tu actividad (forma jurídica, números de registro y fiscal, dirección), tu documento de identidad, tu selfi y tus datos de cobro."], ["2. Para qué", "Para verificar la identidad de los vendedores, cumplir las obligaciones legales de los mercados en línea (trazabilidad de los comerciantes en la Unión Europea, obligaciones fiscales), prevenir el fraude y abonarte tus ventas."], ["3. Quién tiene acceso", "Solo el equipo de verificación de Yiriclick y, en su caso, su proveedor de verificación de identidad. Tus documentos nunca se muestran a los compradores."], ["4. Plazo de conservación", "[PLAZO POR DEFINIR]; después, tus documentos se eliminan."], ["5. Tus derechos", "Puedes pedir acceder a tus datos, corregirlos o eliminarlos, y oponerte a ciertos tratamientos. También puedes acudir a la autoridad de protección de datos de tu país. Contacto: [CORREO ELECTRÓNICO]."]]}, "truth": {"link": "Leer la declaración", "t": "Declaración de exactitud", "s": [["Lo que certificas", "Toda la información y todos los documentos que proporcionas son exactos, completos y están actualizados."], ["Actualizaciones", "Te comprometes a actualizar tu información en cuanto cambie: dirección, forma jurídica, números, cuenta de cobro."], ["Tu responsabilidad", "El vendedor es responsable de la exactitud de la información que proporciona. Si algo es falso o incompleto, Yiriclick te pide corregirlo y puede suspender tu tienda mientras no se corrija."]]}, "law": {"link": "Leer el compromiso", "t": "Compromiso de conformidad de los productos", "s": [["A qué te comprometes", "A ofrecer solo productos y servicios conformes a la ley de los países donde vendes: seguridad de los productos, etiquetado, derechos de los consumidores y propiedad intelectual."], ["Ejemplos de productos prohibidos", "Falsificaciones, medicamentos sin autorización, armas, productos peligrosos o caducados, especies animales o vegetales protegidas. La lista completa depende de los países de venta: [POR COMPLETAR]."], ["En caso de duda", "Contacta con Yiriclick antes de poner un producto a la venta: [CORREO ELECTRÓNICO]."]]}}};
+  var DOCMAP = { cTerms: "terms", cPrivacy: "privacy", cTrue: "truth", cLaw: "law" };
+  var docView = document.getElementById("docView");
+  function openDoc(dk, ck) {
+    var D = DOCS[state.lang], d = D[dk];
+    proForm.hidden = true; docView.hidden = false; docView.textContent = "";
+    var back = el("button", "doc-back"); back.type = "button"; back.innerHTML = svg("chev", 16, 3); back.appendChild(document.createTextNode(D.back));
+    back.addEventListener("click", function () { closeDoc(ck, false); });
+    docView.appendChild(back);
+    var h = el("h3", "doc-h", d.t); h.tabIndex = -1; docView.appendChild(h);
+    docView.appendChild(el("p", "doc-note", D.note));
+    d.s.forEach(function (x) { var sec = el("section", "doc-sec"); sec.appendChild(el("h4", null, x[0])); sec.appendChild(el("p", null, x[1])); docView.appendChild(sec); });
+    docView.appendChild(el("p", "doc-upd", D.updated));
+    var acts = el("div", "doc-actions");
+    var ok = el("button", "btn btn-orange", D.accept); ok.type = "button"; ok.addEventListener("click", function () { closeDoc(ck, true); });
+    var no = el("button", "btn btn-line", D.back); no.type = "button"; no.addEventListener("click", function () { closeDoc(ck, false); });
+    acts.appendChild(ok); acts.appendChild(no); docView.appendChild(acts);
+    modal.querySelector(".sheet").scrollTop = 0; h.focus({ preventScroll: true });
+    anim(docView, [{ opacity: 0, transform: "translateX(24px)" }, { opacity: 1, transform: "none" }], { duration: 320 });
+  }
+  function closeDoc(ck, accepted) {
+    if (accepted) { pv[ck] = true; }
+    docView.hidden = true; proForm.hidden = false; buildPro(false);
+    var n = document.getElementById(fid(ck));
+    if (n) { n.scrollIntoView({ block: "center" }); n.focus({ preventScroll: true }); if (accepted) setErr(fid(ck), ""); }
+  }
+  function two(parent) { var d = el("div", "two"); parent.appendChild(d); return d; }
+
+  var STEPS = [
+    function (b, k, t) {
+      var sum = el("div", "sum"); sum.appendChild(el("span", null, t.sumLabel)); sum.appendChild(el("b", null, planSummary())); b.appendChild(sum);
+      var r = two(b);
+      var pl = field(r, "plan", k, { options: PLAN_KEYS.map(function (p, i) { return [p, t.names[i]]; }) });
+      pl.value = su.plan; pv.plan = su.plan;
+      pl.addEventListener("change", function () { su.plan = pl.value; if (su.plan === "essai") { suRefresh(); showMode(); document.getElementById("suName").focus(); } else buildPro(false); });
+      var zn = field(r, "zone", k, { options: ["af", "eu", "am"].map(function (z, i) { return [z, t.regions[i] + " · " + CURS[i]]; }) });
+      zn.value = su.zone; pv.zone = su.zone;
+      zn.addEventListener("change", function () { su.zone = zn.value; buildPro(false); });
+      field(b, "name", k, { ac: "name" });
+      field(b, "email", k, { type: "email", im: "email", ac: "email", ph: t.phEmail });
+      field(b, "phone", k, { type: "tel", im: "tel", ac: "tel", ph: t.phPhone });
+      combo(field(b, "country", k, { ph: t.phCountry }), function (n, c) { pv.country = n; pv.countryCode = c; setErr(fid("country"), ""); });
+    },
+    function (b, k) {
+      field(b, "status", k, { options: k.statusOpts, rebuild: true });
+      var reg = pv.status !== "none";
+      if (reg) field(b, "legalName", k, { ac: "organization" });
+      field(b, "shopName", k, {});
+      field(b, "category", k, { options: k.cats, placeholder: k.choose });
+      field(b, "products", k, { area: true, hint: k.productsHint });
+      if (reg) field(b, "reg", k, { hint: k.regHint });
+      field(b, "tax", k, { hint: reg ? k.taxHint : k.taxHintOpt });
+      var addrInp = field(b, "address", k, { ac: "street-address", hint: k.addrHint });
+      var sugg = el("div", "addr-sugg"); sugg.setAttribute("aria-live", "polite");
+      addrInp.parentNode.insertBefore(sugg, addrInp.nextSibling);
+      var hasCities = !!(pv.countryCode && CITIES[pv.countryCode]);
+      var cityInp = field(b, "city", k, { hint: hasCities ? k.cityHint.replace("{c}", pv.country) : k.cityFree });
+      combo(cityInp,
+        function (n) { pv.city = n; pv.cityAuto = false; setErr(fid("city"), ""); },
+        { city: true, list: function () { return citiesFor(pv.countryCode); }, empty: function () { return hasCities ? k.cityEmpty : k.cityFree; } });
+      /* City detection from the address: one clear match fills the field, several matches are offered as choices */
+      function setCity(n, auto) {
+        cityInp.value = n; pv.city = n; pv.cityAuto = !!auto; setErr(fid("city"), "");
+        anim(cityInp, [{ backgroundColor: "#E6F4F5" }, { backgroundColor: "#FFFFFF" }], { duration: 900, fill: "none" });
+      }
+      function chips(label, hits) {
+        sugg.appendChild(el("span", null, label));
+        hits.forEach(function (x) {
+          var c = el("button", null, x.n); c.type = "button";
+          c.addEventListener("click", function () { setCity(x.n, false); sugg.textContent = ""; sugg.appendChild(el("span", "ok", k.addrFound.replace("{c}", x.n))); });
+          sugg.appendChild(c);
+        });
+      }
+      function detect(fill) {
+        sugg.textContent = "";
+        var a = " " + norm(addrInp.value) + " ";
+        if (a.trim().length < 3) return;
+        var hits = citiesFor(pv.countryCode).filter(function (x) { return x.k.length >= 3 && a.indexOf(" " + x.k + " ") >= 0; });
+        hits.sort(function (p, q) { return q.k.length - p.k.length; });
+        hits = hits.filter(function (x, i) { return !hits.slice(0, i).some(function (y) { return (" " + y.k + " ").indexOf(" " + x.k + " ") >= 0; }); });
+        if (hits.length === 1) {
+          var n = hits[0].n;
+          if (fill && (!pv.city || pv.cityAuto)) setCity(n, true);
+          if (pv.city === n) sugg.appendChild(el("span", "ok", k.addrFound.replace("{c}", n)));
+          else chips(k.addrPick, hits);
+        } else if (hits.length > 1) chips(k.addrPick, hits.slice(0, 4));
+      }
+      var dt = null;
+      addrInp.addEventListener("input", function () { clearTimeout(dt); dt = setTimeout(function () { detect(true); }, 350); });
+      detect(false);
+    },
+    function (b, k, t) {
+      var info = el("div", "info"); info.appendChild(el("b", null, k.whyT)); info.appendChild(el("p", null, k.whyP)); b.appendChild(info);
+      field(b, "repName", k, { ac: "name" });
+      var r = two(b); field(r, "dob", k, { type: "date", ac: "bday" }); combo(field(r, "nationality", k, { ph: t.phCountry }), function (n, c) { pv.nationality = n; pv.nationalityCode = c; setErr(fid("nationality"), ""); });
+      field(b, "idType", k, { options: k.idTypes, rebuild: true });
+      var r2 = two(b); field(r2, "idNumber", k, {}); field(r2, "idExpiry", k, { type: "date" });
+      fileField(b, "front", k);
+      if (pv.idType !== "passport") fileField(b, "back", k);
+      fileField(b, "selfie", k);
+    },
+    function (b, k) {
+      field(b, "payout", k, { options: k.payoutOpts, rebuild: true });
+      if (pv.payout === "bank") { field(b, "holder", k, { ac: "name" }); field(b, "iban", k, { hint: k.ibanHint }); }
+      else { field(b, "operator", k, { options: [["om", "Orange Money"], ["moov", "Moov Money"], ["wave", "Wave"], ["other", k.other]] }); field(b, "mmNumber", k, { type: "tel", im: "tel", ph: "+226 70 00 00 00" }); }
+      ["cTerms", "cPrivacy", "cTrue", "cLaw"].forEach(function (c) { checkField(b, c, k); });
+    }
+  ];
+
+  function buildPro(animate) {
+    var k = K[state.lang], t = T[state.lang];
+    proForm.textContent = "";
+    var bar = el("div", "pbar");
+    k.steps.forEach(function (s, i) { bar.appendChild(el("span", "pb-it" + (i < pstep ? " done" : "") + (i === pstep ? " on" : ""), s)); });
+    proForm.appendChild(bar);
+    proForm.appendChild(el("p", "pstep-of", k.stepOf.replace("{n}", pstep + 1)));
+    var body = el("div", "pbody"); proForm.appendChild(body);
+    body.appendChild(el("h3", "pstep-h", k.titles[pstep]));
+    STEPS[pstep](body, k, t);
+    var nav = el("div", "pnav");
+    if (pstep > 0) {
+      var back = el("button", "btn btn-line", k.back); back.type = "button";
+      back.addEventListener("click", function () { pstep--; buildPro(true); modal.querySelector(".sheet").scrollTop = 0; focusFirst(); });
+      nav.appendChild(back);
+    }
+    var next = el("button", "btn btn-orange", pstep < 3 ? k.next : k.submit); next.type = "submit"; nav.appendChild(next);
+    proForm.appendChild(nav);
+    if (animate) anim(body, [{ opacity: 0, transform: "translateX(24px)" }, { opacity: 1, transform: "none" }], { duration: 340 });
+  }
+  function focusFirst() {
+    var n = proForm.querySelector(".pbody input:not(.vh), .pbody select, .pbody textarea");
+    if (n && !proForm.hidden) n.focus({ preventScroll: true });
+  }
+  function validStep() {
+    var k = K[state.lang], t = T[state.lang], ok = true, first = null;
+    function bad(key, msg) { setErr(fid(key), msg); if (ok) first = key; ok = false; }
+    function val(key) { return pv[key] == null ? "" : String(pv[key]).trim(); }
+    function req(key) { if (!val(key)) { bad(key, t.eReq); return false; } return true; }
+    var phoneOk = function (v) { return /^\+?[0-9 ().-]{8,20}$/.test(v) && v.replace(/\D/g, "").length >= 8; };
+    if (pstep === 0) {
+      req("name");
+      if (req("email") && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(val("email"))) bad("email", t.eEmail);
+      if (req("phone") && !phoneOk(val("phone"))) bad("phone", t.ePhone);
+      req("country");
+    } else if (pstep === 1) {
+      var reg = pv.status !== "none";
+      if (reg) req("legalName");
+      req("shopName"); req("category"); req("products");
+      if (reg) { req("reg"); req("tax"); }
+      req("address"); req("city");
+    } else if (pstep === 2) {
+      req("repName");
+      if (req("dob")) { var a18 = new Date(); a18.setFullYear(a18.getFullYear() - 18); if (!(new Date(val("dob")) <= a18)) bad("dob", k.eAge); }
+      req("nationality"); req("idNumber");
+      if (req("idExpiry")) { var today = new Date(); today.setHours(0, 0, 0, 0); if (new Date(val("idExpiry")) < today) bad("idExpiry", k.eExpired); }
+      ["front", pv.idType !== "passport" ? "back" : null, "selfie"].forEach(function (x) { if (x && !pv[x]) bad(x, k.eFileReq); });
+    } else {
+      if (pv.payout === "bank") { req("holder"); req("iban"); }
+      else if (req("mmNumber") && !phoneOk(val("mmNumber"))) bad("mmNumber", t.ePhone);
+      ["cTerms", "cPrivacy", "cTrue", "cLaw"].forEach(function (c) { if (!pv[c]) bad(c, k.eCheck); });
+    }
+    if (!ok) { var n = document.getElementById(fid(first)); if (n) n.focus(); }
+    return ok;
+  }
+  proForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (!validStep()) return;
+    var k = K[state.lang];
+    if (pstep < 3) { pstep++; buildPro(true); modal.querySelector(".sheet").scrollTop = 0; focusFirst(); }
+    else showDone(k.pvTitle, k.pvText);
+  });
+
+  /* Country picker: every country with its flag, filtered as you type; free text is still accepted */
+  var ISO = "AD AE AF AG AI AL AM AO AR AS AT AU AW AX AZ BA BB BD BE BF BG BH BI BJ BL BM BN BO BQ BR BS BT BW BY BZ CA CC CD CF CG CH CI CK CL CM CN CO CR CU CV CW CX CY CZ DE DJ DK DM DO DZ EC EE EG EH ER ES ET FI FJ FK FM FO FR GA GB GD GE GF GG GH GI GL GM GN GP GQ GR GT GU GW GY HK HN HR HT HU ID IE IL IM IN IQ IR IS IT JE JM JO JP KE KG KH KI KM KN KP KR KW KY KZ LA LB LC LI LK LR LS LT LU LV LY MA MC MD ME MF MG MH MK ML MM MN MO MP MQ MR MS MT MU MV MW MX MY MZ NA NC NE NF NG NI NL NO NP NR NU NZ OM PA PE PF PG PH PK PL PM PN PR PS PT PW PY QA RE RO RS RU RW SA SB SC SD SE SG SH SI SJ SK SL SM SN SO SR SS ST SV SX SY SZ TC TD TG TH TJ TK TL TM TN TO TR TT TV TW TZ UA UG US UY UZ VA VC VE VG VI VN VU WF WS XK YE YT ZA ZM ZW".split(" ");
+  var ccCache = {}, ccSeq = 0;
+  function flagOf(c) { return String.fromCodePoint(0x1F1E6 + c.charCodeAt(0) - 65, 0x1F1E6 + c.charCodeAt(1) - 65); }
+  function norm(x) { return String(x).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[-’'.,()]/g, " ").replace(/\s+/g, " ").trim(); }
+  function countries() {
+    var L = state.lang; if (ccCache[L]) return ccCache[L];
+    var dn = null; try { dn = new Intl.DisplayNames([LOCALE[L]], { type: "region" }); } catch (e) {}
+    var list = ISO.map(function (c) { var n = c; try { n = dn ? dn.of(c) : c; } catch (e) {} return { c: c, n: n, k: norm(n) }; });
+    list.sort(function (a, b) { return a.n.localeCompare(b.n, LOCALE[L]); });
+    return (ccCache[L] = list);
+  }
+  function codeFor(v) {
+    var k = norm(String(v).trim()); if (!k) return "";
+    for (var L in LOCALE) { var dn; try { dn = new Intl.DisplayNames([LOCALE[L]], { type: "region" }); } catch (e) { continue; }
+      for (var i = 0; i < ISO.length; i++) { try { if (norm(dn.of(ISO[i])) === k) return ISO[i]; } catch (e) {} } }
+    return "";
+  }
+  function combo(inp, onSet, cfg) {
+    cfg = cfg || {};
+    var wrap = el("div", "cc-wrap"); inp.parentNode.insertBefore(wrap, inp); wrap.appendChild(inp);
+    var fl = el("span", "cc-flag"); fl.setAttribute("aria-hidden", "true"); wrap.insertBefore(fl, inp);
+    inp.classList.add("cc-in"); inp.setAttribute("autocomplete", "off");
+    var lid = "cc-list-" + (++ccSeq), ul = el("ul", "cc-list"); ul.id = lid; ul.setAttribute("role", "listbox"); ul.hidden = true; wrap.appendChild(ul);
+    inp.setAttribute("role", "combobox"); inp.setAttribute("aria-autocomplete", "list"); inp.setAttribute("aria-expanded", "false"); inp.setAttribute("aria-controls", lid);
+    var items = [], act = -1;
+    function setFlag(code) { if (cfg.city) { fl.innerHTML = svg("pin", 18); return; } if (code) fl.textContent = flagOf(code); else fl.innerHTML = svg("lang", 18); }
+    function open() {
+      var q = norm(inp.value.trim()), all = (cfg.list || countries)();
+      var res = q ? all.filter(function (x) { return x.k.indexOf(q) === 0; }).concat(all.filter(function (x) { return x.k.indexOf(q) > 0; })) : all;
+      ul.textContent = ""; items = res; act = -1; inp.removeAttribute("aria-activedescendant");
+      if (!res.length) ul.appendChild(el("li", "cc-empty", cfg.empty ? cfg.empty() : T[state.lang].ccEmpty));
+      res.forEach(function (x, i) {
+        var li = el("li"); li.id = lid + "-" + i; li.setAttribute("role", "option"); li.setAttribute("aria-selected", "false");
+        if (!cfg.city) li.appendChild(el("span", "cc-f", flagOf(x.c))); li.appendChild(el("span", null, x.n));
+        li.addEventListener("mousedown", function (e) { e.preventDefault(); pick(x); });
+        ul.appendChild(li);
+      });
+      ul.hidden = false; inp.setAttribute("aria-expanded", "true");
+    }
+    function close() { ul.hidden = true; inp.setAttribute("aria-expanded", "false"); inp.removeAttribute("aria-activedescendant"); }
+    function pick(x) { inp.value = x.n; setFlag(x.c); close(); onSet(x.n, x.c); }
+    function move(d) {
+      if (ul.hidden) open(); if (!items.length) return;
+      act = (act + d + items.length) % items.length;
+      Array.prototype.forEach.call(ul.children, function (li, i) { li.setAttribute("aria-selected", String(i === act)); });
+      var cur = document.getElementById(lid + "-" + act);
+      if (cur) { cur.scrollIntoView({ block: "nearest" }); inp.setAttribute("aria-activedescendant", cur.id); }
+    }
+    inp.addEventListener("focus", open);
+    inp.addEventListener("click", function () { if (ul.hidden) open(); });
+    inp.addEventListener("input", function () { open(); var c = cfg.city ? "" : codeFor(inp.value); setFlag(c); onSet(inp.value, c); });
+    inp.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowDown") { e.preventDefault(); move(1); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); move(-1); }
+      else if (e.key === "Enter" && !ul.hidden && act >= 0) { e.preventDefault(); pick(items[act]); }
+      else if (e.key === "Escape" && !ul.hidden) { e.stopPropagation(); close(); }
+    });
+    inp.addEventListener("blur", function () { setTimeout(close, 150); });
+    setFlag(cfg.city ? "" : codeFor(inp.value));
+  }
+  var CITIES = {"BF": "Ouagadougou|Bobo-Dioulasso|Koudougou|Ouahigouya|Banfora|Kaya|Tenkodogo|Fada N'Gourma|Dédougou|Dori|Gaoua|Ziniaré|Manga|Réo|Kombissiri|Pô|Houndé|Djibo|Kongoussi|Yako|Léo|Nouna|Boromo|Diébougou|Tougan|Gourcy|Koupéla|Pouytenga|Zorgho|Boulsa|Garango|Diapaga|Sebba|Orodara|Solenzo|Sapouy|Bogandé|Titao|Gorom-Gorom|Aribinda|Toma|Sindou|Batié|Dano|Bittou|Ouargaye|Saponé|Kampti|Niangoloko|Loumbila|Saaba|Komsilga|Tanghin-Dassouri|Kantchari|Pama|Kokologho|Laye|Pabré|Zitenga|Boussé|Kindi|Dapelogo", "CI": "Abidjan|Bouaké|Yamoussoukro|Daloa|San-Pédro|Korhogo|Man|Divo|Gagnoa|Abengourou|Anyama|Agboville|Grand-Bassam|Dabou|Séguéla|Bondoukou|Odienné|Soubré|Sinfra|Issia|Ferkessédougou|Katiola|Dimbokro|Bingerville|Duékoué|Guiglo|Aboisso|Adzopé|Bouaflé|Toumodi|Sassandra|Tiassalé|Boundiali|Danané|Daoukro|Jacqueville|Assinie", "SN": "Dakar|Touba|Thiès|Rufisque|Kaolack|Mbour|Saint-Louis|Ziguinchor|Diourbel|Louga|Tambacounda|Kolda|Richard-Toll|Mbacké|Tivaouane|Pikine|Guédiawaye|Kédougou|Fatick|Kaffrine|Matam|Sédhiou|Joal-Fadiouth|Saly", "ML": "Bamako|Sikasso|Ségou|Mopti|Kayes|Koutiala|Kati|Gao|Tombouctou|San|Kidal|Bougouni|Koulikoro|Kita|Djenné|Nioro du Sahel", "NE": "Niamey|Zinder|Maradi|Agadez|Tahoua|Dosso|Diffa|Tillabéri|Arlit|Birni-N'Konni|Gaya", "TG": "Lomé|Sokodé|Kara|Kpalimé|Atakpamé|Dapaong|Tsévié|Aného|Bassar|Mango", "BJ": "Cotonou|Porto-Novo|Parakou|Abomey-Calavi|Djougou|Bohicon|Abomey|Natitingou|Lokossa|Ouidah|Kandi|Malanville|Savè", "GN": "Conakry|Nzérékoré|Kankan|Kindia|Labé|Boké|Mamou|Kissidougou|Siguiri|Faranah|Guéckédou", "CM": "Douala|Yaoundé|Garoua|Bamenda|Bafoussam|Maroua|Ngaoundéré|Bertoua|Kribi|Limbé|Buea|Ebolowa|Kumba|Nkongsamba|Dschang|Edéa", "GH": "Accra|Kumasi|Tamale|Takoradi|Cape Coast|Tema|Sunyani|Koforidua|Ho|Techiman|Wa|Bolgatanga|Obuasi", "NG": "Lagos|Abuja|Kano|Ibadan|Port Harcourt|Benin City|Kaduna|Enugu|Onitsha|Aba|Jos|Ilorin|Abeokuta|Maiduguri|Warri|Calabar|Owerri|Uyo|Sokoto|Zaria", "MA": "Casablanca|Rabat|Marrakech|Fès|Tanger|Agadir|Meknès|Oujda|Kénitra|Tétouan|Salé|Laâyoune|Nador|El Jadida|Essaouira", "DZ": "Alger|Oran|Constantine|Annaba|Blida|Batna|Sétif|Tlemcen", "TN": "Tunis|Sfax|Sousse|Kairouan|Bizerte|Gabès|Monastir", "EG": "Le Caire|Alexandrie|Gizeh|Louxor|Assouan|Port-Saïd", "GA": "Libreville|Port-Gentil|Franceville|Oyem|Moanda|Lambaréné", "CG": "Brazzaville|Pointe-Noire|Dolisie|Nkayi|Owando", "CD": "Kinshasa|Lubumbashi|Mbuji-Mayi|Kisangani|Kananga|Goma|Bukavu|Likasi|Kolwezi|Matadi|Mbandaka|Uvira", "TD": "N'Djamena|Moundou|Abéché|Sarh|Doba", "MR": "Nouakchott|Nouadhibou|Kiffa|Rosso|Kaédi", "GW": "Bissau|Bafatá|Gabú", "CF": "Bangui|Bimbo|Berbérati|Bambari", "KE": "Nairobi|Mombasa|Kisumu|Nakuru|Eldoret", "ZA": "Johannesburg|Cape Town|Durban|Pretoria|Gqeberha|Bloemfontein", "FR": "Paris|Marseille|Lyon|Toulouse|Nice|Nantes|Montpellier|Strasbourg|Bordeaux|Lille|Rennes|Reims|Toulon|Saint-Étienne|Le Havre|Grenoble|Dijon|Angers|Nîmes|Villeurbanne|Clermont-Ferrand|Le Mans|Aix-en-Provence|Brest|Tours|Amiens|Limoges|Annecy|Perpignan|Metz|Besançon|Orléans|Rouen|Mulhouse|Caen|Nancy|Argenteuil|Montreuil|Saint-Denis|Roubaix|Tourcoing|Avignon|Poitiers|Pau|La Rochelle|Calais", "BE": "Bruxelles|Anvers|Gand|Charleroi|Liège|Bruges|Namur|Louvain|Mons|Malines|Alost|Hasselt|Courtrai|Ostende|Tournai|Verviers|Wavre|Arlon", "NL": "Amsterdam|Rotterdam|Den Haag|Utrecht|Eindhoven|Groningen|Tilburg|Almere|Breda|Nijmegen|Apeldoorn|Haarlem|Arnhem|Enschede|Amersfoort|Zaanstad|'s-Hertogenbosch|Zwolle|Leiden|Maastricht|Dordrecht|Zoetermeer|Delft|Alkmaar|Leeuwarden|Deventer|Hilversum|Amstelveen|Hoofddorp|Purmerend|Schiedam|Lelystad|Hengelo|Venlo|Helmond|Emmen|Roosendaal|Oss|Gouda|Vlaardingen|Capelle aan den IJssel|Spijkenisse|Middelburg|Assen", "DE": "Berlin|Hamburg|München|Köln|Frankfurt am Main|Stuttgart|Düsseldorf|Leipzig|Dortmund|Essen|Bremen|Dresden|Hannover|Nürnberg|Duisburg|Bochum|Wuppertal|Bielefeld|Bonn|Münster|Mannheim|Karlsruhe|Augsburg|Wiesbaden|Aachen|Kiel|Freiburg im Breisgau", "ES": "Madrid|Barcelona|Valencia|Sevilla|Zaragoza|Málaga|Murcia|Palma|Las Palmas de Gran Canaria|Bilbao|Alicante|Córdoba|Valladolid|Vigo|Gijón|Granada|A Coruña|Vitoria-Gasteiz|Santa Cruz de Tenerife|Pamplona|San Sebastián|Salamanca|Cádiz", "IT": "Roma|Milano|Napoli|Torino|Palermo|Genova|Bologna|Firenze|Bari|Catania|Venezia|Verona|Messina|Padova|Trieste|Brescia|Parma|Modena|Reggio Calabria|Perugia|Cagliari", "CH": "Zurich|Genève|Bâle|Lausanne|Berne|Winterthour|Lucerne|Saint-Gall|Lugano|Bienne|Fribourg|Neuchâtel|Sion", "GB": "London|Birmingham|Manchester|Glasgow|Liverpool|Leeds|Sheffield|Edinburgh|Bristol|Cardiff|Belfast|Leicester|Nottingham|Newcastle upon Tyne|Southampton|Brighton|Coventry|Bradford|Aberdeen|Oxford|Cambridge", "PT": "Lisboa|Porto|Braga|Coimbra|Funchal|Faro|Aveiro|Setúbal|Amadora", "LU": "Luxembourg|Esch-sur-Alzette|Differdange|Dudelange", "AT": "Wien|Graz|Linz|Salzburg|Innsbruck", "IE": "Dublin|Cork|Limerick|Galway", "SE": "Stockholm|Göteborg|Malmö|Uppsala", "NO": "Oslo|Bergen|Trondheim|Stavanger", "DK": "København|Aarhus|Odense|Aalborg", "PL": "Warszawa|Kraków|Łódź|Wrocław|Poznań|Gdańsk", "FI": "Helsinki|Espoo|Tampere|Turku", "GR": "Athína|Thessaloníki|Pátra|Irákleio", "CZ": "Praha|Brno|Ostrava|Plzeň", "RO": "București|Cluj-Napoca|Timișoara|Iași|Constanța", "HU": "Budapest|Debrecen|Szeged", "US": "New York|Los Angeles|Chicago|Houston|Phoenix|Philadelphia|San Antonio|San Diego|Dallas|San Jose|Austin|Jacksonville|Fort Worth|Columbus|Charlotte|San Francisco|Indianapolis|Seattle|Denver|Washington|Boston|El Paso|Nashville|Detroit|Oklahoma City|Portland|Las Vegas|Memphis|Louisville|Baltimore|Milwaukee|Albuquerque|Tucson|Fresno|Sacramento|Atlanta|Kansas City|Miami|Raleigh|Omaha|Minneapolis|Tampa|New Orleans|Cleveland|Honolulu|Pittsburgh|Cincinnati|St. Louis|Orlando|Newark", "CA": "Toronto|Montréal|Calgary|Ottawa|Edmonton|Winnipeg|Mississauga|Vancouver|Brampton|Hamilton|Québec|Surrey|Laval|Halifax|London|Gatineau|Saskatoon|Longueuil|Regina|Sherbrooke|Victoria|Windsor|Kitchener|St. John's", "CN": "Beijing|Shanghai|Guangzhou|Shenzhen|Chongqing|Tianjin|Chengdu|Wuhan|Hangzhou|Xi'an|Nanjing|Suzhou|Zhengzhou|Changsha|Shenyang|Qingdao|Harbin|Dalian|Xiamen|Kunming|Jinan|Hefei|Fuzhou|Ningbo|Dongguan|Foshan|Yiwu", "BR": "São Paulo|Rio de Janeiro|Brasília|Salvador|Fortaleza|Belo Horizonte|Manaus|Curitiba|Recife|Porto Alegre|Belém|Goiânia", "IN": "Mumbai|Delhi|Bengaluru|Hyderabad|Ahmedabad|Chennai|Kolkata|Pune|Jaipur|Surat|Lucknow|Kanpur", "JP": "Tokyo|Yokohama|Osaka|Nagoya|Sapporo|Fukuoka|Kobe|Kyoto|Kawasaki|Hiroshima|Sendai", "AE": "Dubai|Abu Dhabi|Sharjah|Ajman|Al Ain", "SA": "Riyadh|Jeddah|Mecca|Medina|Dammam", "TR": "İstanbul|Ankara|İzmir|Bursa|Antalya", "AD": "Andorra la Vella", "AF": "Kabul|Kandahar|Herat", "AG": "Saint John's", "AI": "The Valley", "AL": "Tirana|Durrës", "AM": "Yerevan|Gyumri", "AO": "Luanda|Huambo|Lobito", "AR": "Buenos Aires|Córdoba|Rosario|Mendoza", "AS": "Pago Pago", "AU": "Sydney|Melbourne|Brisbane|Perth|Adelaide|Canberra", "AW": "Oranjestad", "AX": "Mariehamn", "AZ": "Baku|Ganja", "BA": "Sarajevo|Banja Luka", "BB": "Bridgetown", "BD": "Dhaka|Chittagong|Khulna", "BG": "Sofia|Plovdiv|Varna", "BH": "Manama", "BI": "Gitega|Bujumbura", "BL": "Gustavia", "BM": "Hamilton", "BN": "Bandar Seri Begawan", "BO": "La Paz|Santa Cruz de la Sierra|Cochabamba|Sucre", "BQ": "Kralendijk", "BS": "Nassau", "BT": "Thimphu", "BW": "Gaborone|Francistown", "BY": "Minsk|Gomel", "BZ": "Belmopan|Belize City", "CC": "West Island", "CK": "Avarua", "CL": "Santiago|Valparaíso|Concepción", "CO": "Bogotá|Medellín|Cali|Barranquilla|Cartagena", "CR": "San José", "CU": "La Habana|Santiago de Cuba", "CV": "Praia|Mindelo", "CW": "Willemstad", "CX": "Flying Fish Cove", "CY": "Nicosia|Limassol", "DJ": "Djibouti", "DM": "Roseau", "DO": "Santo Domingo|Santiago de los Caballeros", "EC": "Quito|Guayaquil", "EE": "Tallinn|Tartu", "EH": "Laâyoune", "ER": "Asmara", "ET": "Addis-Abeba|Dire Dawa|Mekele|Gondar", "FJ": "Suva", "FK": "Stanley", "FM": "Palikir", "FO": "Tórshavn", "GD": "St. George's", "GE": "Tbilisi|Batumi", "GF": "Cayenne|Kourou", "GG": "Saint Peter Port", "GI": "Gibraltar", "GL": "Nuuk", "GM": "Banjul|Serekunda", "GP": "Pointe-à-Pitre|Basse-Terre", "GQ": "Malabo|Bata", "GT": "Guatemala City", "GU": "Hagåtña", "GY": "Georgetown", "HK": "Hong Kong", "HN": "Tegucigalpa|San Pedro Sula", "HR": "Zagreb|Split", "HT": "Port-au-Prince|Cap-Haïtien", "ID": "Jakarta|Surabaya|Bandung|Medan", "IL": "Tel Aviv|Jerusalem|Haifa", "IM": "Douglas", "IQ": "Baghdad|Basra|Mosul|Erbil", "IR": "Tehran|Mashhad|Isfahan|Tabriz|Shiraz", "IS": "Reykjavík", "JE": "Saint Helier", "JM": "Kingston|Montego Bay", "JO": "Amman|Irbid", "KG": "Bishkek|Osh", "KH": "Phnom Penh|Siem Reap", "KI": "Tarawa", "KM": "Moroni", "KN": "Basseterre", "KP": "Pyongyang", "KR": "Seoul|Busan|Incheon", "KW": "Kuwait City", "KY": "George Town", "KZ": "Astana|Almaty|Shymkent", "LA": "Vientiane", "LB": "Beirut|Tripoli", "LC": "Castries", "LI": "Vaduz", "LK": "Colombo|Kandy", "LR": "Monrovia", "LS": "Maseru", "LT": "Vilnius|Kaunas", "LV": "Riga", "LY": "Tripoli|Benghazi", "MC": "Monaco", "MD": "Chișinău", "ME": "Podgorica", "MF": "Marigot", "MG": "Antananarivo|Toamasina", "MH": "Majuro", "MK": "Skopje", "MM": "Yangon|Mandalay|Naypyidaw", "MN": "Ulaanbaatar", "MO": "Macau", "MP": "Saipan", "MQ": "Fort-de-France", "MS": "Brades", "MT": "Valletta", "MU": "Port Louis", "MV": "Malé", "MW": "Lilongwe|Blantyre", "MX": "Ciudad de México|Guadalajara|Monterrey|Puebla", "MY": "Kuala Lumpur|George Town|Johor Bahru", "MZ": "Maputo|Beira", "NA": "Windhoek", "NC": "Nouméa", "NF": "Kingston", "NI": "Managua", "NP": "Kathmandu|Pokhara", "NR": "Yaren", "NU": "Alofi", "NZ": "Auckland|Wellington|Christchurch", "OM": "Muscat", "PA": "Panamá", "PE": "Lima|Arequipa|Trujillo", "PF": "Papeete", "PG": "Port Moresby", "PH": "Manila|Quezon City|Cebu|Davao", "PK": "Karachi|Lahore|Islamabad", "PM": "Saint-Pierre", "PN": "Adamstown", "PR": "San Juan", "PS": "Gaza|Ramallah|Hebron|Nablus", "PW": "Ngerulmud", "PY": "Asunción", "QA": "Doha", "RE": "Saint-Denis|Saint-Pierre|Saint-Paul", "RS": "Beograd|Novi Sad", "RU": "Moskva|Sankt-Peterburg|Novosibirsk|Yekaterinburg|Kazan", "RW": "Kigali", "SB": "Honiara", "SC": "Victoria", "SD": "Khartoum|Omdurman|Port Sudan", "SG": "Singapore", "SH": "Jamestown", "SI": "Ljubljana", "SJ": "Longyearbyen", "SK": "Bratislava|Košice", "SL": "Freetown|Bo|Kenema", "SM": "San Marino", "SO": "Mogadishu|Hargeisa", "SR": "Paramaribo", "SS": "Juba", "ST": "São Tomé", "SV": "San Salvador", "SX": "Philipsburg", "SY": "Damascus|Aleppo", "SZ": "Mbabane|Manzini", "TC": "Cockburn Town", "TH": "Bangkok|Chiang Mai", "TJ": "Dushanbe", "TL": "Dili", "TM": "Ashgabat", "TO": "Nukuʻalofa", "TT": "Port of Spain", "TV": "Funafuti", "TW": "Taipei|Kaohsiung|Taichung", "TZ": "Dar es Salaam|Dodoma|Arusha|Zanzibar", "UA": "Kyiv|Kharkiv|Odesa|Lviv", "UG": "Kampala", "UY": "Montevideo", "UZ": "Tashkent|Samarkand", "VA": "Città del Vaticano", "VC": "Kingstown", "VE": "Caracas|Maracaibo", "VG": "Road Town", "VI": "Charlotte Amalie", "VN": "Hà Nội|Hồ Chí Minh City|Đà Nẵng", "VU": "Port Vila", "WF": "Mata-Utu", "WS": "Apia", "XK": "Prishtina", "YE": "Sanaa|Aden", "YT": "Mamoudzou", "ZM": "Lusaka|Ndola|Kitwe", "ZW": "Harare|Bulawayo"};
+  function citiesFor(code) {
+    var raw = code && CITIES[code]; if (!raw) return [];
+    return raw.split("|").map(function (n) { return { n: n, k: norm(n) }; }).sort(function (a, b) { return a.n.localeCompare(b.n, LOCALE[state.lang]); });
+  }
+  combo(document.getElementById("suCountry"), function () { setErr("suCountry", ""); });
+
+  var btn = document.getElementById("langBtn"), menu = document.getElementById("langMenu");
+  function setOpen(o) { menu.hidden = !o; btn.setAttribute("aria-expanded", String(o)); if (o) { var cur = menu.querySelector('[aria-checked="true"]'); if (cur) cur.focus(); } }
+  btn.addEventListener("click", function (e) { e.stopPropagation(); setOpen(menu.hidden); });
+  menu.addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-lang]"); if (!b) return;
+    var next = b.getAttribute("data-lang"); setOpen(false); btn.focus();
+    if (next === state.lang) return;
+    state.lang = next; save("yc-lang", state.lang); render("lang");
+  });
+  document.addEventListener("click", function (e) { if (!menu.hidden && !e.target.closest(".lang")) setOpen(false); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !menu.hidden) { setOpen(false); btn.focus(); } });
+  function closeDd() { document.querySelectorAll(".dd-menu").forEach(function (m) { if (!m.hidden) { m.hidden = true; var b = m.parentNode.querySelector(".lang-btn"); if (b) b.setAttribute("aria-expanded", "false"); } }); }
+  document.addEventListener("click", function (e) { if (!e.target.closest(".dd")) closeDd(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeDd(); });
+
+  render();
+
+  /* Header shadow once the page scrolls */
+  var top = document.querySelector(".top");
+  function onScroll() { top.classList.toggle("scrolled", window.scrollY > 8); }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  /* Opening sequence: text rises line by line, the Y draws itself */
+  var heroItems = [document.querySelector(".kicker")]
+    .concat(Array.prototype.slice.call(document.querySelectorAll("h1 span")))
+    .concat([document.querySelector(".lead")])
+    .concat(Array.prototype.slice.call(document.querySelectorAll(".ctas .btn")))
+    .concat([document.querySelector(".fine")]);
+  heroItems.forEach(function (n, i) { anim(n, RISE, { duration: 750, delay: 80 + i * 90 }); });
+
+  if (!reduce) {
+    var paths = document.querySelectorAll("#heroY path");
+    [150, 650, 900].forEach(function (d, i) {
+      var p = paths[i]; if (!p || !p.getTotalLength) return;
+      var len = Math.ceil(p.getTotalLength()) + 2;
+      p.style.strokeDasharray = len;
+      anim(p, [{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: i === 2 ? 350 : 600, delay: d, easing: "cubic-bezier(.6,0,.2,1)" });
+    });
+    var mark = document.getElementById("heroY");
+    anim(mark, [{ transform: "scale(.92)" }, { transform: "scale(1.03)", offset: .7 }, { transform: "none" }], { duration: 500, delay: 1150 });
+  }
+
+  /* Logo arrow: on phones there is no hover, so it also jumps on load and on tap */
+  var brandEl = document.querySelector(".brand"), arrowEl = document.querySelector(".brand .arrow");
+  function nudge() {
+    anim(arrowEl, [{ transform: "none" }, { transform: "translate(10px, -10px)", offset: .4 }, { transform: "translate(-2px, 2px)", offset: .75 }, { transform: "none" }], { duration: 750, fill: "none", easing: "ease-out" });
+  }
+  setTimeout(nudge, 1600);
+  setTimeout(nudge, 2500);
+  brandEl.addEventListener("pointerdown", nudge);
+
+  /* Sections rise in as they scroll into view */
+  if (!reduce && "IntersectionObserver" in window) {
+    var LINE = [{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }];
+    var groups = [
+      { el: document.querySelector("#comment h2"), items: function () { return [this.el]; } },
+      { el: document.getElementById("steps"), line: true, items: function () { return this.el.children; } },
+      { el: document.querySelector(".sec.dark h2"), items: function () { return [this.el]; } },
+      { el: document.getElementById("feat"), items: function () { return this.el.querySelectorAll(".feat-btn, .feat-panel:not([hidden])"); } },
+      { el: document.querySelector(".price-head"), items: function () { return this.el.children; } },
+      { el: document.getElementById("zones"), items: function () { return this.el.children; } },
+      { el: document.getElementById("plans"), items: function () { return this.el.children; } }
+    ];
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        io.unobserve(en.target);
+        var g = en.target.__g;
+        Array.prototype.forEach.call(g.items(), function (n, i) {
+          anim(n, RISE, { delay: i * 100 });
+          if (g.line) anim(n, LINE, { duration: 900, delay: i * 100, pseudoElement: "::before" });
+        });
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
+    groups.forEach(function (g) { if (g.el) { g.el.__g = g; io.observe(g.el); } });
+  }
+
+  /* Start the phone demo when it comes into view */
+  if ("IntersectionObserver" in window) {
+    var demoIo = new IntersectionObserver(function (entries) {
+      if (entries.some(function (e) { return e.isIntersecting; })) { demoIo.disconnect(); startDemo(); }
+    }, { threshold: 0.3 });
+    demoIo.observe(document.getElementById("phone"));
+  } else { startDemo(); }
+})();
+</script>
+
+</body>
+</html>
