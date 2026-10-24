@@ -49,6 +49,24 @@ du script SQL, qui autorise uniquement l'ajout d'inscriptions. Ne mets **jamais*
 
 Tant que ces deux valeurs sont vides, le formulaire affiche « Formulaire prêt » et n'envoie rien.
 
+## Formules payantes, espace admin et suivi des visites (base v2)
+
+1. Dans Supabase, **SQL Editor › New query** : colle `supabase/schema-v2.sql`, puis **Run**.
+2. **Authentication › Users › Add user › Create new user** : ton e-mail et un mot de passe solide,
+   coche « Auto Confirm User ».
+3. Dans `schema-v2.sql`, la dernière partie (« Te nommer administrateur ») : remplace
+   `TON_EMAIL@exemple.com` par ton e-mail, colle ces lignes dans une nouvelle requête et **Run**.
+4. Ouvre `admin.html` sur ton site (ex. `https://…github.io/YiriClick-/admin.html`) et connecte-toi.
+
+Ce que fait la base v2 :
+- **dossiers** : les dossiers vendeurs (Basique, Pro, Entreprise), statut « en attente » à la réception ;
+- **pieces-identite** : espace privé pour les pièces d'identité. Les visiteurs peuvent seulement déposer
+  un fichier ; seul un administrateur connecté peut l'ouvrir, via un lien valable 5 minutes ;
+- **visites** : compteur anonyme (visites, formulaires ouverts, inscriptions), sans nom, sans cookie ;
+- **admins** : la liste des comptes autorisés à ouvrir l'espace admin.
+
+Le paiement des abonnements n'est pas encore branché : il le sera avec ton prestataire de paiement.
+
 ## À modifier avant le lancement
 
 - Remplacer `[ADRESSE E-MAIL]` (et ses traductions) par ton adresse de contact,

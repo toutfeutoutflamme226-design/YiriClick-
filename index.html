@@ -1017,6 +1017,26 @@ h1 span { display: block; }
 
   /* Sign-up form. To save sign-ups, paste your Supabase project URL and anon key here (see supabase/inscriptions.sql). */
   var SUPABASE = { url: "https://vtiakxfnechkoomagddl.supabase.co", anonKey: "sb_publishable_415c2KQSDRx0SMofnkHKQA_PJ2IrzBA" };
+  function sbBase() { return SUPABASE.url.replace(/\/$/, ""); }
+  function sbHeaders(extra) {
+    var h = { "apikey": SUPABASE.anonKey };
+    if (/^eyJ/.test(SUPABASE.anonKey)) h.Authorization = "Bearer " + SUPABASE.anonKey;
+    for (var x in extra) h[x] = extra[x];
+    return h;
+  }
+  /* Anonymous visit counter: no name, no IP stored by the site, no cookie */
+  function track(type, detail) {
+    if (!SUPABASE.url || !SUPABASE.anonKey) return;
+    var src = null;
+    try { if (document.referrer) { var hn = new URL(document.referrer).hostname; if (hn !== location.hostname) src = hn.slice(0, 100); } } catch (e) {}
+    try {
+      fetch(sbBase() + "/rest/v1/visites", {
+        method: "POST", keepalive: true,
+        headers: sbHeaders({ "Content-Type": "application/json", "Prefer": "return=minimal" }),
+        body: JSON.stringify({ type: type, detail: detail ? String(detail).slice(0, 40) : null, langue: state.lang, zone: state.zone, page: location.pathname.slice(0, 100), source: src })
+      }).catch(function () {});
+    } catch (e) {}
+  }
   var PLAN_KEYS = ["essai", "basique", "pro", "entreprise"];
   var su = { plan: "essai", zone: state.zone, last: null };
   var modal = document.getElementById("signup"), form = document.getElementById("suForm"), done = document.getElementById("suDone");
@@ -1044,6 +1064,7 @@ h1 span { display: block; }
 
   function openSignup(plan) {
     su.plan = PLAN_KEYS.indexOf(plan) >= 0 ? plan : "essai"; su.zone = state.zone; su.last = document.activeElement;
+    track("formulaire", su.plan);
     suRefresh();
     pstep = 0; done.hidden = true; showMode();
     document.getElementById("suSend-err").textContent = "";
@@ -1107,13 +1128,13 @@ h1 span { display: block; }
     var sendErr = document.getElementById("suSend-err"); sendErr.textContent = "";
     if (!SUPABASE.url || !SUPABASE.anonKey) { showDone(t.pvTitle, t.pvText); return; }
     var btn = document.getElementById("suSubmit"); btn.disabled = true; btn.textContent = t.fSending;
-    fetch(SUPABASE.url.replace(/\/$/, "") + "/rest/v1/inscriptions", {
+    fetch(sbBase() + "/rest/v1/inscriptions", {
       method: "POST",
-      headers: (function () { var h = { "apikey": SUPABASE.anonKey, "Content-Type": "application/json", "Prefer": "return=minimal" }; if (/^eyJ/.test(SUPABASE.anonKey)) h.Authorization = "Bearer " + SUPABASE.anonKey; return h; })(),
+      headers: sbHeaders({ "Content-Type": "application/json", "Prefer": "return=minimal" }),
       body: JSON.stringify(row)
     }).then(function (r) {
       if (!r.ok) throw new Error(r.status);
-      form.reset(); showDone(t.okTitle, t.okText);
+      form.reset(); track("essai", su.plan); showDone(t.okTitle, t.okText);
     }).catch(function () { sendErr.textContent = t.eSend; })
       .then(function () { btn.disabled = false; btn.textContent = t.fSubmit; });
   });
@@ -1140,7 +1161,7 @@ h1 span { display: block; }
       fileHint: "JPG, PNG ou PDF, 10 Mo maximum", cityHint: "Villes : {c}. Choisis dans la liste ou écris ta ville.", cityFree: "Écris le nom de ta ville.", cityEmpty: "Ville absente de la liste. Tu peux garder ce que tu as écrit.", addrHint: "Rue, numéro et ville : la ville est reconnue automatiquement.", addrFound: "Ville reconnue dans ton adresse : {c}.", addrPick: "Quelle est ta ville ?", chosen: "Choisi :",
       whyT: "Pourquoi ces informations ?", whyP: "Comme toute place de marché, Yiriclick doit savoir qui vend sur son site : c’est une obligation légale, notamment dans l’Union européenne, et une protection contre la fraude. Tes documents servent uniquement à vérifier ton identité et ne sont jamais montrés aux acheteurs.",
       eAge: "Tu dois avoir au moins 18 ans pour vendre sur Yiriclick.", eExpired: "Cette pièce est expirée. Utilise une pièce en cours de validité.", eFile: "Format ou taille non accepté : JPG, PNG ou PDF, 10 Mo maximum.", eFileReq: "Ajoute cette photo pour continuer.", eCheck: "Coche cette case pour continuer.",
-      pvTitle: "Dossier prêt", pvText: "Ton dossier vendeur sera transmis dès que les comptes vendeurs Yiriclick seront ouverts. Pour l’instant, rien n’a été envoyé, ni tes informations ni tes photos."
+      sending: "Envoi du dossier…", okTitle: "Dossier envoyé", okText: "Merci ! L’équipe Yiriclick vérifie ton dossier puis te contacte sur WhatsApp ou par e-mail. Ton abonnement démarre une fois le dossier validé.", pvTitle: "Dossier prêt", pvText: "Ton dossier vendeur sera transmis dès que les comptes vendeurs Yiriclick seront ouverts. Pour l’instant, rien n’a été envoyé, ni tes informations ni tes photos."
     },
     en: {
       steps: ["Account", "Business", "Identity", "Payouts"],
@@ -1161,7 +1182,7 @@ h1 span { display: block; }
       fileHint: "JPG, PNG or PDF, 10 MB maximum", cityHint: "Cities: {c}. Pick one from the list or type your city.", cityFree: "Type the name of your city.", cityEmpty: "City not in the list. You can keep what you typed.", addrHint: "Street, number and city: the city is recognised automatically.", addrFound: "City recognised in your address: {c}.", addrPick: "Which is your city?", chosen: "Selected:",
       whyT: "Why do we ask for this?", whyP: "Like every marketplace, Yiriclick must know who sells on its site: it is a legal requirement, especially in the European Union, and a protection against fraud. Your documents are only used to verify your identity and are never shown to buyers.",
       eAge: "You must be at least 18 to sell on Yiriclick.", eExpired: "This document has expired. Use a valid document.", eFile: "Format or size not accepted: JPG, PNG or PDF, 10 MB maximum.", eFileReq: "Add this photo to continue.", eCheck: "Tick this box to continue.",
-      pvTitle: "Application ready", pvText: "Your seller application will be sent as soon as Yiriclick seller accounts open. Nothing has been sent yet, neither your details nor your photos."
+      sending: "Sending your application…", okTitle: "Application sent", okText: "Thank you! The Yiriclick team will check your application and then contact you on WhatsApp or by email. Your subscription starts once the application is approved.", pvTitle: "Application ready", pvText: "Your seller application will be sent as soon as Yiriclick seller accounts open. Nothing has been sent yet, neither your details nor your photos."
     },
     es: {
       steps: ["Cuenta", "Actividad", "Identidad", "Pagos"],
@@ -1182,7 +1203,7 @@ h1 span { display: block; }
       fileHint: "JPG, PNG o PDF, 10 MB como máximo", cityHint: "Ciudades: {c}. Elige una de la lista o escribe tu ciudad.", cityFree: "Escribe el nombre de tu ciudad.", cityEmpty: "Ciudad no incluida en la lista. Puedes dejar lo que escribiste.", addrHint: "Calle, número y ciudad: la ciudad se reconoce automáticamente.", addrFound: "Ciudad reconocida en tu dirección: {c}.", addrPick: "¿Cuál es tu ciudad?", chosen: "Elegido:",
       whyT: "¿Por qué pedimos esta información?", whyP: "Como todo mercado en línea, Yiriclick debe saber quién vende en su sitio: es una obligación legal, sobre todo en la Unión Europea, y una protección contra el fraude. Tus documentos solo sirven para verificar tu identidad y nunca se muestran a los compradores.",
       eAge: "Debes tener al menos 18 años para vender en Yiriclick.", eExpired: "Este documento está caducado. Usa un documento válido.", eFile: "Formato o tamaño no aceptado: JPG, PNG o PDF, 10 MB como máximo.", eFileReq: "Añade esta foto para continuar.", eCheck: "Marca esta casilla para continuar.",
-      pvTitle: "Solicitud lista", pvText: "Tu solicitud de vendedor se enviará en cuanto se abran las cuentas de vendedor de Yiriclick. Por ahora no se ha enviado nada, ni tus datos ni tus fotos."
+      sending: "Enviando la solicitud…", okTitle: "Solicitud enviada", okText: "¡Gracias! El equipo de Yiriclick revisará tu solicitud y te contactará por WhatsApp o por correo. Tu suscripción empieza cuando se valide la solicitud.", pvTitle: "Solicitud lista", pvText: "Tu solicitud de vendedor se enviará en cuanto se abran las cuentas de vendedor de Yiriclick. Por ahora no se ha enviado nada, ni tus datos ni tus fotos."
     }
   };
 
@@ -1368,6 +1389,7 @@ h1 span { display: block; }
     var body = el("div", "pbody"); proForm.appendChild(body);
     body.appendChild(el("h3", "pstep-h", k.titles[pstep]));
     STEPS[pstep](body, k, t);
+    var sendErr = el("p", "err"); sendErr.id = "pf-send-err"; proForm.appendChild(sendErr);
     var nav = el("div", "pnav");
     if (pstep > 0) {
       var back = el("button", "btn btn-line", k.back); back.type = "button";
@@ -1418,7 +1440,7 @@ h1 span { display: block; }
     if (!validStep()) return;
     var k = K[state.lang];
     if (pstep < 3) { pstep++; buildPro(true); modal.querySelector(".sheet").scrollTop = 0; focusFirst(); }
-    else showDone(k.pvTitle, k.pvText);
+    else submitDossier(proForm.querySelector(".pnav .btn-orange"));
   });
 
   /* Country picker: every country with its flag, filtered as you type; free text is still accepted */
@@ -1488,6 +1510,49 @@ h1 span { display: block; }
     return raw.split("|").map(function (n) { return { n: n, k: norm(n) }; }).sort(function (a, b) { return a.n.localeCompare(b.n, LOCALE[state.lang]); });
   }
   combo(document.getElementById("suCountry"), function () { setErr("suCountry", ""); });
+
+  /* Seller file: ID photos go to the private storage space, then the file is saved as "en attente" */
+  function submitDossier(btn) {
+    var k = K[state.lang], t = T[state.lang];
+    if (!SUPABASE.url || !SUPABASE.anonKey) { showDone(k.pvTitle, k.pvText); return; }
+    var errEl = document.getElementById("pf-send-err"); errEl.textContent = "";
+    btn.disabled = true; btn.textContent = k.sending;
+    var id = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now().toString(16) + Math.random().toString(16).slice(2));
+    var files = [["recto", pv.front], ["verso", pv.idType !== "passport" ? pv.back : null], ["selfie", pv.selfie]].filter(function (f) { return f[1]; });
+    var paths = {};
+    var uploads = files.map(function (f) {
+      var ext = f[1].type === "application/pdf" ? "pdf" : (f[1].type === "image/png" ? "png" : "jpg");
+      var p = id + "/" + f[0] + "." + ext; paths[f[0]] = p;
+      return fetch(sbBase() + "/storage/v1/object/pieces-identite/" + p, {
+        method: "POST", headers: sbHeaders({ "Content-Type": f[1].type, "x-upsert": "false" }), body: f[1]
+      }).then(function (r) { if (!r.ok) throw new Error("upload " + r.status); });
+    });
+    var reg = pv.status !== "none", bank = pv.payout === "bank";
+    function v(x) { return x == null || String(x).trim() === "" ? null : String(x).trim(); }
+    Promise.all(uploads).then(function () {
+      var row = {
+        formule: su.plan, zone: su.zone, langue: state.lang,
+        nom: v(pv.name), email: v(pv.email), whatsapp: v(pv.phone), pays: v(pv.country), pays_code: v(pv.countryCode),
+        statut_juridique: pv.status, nom_legal: reg ? v(pv.legalName) : null, boutique: v(pv.shopName), categorie: pv.category, produits: v(pv.products),
+        immatriculation: reg ? v(pv.reg) : null, numero_fiscal: v(pv.tax), adresse: v(pv.address), ville: v(pv.city),
+        representant: v(pv.repName), date_naissance: pv.dob, nationalite: v(pv.nationality), nationalite_code: v(pv.nationalityCode),
+        piece_type: pv.idType, piece_numero: v(pv.idNumber), piece_expiration: pv.idExpiry,
+        fichier_recto: paths.recto, fichier_verso: paths.verso || null, fichier_selfie: paths.selfie,
+        versement: bank ? "bank" : "mm", operateur: bank ? null : pv.operator, numero_mobile: bank ? null : v(pv.mmNumber),
+        titulaire: bank ? v(pv.holder) : null, iban: bank ? v(pv.iban) : null,
+        accepte_cgv: !!pv.cTerms, accepte_confidentialite: !!pv.cPrivacy, certifie_exact: !!pv.cTrue, engagement_conformite: !!pv.cLaw
+      };
+      return fetch(sbBase() + "/rest/v1/dossiers", {
+        method: "POST", headers: sbHeaders({ "Content-Type": "application/json", "Prefer": "return=minimal" }), body: JSON.stringify(row)
+      }).then(function (r) { if (!r.ok) throw new Error("dossier " + r.status); });
+    }).then(function () {
+      track("dossier", su.plan);
+      pv = {}; pstep = 0;
+      showDone(k.okTitle, k.okText);
+    }).catch(function () {
+      errEl.textContent = t.eSend; btn.disabled = false; btn.textContent = k.submit;
+    });
+  }
 
   var btn = document.getElementById("langBtn"), menu = document.getElementById("langMenu");
   function setOpen(o) { menu.hidden = !o; btn.setAttribute("aria-expanded", String(o)); if (o) { var cur = menu.querySelector('[aria-checked="true"]'); if (cur) cur.focus(); } }
@@ -1574,6 +1639,7 @@ h1 span { display: block; }
     }, { threshold: 0.3 });
     demoIo.observe(document.getElementById("phone"));
   } else { startDemo(); }
+  track("visite");
 })();
 </script>
 
