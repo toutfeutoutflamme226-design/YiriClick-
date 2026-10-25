@@ -22,7 +22,7 @@ window.YC = (function () {
       qty: "Quantité", less: "Retirer un", more: "Ajouter un", remove: "Retirer", subtotal: "Sous-total", total: "Total estimé", maxStock: "Stock maximum atteint",
       gone: "Certains produits ne sont plus disponibles et ont été retirés de ton panier.", checkout: "Valider ma commande",
       yourInfo: "Tes coordonnées", cName: "Nom complet", cPhone: "Téléphone (WhatsApp)", cAddr: "Adresse de livraison", cNote: "Message pour le vendeur (facultatif)",
-      eReq: "Ce champ est obligatoire.", ePhone: "Entre ton numéro avec l’indicatif du pays, par exemple +226 70 00 00 00.",
+      eReq: "Ce champ est obligatoire.", ePhone: "Choisis ton pays, puis entre ton numéro WhatsApp.",
       sendTitle: "Envoie ta commande à chaque vendeur", sendHelp: "Ton panier contient des produits de plusieurs vendeurs : envoie la commande à chacun. Le vendeur te confirme la disponibilité, la livraison et le paiement.",
       sendTo: "Envoyer à {s} sur WhatsApp", sent: "Envoyé à {s}", noWaShop: "{s} n’a pas indiqué de numéro WhatsApp : sa commande ne peut pas être envoyée pour l’instant.",
       sentTitle: "Commandes envoyées", sentLine: "{s} · {n} article(s) · {h}", restore: "Remettre dans le panier", doneTitle: "Commande envoyée", doneText: "Ton panier a été vidé. Le vendeur te répond sur WhatsApp pour confirmer la disponibilité, la livraison et le paiement. Si le message n’est pas parti, touche « Remettre dans le panier ».", editInfo: "Modifier mes coordonnées", orderDirect: "Commander directement sur WhatsApp",
@@ -38,7 +38,7 @@ window.YC = (function () {
       qty: "Quantity", less: "Remove one", more: "Add one", remove: "Remove", subtotal: "Subtotal", total: "Estimated total", maxStock: "Maximum stock reached",
       gone: "Some products are no longer available and were removed from your cart.", checkout: "Place my order",
       yourInfo: "Your details", cName: "Full name", cPhone: "Phone (WhatsApp)", cAddr: "Delivery address", cNote: "Message for the seller (optional)",
-      eReq: "This field is required.", ePhone: "Enter your number with the country code, for example +226 70 00 00 00.",
+      eReq: "This field is required.", ePhone: "Choose your country, then enter your WhatsApp number.",
       sendTitle: "Send your order to each seller", sendHelp: "Your cart has products from several sellers: send the order to each one. The seller confirms availability, delivery and payment with you.",
       sendTo: "Send to {s} on WhatsApp", sent: "Sent to {s}", noWaShop: "{s} has not added a WhatsApp number: this order cannot be sent yet.",
       sentTitle: "Orders sent", sentLine: "{s} · {n} item(s) · {h}", restore: "Put back in the cart", doneTitle: "Order sent", doneText: "Your cart has been emptied. The seller will reply on WhatsApp to confirm availability, delivery and payment. If the message did not go through, tap “Put back in the cart”.", editInfo: "Edit my details", orderDirect: "Order directly on WhatsApp",
@@ -54,7 +54,7 @@ window.YC = (function () {
       qty: "Cantidad", less: "Quitar uno", more: "Añadir uno", remove: "Quitar", subtotal: "Subtotal", total: "Total estimado", maxStock: "Stock máximo alcanzado",
       gone: "Algunos productos ya no están disponibles y se han quitado de tu carrito.", checkout: "Confirmar mi pedido",
       yourInfo: "Tus datos", cName: "Nombre completo", cPhone: "Teléfono (WhatsApp)", cAddr: "Dirección de entrega", cNote: "Mensaje para el vendedor (opcional)",
-      eReq: "Este campo es obligatorio.", ePhone: "Introduce tu número con el prefijo del país, por ejemplo +226 70 00 00 00.",
+      eReq: "Este campo es obligatorio.", ePhone: "Elige tu país y luego escribe tu número de WhatsApp.",
       sendTitle: "Envía tu pedido a cada vendedor", sendHelp: "Tu carrito tiene productos de varios vendedores: envía el pedido a cada uno. El vendedor te confirma disponibilidad, entrega y pago.",
       sendTo: "Enviar a {s} por WhatsApp", sent: "Enviado a {s}", noWaShop: "{s} no ha indicado un número de WhatsApp: este pedido aún no se puede enviar.",
       sentTitle: "Pedidos enviados", sentLine: "{s} · {n} artículo(s) · {h}", restore: "Volver a poner en el carrito", doneTitle: "Pedido enviado", doneText: "Tu carrito se ha vaciado. El vendedor te responderá por WhatsApp para confirmar disponibilidad, entrega y pago. Si el mensaje no se envió, toca «Volver a poner en el carrito».", editInfo: "Modificar mis datos", orderDirect: "Pedir directamente por WhatsApp",
@@ -117,7 +117,7 @@ window.YC = (function () {
   function extendT(d) { Object.keys(d).forEach(function (L) { T[L] = T[L] || {}; Object.keys(d[L]).forEach(function (k) { T[L][k] = d[L][k]; }); }); }
   /* Orders and variants */
   extendT({
-    fr: { sizeGuide: "Guide des tailles", sizeNote: "Mesures indicatives en cm : elles varient selon les marques. En cas de doute, demande au vendeur.", gEU: "Europe", gFoot: "Pied (cm)", gSize: "Taille", gFR: "Taille FR", gChest: "Poitrine (cm)", gWaist: "Tour de taille (cm)", chooseVar: "Choisir", pickOpt: "Choisis : {o}", placeOrder: "Envoyer ma commande", placing: "Envoi en cours…", placeHelp: "Ta commande est enregistrée chez chaque vendeur avec un numéro. Tu pourras ensuite la lui envoyer sur WhatsApp.",
+    fr: { cc: "Indicatif du pays", sizeGuide: "Guide des tailles", sizeNote: "Mesures indicatives en cm : elles varient selon les marques. En cas de doute, demande au vendeur.", gEU: "Europe", gFoot: "Pied (cm)", gSize: "Taille", gFR: "Taille FR", gChest: "Poitrine (cm)", gWaist: "Tour de taille (cm)", chooseVar: "Choisir", pickOpt: "Choisis : {o}", placeOrder: "Envoyer ma commande", placing: "Envoi en cours…", placeHelp: "Ta commande est enregistrée chez chaque vendeur avec un numéro. Tu pourras ensuite la lui envoyer sur WhatsApp.",
       orderErr: "La commande n’a pas pu être enregistrée. Réessaie.", orderNo: "Commande n° {n}", orderedTitle: "Commande enregistrée", orderedHelp: "Merci ! Le vendeur a reçu ta commande. Envoie-la-lui aussi sur WhatsApp pour aller plus vite : il te confirme la disponibilité, la livraison et le paiement.",
       noWaRec: "{s} a bien reçu ta commande sur Yiriclick et te contactera.", myOrders: "Mes commandes", ordersHelp: "Les commandes passées depuis ce téléphone ou cet ordinateur, avec leur suivi.",
       st_nouvelle: "En attente", st_confirmee: "Confirmée", st_expediee: "Expédiée", st_livree: "Livrée", st_annulee: "Annulée",
@@ -125,7 +125,7 @@ window.YC = (function () {
       promoBad: "Ce code n’est pas valable pour cette boutique.", promoMin: "dès {m} d’achat", afterPromo: "Après réduction", promoRemove: "Retirer le code",
       revTitle: "Ton avis sur {s}", revNote: "Note sur 5", revPh: "Qu’as-tu pensé du produit et du vendeur ? (facultatif)", revSend: "Publier mon avis", revPick: "Choisis une note de 1 à 5 étoiles.", revThanks: "Merci pour ton avis !",
       reviews: "Avis clients", nReviews: "{n} avis", noReviews: "Pas encore d’avis.", sellerReply: "Réponse du vendeur" },
-    en: { sizeGuide: "Size guide", sizeNote: "Indicative measurements in cm: they vary by brand. If in doubt, ask the seller.", gEU: "EU", gFoot: "Foot (cm)", gSize: "Size", gFR: "FR size", gChest: "Chest (cm)", gWaist: "Waist (cm)", chooseVar: "Choose", pickOpt: "Choose: {o}", placeOrder: "Send my order", placing: "Sending…", placeHelp: "Your order is recorded with each seller with a number. You can then send it to them on WhatsApp.",
+    en: { cc: "Country code", sizeGuide: "Size guide", sizeNote: "Indicative measurements in cm: they vary by brand. If in doubt, ask the seller.", gEU: "EU", gFoot: "Foot (cm)", gSize: "Size", gFR: "FR size", gChest: "Chest (cm)", gWaist: "Waist (cm)", chooseVar: "Choose", pickOpt: "Choose: {o}", placeOrder: "Send my order", placing: "Sending…", placeHelp: "Your order is recorded with each seller with a number. You can then send it to them on WhatsApp.",
       orderErr: "The order could not be recorded. Please try again.", orderNo: "Order no. {n}", orderedTitle: "Order recorded", orderedHelp: "Thank you! The seller has received your order. Send it on WhatsApp too to speed things up: they will confirm availability, delivery and payment.",
       noWaRec: "{s} has received your order on Yiriclick and will contact you.", myOrders: "My orders", ordersHelp: "Orders placed from this phone or computer, with their status.",
       st_nouvelle: "Pending", st_confirmee: "Confirmed", st_expediee: "Shipped", st_livree: "Delivered", st_annulee: "Cancelled",
@@ -133,7 +133,7 @@ window.YC = (function () {
       promoBad: "This code is not valid for this shop.", promoMin: "from {m} spent", afterPromo: "After discount", promoRemove: "Remove code",
       revTitle: "Your review of {s}", revNote: "Rating out of 5", revPh: "What did you think of the product and the seller? (optional)", revSend: "Post my review", revPick: "Choose a rating from 1 to 5 stars.", revThanks: "Thank you for your review!",
       reviews: "Customer reviews", nReviews: "{n} reviews", noReviews: "No reviews yet.", sellerReply: "Seller’s reply" },
-    es: { sizeGuide: "Guía de tallas", sizeNote: "Medidas orientativas en cm: varían según la marca. Si tienes dudas, pregunta al vendedor.", gEU: "Europa", gFoot: "Pie (cm)", gSize: "Talla", gFR: "Talla FR", gChest: "Pecho (cm)", gWaist: "Cintura (cm)", chooseVar: "Elegir", pickOpt: "Elige: {o}", placeOrder: "Enviar mi pedido", placing: "Enviando…", placeHelp: "Tu pedido queda registrado en cada vendedor con un número. Después podrás enviárselo por WhatsApp.",
+    es: { cc: "Prefijo del país", sizeGuide: "Guía de tallas", sizeNote: "Medidas orientativas en cm: varían según la marca. Si tienes dudas, pregunta al vendedor.", gEU: "Europa", gFoot: "Pie (cm)", gSize: "Talla", gFR: "Talla FR", gChest: "Pecho (cm)", gWaist: "Cintura (cm)", chooseVar: "Elegir", pickOpt: "Elige: {o}", placeOrder: "Enviar mi pedido", placing: "Enviando…", placeHelp: "Tu pedido queda registrado en cada vendedor con un número. Después podrás enviárselo por WhatsApp.",
       orderErr: "No se pudo registrar el pedido. Inténtalo de nuevo.", orderNo: "Pedido n.º {n}", orderedTitle: "Pedido registrado", orderedHelp: "¡Gracias! El vendedor ha recibido tu pedido. Envíaselo también por WhatsApp para ir más rápido: te confirmará disponibilidad, entrega y pago.",
       noWaRec: "{s} ha recibido tu pedido en Yiriclick y se pondrá en contacto contigo.", myOrders: "Mis pedidos", ordersHelp: "Los pedidos hechos desde este teléfono u ordenador, con su seguimiento.",
       st_nouvelle: "Pendiente", st_confirmee: "Confirmado", st_expediee: "Enviado", st_livree: "Entregado", st_annulee: "Cancelado",
@@ -581,7 +581,8 @@ window.YC = (function () {
       w.appendChild(i); var e = el("span", "cerr"); e.id = id + "-err"; w.appendChild(e); f.appendChild(w); return i;
     }
     var n = fld("cName", "cName"), ph = fld("cPhone", "cPhone", "tel"), ad = fld("cAddr", "cAddr", "text", true), no = fld("cNote", "cNote", "text", true);
-    ph.placeholder = "+226 70 00 00 00"; n.maxLength = 80; ad.maxLength = 300; no.maxLength = 600;
+    ph.placeholder = "70 00 00 00"; n.maxLength = 80;
+    if (window.YPhone) YPhone.attach(ph, { label: t("cc") }); ad.maxLength = 300; no.maxLength = 600;
     var go = el("button", "btn btn-wa cart-go", t("placeOrder")); go.type = "submit"; f.appendChild(go);
     f.appendChild(el("p", "cart-help", t("placeHelp")));
     var bk = el("button", "cart-rm", t("cartTitle")); bk.type = "button"; bk.style.alignSelf = "center"; bk.addEventListener("click", function () { cartView = "list"; renderCart(); }); f.appendChild(bk);
@@ -589,7 +590,8 @@ window.YC = (function () {
       e.preventDefault(); if (cartBusy) return; var ok = true, first = null;
       function err(i, m) { document.getElementById(i.id + "-err").textContent = m || ""; if (m) { i.setAttribute("aria-invalid", "true"); ok = false; first = first || i; } else i.removeAttribute("aria-invalid"); }
       err(n, n.value.trim().length >= 2 ? "" : t("eReq"));
-      var pv = ph.value.trim(); err(ph, !pv ? t("eReq") : (/^\+?[0-9 ().-]{8,20}$/.test(pv) && pv.replace(/\D/g, "").length >= 8 ? "" : t("ePhone")));
+      var pv = window.YPhone ? YPhone.value(ph) : ph.value.trim();
+      err(ph, !ph.value.trim() ? t("eReq") : (window.YPhone ? YPhone.valid(ph) : /^\+?[0-9 ().-]{8,20}$/.test(pv) && pv.replace(/\D/g, "").length >= 8) ? "" : t("ePhone"));
       err(ad, ad.value.trim().length >= 3 ? "" : t("eReq"));
       if (!ok) { first.focus(); return; }
       buyer = { cName: n.value.trim(), cPhone: pv, cAddr: ad.value.trim(), cNote: no.value.trim() };

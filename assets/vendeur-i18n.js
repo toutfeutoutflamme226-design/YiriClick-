@@ -284,7 +284,11 @@ window.YCV = (function () {
     "Commande sur Yiriclick · lien dans la bio": ["Order on Yiriclick · link in bio", "Pide en Yiriclick · enlace en la bio"], " · sur Yiriclick": [" · on Yiriclick", " · en Yiriclick"],
     "Tous tes produits visibles, rangés par catégorie, avec les prix et un QR code vers ta boutique. À envoyer aux clients ou à imprimer.": ["All your visible products, sorted by category, with prices and a QR code to your shop. To send to customers or print.", "Todos tus productos visibles, por categoría, con precios y un código QR hacia tu tienda. Para enviar a clientes o imprimir."],
     "Ouvrir le catalogue": ["Open the catalogue", "Abrir el catálogo"], "Il s’ouvre dans un nouvel onglet : touche « Imprimer ou enregistrer en PDF ».": ["It opens in a new tab: tap “Print or save as PDF”.", "Se abre en una pestaña nueva: toca «Imprimir o guardar en PDF»."],
-    "Fermer": ["Close", "Cerrar"], "Langue": ["Language", "Idioma"]
+    "Fermer": ["Close", "Cerrar"], "Langue": ["Language", "Idioma"],
+    "Indicatif du pays": ["Country code", "Prefijo del país"],
+    "⚠ Numéro sans indicatif du pays. Choisis le pays du client :": ["⚠ Number without a country code. Choose the customer’s country:", "⚠ Número sin prefijo del país. Elige el país del cliente:"],
+    "Ton numéro WhatsApp n’a pas d’indicatif du pays :": ["Your WhatsApp number has no country code:", "Tu número de WhatsApp no tiene prefijo del país:"],
+    "les clients à l’étranger ne peuvent pas te joindre. Corrige-le dans « Ma boutique ».": ["customers abroad cannot reach you. Fix it in “My shop”.", "los clientes en el extranjero no pueden contactarte. Corrígelo en «Mi tienda»."]
   };
   function L(fr) { if (lang === "fr" || fr == null) return fr; var e = D[fr]; return e ? e[lang === "en" ? 0 : 1] : fr; }
   /* Static page text: translate text nodes and a few attributes whose whole trimmed value is in the list */

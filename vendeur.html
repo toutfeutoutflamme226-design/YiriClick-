@@ -246,6 +246,8 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
 .onote { font-size: 14px; background: var(--bg); padding: 8px 10px; white-space: pre-line; overflow-wrap: anywhere; }
 .oacts { display: flex; flex-wrap: wrap; gap: 8px; }
 .oacts .btn { flex: 1 1 140px; }
+.ccfix { display: flex; flex-direction: column; gap: 6px; background: var(--warnbg); padding: 10px 12px; font-size: 14px; font-weight: 700; }
+.ccfix select { min-height: 44px; border: 2px solid var(--rule); background: var(--white); padding: 0 8px; font-size: 16px; }
 .tbl tr.click { cursor: pointer; } .tbl tr.click:hover td { background: var(--tint); }
 /* Variants editor */
 .vopt { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) auto; gap: 8px; align-items: end; }
@@ -781,8 +783,10 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="assets/qr.js"></script>
 <script src="assets/vendeur-i18n.js"></script>
+<script src="assets/phone.js"></script>
 <script>
   var L = YCV.L; YCV.tr(document.body); document.documentElement.lang = YCV.lang;
+  if (window.YPhone) { YPhone.attach(document.getElementById("bWa"), { label: L("Indicatif du pays") }); document.getElementById("bWa").placeholder = "70 00 00 00"; }
   /* Same language as the rest of the site; changing it here reloads the page in that language */
   document.getElementById("vLang").value = YCV.lang;
   document.getElementById("vLang").addEventListener("change", function () { try { localStorage.setItem("yc-lang", this.value); } catch (e) {} location.reload(); });
@@ -1102,6 +1106,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     if (hid) add("warn", hid + L(" produit(s) masqué(s)."), "", "hidden");
     if (plan[1] && P.length >= plan[1] * 0.8) add("warn", L("Limite bientôt atteinte :"), P.length + L(" produits sur ") + plan[1] + L(" avec ta formule ") + plan[0] + ".");
     if (st.shop && !String(st.shop.whatsapp || "").replace(/\D/g, "")) add("bad", L("Pas de numéro WhatsApp :"), L("les clients ne peuvent pas te commander."));
+    else if (st.shop && window.YPhone && !YPhone.international(st.shop.whatsapp)) add("bad", L("Ton numéro WhatsApp n’a pas d’indicatif du pays :"), L("les clients à l’étranger ne peuvent pas te joindre. Corrige-le dans « Ma boutique »."));
     if (!ul.children.length) add("good", L("Tout va bien."), L("Aucun problème détecté sur ta boutique."));
   }
   $("qAdd").addEventListener("click", function () { if (!st.shop) { tab("shop"); return; } tab("prod"); openEditor(null); });
@@ -1125,7 +1130,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
   function fillShop() {
     var s = st.shop || {};
     $("bNom").value = s.nom || ""; $("bSlug").value = s.slug || ""; $("bDesc").value = s.description || ""; $("bSlogan").value = s.slogan || "";
-    $("bWa").value = s.whatsapp || ""; $("bVille").value = s.ville || ""; $("bPays").value = s.pays || ""; $("bAdresse").value = s.adresse || "";
+    if (window.YPhone) YPhone.set($("bWa"), s.whatsapp || ""); else $("bWa").value = s.whatsapp || ""; $("bVille").value = s.ville || ""; $("bPays").value = s.pays || ""; $("bAdresse").value = s.adresse || "";
     $("bHoraires").value = s.horaires || ""; $("bLivraison").value = s.livraison || ""; $("bRetours").value = s.retours || "";
     $("bDevise").value = s.devise || "XOF"; $("bVisible").checked = s.visible !== false;
     $("bNotif").checked = s.notif_email !== false; $("bNotifHint").textContent = L("À l’adresse ") + (st.user ? st.user.email : "") + L(". Garde aussi ton espace vendeur ouvert : une alerte sonne quand une commande arrive.");
@@ -1229,7 +1234,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     var btn = $("bSave"); btn.disabled = true; btn.textContent = L("Enregistrement…");
     var fresh = [];
     try {
-      var row = { nom: nom, slug: slug, description: $("bDesc").value.trim() || null, whatsapp: $("bWa").value.trim() || null,
+      var row = { nom: nom, slug: slug, description: $("bDesc").value.trim() || null, whatsapp: (window.YPhone ? YPhone.value($("bWa")) : $("bWa").value.trim()) || null,
         ville: $("bVille").value.trim() || null, pays: $("bPays").value.trim() || null, devise: $("bDevise").value, visible: $("bVisible").checked };
       var rs = {}; document.querySelectorAll("[data-net]").forEach(function (i) { var u = netToUrl(i.getAttribute("data-net"), i.value); if (u) rs[i.getAttribute("data-net")] = u; });
       var secs = {}; document.querySelectorAll("[data-sec]").forEach(function (c) { secs[c.getAttribute("data-sec")] = c.checked; });
@@ -1543,8 +1548,19 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     var tt = el("div", "tot"); tt.appendChild(el("span", null, L("Total"))); tt.appendChild(el("span", null, oTotal(o))); lines.appendChild(tt); c.appendChild(lines);
     if (o.client_note) c.appendChild(el("div", "onote", L("Message du client : ") + o.client_note));
     var contact = el("div", "oacts"), d = digits(o.client_tel);
-    var wa = el("a", "btn btn-ghost btn-sm", L("Écrire au client (WhatsApp)")); wa.href = "https://wa.me/" + d + "?text=" + encodeURIComponent(clientMsg(o)); wa.target = "_blank"; wa.rel = "noopener"; contact.appendChild(wa);
-    var call = el("a", "btn btn-ghost btn-sm", L("Appeler")); call.href = "tel:+" + d; contact.appendChild(call);
+    var wa = el("a", "btn btn-ghost btn-sm", L("Écrire au client (WhatsApp)")); wa.target = "_blank"; wa.rel = "noopener"; contact.appendChild(wa);
+    var call = el("a", "btn btn-ghost btn-sm", L("Appeler")); contact.appendChild(call);
+    function links(num) { wa.href = "https://wa.me/" + num + "?text=" + encodeURIComponent(clientMsg(o)); call.href = "tel:+" + num; }
+    links(d);
+    /* Older orders were recorded without the country code: let the seller pick the customer's country */
+    if (window.YPhone && !YPhone.international(o.client_tel)) {
+      var fix = el("div", "ccfix"), lab = el("label", null, L("⚠ Numéro sans indicatif du pays. Choisis le pays du client :")), sel = el("select");
+      sel.id = "cc-" + o.id; lab.setAttribute("for", sel.id); YPhone.options(sel);
+      sel.value = YPhone.guess(o.client_adresse) || YPhone.defCountry();
+      function apply() { links(YPhone.build(YPhone.dialOf(sel.value), o.client_tel).replace(/\D/g, "")); }
+      sel.addEventListener("change", apply); apply();
+      fix.appendChild(lab); fix.appendChild(sel); c.appendChild(fix);
+    }
     var pr = el("button", "btn btn-ghost btn-sm", L("Bon de commande")); pr.type = "button"; pr.addEventListener("click", function () { printOrder(o); }); contact.appendChild(pr);
     c.appendChild(contact);
     var acts = el("div", "oacts");
