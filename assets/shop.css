@@ -228,3 +228,4 @@ footer a { color: var(--teal); }
 .gtable { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; margin: 4px 0 6px; }
 .gtable th, .gtable td { border: 1px solid var(--rule); padding: 6px; text-align: center; }
 .gtable th { background: var(--bg); font-weight: 800; }
+.item .ends { font-size: 12px; font-weight: 800; color: #C62828; }

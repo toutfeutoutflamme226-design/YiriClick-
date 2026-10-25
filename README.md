@@ -137,6 +137,14 @@ en haut du script de `vitrine.html` (objet `SOCIAL`).
    pointures enfant, âges enfant et bébé, couleurs, taille unique. Un rappel apparaît pour les vêtements sans tailles.
 4. Côté client : les tailles s’affichent sur les cartes produits, et un guide des tailles indicatif dans la fiche.
 
+## Pages du site
+
+- `index.html` : la vitrine, page d’accueil pour les acheteurs.
+- `vendre.html` : la présentation pour les vendeurs (tarifs, inscription).
+- `vitrine.html` : redirige vers l’accueil pour que les anciens liens marchent encore.
+- Dans l’admin, chaque bannière ou tuile a une destination à choisir : tous les produits, petits prix,
+  une catégorie, une boutique, un produit précis, la page vendeurs ou un autre lien.
+
 ## À modifier avant le lancement
 
 - Remplacer `[ADRESSE E-MAIL]` (et ses traductions) par ton adresse de contact,

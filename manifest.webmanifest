@@ -2,7 +2,7 @@
   "name": "Yiriclick",
   "short_name": "Yiriclick",
   "description": "La place de marché des petits vendeurs, partout dans le monde.",
-  "start_url": "./vitrine.html",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#10232A",

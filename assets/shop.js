@@ -1,4 +1,4 @@
-/* Shared logic for boutique.html and vitrine.html: Supabase client, languages, currencies, product cards and product detail */
+/* Shared logic for the showcase (index.html), boutique.html and catalogue.html: Supabase client, languages, currencies, product cards and product detail */
 window.YC = (function () {
   var URL_SB = "https://vtiakxfnechkoomagddl.supabase.co";
   var KEY_SB = "sb_publishable_415c2KQSDRx0SMofnkHKQA_PJ2IrzBA";
@@ -167,7 +167,7 @@ window.YC = (function () {
   }
   /* Anonymous statistics for sellers (no personal data). Views are counted once per browser session,
      and a seller's own visits are skipped (vendeur.html remembers which shop is theirs). */
-  var SRC = /vitrine\.html$/.test(location.pathname) ? "vitrine" : "boutique";
+  var SRC = /(\/|index\.html|vitrine\.html)$/.test(location.pathname) ? "vitrine" : "boutique";
   function track(type, boutiqueId, produitId) {
     try {
       if (!boutiqueId) return;
@@ -268,7 +268,7 @@ window.YC = (function () {
     else media.appendChild(el("div", "noim"));
     var badges = el("div", "badges"), d = discount(p);
     if (d) badges.appendChild(el("span", "bdg bdg-sale", t("off", { n: d })));
-    if (p.en_solde) badges.appendChild(el("span", "bdg bdg-solde", t("soldes") + (endsIn(p) ? " · " + endsIn(p) : "")));
+    if (p.en_solde) badges.appendChild(el("span", "bdg bdg-solde", t("soldes")));
     if (isNew(p)) badges.appendChild(el("span", "bdg bdg-new", t("newB")));
     if (p.stock != null && p.stock > 0 && p.stock <= 3) badges.appendChild(el("span", "bdg bdg-low", t("lowB")));
     if (badges.children.length) media.appendChild(badges);
@@ -277,6 +277,7 @@ window.YC = (function () {
     if (showShop && shop) ib.appendChild(el("span", "shopname", shop.nom));
     ib.appendChild(el("h3", null, p.nom));
     ib.appendChild(priceBlock(p));
+    if (endsIn(p)) ib.appendChild(el("span", "ends", "⏱ " + t("soldes") + " · " + endsIn(p)));
     if (hasVar(p)) { var o0 = p.variantes.options[0], vs = o0.valeurs; ib.appendChild(el("span", "sizes", o0.nom + " : " + vs.slice(0, 6).join(" · ") + (vs.length > 6 ? " …" : ""))); }
     open.appendChild(ib);
     open.addEventListener("click", function () { onOpen(p, shop); });
@@ -487,7 +488,7 @@ window.YC = (function () {
     if (!cart.length) {
       sentBlock(p, false);
       p.appendChild(el("p", "cart-empty", t("cartEmpty")));
-      var k = el("a", "btn btn-navy", t("keepShopping")); k.href = "vitrine.html"; p.appendChild(k);
+      var k = el("a", "btn btn-navy", t("keepShopping")); k.href = "./"; p.appendChild(k);
       ordersLink(p);
       return;
     }
@@ -678,7 +679,7 @@ window.YC = (function () {
       });
       sentBlock(p, true);
     }
-    var k = el("a", "btn btn-navy cart-go", t("keepShopping")); k.href = "vitrine.html"; p.appendChild(k);
+    var k = el("a", "btn btn-navy cart-go", t("keepShopping")); k.href = "./"; p.appendChild(k);
     if (!justOrdered.length && gs.length) { var ed = el("button", "cart-rm", t("editInfo")); ed.type = "button"; ed.style.alignSelf = "center"; ed.addEventListener("click", function () { cartView = "info"; renderCart(); }); p.appendChild(ed); }
     ordersLink(p);
   }

@@ -211,7 +211,14 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
       </div>
       <div class="field"><label for="pmTitle">Titre</label><input id="pmTitle" maxlength="80" placeholder="Ex. : Soldes mode jusqu’à -30 %"></div>
       <div class="field"><label for="pmSub">Sous-titre (facultatif)</label><input id="pmSub" maxlength="140"></div>
-      <div class="field" id="pmLinkWrap"><label for="pmLink">Lien (facultatif)</label><input id="pmLink" maxlength="300" placeholder="vitrine.html?cat=mode"><span class="notice">Exemples : <code>vitrine.html?cat=mode</code> (une catégorie), <code>vitrine.html?promo=1</code> (les petits prix), <code>boutique.html?b=fougueux-shop</code> (une boutique).</span></div>
+      <div id="pmLinkWrap" style="display:flex;flex-direction:column;gap:10px">
+        <div class="field"><label for="pmDest">Quand on touche la bannière, aller vers…</label>
+          <select id="pmDest"><option value="all">Tous les produits</option><option value="promo">Les petits prix et promotions</option><option value="cat">Une catégorie</option><option value="shop">Une boutique</option><option value="prod">Un produit précis</option><option value="vendre">La page « Vendre sur Yiriclick »</option><option value="url">Un autre lien</option></select></div>
+        <div class="field" id="pmDestCatW" hidden><label for="pmDestCat">Catégorie</label><select id="pmDestCat"></select></div>
+        <div class="field" id="pmDestShopW" hidden><label for="pmDestShop">Boutique</label><select id="pmDestShop"></select></div>
+        <div class="field" id="pmDestProdW" hidden><label for="pmDestProd">Produit</label><select id="pmDestProd"></select></div>
+        <div class="field" id="pmLinkW" hidden><label for="pmLink">Lien</label><input id="pmLink" maxlength="300" placeholder="https://…"></div>
+      </div>
       <div class="field" id="pmImgWrap"><label for="pmImg">Image (facultatif)</label><input id="pmImg" type="file" accept="image/jpeg,image/png,image/webp"><span class="notice">Format paysage pour une bannière, carré ou portrait pour une tuile. L’image est réduite automatiquement.</span></div>
       <div class="pm-grid" id="pmDealWrap" hidden>
         <div class="field"><label for="pmProd">Produit en offre</label><select id="pmProd"></select></div>
@@ -544,6 +551,25 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
       a.appendChild(tg); a.appendChild(del); tx.appendChild(a); it.appendChild(tx); box.appendChild(it);
     });
   }
+  var ADM_CATS = [["mode","Mode et vêtements"],["chaussures","Chaussures et maroquinerie"],["bijoux","Bijoux et accessoires"],["textile","Tissus et pagnes"],["beaute","Beauté et cosmétiques"],["sante","Santé et bien-être"],["alim","Alimentation et épicerie"],["boissons","Boissons"],["agri","Produits agricoles et élevage"],["artisanat","Artisanat et art"],["deco","Décoration et maison"],["meubles","Meubles"],["electromenager","Électroménager"],["tech","Téléphones et électronique"],["info","Informatique"],["auto","Auto et moto"],["btp","Bâtiment et matériaux"],["bebe","Bébé et enfants"],["jouets","Jouets et jeux"],["sport","Sport et loisirs"],["livres","Livres et fournitures scolaires"],["musique","Musique et instruments"],["animaux","Animaux"],["numerique","Produits numériques"],["services","Services"],["autre","Autre"]];
+  function pmDestUI() {
+    var d = $("pmDest").value;
+    $("pmDestCatW").hidden = d !== "cat"; $("pmDestShopW").hidden = d !== "shop"; $("pmDestProdW").hidden = d !== "prod"; $("pmLinkW").hidden = d !== "url";
+    var live = data.produits.filter(function (p) { return p.visible && !p.masque_admin && p.boutiques && p.boutiques.slug; });
+    if (d === "cat" && !$("pmDestCat").options.length) ADM_CATS.forEach(function (c) { var o = el("option", null, c[1]); o.value = c[0]; $("pmDestCat").appendChild(o); });
+    if (d === "shop") { var s = $("pmDestShop"), seen = {}; s.textContent = ""; live.forEach(function (p) { if (seen[p.boutiques.slug]) return; seen[p.boutiques.slug] = 1; var o = el("option", null, p.boutiques.nom); o.value = p.boutiques.slug; s.appendChild(o); }); if (!s.options.length) { var o0 = el("option", null, "Aucune boutique avec des produits en ligne"); o0.value = ""; s.appendChild(o0); } }
+    if (d === "prod") { var s2 = $("pmDestProd"); s2.textContent = ""; live.forEach(function (p) { var o = el("option", null, p.nom + " · " + p.boutiques.nom); o.value = "boutique.html?b=" + encodeURIComponent(p.boutiques.slug) + "&p=" + p.id; s2.appendChild(o); }); if (!s2.options.length) { var o1 = el("option", null, "Aucun produit en ligne"); o1.value = ""; s2.appendChild(o1); } }
+  }
+  $("pmDest").addEventListener("change", pmDestUI);
+  function pmLinkValue() {
+    switch ($("pmDest").value) {
+      case "all": return "./?all=1"; case "promo": return "./?promo=1"; case "vendre": return "vendre.html";
+      case "cat": return "./?cat=" + encodeURIComponent($("pmDestCat").value);
+      case "shop": return $("pmDestShop").value ? "boutique.html?b=" + encodeURIComponent($("pmDestShop").value) : null;
+      case "prod": return $("pmDestProd").value || null;
+      default: var v = $("pmLink").value.trim(); return v || null;
+    }
+  }
   function pmTypeUI() {
     var deal = $("pmType").value === "offre_jour";
     $("pmDealWrap").hidden = !deal; $("pmImgWrap").hidden = deal; $("pmLinkWrap").hidden = deal;
@@ -557,7 +583,7 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
     }
   }
   $("pmType").addEventListener("change", pmTypeUI);
-  $("pmNew").addEventListener("click", function () { $("pmForm").reset(); $("pmErr").textContent = ""; $("pmForm").hidden = false; pmTypeUI(); $("pmTitle").focus(); });
+  $("pmNew").addEventListener("click", function () { $("pmForm").reset(); $("pmErr").textContent = ""; $("pmForm").hidden = false; pmTypeUI(); pmDestUI(); $("pmTitle").focus(); });
   $("pmCancel").addEventListener("click", function () { $("pmForm").hidden = true; });
   function shrink(file, max) {
     return new Promise(function (res, rej) {
@@ -577,7 +603,9 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
       var end = new Date($("pmEnd").value); if (!$("pmEnd").value || !(end > new Date())) { $("pmErr").textContent = "La fin de l’offre doit être dans le futur."; $("pmEnd").focus(); return; }
       row.produit_id = $("pmProd").value; row.fin = end.toISOString();
     } else {
-      row.lien = $("pmLink").value.trim() || null;
+      row.lien = pmLinkValue();
+      if ($("pmDest").value === "url" && row.lien && !/^(https:\/\/|\.\/|\?|boutique\.html|vendre\.html)/.test(row.lien)) { $("pmErr").textContent = "Le lien doit commencer par https://"; $("pmLink").focus(); return; }
+      if (!row.lien && $("pmDest").value !== "url") { $("pmErr").textContent = "Choisis la destination de la bannière."; return; }
       if ($("pmEndAll").value) { var f = new Date($("pmEndAll").value); if (!(f > new Date())) { $("pmErr").textContent = "La fin d’affichage doit être dans le futur."; return; } row.fin = f.toISOString(); }
     }
     var btn = $("pmSave"); btn.disabled = true; btn.textContent = "Publication…";
