@@ -137,6 +137,34 @@ en haut du script de `vitrine.html` (objet `SOCIAL`).
    pointures enfant, âges enfant et bébé, couleurs, taille unique. Un rappel apparaît pour les vêtements sans tailles.
 4. Côté client : les tailles s’affichent sur les cartes produits, et un guide des tailles indicatif dans la fiche.
 
+## E-mails automatiques (base v9)
+
+Chaque nouvelle commande envoie un e-mail au vendeur, et chaque nouvel essai ou dossier t’envoie une alerte.
+Les e-mails partent par Resend (gratuit : 100 par jour, 3 000 par mois).
+
+1. Supabase › **SQL Editor** : colle `supabase/schema-v9.sql`, puis **Run**.
+2. Crée un compte sur https://resend.com avec ton adresse e-mail, puis **API Keys › Create API key** (accès « Sending »). Copie la clé `re_…`.
+3. Supabase › **SQL Editor**, en remplaçant les deux valeurs :
+   ```sql
+   select vault.create_secret('re_COLLE_TA_CLE_ICI', 'resend_api_key');
+   update public.reglages_email set admin_email = 'ton.adresse@gmail.com';
+   ```
+4. Test : fais une inscription d’essai sur `vendre.html`. Tu dois recevoir l’alerte en quelques secondes.
+   En cas de souci : `select * from net._http_response order by created desc limit 5;`
+5. **Tant que le domaine n’est pas vérifié**, Resend n’envoie qu’à ta propre adresse : les alertes admin marchent,
+   pas encore les e-mails aux vendeurs. Après l’achat de yiriclick.com : Resend › **Domains › Add domain**,
+   ajoute les enregistrements DNS indiqués, puis :
+   ```sql
+   update public.reglages_email set expediteur = 'Yiriclick <commandes@yiriclick.com>';
+   ```
+6. Même domaine pour les e-mails de connexion : Supabase › Authentication › Emails › **SMTP Settings** :
+   hôte `smtp.resend.com`, port `465`, utilisateur `resend`, mot de passe = la clé Resend, expéditeur `no-reply@yiriclick.com`.
+
+Pour changer la clé : `select vault.update_secret((select id from vault.secrets where name = 'resend_api_key'), 're_NOUVELLE_CLE');`
+
+Le vendeur peut couper les e-mails (« Ma boutique › Contact »). Dans l’espace vendeur ouvert, une alerte sonore
+et une notification signalent aussi chaque nouvelle commande (vérification toutes les 30 secondes).
+
 ## Pages du site
 
 - `index.html` : la vitrine, page d’accueil pour les acheteurs.

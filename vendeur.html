@@ -217,6 +217,9 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
 .empty { padding: 28px 16px; text-align: center; color: var(--soft); background: var(--white); border: 1px dashed var(--rule); grid-column: 1 / -1; }
 
 /* Orders */
+.ordalert { position: sticky; top: 68px; z-index: 22; display: flex; align-items: center; gap: 10px; background: var(--navy); color: var(--white); padding: 10px 12px; font-weight: 800; box-shadow: 0 8px 20px rgba(16, 35, 42, .25); }
+.ordalert span { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.ordalert .x { background: transparent; color: var(--white); }
 .seg { display: inline-flex; border: 2px solid var(--navy); align-self: flex-start; }
 .seg button { border: 0; background: var(--white); color: var(--navy); font-weight: 800; min-height: 40px; padding: 0 16px; cursor: pointer; }
 .seg button[aria-selected="true"] { background: var(--navy); color: var(--white); }
@@ -390,6 +393,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
   </nav>
 
   <main class="content">
+    <div class="ordalert" id="ordAlert" hidden role="alert"><span></span><button class="btn btn-orange btn-sm" type="button" id="ordAlertGo">Voir</button><button class="x" type="button" id="ordAlertX" aria-label="Fermer l’alerte">×</button></div>
     <p class="notice" id="dbNotice" hidden>La base Yiriclick doit être mise à jour (script <b>schema-v5.sql</b>) pour enregistrer l’apparence, les infos pratiques, la FAQ, les produits à la une et les statistiques.</p>
 
     <!-- ===== Dashboard ===== -->
@@ -458,6 +462,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
           <div><h1>Commandes</h1><p id="ordHint">Les commandes passées dans ta boutique et sur la vitrine.</p></div>
           <button class="btn btn-ghost" type="button" id="ordRefresh">Actualiser</button>
         </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button class="btn btn-navy btn-sm" type="button" id="notifBtn" hidden>🔔 Activer les alertes sur cet appareil</button><span class="hint" id="notifState"></span></div>
         <p class="notice" id="ordNotice" hidden>Les commandes enregistrées arrivent avec la mise à jour <b>schema-v6.sql</b> de la base. En attendant, les clients t’écrivent seulement sur WhatsApp.</p>
         <div class="seg" role="tablist" aria-label="Affichage">
           <button type="button" role="tab" id="segOrd" aria-selected="true">Commandes</button>
@@ -530,6 +535,8 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
             <div class="field"><label for="bAdresse">Adresse du magasin ou point de retrait (facultatif)</label><input id="bAdresse" maxlength="200"></div>
             <div class="field"><label for="bHoraires">Horaires</label><textarea id="bHoraires" rows="2" maxlength="400" placeholder="Lun–Sam : 9 h – 19 h&#10;Dimanche : fermé"></textarea></div>
             <div class="field"><label for="bLivraison">Livraison</label><textarea id="bLivraison" rows="3" maxlength="800" placeholder="Ouagadougou : 1 000 FCFA, sous 24 h&#10;Autres villes : selon la distance&#10;International : nous contacter"></textarea></div>
+            <label class="check"><input type="checkbox" id="bNotif" checked>Recevoir un e-mail à chaque nouvelle commande</label>
+            <span class="hint" id="bNotifHint" style="margin-top:-8px"></span>
             <div class="field"><label for="bRetours">Retours et échanges</label><textarea id="bRetours" rows="2" maxlength="800" placeholder="Échange possible sous 7 jours, article non porté avec son étiquette."></textarea></div>
           </div>
 
@@ -895,7 +902,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     document.querySelectorAll(".side [data-tab]").forEach(function (b) { if (b.getAttribute("data-tab") === t) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
     if (t === "share") renderShare();
     if (t === "dash") renderDash();
-    if (t === "orders") { renderOrders(); loadOrders(true); }
+    if (t === "orders") { renderOrders(); loadOrders(true); notifUI(); }
     if (!keepScroll) window.scrollTo(0, 0);
     try { history.replaceState(null, "", "#" + t); } catch (e) {}
   }
@@ -1079,6 +1086,8 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     $("bWa").value = s.whatsapp || ""; $("bVille").value = s.ville || ""; $("bPays").value = s.pays || ""; $("bAdresse").value = s.adresse || "";
     $("bHoraires").value = s.horaires || ""; $("bLivraison").value = s.livraison || ""; $("bRetours").value = s.retours || "";
     $("bDevise").value = s.devise || "XOF"; $("bVisible").checked = s.visible !== false;
+    $("bNotif").checked = s.notif_email !== false; $("bNotifHint").textContent = "À l’adresse " + (st.user ? st.user.email : "") + ". Garde aussi ton espace vendeur ouvert : une alerte sonne quand une commande arrive.";
+    $("bNotif").closest("label").hidden = st.shop ? !("notif_email" in st.shop) : true;
     var th = document.querySelector('input[name=theme][value="' + (s.theme || "teal") + '"]'); if (th) th.checked = true;
     var secs = Object.assign({}, SECS, s.sections || {});
     document.querySelectorAll("[data-sec]").forEach(function (c) { c.checked = secs[c.getAttribute("data-sec")] !== false; });
@@ -1184,11 +1193,12 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
       var secs = {}; document.querySelectorAll("[data-sec]").forEach(function (c) { secs[c.getAttribute("data-sec")] = c.checked; });
       var extra = { slogan: $("bSlogan").value.trim() || null, theme: themeVal(), sections: secs, adresse: $("bAdresse").value.trim() || null,
         horaires: $("bHoraires").value.trim() || null, livraison: $("bLivraison").value.trim() || null, retours: $("bRetours").value.trim() || null,
-        reseaux: rs, faq: faq.filter(function (x) { return x.q.trim(); }).map(function (x) { return { q: x.q.trim(), r: x.r.trim() }; }) };
+        notif_email: $("bNotif").checked, reseaux: rs, faq: faq.filter(function (x) { return x.q.trim(); }).map(function (x) { return { q: x.q.trim(), r: x.r.trim() }; }) };
       var old = [];
       if (shopImgs.logo) { row.logo = await upload(await compress(shopImgs.logo, 600, .85), "boutique"); fresh.push(row.logo); if (st.shop && st.shop.logo) old.push(st.shop.logo); }
       if (shopImgs.cover) { row.couverture = await upload(await compress(shopImgs.cover, 1800, .82), "boutique"); fresh.push(row.couverture); if (st.shop && st.shop.couverture) old.push(st.shop.couverture); }
       function send(r0) { return st.shop ? sb.from("boutiques").update(r0).eq("id", st.shop.id).select().single() : sb.from("boutiques").insert(r0).select().single(); }
+      if (!st.shop || !("notif_email" in st.shop)) delete extra.notif_email;
       var r = await send(Object.assign({}, row, extra)), partial = false;
       if (r.error && missingCol(r.error)) { r = await send(row); partial = true; }
       if (r.error) throw r.error;
@@ -1385,10 +1395,14 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     return Object.keys(by).map(function (d) { return money(by[d], d); }).join(" + ");
   }
   function isSale(o) { return ["confirmee", "expediee", "livree"].indexOf(o.statut) >= 0; }
+  var seenNew = null;
   async function loadOrders(quiet) {
     if (!st.shop) { st.orders = []; return; }
     var r = await sb.from("commandes").select("*").eq("boutique_id", st.shop.id).order("created_at", { ascending: false }).limit(500);
     if (r.error) { st.ordersOk = false; st.orders = []; } else { st.ordersOk = true; st.orders = r.data || []; }
+    var fresh = st.orders.filter(function (o) { return o.statut === "nouvelle"; });
+    if (seenNew) { var arrived = fresh.filter(function (o) { return !seenNew[o.id]; }); if (arrived.length) alertNew(arrived); }
+    seenNew = {}; fresh.forEach(function (o) { seenNew[o.id] = 1; });
     ordBadge();
     var typing = document.activeElement && document.activeElement.closest && document.activeElement.closest("#ordList");
     if (st.tab === "orders" && !typing) renderOrders();
@@ -1397,8 +1411,34 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
   function ordBadge() {
     var n = st.orders.filter(function (o) { return o.statut === "nouvelle"; }).length, b = $("ordBadge");
     b.textContent = n; b.hidden = !n;
+    document.title = (n ? "(" + n + ") " : "") + baseTitle;
   }
-  setInterval(function () { if (document.visibilityState === "visible" && st.shop && st.user) loadOrders(false); }, 60000);
+  /* Polls every 30 s while the page is open (also in a background tab, for the sound and the notification) */
+  setInterval(function () { if (st.shop && st.user) loadOrders(document.visibilityState !== "visible"); }, 30000);
+  var baseTitle = document.title;
+  function beep() {
+    try {
+      var C = window.AudioContext || window.webkitAudioContext; if (!C) return; var ac = new C();
+      [0, .18].forEach(function (t0, i) { var o = ac.createOscillator(), g = ac.createGain(); o.type = "sine"; o.frequency.value = i ? 1046 : 784; g.gain.setValueAtTime(.0001, ac.currentTime + t0); g.gain.exponentialRampToValueAtTime(.25, ac.currentTime + t0 + .02); g.gain.exponentialRampToValueAtTime(.0001, ac.currentTime + t0 + .16); o.connect(g); g.connect(ac.destination); o.start(ac.currentTime + t0); o.stop(ac.currentTime + t0 + .18); });
+    } catch (e) {}
+  }
+  function alertNew(list) {
+    var o = list[0], txt = list.length > 1 ? list.length + " nouvelles commandes" : "Nouvelle commande " + o.numero + " · " + o.client_nom;
+    beep();
+    var bar = $("ordAlert"); bar.querySelector("span").textContent = "🔔 " + txt; bar.hidden = false;
+    if ("Notification" in window && Notification.permission === "granted") {
+      try { var n = new Notification("Yiriclick · " + txt, { body: o.numero + " · " + oTotal(o), tag: "yc-order", icon: "assets/icons/icon-192.png" }); n.onclick = function () { window.focus(); tab("orders"); n.close(); }; } catch (e) {}
+    }
+  }
+  $("ordAlertGo").addEventListener("click", function () { $("ordAlert").hidden = true; ordFilter = "nouvelle"; tab("orders"); });
+  $("ordAlertX").addEventListener("click", function () { $("ordAlert").hidden = true; });
+  function notifUI() {
+    var b = $("notifBtn"); if (!b) return;
+    var ok = "Notification" in window;
+    b.hidden = !ok || Notification.permission !== "default";
+    $("notifState").textContent = !ok ? "" : Notification.permission === "granted" ? "🔔 Alertes activées sur cet appareil (quand l’espace vendeur est ouvert)." : Notification.permission === "denied" ? "Les alertes sont bloquées dans les réglages du navigateur." : "";
+  }
+  $("notifBtn").addEventListener("click", function () { Notification.requestPermission().then(function () { beep(); notifUI(); }); });
   $("ordRefresh").addEventListener("click", function () { loadOrders(true); });
   function setSeg(v) {
     seg = v; $("segOrd").setAttribute("aria-selected", String(v === "ord")); $("segCli").setAttribute("aria-selected", String(v === "cli")); $("segAvis").setAttribute("aria-selected", String(v === "avis"));
