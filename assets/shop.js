@@ -204,7 +204,7 @@ window.YC = (function () {
     document.querySelectorAll("[data-t]").forEach(function (n) { n.textContent = t(n.getAttribute("data-t")); });
     document.querySelectorAll("[data-tp]").forEach(function (n) { n.placeholder = t(n.getAttribute("data-tp")); });
     document.querySelectorAll("[data-ta]").forEach(function (n) { n.setAttribute("aria-label", t(n.getAttribute("data-ta"))); });
-    var cs = document.getElementById("prefCur"); if (cs && cs.options[0]) cs.options[0].textContent = t("cur") + " : —";
+    var cs = document.getElementById("prefCur"); if (cs && cs.options[0]) cs.options[0].textContent = cs.closest(".ch-f") ? "—" : t("cur") + " : —";
     cartBadge();
     var cw = document.getElementById("cartWrap"); if (cw && !cw.hidden) renderCart();
   }
