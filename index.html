@@ -8,6 +8,13 @@
 <meta property="og:title" content="Yiriclick – la place de marché des petits vendeurs">
 <meta property="og:description" content="Des vendeurs vérifiés d’Afrique, d’Europe et d’ailleurs. Commande simple sur WhatsApp.">
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="Yiriclick">
+<meta property="og:url" content="https://toutfeutoutflamme226-design.github.io/YiriClick-/">
+<meta property="og:image" content="https://toutfeutoutflamme226-design.github.io/YiriClick-/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://toutfeutoutflamme226-design.github.io/YiriClick-/">
 <meta name="theme-color" content="#10232A">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
@@ -745,6 +752,12 @@ section.block { margin-top: 28px; }
     if (!country) openChooser();
     await loadData();
     render();
+    /* Product share link: …/?produit=<id> opens the product sheet */
+    var pid = new URLSearchParams(location.search).get("produit");
+    if (pid && /^[0-9a-f-]{36}$/.test(pid)) {
+      var one = await Y.sb.from("produits").select(COLS).eq("id", pid).maybeSingle();
+      if (one.data) { var pp = Y.prep([one.data])[0]; Y.openProduct(pp, pp.boutiques, { showShop: true }); }
+    }
   }
   start();
 })();

@@ -9,6 +9,12 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
 <meta name="theme-color" content="#10232A">
+<meta name="description" content="Boutique sur Yiriclick, la place de marché des petits vendeurs. Commande sur WhatsApp.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Yiriclick">
+<meta property="og:title" content="Boutique Yiriclick">
+<meta property="og:image" content="https://toutfeutoutflamme226-design.github.io/YiriClick-/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
 </head>
 <body>
 <header class="top">
@@ -108,7 +114,35 @@
   function sec(k) { var s = shop && shop.sections; return !s || s[k] !== false; }
   function shopUrl() { return location.origin + location.pathname + "?b=" + encodeURIComponent(shop.slug); }
   function safeUrl(u) { return /^https:\/\/[^\s"<>]+$/i.test(String(u || "")) ? u : ""; }
-  function openP(pp) { Y.openProduct(pp, shop); }
+  /* Opening a product puts its own address in the browser, so copying the link shares that product */
+  function openP(pp) {
+    Y.openProduct(pp, shop);
+    try { history.replaceState(null, "", location.pathname + "?b=" + encodeURIComponent(shop.slug) + "&p=" + pp.id); } catch (e) {}
+    document.title = pp.nom + " · " + shop.nom;
+  }
+  document.addEventListener("click", function (e) {
+    if (e.target.closest && (e.target.closest(".mclose") || e.target.classList.contains("modal-bg"))) resetUrl();
+  });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") resetUrl(); });
+  function resetUrl() { if (!shop) return; try { history.replaceState(null, "", location.pathname + "?b=" + encodeURIComponent(shop.slug)); } catch (e) {} document.title = shop.nom + " · Yiriclick"; }
+  /* Description, canonical address and structured data (Store, products, rating) for search engines */
+  function seo() {
+    var base = location.origin + location.pathname, url = base + "?b=" + encodeURIComponent(shop.slug);
+    var desc = [shop.slogan, shop.description, [shop.ville, shop.pays].filter(Boolean).join(", ")].filter(Boolean).join(" · ").replace(/\s+/g, " ").slice(0, 160);
+    function meta(sel, attr, val) { var m = document.querySelector(sel); if (!m) { m = document.createElement(sel.indexOf("link") === 0 ? "link" : "meta"); document.head.appendChild(m); } m.setAttribute(attr, val); return m; }
+    meta('meta[name="description"]', "content", desc || shop.nom + " sur Yiriclick");
+    meta('meta[property="og:title"]', "content", shop.nom + " · Yiriclick");
+    var cn = document.querySelector('link[rel="canonical"]'); if (!cn) { cn = document.createElement("link"); cn.rel = "canonical"; document.head.appendChild(cn); } cn.href = url;
+    var img = shop.couverture ? Y.pub(shop.couverture) : shop.logo ? Y.pub(shop.logo) : base.replace(/boutique\.html$/, "") + "assets/og.png";
+    var data = { "@context": "https://schema.org", "@type": "Store", name: shop.nom, url: url, description: desc || undefined, image: img,
+      address: shop.ville || shop.pays ? { "@type": "PostalAddress", addressLocality: shop.ville || undefined, addressCountry: shop.pays || undefined } : undefined,
+      makesOffer: items.slice(0, 50).map(function (p) { return { "@type": "Offer", price: Number(p.prix).toFixed(p.devise === "XOF" ? 0 : 2), priceCurrency: p.devise,
+        availability: p.stock === 0 ? "https://schema.org/OutOfStock" : "https://schema.org/InStock", url: url + "&p=" + p.id,
+        itemOffered: { "@type": "Product", name: p.nom, description: (p.description || p.nom).slice(0, 300), image: (p.photos || []).map(Y.pub) } }; }) };
+    if (reviews.length) data.aggregateRating = { "@type": "AggregateRating", ratingValue: (reviews.reduce(function (s, r) { return s + r.note; }, 0) / reviews.length).toFixed(1), reviewCount: reviews.length };
+    var sc = document.getElementById("ldjson"); if (!sc) { sc = document.createElement("script"); sc.type = "application/ld+json"; sc.id = "ldjson"; document.head.appendChild(sc); }
+    sc.textContent = JSON.stringify(data).replace(/</g, "\\u003c");
+  }
 
   function rail(id, secId, list, on) {
     var box = $(id); box.textContent = "";
@@ -187,7 +221,7 @@
 
     var th = Y.THEMES[shop.theme] || Y.THEMES.teal;
     document.body.style.setProperty("--brand", th[0]); document.body.style.setProperty("--brand-ink", th[1]);
-    document.title = shop.nom + " · Yiriclick";
+    document.title = shop.nom + " · Yiriclick"; seo();
     $("sName").textContent = shop.nom;
     if (shop.slogan) { $("sSlogan").textContent = shop.slogan; $("sSlogan").hidden = false; }
     $("sPlace").textContent = [shop.ville, shop.pays].filter(Boolean).join(", ");
@@ -217,7 +251,7 @@
     $("fCat").addEventListener("change", render);
     render();
     Y.track("vue_boutique", shop.id);
-    if (pid) { var hit = items.filter(function (x) { return x.id === pid; })[0]; if (hit) Y.openProduct(hit, shop); }
+    if (pid) { var hit = items.filter(function (x) { return x.id === pid; })[0]; if (hit) openP(hit); }
   }
   function notFound() { $("loading").hidden = true; $("missing").hidden = false; Y.labels(); }
   start();

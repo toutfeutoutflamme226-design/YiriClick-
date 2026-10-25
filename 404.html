@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Page introuvable · Yiriclick</title>
+<script>
+/* Short share links (…/b/shop-name/ and …/p/product-id/) work even before their page is generated:
+   they are sent to the live shop or product. Anything else shows the message below. */
+(function () {
+  var m = /^(.*?\/)(b|p)\/([^\/?#]+)\/?$/.exec(location.pathname);
+  if (!m) return;
+  var base = m[1], kind = m[2], id = decodeURIComponent(m[3]);
+  if (kind === "b" && /^[a-z0-9-]{3,40}$/.test(id)) location.replace(base + "boutique.html?b=" + id);
+  else if (kind === "p" && /^[0-9a-f-]{36}$/.test(id)) location.replace(base + "?produit=" + id);
+})();
+</script>
+<style>
+:root { --navy: #10232A; --teal: #4FC7CF; --orange: #FF7A2E; }
+html, body { margin: 0; }
+body { min-height: 100vh; background: var(--navy); color: #fff; font-family: 'Helvetica Neue', Arial, sans-serif; display: flex; align-items: center; justify-content: center; text-align: center; padding: 24px; box-sizing: border-box; }
+h1 { font-size: 30px; margin: 18px 0 8px; }
+p { color: #C9D8DB; margin: 0 0 22px; }
+a { display: inline-block; background: var(--orange); color: var(--navy); font-weight: 800; text-decoration: none; padding: 14px 22px; }
+.w { font-size: 34px; font-weight: 900; letter-spacing: -1px; } .w .a { color: var(--orange); } .w .b { color: var(--teal); }
+</style>
+</head>
+<body>
+<main>
+  <div class="w"><span class="a">yiri</span><span class="b">click</span></div>
+  <h1>Page introuvable</h1>
+  <p>Ce lien n’existe pas ou plus. Page not found · Página no encontrada.</p>
+  <a href="./" id="home">Aller à la vitrine</a>
+</main>
+<script>
+(function () { var m = /^(\/[^\/]+\/)/.exec(location.pathname); if (m && location.hostname.indexOf("github.io") >= 0) document.getElementById("home").href = m[1]; })();
+</script>
+</body>
+</html>

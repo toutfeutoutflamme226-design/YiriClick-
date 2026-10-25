@@ -192,6 +192,19 @@ et une notification signalent aussi chaque nouvelle commande (vérification tout
 3. La vitrine, les boutiques et la démo des monnaies de `vendre.html` utilisent ces taux, avec leur date.
 4. Vérifier : `select * from public.taux;` · Voir les tâches : `select * from cron.job;`
 
+## Préparation Google et aperçus de liens
+
+- **Publication automatique** (`.github/workflows/publier.yml`) : à chaque modification et toutes les heures,
+  le site est publié avec une page de partage par boutique (`b/nom-de-boutique/`) et par produit (`p/id/`),
+  un plan du site `sitemap.xml` et `robots.txt`.
+  **À faire une fois** : GitHub › Settings › Pages › Build and deployment › Source = **GitHub Actions**.
+- Les liens courts affichent le nom, la description et la photo dans WhatsApp, Facebook et X, puis ouvrent la boutique.
+  Ils marchent aussi avant la publication suivante grâce à `404.html`.
+- Chaque boutique décrit ses produits, prix, disponibilité et note moyenne aux moteurs de recherche (données structurées schema.org).
+- Image d’aperçu par défaut : `assets/og.png`.
+- **Après l’achat du domaine** : GitHub › Settings › Secrets and variables › Actions › Variables › `SITE_URL` = `https://yiriclick.com/`.
+  Toutes les adresses absolues suivent automatiquement.
+
 ## Pages du site
 
 - `index.html` : la vitrine, page d’accueil pour les acheteurs.

@@ -822,6 +822,8 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
   }
   function missingCol(e) { return /column|schema cache|does not exist/i.test((e && e.message) || ""); }
   function shopUrl() { return st.shop ? SITE + "boutique.html?b=" + st.shop.slug : ""; }
+  /* Short link for sharing: shows the shop name, description and photo in WhatsApp / Facebook previews */
+  function shareUrl() { return st.shop ? SITE + "b/" + st.shop.slug + "/" : ""; }
   function isPro() { return PLANS[st.plan][3]; }
   function copy(text, btn, label) {
     function done() { btn.textContent = L("Copié"); setTimeout(function () { btn.textContent = label; }, 1800); }
@@ -1912,7 +1914,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
   $("gShare").addEventListener("click", async function () {
     if (!gBlob) return;
     var f = new File([gBlob], $("gDl").download || "visuel.png", { type: "image/png" });
-    if (navigator.canShare && navigator.canShare({ files: [f] })) { try { await navigator.share({ files: [f], text: shopUrl() }); } catch (e) {} }
+    if (navigator.canShare && navigator.canShare({ files: [f] })) { try { await navigator.share({ files: [f], text: shareUrl() }); } catch (e) {} }
     else $("gDl").click();
   });
   document.querySelectorAll(".chiplink").forEach(function (a) { a.addEventListener("click", function (e) { e.preventDefault(); var t = document.querySelector(a.getAttribute("href")); if (t) t.scrollIntoView({ behavior: "smooth", block: "start" }); }); });
@@ -1921,12 +1923,12 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
   var msgTouched = false;
   function defaultMsg() {
     var s = st.shop; return L("Découvre ma boutique ") + s.nom + L(" sur Yiriclick") + (s.slogan ? " : " + s.slogan : "") + ".\n" +
-      (st.products.length ? st.products.length + L(" produits à commander directement sur WhatsApp.\n") : "") + "👉 " + shopUrl();
+      (st.products.length ? st.products.length + L(" produits à commander directement sur WhatsApp.\n") : "") + "👉 " + shareUrl();
   }
   function renderShare() {
     $("shareNone").hidden = !!st.shop; $("shareAll").hidden = !st.shop;
     if (!st.shop) return;
-    var u = shopUrl();
+    var u = shareUrl();
     $("shareUrl").textContent = u;
     if (!msgTouched) $("shMsg").value = defaultMsg();
     $("shWa").href = "https://wa.me/?text=" + encodeURIComponent($("shMsg").value);
@@ -1941,9 +1943,9 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     }
   }
   $("shMsg").addEventListener("input", function () { msgTouched = true; $("shWa").href = "https://wa.me/?text=" + encodeURIComponent($("shMsg").value); });
-  $("copyLink").addEventListener("click", function () { copy(shopUrl(), this, L("Copier le lien")); });
+  $("copyLink").addEventListener("click", function () { copy(shareUrl(), this, L("Copier le lien")); });
   $("copyMsg").addEventListener("click", function () { copy($("shMsg").value, this, L("Copier le message")); });
-  $("shNative").addEventListener("click", function () { navigator.share({ title: st.shop.nom, text: $("shMsg").value, url: shopUrl() }).catch(function () {}); });
+  $("shNative").addEventListener("click", function () { navigator.share({ title: st.shop.nom, text: $("shMsg").value, url: shareUrl() }).catch(function () {}); });
   $("qrPrint").addEventListener("click", function () {
     var p = $("poster"); p.textContent = ""; p.className = "";
     if (st.shop.logo) { var im = el("img"); im.src = pub(st.shop.logo); im.alt = ""; im.style.width = "120px"; im.style.height = "120px"; im.style.objectFit = "cover"; p.appendChild(im); }
