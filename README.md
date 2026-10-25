@@ -95,6 +95,17 @@ suggestions et recherche vocale, favoris, bannières, tuiles, offre du jour, pet
 « Près de chez toi », boutiques, catégories, filtres et tri. Les liens des réseaux sociaux se renseignent
 en haut du script de `vitrine.html` (objet `SOCIAL`).
 
+## Espace vendeur professionnel (base v5)
+
+1. Dans Supabase, **SQL Editor › New query** : colle `supabase/schema-v5.sql`, puis **Run**.
+2. L'espace vendeur (`vendeur.html`) contient :
+   - **Accueil** : boutique complète à X %, chiffres des 7 derniers jours, alertes de stock ;
+     pour Pro et Entreprise, la courbe sur 30 jours et les produits les plus regardés ;
+   - **Boutique** : identité, couleur de marque, sections, infos pratiques, réseaux sociaux, FAQ, avec un aperçu en direct ;
+   - **Produits** : recherche, filtres, produits à la une, réordonner les photos, calcul de marge (le coût reste dans le navigateur) ;
+   - **Partager** : lien, message prêt à envoyer, WhatsApp et Facebook ; QR code et affiche à imprimer (Pro et Entreprise).
+3. Les statistiques sont anonymes (table `evenements`) : visites, vues, ajouts au panier, favoris et contacts WhatsApp.
+
 ## À modifier avant le lancement
 
 - Remplacer `[ADRESSE E-MAIL]` (et ses traductions) par ton adresse de contact,

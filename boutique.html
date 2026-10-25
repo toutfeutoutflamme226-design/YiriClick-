@@ -40,18 +40,39 @@
       <div class="logo" id="logo" aria-hidden="true"></div>
       <div class="shop-id">
         <h1 id="sName"></h1>
-        <p id="sPlace"></p>
+        <p class="slogan" id="sSlogan" hidden></p>
+        <p class="place" id="sPlace"></p>
         <span class="verified"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span data-t="verified"></span></span>
       </div>
+      <div class="shop-acts">
+        <a class="btn btn-brand" id="contact" target="_blank" rel="noopener" hidden data-t="contact"></a>
+        <button class="btn btn-ghost" type="button" id="shareBtn" data-t="share"></button>
+      </div>
     </div>
+    <div class="socials" id="socials" hidden></div>
     <p class="about" id="sDesc"></p>
-    <div class="tools">
-      <label for="q" class="vh" style="position:absolute;left:-9999px" data-t="search"></label>
-      <input id="q" type="search" data-tp="search">
-      <label for="fCat" style="position:absolute;left:-9999px" data-t="allCats"></label>
-      <select id="fCat"></select>
-    </div>
-    <div class="grid" id="grid"></div>
+    <nav class="shop-nav" id="shopNav" data-ta="sections"></nav>
+
+    <section class="ssec" id="secUne" hidden><h2 data-t="sUne"></h2><div class="srail" id="railUne"></div></section>
+    <section class="ssec" id="secPromo" hidden><h2 data-t="sPromo"></h2><div class="srail" id="railPromo"></div></section>
+    <section class="ssec" id="secNew" hidden><h2 data-t="sNew"></h2><div class="srail" id="railNew"></div></section>
+
+    <section class="ssec" id="secAll">
+      <h2 id="allTitle"></h2>
+      <div class="tools">
+        <label for="q" style="position:absolute;left:-9999px" data-t="search"></label>
+        <input id="q" type="search" data-tp="search">
+        <label for="fCat" style="position:absolute;left:-9999px" data-t="allCats"></label>
+        <select id="fCat"></select>
+      </div>
+      <div class="grid" id="grid"></div>
+    </section>
+
+    <section class="ssec" id="secInfo" hidden style="padding-bottom:40px">
+      <h2 data-t="sInfo"></h2>
+      <div class="infos" id="infos"></div>
+      <div class="faq" id="faq" hidden></div>
+    </section>
   </div>
 </div>
 
@@ -68,42 +89,109 @@
 (function () {
   var Y = window.YC, shop = null, items = [];
   var params = new URLSearchParams(location.search), slug = (params.get("b") || "").toLowerCase(), pid = params.get("p");
+  Y.extend({
+    fr: { contact: "Contacter sur WhatsApp", share: "Partager la boutique", copied: "Lien copié", sections: "Sections de la boutique", sUne: "À la une", sPromo: "Promotions", sNew: "Nouveautés",
+      sAll: "Tous les produits", sInfo: "Infos pratiques", hours: "Horaires", delivery: "Livraison", returns: "Retours et échanges", address: "Adresse", faqT: "Questions fréquentes", site: "Site web",
+      waHello: "Bonjour, je vous contacte depuis votre boutique Yiriclick : {u}", nProducts: "{n} produits" },
+    en: { contact: "Contact on WhatsApp", share: "Share this shop", copied: "Link copied", sections: "Shop sections", sUne: "Featured", sPromo: "Deals", sNew: "New in",
+      sAll: "All products", sInfo: "Good to know", hours: "Opening hours", delivery: "Delivery", returns: "Returns and exchanges", address: "Address", faqT: "Frequently asked questions", site: "Website",
+      waHello: "Hello, I am contacting you from your Yiriclick shop: {u}", nProducts: "{n} products" },
+    es: { contact: "Contactar por WhatsApp", share: "Compartir la tienda", copied: "Enlace copiado", sections: "Secciones de la tienda", sUne: "Destacados", sPromo: "Ofertas", sNew: "Novedades",
+      sAll: "Todos los productos", sInfo: "Información práctica", hours: "Horario", delivery: "Envío", returns: "Devoluciones y cambios", address: "Dirección", faqT: "Preguntas frecuentes", site: "Sitio web",
+      waHello: "Hola, le contacto desde su tienda Yiriclick: {u}", nProducts: "{n} productos" }
+  });
+  function $(id) { return document.getElementById(id); }
+  function sec(k) { var s = shop && shop.sections; return !s || s[k] !== false; }
+  function shopUrl() { return location.origin + location.pathname + "?b=" + encodeURIComponent(shop.slug); }
+  function safeUrl(u) { return /^https:\/\/[^\s"<>]+$/i.test(String(u || "")) ? u : ""; }
+  function openP(pp) { Y.openProduct(pp, shop); }
 
+  function rail(id, secId, list, on) {
+    var box = $(id); box.textContent = "";
+    $(secId).hidden = !on || !list.length;
+    list.slice(0, 12).forEach(function (p) { box.appendChild(Y.card(p, shop, false, openP)); });
+  }
   function render() {
     Y.labels();
     if (!shop) return;
-    Y.catOptions(document.getElementById("fCat"), items.map(function (p) { return p.categorie; }));
-    var q = Y.norm(document.getElementById("q").value.trim()), c = document.getElementById("fCat").value;
+    var recent = Date.now() - 14 * 864e5;
+    rail("railUne", "secUne", items.filter(function (p) { return p.a_la_une; }), sec("une"));
+    rail("railPromo", "secPromo", items.filter(function (p) { return Y.discount(p) > 0; }), sec("promos") && items.length >= 6);
+    rail("railNew", "secNew", items.filter(function (p) { return new Date(p.created_at).getTime() > recent; }), sec("nouveautes") && items.length >= 6);
+    $("allTitle").textContent = Y.t("sAll") + " (" + items.length + ")";
+    Y.catOptions($("fCat"), items.map(function (p) { return p.categorie; }));
+    var q = Y.norm($("q").value.trim()), c = $("fCat").value;
     var list = items.filter(function (p) { return (!c || p.categorie === c) && (!q || Y.norm(p.nom + " " + (p.description || "")).indexOf(q) >= 0); });
-    var g = document.getElementById("grid"); g.textContent = "";
-    if (!list.length) { g.appendChild(Y.el("div", "empty", items.length ? Y.t("noMatch") : Y.t("noProducts"))); return; }
-    list.forEach(function (p) { g.appendChild(Y.card(p, shop, false, function (pp) { Y.openProduct(pp, shop); })); });
+    var g = $("grid"); g.textContent = "";
+    if (!list.length) g.appendChild(Y.el("div", "empty", items.length ? Y.t("noMatch") : Y.t("noProducts")));
+    else list.forEach(function (p) { g.appendChild(Y.card(p, shop, false, openP)); });
+    renderInfos(); renderNav();
+  }
+  function renderInfos() {
+    var box = $("infos"); box.textContent = "";
+    [["hours", shop.horaires], ["delivery", shop.livraison], ["returns", shop.retours], ["address", shop.adresse]].forEach(function (x) {
+      if (!x[1]) return; var c = Y.el("div", "icard"); c.appendChild(Y.el("h3", null, Y.t(x[0]))); c.appendChild(Y.el("p", null, x[1])); box.appendChild(c);
+    });
+    var f = $("faq"); f.textContent = "";
+    var faq = Array.isArray(shop.faq) ? shop.faq.filter(function (x) { return x && x.q && x.r; }) : [];
+    if (faq.length) { f.appendChild(Y.el("h3", null, Y.t("faqT"))); faq.forEach(function (x) { var d = Y.el("details"); d.appendChild(Y.el("summary", null, x.q)); d.appendChild(Y.el("p", null, x.r)); f.appendChild(d); }); }
+    f.hidden = !faq.length;
+    $("secInfo").hidden = !sec("infos") || (!box.children.length && !faq.length);
+  }
+  function renderNav() {
+    var n = $("shopNav"); n.textContent = "";
+    [["secUne", "sUne"], ["secPromo", "sPromo"], ["secNew", "sNew"], ["secAll", "sAll"], ["secInfo", "sInfo"]].forEach(function (x) {
+      if ($(x[0]).hidden) return; var a = Y.el("a", null, Y.t(x[1])); a.href = "#" + x[0]; n.appendChild(a);
+    });
+    n.hidden = n.children.length < 3;
   }
 
   async function start() {
     Y.wirePrefs(render); Y.labels();
     if (!/^[a-z0-9-]{3,40}$/.test(slug)) return notFound();
-    var b = await Y.sb.from("boutiques").select("id,slug,nom,description,whatsapp,ville,pays,devise,logo,couverture").eq("slug", slug).maybeSingle();
+    var b = await Y.sb.from("boutiques").select("*").eq("slug", slug).maybeSingle();
     if (b.error || !b.data) return notFound();
     shop = b.data;
-    var cols = "id,nom,description,prix,devise,categorie,stock,photos,created_at";
-    var p = await Y.sb.from("produits").select("prix_avant," + cols).eq("boutique_id", shop.id).order("created_at", { ascending: false });
+    var cols = "id,boutique_id,nom,description,prix,devise,categorie,stock,photos,created_at";
+    var p = await Y.sb.from("produits").select("prix_avant,a_la_une," + cols).eq("boutique_id", shop.id).order("created_at", { ascending: false });
+    if (p.error) p = await Y.sb.from("produits").select("prix_avant," + cols).eq("boutique_id", shop.id).order("created_at", { ascending: false });
     if (p.error) p = await Y.sb.from("produits").select(cols).eq("boutique_id", shop.id).order("created_at", { ascending: false });
     items = p.data || [];
+
+    var th = Y.THEMES[shop.theme] || Y.THEMES.teal;
+    document.body.style.setProperty("--brand", th[0]); document.body.style.setProperty("--brand-ink", th[1]);
     document.title = shop.nom + " · Yiriclick";
-    document.getElementById("sName").textContent = shop.nom;
-    document.getElementById("sPlace").textContent = [shop.ville, shop.pays].filter(Boolean).join(", ");
-    document.getElementById("sDesc").textContent = shop.description || "";
-    if (shop.couverture) document.getElementById("cover").style.backgroundImage = "url(\"" + Y.pub(shop.couverture) + "\")";
-    var lg = document.getElementById("logo");
+    $("sName").textContent = shop.nom;
+    if (shop.slogan) { $("sSlogan").textContent = shop.slogan; $("sSlogan").hidden = false; }
+    $("sPlace").textContent = [shop.ville, shop.pays].filter(Boolean).join(", ");
+    $("sDesc").textContent = shop.description || "";
+    if (shop.couverture) $("cover").style.backgroundImage = "url(\"" + Y.pub(shop.couverture) + "\")";
+    var lg = $("logo");
     if (shop.logo) lg.style.backgroundImage = "url(\"" + Y.pub(shop.logo) + "\")"; else lg.textContent = shop.nom.charAt(0).toUpperCase();
-    document.getElementById("loading").hidden = true; document.getElementById("shop").hidden = false;
-    document.getElementById("q").addEventListener("input", render);
-    document.getElementById("fCat").addEventListener("change", render);
+    var wa = String(shop.whatsapp || "").replace(/\D/g, "");
+    if (wa.length >= 8) {
+      var c = $("contact"); c.hidden = false;
+      c.addEventListener("click", function () { c.href = "https://wa.me/" + wa + "?text=" + encodeURIComponent(Y.t("waHello", { u: shopUrl() })); Y.track("clic_whatsapp", shop.id); });
+      c.href = "https://wa.me/" + wa;
+    }
+    var rs = shop.reseaux || {}, so = $("socials");
+    [["facebook", "Facebook"], ["instagram", "Instagram"], ["tiktok", "TikTok"], ["youtube", "YouTube"], ["site", null]].forEach(function (x) {
+      var u = safeUrl(rs[x[0]]); if (!u) return; var a = Y.el("a", null, x[1] || Y.t("site")); a.href = u; a.target = "_blank"; a.rel = "noopener"; if (!x[1]) a.setAttribute("data-t", "site"); so.appendChild(a);
+    });
+    so.hidden = !so.children.length;
+    $("shareBtn").addEventListener("click", async function () {
+      var u = shopUrl(), b2 = this;
+      if (navigator.share) { try { await navigator.share({ title: shop.nom, text: shop.slogan || shop.nom, url: u }); return; } catch (e) { if (e && e.name === "AbortError") return; } }
+      try { await navigator.clipboard.writeText(u); b2.textContent = Y.t("copied"); setTimeout(function () { b2.textContent = Y.t("share"); }, 1800); } catch (e) { prompt("", u); }
+    });
+    $("loading").hidden = true; $("shop").hidden = false;
+    $("q").addEventListener("input", render);
+    $("fCat").addEventListener("change", render);
     render();
+    Y.track("vue_boutique", shop.id);
     if (pid) { var hit = items.filter(function (x) { return x.id === pid; })[0]; if (hit) Y.openProduct(hit, shop); }
   }
-  function notFound() { document.getElementById("loading").hidden = true; document.getElementById("missing").hidden = false; Y.labels(); }
+  function notFound() { $("loading").hidden = true; $("missing").hidden = false; Y.labels(); }
   start();
 })();
 </script>

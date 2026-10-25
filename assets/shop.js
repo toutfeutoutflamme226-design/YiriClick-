@@ -7,6 +7,9 @@ window.YC = (function () {
   /* ECB reference rates of 23 October 2026 (1 EUR = x). The CFA franc is pegged: 1 EUR = 655.957 FCFA. */
   var RATES = { EUR: 1, XOF: 655.957, USD: 1.1193 };
   var LOCALE = { fr: "fr-FR", en: "en-GB", es: "es-ES" };
+  /* Shop brand colours chosen by the seller: [background, text on it] */
+  var THEMES = { teal: ["#0E6E78", "#FFFFFF"], navy: ["#10232A", "#FFFFFF"], orange: ["#FF7A2E", "#10232A"], rouge: ["#C62828", "#FFFFFF"], vert: ["#1E7F4F", "#FFFFFF"],
+    violet: ["#6A3FB5", "#FFFFFF"], or: ["#E0A526", "#10232A"], rose: ["#C2185B", "#FFFFFF"], noir: ["#111111", "#FFFFFF"] };
 
   var T = {
     fr: { lang: "Langue", cur: "Monnaie", showcase: "Vitrine", sellers: "Espace vendeur", search: "Rechercher un produit…", allCats: "Toutes les catégories",
@@ -134,6 +137,19 @@ window.YC = (function () {
     var v = money(convert(p.prix, p.devise, to), to);
     return exact ? "= " + v : t("approx", { v: v });
   }
+  /* Anonymous statistics for sellers (no personal data). Views are counted once per browser session,
+     and a seller's own visits are skipped (vendeur.html remembers which shop is theirs). */
+  var SRC = /vitrine\.html$/.test(location.pathname) ? "vitrine" : "boutique";
+  function track(type, boutiqueId, produitId) {
+    try {
+      if (!boutiqueId) return;
+      if (String(localStorage.getItem("yc-own-shop") || "") === String(boutiqueId)) return;
+      if (/^vue_/.test(type)) { var k = "yc-seen-" + type + (produitId || boutiqueId); if (sessionStorage.getItem(k)) return; sessionStorage.setItem(k, "1"); }
+      var row = { type: type, boutique_id: boutiqueId, source: SRC }; if (produitId) row.produit_id = produitId;
+      var q = sb.from("evenements").insert(row); if (q && q.then) q.then(function () {}, function () {});
+    } catch (e) {}
+  }
+  function shopIdOf(p, shop) { return (p && p.boutique_id) || (shop && shop.id) || null; }
   function waLink(shop, p) {
     var d = String(shop.whatsapp || "").replace(/\D/g, ""); if (d.length < 8) return "";
     var u = location.origin + location.pathname.replace(/[^/]*$/, "") + "boutique.html?b=" + encodeURIComponent(shop.slug) + "&p=" + p.id;
@@ -170,8 +186,8 @@ window.YC = (function () {
   try { favs = JSON.parse(localStorage.getItem("yc-favs") || "[]"); if (!Array.isArray(favs)) favs = []; } catch (e) { favs = []; }
   var favListeners = [];
   function isFav(id) { return favs.indexOf(id) >= 0; }
-  function toggleFav(id) {
-    if (isFav(id)) favs = favs.filter(function (x) { return x !== id; }); else favs.unshift(id);
+  function toggleFav(id, p) {
+    if (isFav(id)) favs = favs.filter(function (x) { return x !== id; }); else { favs.unshift(id); if (p) track("favori", p.boutique_id, id); }
     try { localStorage.setItem("yc-favs", JSON.stringify(favs.slice(0, 200))); } catch (e) {}
     document.querySelectorAll('[data-fav="' + id + '"]').forEach(function (b) { favPaint(b, id); });
     favListeners.forEach(function (f) { f(); });
@@ -180,7 +196,7 @@ window.YC = (function () {
   function favPaint(b, id) { var on = isFav(id); b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on)); b.setAttribute("aria-label", on ? t("favDel") : t("favAdd")); }
   function favButton(p) {
     var b = el("button", "fav"); b.type = "button"; b.setAttribute("data-fav", p.id); b.innerHTML = HEART; favPaint(b, p.id);
-    b.addEventListener("click", function (e) { e.stopPropagation(); toggleFav(p.id); if (b.animate && isFav(p.id)) b.animate([{ transform: "scale(1)" }, { transform: "scale(1.3)" }, { transform: "scale(1)" }], { duration: 300 }); });
+    b.addEventListener("click", function (e) { e.stopPropagation(); toggleFav(p.id, p); if (b.animate && isFav(p.id)) b.animate([{ transform: "scale(1)" }, { transform: "scale(1.3)" }, { transform: "scale(1)" }], { duration: 300 }); });
     return b;
   }
   function discount(p) { return p.prix_avant && Number(p.prix_avant) > Number(p.prix) ? Math.round((1 - Number(p.prix) / Number(p.prix_avant)) * 100) : 0; }
@@ -281,8 +297,8 @@ window.YC = (function () {
     var max = p.stock == null ? 99 : p.stock;
     var it = cart.filter(function (i) { return i.id === p.id; })[0];
     if (it) { it.qty = Math.min(max, it.qty + q); it.prix = p.prix; it.devise = p.devise; it.stock = p.stock; }
-    else cart.push({ id: p.id, qty: Math.min(max, q), nom: p.nom, prix: Number(p.prix), devise: p.devise, stock: p.stock, photo: p.photos && p.photos[0] || null, shop: { slug: shop.slug, nom: shop.nom, whatsapp: shop.whatsapp || "" } });
-    cartSave(); toast(t("added"), fromBtn);
+    else cart.push({ id: p.id, qty: Math.min(max, q), nom: p.nom, prix: Number(p.prix), devise: p.devise, stock: p.stock, photo: p.photos && p.photos[0] || null, shop: { id: shopIdOf(p, shop), slug: shop.slug, nom: shop.nom, whatsapp: shop.whatsapp || "" } });
+    cartSave(); toast(t("added"), fromBtn); track("ajout_panier", shopIdOf(p, shop), p.id);
     var b = document.getElementById("cartBtn");
     if (b && b.animate && !matchMedia("(prefers-reduced-motion: reduce)").matches) b.animate([{ transform: "scale(1)" }, { transform: "scale(1.18)" }, { transform: "scale(1)" }], { duration: 380 });
   }
@@ -338,13 +354,13 @@ window.YC = (function () {
   /* Refresh prices, stock and availability from the database before ordering */
   async function refreshCart() {
     if (!cart.length) return;
-    var r = await sb.from("produits").select("id,nom,prix,devise,stock,photos,boutiques(nom,slug,whatsapp)").in("id", cart.map(function (i) { return i.id; }));
+    var r = await sb.from("produits").select("id,nom,prix,devise,stock,photos,boutique_id,boutiques(nom,slug,whatsapp)").in("id", cart.map(function (i) { return i.id; }));
     if (r.error || !r.data) return;
     var map = {}; r.data.forEach(function (p) { map[p.id] = p; });
     var before = cart.length;
     cart = cart.filter(function (i) { var p = map[i.id]; return p && p.boutiques && p.stock !== 0; }).map(function (i) {
       var p = map[i.id]; var max = p.stock == null ? 99 : p.stock;
-      return { id: i.id, qty: Math.min(i.qty, max), nom: p.nom, prix: Number(p.prix), devise: p.devise, stock: p.stock, photo: p.photos && p.photos[0] || null, shop: { slug: p.boutiques.slug, nom: p.boutiques.nom, whatsapp: p.boutiques.whatsapp || "" } };
+      return { id: i.id, qty: Math.min(i.qty, max), nom: p.nom, prix: Number(p.prix), devise: p.devise, stock: p.stock, photo: p.photos && p.photos[0] || null, shop: { id: p.boutique_id, slug: p.boutiques.slug, nom: p.boutiques.nom, whatsapp: p.boutiques.whatsapp || "" } };
     });
     if (cart.length < before) cartNotice = t("gone");
     cartSave();
@@ -456,7 +472,7 @@ window.YC = (function () {
       else {
         var a = el("a", "btn btn-wa cart-go", t("sendTo", { s: g.shop.nom }));
         a.href = "https://wa.me/" + d + "?text=" + encodeURIComponent(orderText(g)); a.target = "_blank"; a.rel = "noopener";
-        a.addEventListener("click", function () { markSent(g); setTimeout(renderCart, 300); });
+        a.addEventListener("click", function () { track("commande_envoyee", g.shop.id); markSent(g); setTimeout(renderCart, 300); });
         sec.appendChild(a);
       }
       p.appendChild(sec);
@@ -482,6 +498,7 @@ window.YC = (function () {
     var bd = el("div", "mbody");
     if (opts.showShop && shop) { var sa = el("a", null, t("by", { s: shop.nom })); sa.href = "boutique.html?b=" + encodeURIComponent(shop.slug); sa.style.color = "var(--teal-deep)"; sa.style.fontWeight = "700"; bd.appendChild(sa); }
     var h = el("h2", null, p.nom); h.id = "pmTitle"; bd.appendChild(h);
+    track("vue_produit", shopIdOf(p, shop), p.id);
     var hr = el("div", "m-pricerow"); hr.appendChild(priceBlock(p, true)); hr.appendChild(favButton(p)); bd.appendChild(hr);
     var meta = [cat(p.categorie)]; if (p.stock != null) meta.push(p.stock > 0 ? t("stock", { n: p.stock }) : t("outStock"));
     bd.appendChild(el("div", "meta", meta.filter(Boolean).join(" · ")));
@@ -498,7 +515,7 @@ window.YC = (function () {
       row.appendChild(ad); bd.appendChild(row);
     }
     var wa = shop ? waLink(shop, p) : "";
-    if (wa && p.stock !== 0) { var w = el("a", "direct", t("orderDirect")); w.href = wa; w.target = "_blank"; w.rel = "noopener"; bd.appendChild(w); }
+    if (wa && p.stock !== 0) { var w = el("a", "direct", t("orderDirect")); w.href = wa; w.target = "_blank"; w.rel = "noopener"; w.addEventListener("click", function () { track("clic_whatsapp", shopIdOf(p, shop), p.id); }); bd.appendChild(w); }
     else if (!wa) bd.appendChild(el("p", "wa-note", t("noWa")));
     box.appendChild(bd);
     box.setAttribute("aria-labelledby", "pmTitle");
@@ -522,7 +539,7 @@ window.YC = (function () {
   /* Pages can add their own texts: YC.extend({ fr: {...}, en: {...}, es: {...} }) */
   function extend(d) { Object.keys(d).forEach(function (L) { T[L] = T[L] || {}; Object.keys(d[L]).forEach(function (k) { T[L][k] = d[L][k]; }); }); }
 
-  return { extend: extend, sb: sb, t: t, cat: cat, el: el, pub: pub, money: money, card: card, openProduct: openProduct, wirePrefs: wirePrefs, setPrefs: setPrefs, labels: labels, catOptions: catOptions, norm: norm, prefs: prefs,
+  return { extend: extend, track: track, cartAdd: function (p, shop, q, b) { cartAdd(p, shop, q || 1, b); }, sb: sb, t: t, cat: cat, el: el, pub: pub, money: money, card: card, openProduct: openProduct, wirePrefs: wirePrefs, setPrefs: setPrefs, labels: labels, catOptions: catOptions, norm: norm, prefs: prefs,
     convert: convert, discount: discount, priceBlock: priceBlock, favButton: favButton, isFav: isFav, favs: function () { return favs.slice(); }, onFavs: function (f) { favListeners.push(f); },
-    openCart: function () { openCart(); }, CATS: CATS, FAMILIES: FAMILIES, LOCALE: LOCALE, URL_SB: URL_SB, HEART: HEART, CART_SVG: CART_SVG };
+    openCart: function () { openCart(); }, CATS: CATS, FAMILIES: FAMILIES, THEMES: THEMES, LOCALE: LOCALE, URL_SB: URL_SB, HEART: HEART, CART_SVG: CART_SVG };
 })();

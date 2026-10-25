@@ -338,7 +338,7 @@ section.block { margin-top: 28px; }
 
   /* ---------- data ---------- */
   async function loadData() {
-    var cols = "id,nom,description,prix,devise,categorie,stock,photos,created_at,boutiques!inner(nom,slug,ville,pays,whatsapp,logo)";
+    var cols = "id,boutique_id,nom,description,prix,devise,categorie,stock,photos,created_at,boutiques!inner(nom,slug,ville,pays,whatsapp,logo)";
     var r = await Y.sb.from("produits").select("prix_avant," + cols).order("created_at", { ascending: false }).limit(400);
     if (r.error) r = await Y.sb.from("produits").select(cols).order("created_at", { ascending: false }).limit(400);
     items = r.data || [];
