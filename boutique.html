@@ -191,6 +191,7 @@
     if (shop.slogan) { $("sSlogan").textContent = shop.slogan; $("sSlogan").hidden = false; }
     $("sPlace").textContent = [shop.ville, shop.pays].filter(Boolean).join(", ");
     $("sDesc").textContent = shop.description || "";
+    if (shop.verifie === false) document.querySelector(".verified").hidden = true;
     if (shop.couverture) $("cover").style.backgroundImage = "url(\"" + Y.pub(shop.couverture) + "\")";
     var lg = $("logo");
     if (shop.logo) lg.style.backgroundImage = "url(\"" + Y.pub(shop.logo) + "\")"; else lg.textContent = shop.nom.charAt(0).toUpperCase();

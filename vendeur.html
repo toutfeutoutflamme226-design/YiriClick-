@@ -95,6 +95,9 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
 .notice { padding: 12px 14px; font-size: 14px; border-left: 4px solid var(--warn); background: var(--warnbg); color: var(--ink); }
 
 /* Dashboard */
+.planbar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; background: var(--tint); border-left: 5px solid var(--teal-deep); padding: 12px 14px; font-weight: 700; }
+.planbar span { flex: 1 1 220px; }
+.planbar.urgent { background: var(--warnbg); border-left-color: var(--orange); }
 .progress { height: 10px; background: var(--tint); overflow: hidden; }
 .progress i { display: block; height: 100%; background: var(--teal-deep); transition: width .5s ease; }
 .todo { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); gap: 6px 14px; }
@@ -346,6 +349,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
   </form>
   <form class="box" id="fSignup" novalidate hidden>
     <h1>Créer mon accès</h1>
+    <p class="ok" id="signupLead" hidden>Ton essai gratuit est ouvert. Choisis ton mot de passe : tu recevras ensuite un e-mail pour confirmer ton adresse.</p>
     <p>Utilise <b>la même adresse e-mail</b> que dans ton inscription Yiriclick. Ton accès s’ouvre une fois ton dossier validé par l’équipe.</p>
     <div class="field"><label for="sEmail">Adresse e-mail</label><input id="sEmail" type="email" autocomplete="username" inputmode="email"></div>
     <div class="field"><label for="sPass">Mot de passe</label><input id="sPass" type="password" autocomplete="new-password"><span class="hint">8 caractères minimum.</span></div>
@@ -372,9 +376,10 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
 
 <section class="wrap" id="vInactive" hidden>
   <div class="box">
-    <h1>Compte pas encore activé</h1>
-    <p>Ton accès est bien créé, mais ta boutique n’est pas encore ouverte. L’équipe Yiriclick l’active après avoir vérifié ton dossier ; tu seras prévenu sur WhatsApp ou par e-mail.</p>
+    <h1 id="inTitle">Compte pas encore activé</h1>
+    <p id="inText">Ton accès est bien créé, mais ta boutique n’est pas encore ouverte.</p>
     <p class="hint" id="inactiveMail"></p>
+    <a class="btn btn-orange" id="inGo" hidden></a>
     <button class="btn btn-navy" type="button" id="recheck">Vérifier à nouveau</button>
   </div>
 </section>
@@ -402,6 +407,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
         <div class="phead">
           <div><p id="dHello" style="margin:0">Bonjour</p><h1 id="dName">Mon espace</h1><div class="plan"><b id="planName"></b><span id="planUse"></span></div></div>
         </div>
+        <div class="planbar" id="planBar" hidden><span id="planBarTxt"></span><a class="btn btn-orange btn-sm" id="planBarGo"></a></div>
         <div class="card" id="noShop" hidden>
           <h2>Crée ta boutique</h2>
           <p class="sub" style="margin:0">Choisis un nom, une adresse et une couleur : ta boutique est en ligne en quelques minutes.</p>
@@ -838,17 +844,32 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
   function form(f) { ["fLogin", "fSignup", "fForgot", "fNewPass"].forEach(function (x) { $(x).hidden = x !== f; }); }
   document.querySelectorAll("[data-go]").forEach(function (b) { b.addEventListener("click", function () { form(b.getAttribute("data-go")); }); });
 
+  var inscrit = (new URLSearchParams(location.search).get("inscrit") || "").trim();
   async function boot() {
     var s = await sb.auth.getSession();
-    if (!s.data.session) { view("vAuth"); form("fLogin"); return; }
+    if (!s.data.session) {
+      view("vAuth");
+      if (inscrit) { form("fSignup"); $("sEmail").value = inscrit; $("signupLead").hidden = false; setTimeout(function () { $("sPass").focus(); }, 50); }
+      else form("fLogin");
+      return;
+    }
     st.user = s.data.session.user;
     var f = await sb.rpc("vendeur_formule");
     if (f.error || !f.data) {
-      $("inactiveMail").textContent = f.error
-        ? "Compte : " + st.user.email + " · La base Yiriclick n’est pas à jour (script v3 manquant) : préviens l’équipe Yiriclick."
-        : "Compte : " + st.user.email + " · Aucune inscription validée n’a été trouvée pour cette adresse e-mail. Vérifie que c’est bien celle utilisée lors de ton inscription.";
+      var acc = f.error ? null : await sb.rpc("mon_compte"), A = acc && !acc.error ? acc.data || {} : {};
+      var dossierUrl = "vendre.html?email=" + encodeURIComponent(st.user.email) + "#dossier-" + (["basique", "pro", "entreprise"].indexOf(A.formule_souhaitee) >= 0 ? A.formule_souhaitee : "pro");
+      var title = "Compte pas encore activé", text = "Ton accès est bien créé, mais ta boutique n’est pas encore ouverte.", go = null;
+      if (f.error) text = "La base Yiriclick n’est pas à jour : préviens l’équipe Yiriclick.";
+      else if (A.dossier_statut === "en_attente" || A.dossier_statut === "verifie") { title = "Dossier en cours de vérification"; text = "Merci ! L’équipe Yiriclick vérifie ton dossier " + (A.dossier_formule || "") + ". Tu seras prévenu sur WhatsApp ou par e-mail dès que ta boutique est activée."; }
+      else if (A.dossier_statut === "refuse") { title = "Dossier non validé"; text = "Ton dossier n’a pas pu être validé. Contacte l’équipe Yiriclick pour en savoir plus, ou envoie un nouveau dossier."; go = ["Envoyer un nouveau dossier", dossierUrl]; }
+      else if (A.essai_statut === "actif" && A.essai_fin && new Date(A.essai_fin) <= new Date()) { title = "Ton essai gratuit est terminé"; text = "Tes produits et ta boutique sont conservés. Pour continuer à vendre, choisis ta formule et envoie ton dossier de vérification (pièce d’identité) : ta boutique se rouvre dès sa validation."; go = ["Choisir ma formule", dossierUrl]; }
+      else if (A.essai_statut === "nouveau") { text = "Cette adresse e-mail avait déjà utilisé un essai gratuit. L’équipe Yiriclick regarde ta demande, ou tu peux passer directement à une formule payante."; go = ["Choisir ma formule", dossierUrl]; }
+      else if (!A.essai_statut && !A.dossier_statut) { text = "Aucune inscription n’a été trouvée pour cette adresse e-mail. Vérifie que c’est bien celle de ton inscription, ou inscris-toi : l’essai gratuit s’ouvre tout de suite."; go = ["S’inscrire gratuitement", "vendre.html#inscription"]; }
+      $("inTitle").textContent = title; $("inText").textContent = text; $("inactiveMail").textContent = "Compte : " + st.user.email;
+      if (go) { $("inGo").hidden = false; $("inGo").textContent = go[0]; $("inGo").href = go[1]; } else $("inGo").hidden = true;
       view("vInactive"); return;
     }
+    var ac = await sb.rpc("mon_compte"); st.account = ac.error ? null : ac.data;
     st.plan = PLANS[f.data] ? f.data : "essai"; view("vApp"); await loadAll();
   }
   sb.auth.onAuthStateChange(function (ev) { if (ev === "PASSWORD_RECOVERY") { view("vAuth"); form("fNewPass"); } });
@@ -970,7 +991,21 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
       ["Mettre un produit à la une", P.some(function (p) { return p.a_la_une; }), "prod", null]
     ];
   }
+  function renderPlanBar() {
+    var A = st.account || {}, bar = $("planBar"), go = $("planBarGo");
+    var url = "vendre.html?email=" + encodeURIComponent(st.user.email) + "#dossier-" + (["basique", "pro", "entreprise"].indexOf(A.formule_souhaitee) >= 0 ? A.formule_souhaitee : "pro");
+    bar.hidden = true; go.hidden = false; bar.className = "planbar";
+    if (A.dossier_statut === "en_attente" || A.dossier_statut === "verifie") {
+      bar.hidden = false; $("planBarTxt").textContent = "Dossier " + (A.dossier_formule || "") + " en cours de vérification. Tu seras prévenu dès sa validation."; go.hidden = true;
+    } else if (st.plan === "essai" && A.essai_fin) {
+      var d = Math.max(0, Math.ceil((new Date(A.essai_fin) - new Date()) / 864e5));
+      bar.hidden = false; if (d <= 3) bar.className = "planbar urgent";
+      $("planBarTxt").textContent = "Essai gratuit : " + (d <= 1 ? "dernier jour" : d + " jours restants") + ". Limites : 15 produits, 4 photos par produit.";
+      go.textContent = "Passer à une formule"; go.href = url;
+    }
+  }
   function renderDash() {
+    renderPlanBar();
     $("dName").textContent = st.shop ? st.shop.nom : "Mon espace";
     var h = new Date().getHours(); $("dHello").textContent = h < 5 || h >= 18 ? "Bonsoir" : "Bonjour";
     $("noShop").hidden = !!st.shop;

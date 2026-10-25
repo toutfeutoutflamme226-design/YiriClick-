@@ -393,7 +393,7 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
     dossiers: [["Date", function (r) { return fmtDate(r.created_at); }, "num"], ["Boutique", function (r) { return r.boutique; }], ["Nom", function (r) { return r.nom; }],
       ["Formule", function (r) { return PLAN[r.formule]; }], ["Pays", function (r) { return r.pays; }], ["Catégorie", function (r) { return r.categorie; }], ["Statut", null]],
     inscriptions: [["Date", function (r) { return fmtDate(r.created_at); }, "num"], ["Boutique", function (r) { return r.boutique; }], ["Nom", function (r) { return r.nom; }],
-      ["Pays", function (r) { return r.pays; }], ["WhatsApp", function (r) { return r.whatsapp; }, "num"], ["E-mail", function (r) { return r.email; }], ["Statut", null]],
+      ["Pays", function (r) { return r.pays; }], ["WhatsApp", function (r) { return r.whatsapp; }, "num"], ["E-mail", function (r) { return r.email; }], ["Fin d’essai", function (r) { return r.essai_fin ? fmtDate(r.essai_fin) : "–"; }, "num"], ["Statut", null]],
     produits: [["Date", function (r) { return fmtDate(r.created_at); }, "num"], ["Produit", function (r) { return r.nom; }], ["Boutique", function (r) { return r.boutique; }],
       ["Prix", function (r) { return money(r.prix, r.devise); }, "num"], ["Affiché par le vendeur", function (r) { return r.visible ? "Oui" : "Non"; }], ["Statut", null]]
   };
@@ -472,6 +472,19 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
       body.appendChild(group("Engagements acceptés", [["Conditions générales", r.accepte_cgv ? "Oui" : "Non"], ["Confidentialité", r.accepte_confidentialite ? "Oui" : "Non"], ["Exactitude", r.certifie_exact ? "Oui" : "Non"], ["Conformité des produits", r.engagement_conformite ? "Oui" : "Non"]]));
     } else {
       body.appendChild(group("Inscription", [["Nom", r.nom], ["Boutique", r.boutique], ["Pays", r.pays], ["WhatsApp", r.whatsapp], ["E-mail", r.email], ["Formule", PLAN[r.formule]], ["Région de tarif", ZONE[r.zone]], ["Langue", r.langue], ["Accepte d’être contacté", r.consentement ? "Oui" : "Non"]]));
+      if (r.essai_fin) {
+        var ef = new Date(r.essai_fin), left = Math.ceil((ef - new Date()) / 864e5);
+        body.appendChild(group("Essai gratuit", [["Fin", fmtDate(r.essai_fin)], ["Jours restants", left > 0 ? String(left) : "Terminé"]]));
+        var ext = el("button", "btn btn-ghost", "Prolonger l’essai de 14 jours"); ext.type = "button";
+        ext.addEventListener("click", async function () {
+          ext.disabled = true; var nf = new Date(Math.max(Date.now(), ef.getTime()) + 14 * 864e5).toISOString();
+          var x = await sb.from("inscriptions").update({ essai_fin: nf, statut: "actif" }).eq("id", r.id);
+          if (x.error) { $("dErr").textContent = x.error.message; ext.disabled = false; return; }
+          r.essai_fin = nf; r.statut = "actif"; renderTable(); openDetail(r);
+        });
+        body.appendChild(ext);
+      }
+      body.appendChild(el("p", "notice", "L’essai s’ouvre automatiquement à l’inscription, pour 14 jours. « Refusé » ferme l’accès tout de suite."));
     }
     var sel = $("dStatut"); sel.textContent = ""; ST[tab].forEach(function (s) { var o = el("option", null, s[1]); o.value = s[0]; sel.appendChild(o); }); sel.value = r.statut;
     $("dNote").value = r.note_admin || ""; $("dErr").textContent = ""; $("dOk").textContent = "";

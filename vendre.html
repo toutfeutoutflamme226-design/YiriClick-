@@ -539,6 +539,7 @@ h1 span { display: block; }
     <form id="suForm" novalidate>
       <p class="su-sub" data-t="suSub"></p>
       <div class="sum" id="suSum"><span data-t="sumLabel">Ton choix</span><b id="suSumV"></b></div>
+      <p class="su-sub" id="suTrialNote" hidden style="background:#E6F4F5;padding:10px 12px;color:#10232A"></p>
       <div class="two">
         <div class="field"><label for="suPlan" data-t="fPlan">Formule</label><select id="suPlan" name="formule"></select></div>
         <div class="field"><label for="suZone" data-t="fZone">Région de tarif</label><select id="suZone" name="zone"></select></div>
@@ -584,7 +585,8 @@ h1 span { display: block; }
       ctas: ["Essayer gratuitement", "Choisir Basique", "Choisir Pro", "Choisir Entreprise"],
       feats: [["Jusqu’à 15 produits, 4 photos chacun", "Boutique avec lien à partager", "Réception des commandes", "Bouton « Commander sur WhatsApp »"], ["Jusqu’à 100 produits, 4 photos chacun", "Boutique personnalisée", "Paiement en ligne (bientôt)", "Avis clients", "Présence sur la vitrine Yiriclick"], ["Tout le Basique", "Jusqu’à 500 produits, 6 photos chacun", "Espace administrateur : stock, finances, factures", "Statistiques de ventes"], ["Tout le Pro", "Produits illimités, 10 photos chacun", "Analyse du marché et des tendances", "Publicité et promotion gérées par Yiriclick", "Plusieurs comptes employés", "Support prioritaire"]],
       contact: "Contact : [ADRESSE E-MAIL]", legal: "Conditions · Confidentialité", langAria: "Changer de langue",
-      suTitle: "Créer ma boutique", suSub: "Remplis ce formulaire. L’équipe Yiriclick te contacte pour activer ta boutique.",
+      suTitle: "Créer ma boutique", suSub: "Ton essai gratuit de 14 jours s’ouvre tout de suite : pas de carte bancaire, pas de pièce d’identité à ce stade.",
+      trialFirst: "Tu commences par 14 jours gratuits. Pour passer à la formule {p}, tu enverras ton dossier de vérification depuis ton espace vendeur, quand tu seras prêt.", okGo: "Créer mon mot de passe",
       fName: "Ton nom complet", fShop: "Nom de ta boutique", fCountry: "Pays", fPhone: "Numéro WhatsApp", fEmail: "Adresse e-mail",
       fPlan: "Formule", fZone: "Région de tarif", fConsent: "J’accepte que Yiriclick me contacte au sujet de mon inscription.",
       fSubmit: "Envoyer mon inscription", fSending: "Envoi…", close: "Fermer", sumLabel: "Ton choix",
@@ -593,7 +595,7 @@ h1 span { display: block; }
       eReq: "Ce champ est obligatoire.", eEmail: "Entre une adresse e-mail valide, par exemple nom@exemple.com.",
       ePhone: "Entre ton numéro avec l’indicatif du pays, par exemple +226 70 00 00 00.", eConsent: "Coche la case pour continuer.",
       eSend: "L’envoi n’a pas fonctionné. Vérifie ta connexion et réessaie.",
-      okTitle: "Inscription envoyée", okText: "Merci ! L’équipe Yiriclick te contacte sur WhatsApp ou par e-mail pour activer ta boutique.",
+      okTitle: "Ton essai est ouvert !", okText: "Dernière étape : crée ton mot de passe avec la même adresse e-mail, confirme-la grâce au lien reçu, et ta boutique est à toi pendant 14 jours.",
       pvTitle: "Formulaire prêt", pvText: "Les inscriptions seront enregistrées dès que le site sera relié à Supabase. Pour l’instant, rien n’a été envoyé.",
       demo: "Exemple", pOpen: "✓ Boutique ouverte", pProduct: "Beurre de karité bio · 250 g", pPublish: "Publier le produit",
       pChips: ["Mobile Money", "Carte", "WhatsApp"], pOrders: "Nouvelles commandes", pEur: "3,81 €",
@@ -626,7 +628,8 @@ h1 span { display: block; }
       ctas: ["Try for free", "Choose Basic", "Choose Pro", "Choose Business"],
       feats: [["Up to 15 products, 4 photos each", "Shop with a shareable link", "Order management", "“Order on WhatsApp” button"], ["Up to 100 products, 4 photos each", "Custom shop", "Online payment (coming soon)", "Customer reviews", "Listed on the Yiriclick showcase"], ["Everything in Basic", "Up to 500 products, 6 photos each", "Admin space: stock, finances, invoices", "Sales statistics"], ["Everything in Pro", "Unlimited products, 10 photos each", "Market and trend analysis", "Ads and promotion managed by Yiriclick", "Multiple staff accounts", "Priority support"]],
       contact: "Contact: [EMAIL ADDRESS]", legal: "Terms · Privacy", langAria: "Change language",
-      suTitle: "Create my shop", suSub: "Fill in this form. The Yiriclick team will contact you to activate your shop.",
+      suTitle: "Create my shop", suSub: "Your 14-day free trial opens right away: no credit card and no ID needed at this stage.",
+      trialFirst: "You start with 14 free days. To move to the {p} plan, you will send your verification file from your seller space, whenever you are ready.", okGo: "Create my password",
       fName: "Your full name", fShop: "Shop name", fCountry: "Country", fPhone: "WhatsApp number", fEmail: "Email address",
       fPlan: "Plan", fZone: "Pricing region", fConsent: "I agree that Yiriclick may contact me about my sign-up.",
       fSubmit: "Send my sign-up", fSending: "Sending…", close: "Close", sumLabel: "Your choice",
@@ -635,7 +638,7 @@ h1 span { display: block; }
       eReq: "This field is required.", eEmail: "Enter a valid email address, for example name@example.com.",
       ePhone: "Enter your number with the country code, for example +226 70 00 00 00.", eConsent: "Tick the box to continue.",
       eSend: "Sending didn’t work. Check your connection and try again.",
-      okTitle: "Sign-up sent", okText: "Thank you! The Yiriclick team will contact you on WhatsApp or by email to activate your shop.",
+      okTitle: "Your trial is open!", okText: "Last step: create your password with the same email address, confirm it with the link you receive, and your shop is yours for 14 days.",
       pvTitle: "Form ready", pvText: "Sign-ups will be saved once the site is connected to Supabase. Nothing has been sent yet.",
       demo: "Example", pOpen: "✓ Shop is live", pProduct: "Organic shea butter · 250 g", pPublish: "Publish product",
       pChips: ["Mobile Money", "Card", "WhatsApp"], pOrders: "New orders", pEur: "€3.81",
@@ -668,7 +671,8 @@ h1 span { display: block; }
       ctas: ["Probar gratis", "Elegir Básico", "Elegir Pro", "Elegir Empresa"],
       feats: [["Hasta 15 productos, 4 fotos cada uno", "Tienda con enlace para compartir", "Recepción de pedidos", "Botón «Pedir por WhatsApp»"], ["Hasta 100 productos, 4 fotos cada uno", "Tienda personalizada", "Pago en línea (muy pronto)", "Opiniones de clientes", "Presencia en el escaparate Yiriclick"], ["Todo lo del Básico", "Hasta 500 productos, 6 fotos cada uno", "Espacio de administración: stock, finanzas, facturas", "Estadísticas de ventas"], ["Todo lo del Pro", "Productos ilimitados, 10 fotos cada uno", "Análisis del mercado y tendencias", "Publicidad y promoción gestionadas por Yiriclick", "Varias cuentas de empleados", "Soporte prioritario"]],
       contact: "Contacto: [CORREO ELECTRÓNICO]", legal: "Condiciones · Privacidad", langAria: "Cambiar idioma",
-      suTitle: "Crear mi tienda", suSub: "Rellena este formulario. El equipo de Yiriclick te contactará para activar tu tienda.",
+      suTitle: "Crear mi tienda", suSub: "Tu prueba gratuita de 14 días se abre al momento: sin tarjeta bancaria ni documento de identidad por ahora.",
+      trialFirst: "Empiezas con 14 días gratis. Para pasar al plan {p}, enviarás tu expediente de verificación desde tu espacio de vendedor, cuando estés listo.", okGo: "Crear mi contraseña",
       fName: "Tu nombre completo", fShop: "Nombre de tu tienda", fCountry: "País", fPhone: "Número de WhatsApp", fEmail: "Correo electrónico",
       fPlan: "Plan", fZone: "Región de precios", fConsent: "Acepto que Yiriclick me contacte sobre mi inscripción.",
       fSubmit: "Enviar mi inscripción", fSending: "Enviando…", close: "Cerrar", sumLabel: "Tu elección",
@@ -677,7 +681,7 @@ h1 span { display: block; }
       eReq: "Este campo es obligatorio.", eEmail: "Introduce un correo válido, por ejemplo nombre@ejemplo.com.",
       ePhone: "Introduce tu número con el prefijo del país, por ejemplo +226 70 00 00 00.", eConsent: "Marca la casilla para continuar.",
       eSend: "El envío no funcionó. Revisa tu conexión e inténtalo de nuevo.",
-      okTitle: "Inscripción enviada", okText: "¡Gracias! El equipo de Yiriclick te contactará por WhatsApp o por correo para activar tu tienda.",
+      okTitle: "¡Tu prueba está abierta!", okText: "Último paso: crea tu contraseña con el mismo correo, confírmalo con el enlace que recibirás y tu tienda es tuya durante 14 días.",
       pvTitle: "Formulario listo", pvText: "Las inscripciones se guardarán cuando el sitio esté conectado a Supabase. Por ahora no se ha enviado nada.",
       demo: "Ejemplo", pOpen: "✓ Tienda abierta", pProduct: "Manteca de karité bio · 250 g", pPublish: "Publicar producto",
       pChips: ["Mobile Money", "Tarjeta", "WhatsApp"], pOrders: "Nuevos pedidos", pEur: "3,81 €",
@@ -1057,7 +1061,7 @@ h1 span { display: block; }
     } catch (e) {}
   }
   var PLAN_KEYS = ["essai", "basique", "pro", "entreprise"];
-  var su = { plan: "essai", zone: state.zone, last: null };
+  var su = { plan: "essai", zone: state.zone, last: null, dossier: false };
   var modal = document.getElementById("signup"), form = document.getElementById("suForm"), done = document.getElementById("suDone");
   var suPlan = document.getElementById("suPlan"), suZone = document.getElementById("suZone");
 
@@ -1067,7 +1071,7 @@ h1 span { display: block; }
     PLAN_KEYS.forEach(function (k, i) { var o = el("option", null, t.names[i]); o.value = k; suPlan.appendChild(o); });
     ["af", "eu", "am"].forEach(function (z, i) { var o = el("option", null, t.regions[i] + " · " + CURS[i]); o.value = z; suZone.appendChild(o); });
     suPlan.value = su.plan; suZone.value = su.zone;
-    suSummary();
+    suSummary(); if (typeof showMode === "function" && modal && !modal.hidden && !su.dossier) showMode();
     if (proForm && !proForm.hidden) buildPro(false);
     else if (docView && !docView.hidden) { docView.hidden = true; proForm.hidden = false; buildPro(false); }
   }
@@ -1078,11 +1082,19 @@ h1 span { display: block; }
     return t.names[i] + " · " + fmtZ(N[i === 2 ? 1 : 3], su.zone) + " " + t.perMonth + " (" + t.launch + ")";
   }
   function suSummary() { document.getElementById("suSumV").textContent = planSummary(); }
-  suPlan.addEventListener("change", function () { su.plan = suPlan.value; if (su.plan !== "essai") { pstep = 0; showMode(); focusFirst(); } else suSummary(); });
+  suPlan.addEventListener("change", function () {
+    su.plan = suPlan.value;
+    if (su.dossier && su.plan !== "essai") { pstep = 0; showMode(); focusFirst(); }
+    else if (su.dossier) { su.dossier = false; showMode(); }
+    else suSummary();
+  });
   suZone.addEventListener("change", function () { su.zone = suZone.value; suSummary(); });
 
-  function openSignup(plan) {
+  /* Everyone starts with the free trial (opened at once). The identity check (dossier) only comes
+     when a seller moves to a paid plan, from the seller space: vendre.html?email=…#dossier-pro */
+  function openSignup(plan, dossier) {
     su.plan = PLAN_KEYS.indexOf(plan) >= 0 ? plan : "essai"; su.zone = state.zone; su.last = document.activeElement;
+    su.dossier = !!dossier; if (su.dossier && su.plan === "essai") su.plan = "basique";
     track("formulaire", su.plan);
     suRefresh();
     pstep = 0; done.hidden = true; showMode();
@@ -1112,7 +1124,10 @@ h1 span { display: block; }
       else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
     }
   });
+  var urlEmail = (new URLSearchParams(location.search).get("email") || "").trim();
   if (location.hash === "#inscription") setTimeout(function () { openSignup("essai"); }, 300);
+  var dm = /^#dossier(?:-(basique|pro|entreprise))?$/.exec(location.hash);
+  if (dm) setTimeout(function () { if (urlEmail) pv.email = urlEmail; openSignup(dm[1] || "pro", true); }, 300);
 
   function setErr(id, msg) {
     var inp = document.getElementById(id), e = document.getElementById(id + "-err");
@@ -1154,6 +1169,8 @@ h1 span { display: block; }
     }).then(function (r) {
       if (!r.ok) throw new Error(r.status);
       form.reset(); track("essai", su.plan); showDone(t.okTitle, t.okText);
+      var go = el("a", "btn btn-orange", t.okGo); go.href = "vendeur.html?inscrit=" + encodeURIComponent(row.email) + "#signup"; go.style.marginTop = "6px";
+      var dn = document.getElementById("suDone"); var old = dn.querySelector(".ok-go"); if (old) old.remove(); go.classList.add("ok-go"); dn.insertBefore(go, dn.querySelector("button")); go.focus();
     }).catch(function () { sendErr.textContent = t.eSend; })
       .then(function () { btn.disabled = false; btn.textContent = t.fSubmit; });
   });
@@ -1227,7 +1244,9 @@ h1 span { display: block; }
   };
 
   function showMode() {
-    var trial = su.plan === "essai";
+    var trial = !su.dossier;
+    var note = document.getElementById("suTrialNote");
+    if (note) { var tt = T[state.lang], i = PLAN_KEYS.indexOf(su.plan); note.hidden = !trial || su.plan === "essai"; note.textContent = i > 0 ? tt.trialFirst.replace("{p}", tt.names[i]) : ""; }
     form.hidden = !trial; proForm.hidden = trial; docView.hidden = true;
     if (!trial) buildPro(false);
   }

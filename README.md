@@ -165,6 +165,17 @@ Pour changer la clé : `select vault.update_secret((select id from vault.secrets
 Le vendeur peut couper les e-mails (« Ma boutique › Contact »). Dans l’espace vendeur ouvert, une alerte sonore
 et une notification signalent aussi chaque nouvelle commande (vérification toutes les 30 secondes).
 
+## Inscription simplifiée (base v10)
+
+1. Supabase › **SQL Editor** : colle `supabase/schema-v10.sql`, puis **Run**.
+2. Toute inscription ouvre **tout de suite** un essai gratuit de 14 jours (une seule fois par adresse e-mail).
+   Le vendeur crée son mot de passe, confirme son e-mail, et sa boutique est ouverte.
+3. La pièce d’identité n’est demandée que pour passer en formule payante : bouton « Passer à une formule »
+   dans l’espace vendeur, ou `vendre.html?email=…#dossier-pro`.
+4. À la fin de l’essai, l’espace vendeur affiche « Ton essai gratuit est terminé » avec le lien vers le dossier.
+   Dans l’admin (onglet Essais), tu peux **prolonger l’essai de 14 jours** ou le refuser.
+5. Le badge « Vendeur vérifié » ne s’affiche que pour les vendeurs dont le dossier est validé (Actif).
+
 ## Pages du site
 
 - `index.html` : la vitrine, page d’accueil pour les acheteurs.
