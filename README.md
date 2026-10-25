@@ -184,6 +184,14 @@ et une notification signalent aussi chaque nouvelle commande (vérification tout
 3. Sans ce script, la vitrine continue de marcher comme avant (400 produits chargés d’un coup).
 4. Taux de change utilisés pour trier par prix : table `taux` (1 EUR = x).
 
+## Taux de change du jour (base v12)
+
+1. Supabase › **SQL Editor** : colle `supabase/schema-v12.sql`, puis **Run**.
+2. Chaque jour de semaine à 15 h 30 UTC, la base récupère les taux de la Banque centrale européenne (API Frankfurter, gratuite)
+   et met à jour la table `taux`. Le franc CFA reste fixe (1 € = 655,957 FCFA).
+3. La vitrine, les boutiques et la démo des monnaies de `vendre.html` utilisent ces taux, avec leur date.
+4. Vérifier : `select * from public.taux;` · Voir les tâches : `select * from cron.job;`
+
 ## Pages du site
 
 - `index.html` : la vitrine, page d’accueil pour les acheteurs.

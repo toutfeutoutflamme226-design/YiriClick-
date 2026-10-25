@@ -5,7 +5,13 @@ window.YC = (function () {
   var sb = window.supabase.createClient(URL_SB, KEY_SB, { auth: { persistSession: false } });
 
   /* ECB reference rates of 23 October 2026 (1 EUR = x). The CFA franc is pegged: 1 EUR = 655.957 FCFA. */
-  var RATES = { EUR: 1, XOF: 655.957, USD: 1.1193 };
+  var RATES = { EUR: 1, XOF: 655.957, USD: 1.1193 }, RATES_DATE = new Date("2026-10-23T16:00:00Z");
+  /* Daily rates from the database (base v12); the values above are only a fallback */
+  sb.from("taux").select("devise,par_eur,maj").then(function (r) {
+    if (r.error || !r.data || !r.data.length) return;
+    r.data.forEach(function (x) { if (Number(x.par_eur) > 0) RATES[x.devise] = Number(x.par_eur); if (x.devise === "USD" && x.maj) RATES_DATE = new Date(x.maj); });
+    prefsListeners.forEach(function (f) { try { f(); } catch (e) {} });
+  }, function () {});
   var LOCALE = { fr: "fr-FR", en: "en-GB", es: "es-ES" };
   /* Shop brand colours chosen by the seller: [background, text on it] */
   var THEMES = { teal: ["#0E6E78", "#FFFFFF"], navy: ["#10232A", "#FFFFFF"], orange: ["#FF7A2E", "#10232A"], rouge: ["#C62828", "#FFFFFF"], vert: ["#1E7F4F", "#FFFFFF"],
@@ -15,7 +21,7 @@ window.YC = (function () {
     fr: { lang: "Langue", cur: "Monnaie", showcase: "Vitrine", sellers: "Espace vendeur", search: "Rechercher un produit…", allCats: "Toutes les catégories",
       noProducts: "Aucun produit pour l’instant.", noMatch: "Aucun produit ne correspond à ta recherche.", stock: "En stock : {n}", outStock: "Rupture de stock",
       order: "Commander sur WhatsApp", noWa: "Ce vendeur n’a pas encore indiqué de numéro WhatsApp.", waMsg: "Bonjour, je suis intéressé(e) par « {p} » ({x}) vu sur votre boutique Yiriclick : {u}",
-      approx: "≈ {v} au taux du 23/10/2026", close: "Fermer", verified: "Vendeur vérifié par Yiriclick", notFound: "Boutique introuvable", notFoundP: "Cette boutique n’existe pas ou n’est pas visible pour le moment.",
+      approx: "≈ {v} au taux du {d}", close: "Fermer", verified: "Vendeur vérifié par Yiriclick", notFound: "Boutique introuvable", notFoundP: "Cette boutique n’existe pas ou n’est pas visible pour le moment.",
       back: "Voir la vitrine Yiriclick", loading: "Chargement…", latest: "Les derniers produits des vendeurs Yiriclick", vitrineT: "La vitrine Yiriclick", see: "Voir la boutique", by: "Par {s}", foot: "Boutique propulsée par Yiriclick", openShop: "Ouvrir ma boutique sur Yiriclick", buy: "Commander", details: "Détails",
       add: "Ajouter", addLong: "Ajouter au panier", added: "Ajouté au panier", viewCart: "Voir le panier", cart: "Panier", cartTitle: "Mon panier",
       cartEmpty: "Ton panier est vide. Ajoute des produits depuis la vitrine ou une boutique.", keepShopping: "Continuer mes achats",
@@ -31,7 +37,7 @@ window.YC = (function () {
     en: { lang: "Language", cur: "Currency", showcase: "Showcase", sellers: "Seller space", search: "Search for a product…", allCats: "All categories",
       noProducts: "No products yet.", noMatch: "No product matches your search.", stock: "In stock: {n}", outStock: "Out of stock",
       order: "Order on WhatsApp", noWa: "This seller has not added a WhatsApp number yet.", waMsg: "Hello, I am interested in “{p}” ({x}) seen on your Yiriclick shop: {u}",
-      approx: "≈ {v} at the 23/10/2026 rate", close: "Close", verified: "Seller verified by Yiriclick", notFound: "Shop not found", notFoundP: "This shop does not exist or is not visible right now.",
+      approx: "≈ {v} at the {d} rate", close: "Close", verified: "Seller verified by Yiriclick", notFound: "Shop not found", notFoundP: "This shop does not exist or is not visible right now.",
       back: "See the Yiriclick showcase", loading: "Loading…", latest: "The latest products from Yiriclick sellers", vitrineT: "The Yiriclick showcase", see: "See the shop", by: "By {s}", foot: "Shop powered by Yiriclick", openShop: "Open my shop on Yiriclick", buy: "Order", details: "Details",
       add: "Add", addLong: "Add to cart", added: "Added to cart", viewCart: "View cart", cart: "Cart", cartTitle: "My cart",
       cartEmpty: "Your cart is empty. Add products from the showcase or a shop.", keepShopping: "Continue shopping",
@@ -47,7 +53,7 @@ window.YC = (function () {
     es: { lang: "Idioma", cur: "Moneda", showcase: "Escaparate", sellers: "Espacio vendedor", search: "Buscar un producto…", allCats: "Todas las categorías",
       noProducts: "Todavía no hay productos.", noMatch: "Ningún producto coincide con tu búsqueda.", stock: "En stock: {n}", outStock: "Agotado",
       order: "Pedir por WhatsApp", noWa: "Este vendedor aún no ha indicado un número de WhatsApp.", waMsg: "Hola, me interesa «{p}» ({x}) visto en su tienda Yiriclick: {u}",
-      approx: "≈ {v} al cambio del 23/10/2026", close: "Cerrar", verified: "Vendedor verificado por Yiriclick", notFound: "Tienda no encontrada", notFoundP: "Esta tienda no existe o no está visible por ahora.",
+      approx: "≈ {v} al cambio del {d}", close: "Cerrar", verified: "Vendedor verificado por Yiriclick", notFound: "Tienda no encontrada", notFoundP: "Esta tienda no existe o no está visible por ahora.",
       back: "Ver el escaparate de Yiriclick", loading: "Cargando…", latest: "Los últimos productos de los vendedores de Yiriclick", vitrineT: "El escaparate de Yiriclick", see: "Ver la tienda", by: "Por {s}", foot: "Tienda impulsada por Yiriclick", openShop: "Abrir mi tienda en Yiriclick", buy: "Pedir", details: "Detalles",
       add: "Añadir", addLong: "Añadir al carrito", added: "Añadido al carrito", viewCart: "Ver el carrito", cart: "Carrito", cartTitle: "Mi carrito",
       cartEmpty: "Tu carrito está vacío. Añade productos desde el escaparate o una tienda.", keepShopping: "Seguir comprando",
@@ -163,7 +169,7 @@ window.YC = (function () {
     var to = prefs.cur; if (!to || to === p.devise) return "";
     var exact = (to === "XOF" && p.devise === "EUR") || (to === "EUR" && p.devise === "XOF");
     var v = money(convert(p.prix, p.devise, to), to);
-    return exact ? "= " + v : t("approx", { v: v });
+    return exact ? "= " + v : t("approx", { v: v, d: RATES_DATE.toLocaleDateString(LOCALE[prefs.lang], { day: "2-digit", month: "2-digit", year: "numeric" }) });
   }
   /* Anonymous statistics for sellers (no personal data). Views are counted once per browser session,
      and a seller's own visits are skipped (vendeur.html remembers which shop is theirs). */
