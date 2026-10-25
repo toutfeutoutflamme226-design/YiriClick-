@@ -606,7 +606,7 @@ section.block { margin-top: 28px; }
   function renderChooser() {
     var box = $("clist"); box.textContent = "";
     COUNTRIES.forEach(function (c) {
-      var l = el("label"), r = el("input"); r.type = "radio"; r.name = "country"; r.value = c[0]; r.checked = c[0] === country;
+      var l = el("label"), r = el("input"); r.type = "radio"; r.name = "country"; r.value = c[0]; r.checked = c[0] === (pickCountry || country);
       r.addEventListener("change", function () { pickCountry = c[0]; Y.setPrefs(null, c[1]); });
       l.appendChild(r); l.appendChild(el("span", null, cname(c[0]))); l.appendChild(el("span", "flag", flag(c[0]))); box.appendChild(l);
     });
