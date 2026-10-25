@@ -117,7 +117,7 @@ window.YC = (function () {
   function extendT(d) { Object.keys(d).forEach(function (L) { T[L] = T[L] || {}; Object.keys(d[L]).forEach(function (k) { T[L][k] = d[L][k]; }); }); }
   /* Orders and variants */
   extendT({
-    fr: { chooseVar: "Choisir", pickOpt: "Choisis : {o}", placeOrder: "Envoyer ma commande", placing: "Envoi en cours…", placeHelp: "Ta commande est enregistrée chez chaque vendeur avec un numéro. Tu pourras ensuite la lui envoyer sur WhatsApp.",
+    fr: { sizeGuide: "Guide des tailles", sizeNote: "Mesures indicatives en cm : elles varient selon les marques. En cas de doute, demande au vendeur.", gEU: "Europe", gFoot: "Pied (cm)", gSize: "Taille", gFR: "Taille FR", gChest: "Poitrine (cm)", gWaist: "Tour de taille (cm)", chooseVar: "Choisir", pickOpt: "Choisis : {o}", placeOrder: "Envoyer ma commande", placing: "Envoi en cours…", placeHelp: "Ta commande est enregistrée chez chaque vendeur avec un numéro. Tu pourras ensuite la lui envoyer sur WhatsApp.",
       orderErr: "La commande n’a pas pu être enregistrée. Réessaie.", orderNo: "Commande n° {n}", orderedTitle: "Commande enregistrée", orderedHelp: "Merci ! Le vendeur a reçu ta commande. Envoie-la-lui aussi sur WhatsApp pour aller plus vite : il te confirme la disponibilité, la livraison et le paiement.",
       noWaRec: "{s} a bien reçu ta commande sur Yiriclick et te contactera.", myOrders: "Mes commandes", ordersHelp: "Les commandes passées depuis ce téléphone ou cet ordinateur, avec leur suivi.",
       st_nouvelle: "En attente", st_confirmee: "Confirmée", st_expediee: "Expédiée", st_livree: "Livrée", st_annulee: "Annulée",
@@ -125,7 +125,7 @@ window.YC = (function () {
       promoBad: "Ce code n’est pas valable pour cette boutique.", promoMin: "dès {m} d’achat", afterPromo: "Après réduction", promoRemove: "Retirer le code",
       revTitle: "Ton avis sur {s}", revNote: "Note sur 5", revPh: "Qu’as-tu pensé du produit et du vendeur ? (facultatif)", revSend: "Publier mon avis", revPick: "Choisis une note de 1 à 5 étoiles.", revThanks: "Merci pour ton avis !",
       reviews: "Avis clients", nReviews: "{n} avis", noReviews: "Pas encore d’avis.", sellerReply: "Réponse du vendeur" },
-    en: { chooseVar: "Choose", pickOpt: "Choose: {o}", placeOrder: "Send my order", placing: "Sending…", placeHelp: "Your order is recorded with each seller with a number. You can then send it to them on WhatsApp.",
+    en: { sizeGuide: "Size guide", sizeNote: "Indicative measurements in cm: they vary by brand. If in doubt, ask the seller.", gEU: "EU", gFoot: "Foot (cm)", gSize: "Size", gFR: "FR size", gChest: "Chest (cm)", gWaist: "Waist (cm)", chooseVar: "Choose", pickOpt: "Choose: {o}", placeOrder: "Send my order", placing: "Sending…", placeHelp: "Your order is recorded with each seller with a number. You can then send it to them on WhatsApp.",
       orderErr: "The order could not be recorded. Please try again.", orderNo: "Order no. {n}", orderedTitle: "Order recorded", orderedHelp: "Thank you! The seller has received your order. Send it on WhatsApp too to speed things up: they will confirm availability, delivery and payment.",
       noWaRec: "{s} has received your order on Yiriclick and will contact you.", myOrders: "My orders", ordersHelp: "Orders placed from this phone or computer, with their status.",
       st_nouvelle: "Pending", st_confirmee: "Confirmed", st_expediee: "Shipped", st_livree: "Delivered", st_annulee: "Cancelled",
@@ -133,7 +133,7 @@ window.YC = (function () {
       promoBad: "This code is not valid for this shop.", promoMin: "from {m} spent", afterPromo: "After discount", promoRemove: "Remove code",
       revTitle: "Your review of {s}", revNote: "Rating out of 5", revPh: "What did you think of the product and the seller? (optional)", revSend: "Post my review", revPick: "Choose a rating from 1 to 5 stars.", revThanks: "Thank you for your review!",
       reviews: "Customer reviews", nReviews: "{n} reviews", noReviews: "No reviews yet.", sellerReply: "Seller’s reply" },
-    es: { chooseVar: "Elegir", pickOpt: "Elige: {o}", placeOrder: "Enviar mi pedido", placing: "Enviando…", placeHelp: "Tu pedido queda registrado en cada vendedor con un número. Después podrás enviárselo por WhatsApp.",
+    es: { sizeGuide: "Guía de tallas", sizeNote: "Medidas orientativas en cm: varían según la marca. Si tienes dudas, pregunta al vendedor.", gEU: "Europa", gFoot: "Pie (cm)", gSize: "Talla", gFR: "Talla FR", gChest: "Pecho (cm)", gWaist: "Cintura (cm)", chooseVar: "Elegir", pickOpt: "Elige: {o}", placeOrder: "Enviar mi pedido", placing: "Enviando…", placeHelp: "Tu pedido queda registrado en cada vendedor con un número. Después podrás enviárselo por WhatsApp.",
       orderErr: "No se pudo registrar el pedido. Inténtalo de nuevo.", orderNo: "Pedido n.º {n}", orderedTitle: "Pedido registrado", orderedHelp: "¡Gracias! El vendedor ha recibido tu pedido. Envíaselo también por WhatsApp para ir más rápido: te confirmará disponibilidad, entrega y pago.",
       noWaRec: "{s} ha recibido tu pedido en Yiriclick y se pondrá en contacto contigo.", myOrders: "Mis pedidos", ordersHelp: "Los pedidos hechos desde este teléfono u ordenador, con su seguimiento.",
       st_nouvelle: "Pendiente", st_confirmee: "Confirmado", st_expediee: "Enviado", st_livree: "Entregado", st_annulee: "Cancelado",
@@ -277,6 +277,7 @@ window.YC = (function () {
     if (showShop && shop) ib.appendChild(el("span", "shopname", shop.nom));
     ib.appendChild(el("h3", null, p.nom));
     ib.appendChild(priceBlock(p));
+    if (hasVar(p)) { var o0 = p.variantes.options[0], vs = o0.valeurs; ib.appendChild(el("span", "sizes", o0.nom + " : " + vs.slice(0, 6).join(" · ") + (vs.length > 6 ? " …" : ""))); }
     open.appendChild(ib);
     open.addEventListener("click", function () { onOpen(p, shop); });
     c.appendChild(open);
@@ -310,6 +311,20 @@ window.YC = (function () {
     var cs = p.variantes.combis || []; if (!cs.length) return p.stock;
     var c = combiOf(p, v); if (!c) return 0;
     return typeof c.stock === "number" ? c.stock : null;
+  }
+  /* Indicative size guides (vary by brand) */
+  function guideKind(o, p) {
+    if (/pointure|shoe|calzado/i.test(o.nom) || (p.categorie === "chaussures" && /taille|size|talla/i.test(o.nom))) return o.valeurs.some(function (v) { return Number(v) >= 36; }) ? "shoes" : null;
+    if (/taille|size|talla/i.test(o.nom) && o.valeurs.some(function (v) { return /^(XS|S|M|L|XL|XXL)$/i.test(v); })) return "clothes";
+    return null;
+  }
+  function guideTable(kind) {
+    var rows = kind === "shoes"
+      ? [[t("gEU"), "UK", "US", t("gFoot")], ["36", "3,5", "4,5", "23"], ["37", "4", "5", "23,5"], ["38", "5", "6", "24"], ["39", "6", "7", "25"], ["40", "6,5", "7,5", "25,5"], ["41", "7,5", "8,5", "26"], ["42", "8", "9", "26,5"], ["43", "9", "10", "27,5"], ["44", "9,5", "10,5", "28"], ["45", "10,5", "11,5", "29"], ["46", "11", "12", "29,5"]]
+      : [[t("gSize"), t("gFR"), t("gChest"), t("gWaist")], ["XS", "34", "80–84", "64–68"], ["S", "36", "84–90", "68–74"], ["M", "38–40", "90–98", "74–82"], ["L", "42", "98–106", "82–90"], ["XL", "44", "106–114", "90–98"], ["XXL", "46", "114–122", "98–106"]];
+    var tb = el("table", "gtable");
+    rows.forEach(function (r, i) { var tr = el("tr"); r.forEach(function (c) { tr.appendChild(el(i ? "td" : "th", null, c)); }); tb.appendChild(tr); });
+    return tb;
   }
   function vLabel(v) { return v && v.length ? v.join(" / ") : ""; }
 
@@ -760,7 +775,13 @@ window.YC = (function () {
           b.addEventListener("click", function () { sel[k] = sel[k] === val ? null : val; q = 1; update(); });
           list.appendChild(b);
         });
-        g.appendChild(list); vbox.appendChild(g);
+        g.appendChild(list);
+        var kind = guideKind(o, p);
+        if (kind) {
+          var gd = el("details", "sguide"), gs = el("summary", null, t("sizeGuide")); gd.appendChild(gs);
+          gd.appendChild(guideTable(kind)); gd.appendChild(el("p", "wa-note", t("sizeNote"))); g.appendChild(gd);
+        }
+        vbox.appendChild(g);
       });
       bd.appendChild(vbox);
     }

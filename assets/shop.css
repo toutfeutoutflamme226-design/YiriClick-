@@ -222,3 +222,9 @@ footer a { color: var(--teal); }
 .rev .reply { background: var(--bg); padding: 8px 10px; font-size: 14px; border-left: 3px solid var(--brand, #0E6E78); }
 .rev-sum { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 12px; }
 .rev-sum .big { font-size: 40px; font-weight: 900; letter-spacing: -1px; }
+/* Sizes on cards and size guide */
+.item .sizes { font-size: 12px; color: var(--soft); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sguide summary { cursor: pointer; font-size: 14px; font-weight: 700; color: var(--teal-deep); text-decoration: underline; text-underline-offset: 3px; min-height: 36px; display: flex; align-items: center; }
+.gtable { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; margin: 4px 0 6px; }
+.gtable th, .gtable td { border: 1px solid var(--rule); padding: 6px; text-align: center; }
+.gtable th { background: var(--bg); font-weight: 800; }

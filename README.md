@@ -128,6 +128,15 @@ en haut du script de `vitrine.html` (objet `SOCIAL`).
 3. **Avis clients** : après une commande livrée, le client note la boutique depuis « Mes commandes ».
    Le vendeur répond ou signale (onglet Commandes › Avis) ; l’admin masque les avis abusifs.
 
+## Tailles pour toutes les formules (base v8)
+
+1. Dans Supabase, **SQL Editor › New query** : colle `supabase/schema-v8.sql`, puis **Run**.
+2. Essai et Basique : une option (taille, pointure, âge…) avec un stock par taille.
+   Pro et Entreprise : taille **et** couleur, et un prix par variante.
+3. Dans la fiche produit, des modèles en un geste : XS → XXL, grandes tailles, 34 → 48, pointures 36 → 46,
+   pointures enfant, âges enfant et bébé, couleurs, taille unique. Un rappel apparaît pour les vêtements sans tailles.
+4. Côté client : les tailles s’affichent sur les cartes produits, et un guide des tailles indicatif dans la fiche.
+
 ## À modifier avant le lancement
 
 - Remplacer `[ADRESSE E-MAIL]` (et ses traductions) par ton adresse de contact,
