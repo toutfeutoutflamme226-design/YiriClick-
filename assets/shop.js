@@ -22,7 +22,7 @@ window.YC = (function () {
       eReq: "Ce champ est obligatoire.", ePhone: "Entre ton numéro avec l’indicatif du pays, par exemple +226 70 00 00 00.",
       sendTitle: "Envoie ta commande à chaque vendeur", sendHelp: "Ton panier contient des produits de plusieurs vendeurs : envoie la commande à chacun. Le vendeur te confirme la disponibilité, la livraison et le paiement.",
       sendTo: "Envoyer à {s} sur WhatsApp", sent: "Envoyé à {s}", noWaShop: "{s} n’a pas indiqué de numéro WhatsApp : sa commande ne peut pas être envoyée pour l’instant.",
-      clearSent: "Retirer les produits envoyés du panier", editInfo: "Modifier mes coordonnées", orderDirect: "Commander directement sur WhatsApp",
+      sentTitle: "Commandes envoyées", sentLine: "{s} · {n} article(s) · {h}", restore: "Remettre dans le panier", doneTitle: "Commande envoyée", doneText: "Ton panier a été vidé. Le vendeur te répond sur WhatsApp pour confirmer la disponibilité, la livraison et le paiement. Si le message n’est pas parti, touche « Remettre dans le panier ».", editInfo: "Modifier mes coordonnées", orderDirect: "Commander directement sur WhatsApp",
       waCart: "Bonjour {s}, je souhaite commander sur Yiriclick :", waTotal: "Total", waName: "Nom", waPhone: "Téléphone", waAddr: "Adresse de livraison", waNote: "Message",
       waEnd: "Merci de me confirmer la disponibilité, les frais de livraison et le mode de paiement.", approxSign: "≈ " },
     en: { lang: "Language", cur: "Currency", showcase: "Showcase", sellers: "Seller space", search: "Search for a product…", allCats: "All categories",
@@ -38,7 +38,7 @@ window.YC = (function () {
       eReq: "This field is required.", ePhone: "Enter your number with the country code, for example +226 70 00 00 00.",
       sendTitle: "Send your order to each seller", sendHelp: "Your cart has products from several sellers: send the order to each one. The seller confirms availability, delivery and payment with you.",
       sendTo: "Send to {s} on WhatsApp", sent: "Sent to {s}", noWaShop: "{s} has not added a WhatsApp number: this order cannot be sent yet.",
-      clearSent: "Remove sent products from the cart", editInfo: "Edit my details", orderDirect: "Order directly on WhatsApp",
+      sentTitle: "Orders sent", sentLine: "{s} · {n} item(s) · {h}", restore: "Put back in the cart", doneTitle: "Order sent", doneText: "Your cart has been emptied. The seller will reply on WhatsApp to confirm availability, delivery and payment. If the message did not go through, tap “Put back in the cart”.", editInfo: "Edit my details", orderDirect: "Order directly on WhatsApp",
       waCart: "Hello {s}, I would like to order on Yiriclick:", waTotal: "Total", waName: "Name", waPhone: "Phone", waAddr: "Delivery address", waNote: "Message",
       waEnd: "Please confirm availability, delivery costs and payment method.", approxSign: "≈ " },
     es: { lang: "Idioma", cur: "Moneda", showcase: "Escaparate", sellers: "Espacio vendedor", search: "Buscar un producto…", allCats: "Todas las categorías",
@@ -54,7 +54,7 @@ window.YC = (function () {
       eReq: "Este campo es obligatorio.", ePhone: "Introduce tu número con el prefijo del país, por ejemplo +226 70 00 00 00.",
       sendTitle: "Envía tu pedido a cada vendedor", sendHelp: "Tu carrito tiene productos de varios vendedores: envía el pedido a cada uno. El vendedor te confirma disponibilidad, entrega y pago.",
       sendTo: "Enviar a {s} por WhatsApp", sent: "Enviado a {s}", noWaShop: "{s} no ha indicado un número de WhatsApp: este pedido aún no se puede enviar.",
-      clearSent: "Quitar del carrito los productos enviados", editInfo: "Modificar mis datos", orderDirect: "Pedir directamente por WhatsApp",
+      sentTitle: "Pedidos enviados", sentLine: "{s} · {n} artículo(s) · {h}", restore: "Volver a poner en el carrito", doneTitle: "Pedido enviado", doneText: "Tu carrito se ha vaciado. El vendedor te responderá por WhatsApp para confirmar disponibilidad, entrega y pago. Si el mensaje no se envió, toca «Volver a poner en el carrito».", editInfo: "Modificar mis datos", orderDirect: "Pedir directamente por WhatsApp",
       waCart: "Hola {s}, quiero hacer un pedido en Yiriclick:", waTotal: "Total", waName: "Nombre", waPhone: "Teléfono", waAddr: "Dirección de entrega", waNote: "Mensaje",
       waEnd: "Por favor, confírmame disponibilidad, gastos de envío y forma de pago.", approxSign: "≈ " }
   };
@@ -146,7 +146,40 @@ window.YC = (function () {
   try { cart = JSON.parse(localStorage.getItem("yc-cart") || "[]"); if (!Array.isArray(cart)) cart = []; } catch (e) { cart = []; }
   var buyer = {};
   try { buyer = JSON.parse(localStorage.getItem("yc-buyer") || "{}") || {}; } catch (e) { buyer = {}; }
-  var cartView = "list", sentShops = {}, cartNotice = "";
+  var cartView = "list", cartNotice = "";
+  var sentLog = [];
+  try { sentLog = JSON.parse(localStorage.getItem("yc-sent") || "[]"); if (!Array.isArray(sentLog)) sentLog = []; } catch (e) { sentLog = []; }
+  function sentSave() {
+    var day = Date.now() - 24 * 3600 * 1000;
+    sentLog = sentLog.filter(function (x) { return x.at > day; }).slice(-10);
+    try { localStorage.setItem("yc-sent", JSON.stringify(sentLog)); } catch (e) {}
+  }
+  sentSave();
+  /* Called when the visitor taps "Envoyer à … sur WhatsApp": those products leave the cart */
+  function markSent(g) {
+    sentLog.push({ at: Date.now(), shop: g.shop, items: g.items.map(function (i) { return JSON.parse(JSON.stringify(i)); }) });
+    var ids = g.items.map(function (i) { return i.id; });
+    cart = cart.filter(function (i) { return ids.indexOf(i.id) < 0; });
+    sentSave(); cartSave();
+  }
+  function restoreSent(entry) {
+    entry.items.forEach(function (it) { var ex = cart.filter(function (i) { return i.id === it.id; })[0]; if (ex) ex.qty += it.qty; else cart.push(it); });
+    sentLog = sentLog.filter(function (x) { return x !== entry; }); sentSave(); cartSave();
+  }
+  function sentBlock(p, recentOnly) {
+    var list = sentLog.slice().reverse().filter(function (x) { return !recentOnly || x.at > Date.now() - 2 * 3600 * 1000; });
+    if (!list.length) return;
+    var box = el("section", "cart-sentbox"); box.appendChild(el("b", null, t("sentTitle")));
+    list.forEach(function (x) {
+      var r = el("div", "cart-sentrow");
+      var tm = new Date(x.at).toLocaleTimeString(LOCALE[prefs.lang], { hour: "2-digit", minute: "2-digit" });
+      r.appendChild(el("span", null, "✓ " + t("sentLine", { s: x.shop.nom, h: tm, n: x.items.reduce(function (n, i) { return n + i.qty; }, 0) })));
+      var b = el("button", "cart-rm", t("restore")); b.type = "button";
+      b.addEventListener("click", function () { restoreSent(x); cartView = "list"; renderCart(); });
+      r.appendChild(b); box.appendChild(r);
+    });
+    p.appendChild(box);
+  }
   function cartSave() { try { localStorage.setItem("yc-cart", JSON.stringify(cart)); } catch (e) {} cartBadge(); }
   function cartCount() { return cart.reduce(function (n, i) { return n + i.qty; }, 0); }
   function cartAdd(p, shop, q, fromBtn) {
@@ -202,7 +235,7 @@ window.YC = (function () {
   }
   var cartLast = null;
   async function openCart() {
-    cartLast = document.activeElement; cartView = "list"; sentShops = {};
+    cartLast = document.activeElement; cartView = "list";
     var d = document.getElementById("cartWrap"); d.hidden = false; document.body.style.overflow = "hidden";
     renderCart(); document.querySelector("#cartPanel .mclose").focus();
     await refreshCart(); renderCart();
@@ -234,6 +267,7 @@ window.YC = (function () {
     head(p, t("cartTitle") + (cartCount() ? " (" + cartCount() + ")" : ""));
     if (cartNotice) { p.appendChild(el("p", "cart-notice", cartNotice)); cartNotice = ""; }
     if (!cart.length) {
+      sentBlock(p, false);
       p.appendChild(el("p", "cart-empty", t("cartEmpty")));
       var k = el("a", "btn btn-navy", t("keepShopping")); k.href = "vitrine.html"; p.appendChild(k); return;
     }
@@ -307,6 +341,16 @@ window.YC = (function () {
   function renderSend(p) {
     head(p, t("sendTitle"));
     var gs = groups();
+    if (!gs.length) {
+      var ok = el("div", "cart-done");
+      ok.appendChild(el("span", "cart-done-ic", "✓"));
+      ok.appendChild(el("h3", null, t("doneTitle")));
+      ok.appendChild(el("p", "cart-help", t("doneText")));
+      p.appendChild(ok);
+      sentBlock(p, true);
+      var k = el("a", "btn btn-navy cart-go", t("keepShopping")); k.href = "vitrine.html"; p.appendChild(k);
+      return;
+    }
     if (gs.length > 1) p.appendChild(el("p", "cart-help", t("sendHelp")));
     gs.forEach(function (g) {
       var sec = el("section", "cart-group");
@@ -315,23 +359,18 @@ window.YC = (function () {
       sec.appendChild(el("p", "cart-help", g.items.reduce(function (n, i) { return n + i.qty; }, 0) + " × · " + (st.approx ? t("approxSign") : "") + money(st.v, to)));
       var d = String(g.shop.whatsapp || "").replace(/\D/g, "");
       if (d.length < 8) { sec.appendChild(el("p", "wa-note", t("noWaShop", { s: g.shop.nom }))); }
-      else if (sentShops[g.shop.slug]) { sec.appendChild(el("p", "cart-sent", "✓ " + t("sent", { s: g.shop.nom }))); }
       else {
         var a = el("a", "btn btn-wa cart-go", t("sendTo", { s: g.shop.nom }));
         a.href = "https://wa.me/" + d + "?text=" + encodeURIComponent(orderText(g)); a.target = "_blank"; a.rel = "noopener";
-        a.addEventListener("click", function () { sentShops[g.shop.slug] = true; setTimeout(renderCart, 300); });
+        a.addEventListener("click", function () { markSent(g); setTimeout(renderCart, 300); });
         sec.appendChild(a);
       }
       p.appendChild(sec);
     });
-    if (Object.keys(sentShops).length) {
-      var cl = el("button", "btn btn-navy cart-go", t("clearSent")); cl.type = "button";
-      cl.addEventListener("click", function () { cart = cart.filter(function (i) { return !sentShops[i.shop.slug]; }); sentShops = {}; cartSave(); cartView = cart.length ? "send" : "list"; renderCart(); });
-      p.appendChild(cl);
-    }
+    sentBlock(p, true);
     var ed = el("button", "cart-rm", t("editInfo")); ed.type = "button"; ed.style.alignSelf = "center"; ed.addEventListener("click", function () { cartView = "info"; renderCart(); }); p.appendChild(ed);
   }
-  window.addEventListener("storage", function (e) { if (e.key === "yc-cart") { try { cart = JSON.parse(e.newValue || "[]"); } catch (x) { cart = []; } cartBadge(); } });
+  window.addEventListener("storage", function (e) { if (e.key === "yc-sent") { try { sentLog = JSON.parse(e.newValue || "[]"); } catch (x) { sentLog = []; } } if (e.key === "yc-cart") { try { cart = JSON.parse(e.newValue || "[]"); } catch (x) { cart = []; } cartBadge(); } });
 
   var lastFocus = null;
   function openProduct(p, shop, opts) {
