@@ -13,17 +13,17 @@ window.YC = (function () {
       noProducts: "Aucun produit pour l’instant.", noMatch: "Aucun produit ne correspond à ta recherche.", stock: "En stock : {n}", outStock: "Rupture de stock",
       order: "Commander sur WhatsApp", noWa: "Ce vendeur n’a pas encore indiqué de numéro WhatsApp.", waMsg: "Bonjour, je suis intéressé(e) par « {p} » ({x}) vu sur votre boutique Yiriclick : {u}",
       approx: "≈ {v} au taux du 23/10/2026", close: "Fermer", verified: "Vendeur vérifié par Yiriclick", notFound: "Boutique introuvable", notFoundP: "Cette boutique n’existe pas ou n’est pas visible pour le moment.",
-      back: "Voir la vitrine Yiriclick", loading: "Chargement…", latest: "Les derniers produits des vendeurs Yiriclick", vitrineT: "La vitrine Yiriclick", see: "Voir la boutique", by: "Par {s}", foot: "Boutique propulsée par Yiriclick", openShop: "Ouvrir ma boutique sur Yiriclick" },
+      back: "Voir la vitrine Yiriclick", loading: "Chargement…", latest: "Les derniers produits des vendeurs Yiriclick", vitrineT: "La vitrine Yiriclick", see: "Voir la boutique", by: "Par {s}", foot: "Boutique propulsée par Yiriclick", openShop: "Ouvrir ma boutique sur Yiriclick", buy: "Commander", details: "Détails" },
     en: { lang: "Language", cur: "Currency", showcase: "Showcase", sellers: "Seller space", search: "Search for a product…", allCats: "All categories",
       noProducts: "No products yet.", noMatch: "No product matches your search.", stock: "In stock: {n}", outStock: "Out of stock",
       order: "Order on WhatsApp", noWa: "This seller has not added a WhatsApp number yet.", waMsg: "Hello, I am interested in “{p}” ({x}) seen on your Yiriclick shop: {u}",
       approx: "≈ {v} at the 23/10/2026 rate", close: "Close", verified: "Seller verified by Yiriclick", notFound: "Shop not found", notFoundP: "This shop does not exist or is not visible right now.",
-      back: "See the Yiriclick showcase", loading: "Loading…", latest: "The latest products from Yiriclick sellers", vitrineT: "The Yiriclick showcase", see: "See the shop", by: "By {s}", foot: "Shop powered by Yiriclick", openShop: "Open my shop on Yiriclick" },
+      back: "See the Yiriclick showcase", loading: "Loading…", latest: "The latest products from Yiriclick sellers", vitrineT: "The Yiriclick showcase", see: "See the shop", by: "By {s}", foot: "Shop powered by Yiriclick", openShop: "Open my shop on Yiriclick", buy: "Order", details: "Details" },
     es: { lang: "Idioma", cur: "Moneda", showcase: "Escaparate", sellers: "Espacio vendedor", search: "Buscar un producto…", allCats: "Todas las categorías",
       noProducts: "Todavía no hay productos.", noMatch: "Ningún producto coincide con tu búsqueda.", stock: "En stock: {n}", outStock: "Agotado",
       order: "Pedir por WhatsApp", noWa: "Este vendedor aún no ha indicado un número de WhatsApp.", waMsg: "Hola, me interesa «{p}» ({x}) visto en su tienda Yiriclick: {u}",
       approx: "≈ {v} al cambio del 23/10/2026", close: "Cerrar", verified: "Vendedor verificado por Yiriclick", notFound: "Tienda no encontrada", notFoundP: "Esta tienda no existe o no está visible por ahora.",
-      back: "Ver el escaparate de Yiriclick", loading: "Cargando…", latest: "Los últimos productos de los vendedores de Yiriclick", vitrineT: "El escaparate de Yiriclick", see: "Ver la tienda", by: "Por {s}", foot: "Tienda impulsada por Yiriclick", openShop: "Abrir mi tienda en Yiriclick" }
+      back: "Ver el escaparate de Yiriclick", loading: "Cargando…", latest: "Los últimos productos de los vendedores de Yiriclick", vitrineT: "El escaparate de Yiriclick", see: "Ver la tienda", by: "Por {s}", foot: "Tienda impulsada por Yiriclick", openShop: "Abrir mi tienda en Yiriclick", buy: "Pedir", details: "Detalles" }
   };
   var CATS = {
     fr: { mode: "Mode et vêtements", chaussures: "Chaussures et maroquinerie", bijoux: "Bijoux et accessoires", textile: "Tissus et pagnes", beaute: "Beauté et cosmétiques", sante: "Santé et bien-être", alim: "Alimentation et épicerie", boissons: "Boissons", agri: "Produits agricoles et élevage", artisanat: "Artisanat et art", deco: "Décoration et maison", meubles: "Meubles", electromenager: "Électroménager", tech: "Téléphones et électronique", info: "Informatique", auto: "Auto et moto", btp: "Bâtiment et matériaux", bebe: "Bébé et enfants", jouets: "Jouets et jeux", sport: "Sport et loisirs", livres: "Livres et fournitures scolaires", musique: "Musique et instruments", animaux: "Animaux", numerique: "Produits numériques", services: "Services", autre: "Autre" },
@@ -75,18 +75,34 @@ window.YC = (function () {
     var cs = document.getElementById("prefCur"); if (cs && cs.options[0]) cs.options[0].textContent = t("cur") + " : —";
   }
 
+  /* Product card: photo and title open the details; "Commander" goes straight to WhatsApp with a ready message */
   function card(p, shop, showShop, onOpen) {
-    var b = el("button", "item"); b.type = "button";
-    if (p.photos && p.photos[0]) { var im = el("img", "im"); im.src = pub(p.photos[0]); im.alt = ""; im.loading = "lazy"; b.appendChild(im); }
-    else b.appendChild(el("div", "noim"));
+    var c = el("article", "item");
+    var open = el("button", "item-open"); open.type = "button";
+    if (p.photos && p.photos[0]) { var im = el("img", "im"); im.src = pub(p.photos[0]); im.alt = ""; im.loading = "lazy"; open.appendChild(im); }
+    else open.appendChild(el("div", "noim"));
     var ib = el("div", "ib");
     if (showShop && shop) ib.appendChild(el("span", "shopname", shop.nom));
     ib.appendChild(el("h3", null, p.nom));
     ib.appendChild(el("span", "pr", money(p.prix, p.devise)));
     var a = approx(p); if (a) ib.appendChild(el("span", "cv", a));
-    b.appendChild(ib);
-    b.addEventListener("click", function () { onOpen(p, shop); });
-    return b;
+    open.appendChild(ib);
+    open.addEventListener("click", function () { onOpen(p, shop); });
+    c.appendChild(open);
+    var acts = el("div", "item-acts");
+    var out = p.stock === 0;
+    var wa = shop && !out ? waLink(shop, p) : "";
+    var buy;
+    if (wa) { buy = el("a", "btn btn-wa btn-buy"); buy.href = wa; buy.target = "_blank"; buy.rel = "noopener"; }
+    else { buy = el("button", "btn btn-wa btn-buy"); buy.type = "button"; buy.addEventListener("click", function () { onOpen(p, shop); }); if (out) buy.disabled = true; }
+    buy.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h2l2 10h10l2-7H7"/><circle cx="10" cy="19" r="1.4"/><circle cx="17" cy="19" r="1.4"/></svg>';
+    buy.appendChild(document.createTextNode(out ? t("outStock") : t("buy")));
+    buy.setAttribute("aria-label", (out ? t("outStock") : t("buy")) + " : " + p.nom);
+    var det = el("button", "btn btn-ghost btn-det", t("details")); det.type = "button";
+    det.setAttribute("aria-label", t("details") + " : " + p.nom);
+    det.addEventListener("click", function () { onOpen(p, shop); });
+    acts.appendChild(buy); acts.appendChild(det); c.appendChild(acts);
+    return c;
   }
 
   var lastFocus = null;

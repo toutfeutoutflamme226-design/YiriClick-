@@ -38,7 +38,12 @@ img { max-width: 100%; }
 .tools input { flex: 1 1 240px; min-width: 0; min-height: 48px; padding: 10px 12px; border: 2px solid var(--rule); background: var(--white); }
 .tools select { min-height: 48px; padding: 0 12px; border: 2px solid var(--rule); background: var(--white); flex: 0 1 260px; min-width: 0; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr)); gap: 14px; padding-bottom: 40px; }
-.item { background: var(--white); border: 1px solid var(--rule); display: flex; flex-direction: column; min-width: 0; cursor: pointer; text-align: left; padding: 0; color: inherit; font: inherit; transition: transform .2s ease, box-shadow .2s ease; }
+.item { background: var(--white); border: 1px solid var(--rule); display: flex; flex-direction: column; min-width: 0; transition: transform .2s ease, box-shadow .2s ease; }
+.item-open { display: flex; flex-direction: column; flex: 1; min-width: 0; cursor: pointer; text-align: left; padding: 0; border: 0; background: none; color: inherit; font: inherit; }
+.item-acts { display: grid; grid-template-columns: 1fr auto; gap: 8px; padding: 0 12px 12px; }
+.item-acts .btn { min-height: 44px; padding: 0 12px; font-size: 14px; }
+.btn-buy { gap: 6px; }
+.btn-buy:disabled { background: var(--rule); color: var(--soft); cursor: not-allowed; }
 .item:hover { transform: translateY(-3px); box-shadow: 0 12px 26px rgba(16, 35, 42, .12); }
 @media (prefers-reduced-motion: reduce) { .item { transition: none; } .item:hover { transform: none; } }
 .item .im { width: 100%; aspect-ratio: 1; object-fit: cover; background: var(--tint); display: block; }

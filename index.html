@@ -58,6 +58,18 @@ a { color: inherit; }
 .login-btn { gap: 8px; }
 @media (max-width: 560px) { .login-txt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; } .login-btn { padding: 0 12px; min-width: 44px; } }
 @media (max-width: 560px) { .nav > a.link { display: none; } }
+/* Showcase and seller-space shortcuts, always visible between the language menu and "Démarrer" */
+.quick { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px; border: 1px solid #3A4E56; color: var(--white); text-decoration: none; font-size: 15px; font-weight: 700; transition: border-color .2s ease, color .2s ease; }
+.quick:hover { border-color: var(--teal); color: var(--teal); }
+.quick svg { color: var(--teal); flex: none; }
+.q-short { display: none; }
+@media (max-width: 560px) {
+  .nav { display: grid; grid-template-columns: auto 1fr 1fr auto; gap: 8px; width: 100%; }
+  .quick { flex-direction: column; justify-content: center; gap: 2px; padding: 4px 6px; min-height: 48px; font-size: 12px; text-align: center; }
+  .q-long { display: none; } .q-short { display: inline; }
+  .nav .lang-btn { padding: 0 10px; }
+  .nav .btn-orange { padding: 0 14px; }
+}
 
 /* Language menu */
 .lang { position: relative; }
@@ -408,7 +420,6 @@ h1 span { display: block; }
     <nav class="nav">
       <a class="link" href="#comment" data-t="nav1">Fonctionnement</a>
       <a class="link" href="#tarifs" data-t="nav2">Tarifs</a>
-      <a class="link" href="vitrine.html" data-t="nav3">Vitrine</a>
       <div class="lang">
         <button type="button" class="lang-btn" id="langBtn" aria-haspopup="true" aria-expanded="false">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4FC7CF" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg>
@@ -421,7 +432,8 @@ h1 span { display: block; }
           <button type="button" role="menuitemradio" data-lang="es">Español</button>
         </div>
       </div>
-      <a class="btn btn-line btn-sm login-btn" href="vendeur.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span class="login-txt" data-t="login">Se connecter</span></a>
+      <a class="quick" href="vitrine.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9l1.5-5h13L20 9"/><path d="M4 9h16v2a3 3 0 0 1-5.3 2 3 3 0 0 1-5.4 0A3 3 0 0 1 4 11z"/><path d="M5 13v7h14v-7"/></svg><span data-t="nav3">Vitrine</span></a>
+      <a class="quick" href="vendeur.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span class="q-long" data-t="nav4">Espace vendeur</span><span class="q-short" data-t="nav4s">Vendeur</span></a>
       <a class="btn btn-orange btn-sm" href="#inscription" data-signup="essai" data-t="start">Démarrer</a>
     </nav>
   </div>
@@ -555,7 +567,7 @@ h1 span { display: block; }
 (function () {
   var T = {
     fr: {
-      nav1: "Fonctionnement", nav2: "Tarifs", nav3: "Vitrine", nav4: "Espace vendeur", login: "Se connecter", start: "Démarrer",
+      nav1: "Fonctionnement", nav2: "Tarifs", nav3: "Vitrine", nav4: "Espace vendeur", nav4s: "Vendeur", login: "Se connecter", start: "Démarrer",
       kicker: "La place de marché mondiale des petits vendeurs",
       h1a: "Vends plus.", h1b: "Vends partout.",
       lead: "Ta boutique en ligne, visible par des acheteurs sur plusieurs continents. Paiement Mobile Money ou carte, dans la langue et la monnaie de chacun.",
@@ -597,7 +609,7 @@ h1 span { display: block; }
       ]
     },
     en: {
-      nav1: "How it works", nav2: "Pricing", nav3: "Showcase", nav4: "Seller space", login: "Sign in", start: "Get started",
+      nav1: "How it works", nav2: "Pricing", nav3: "Showcase", nav4: "Seller space", nav4s: "Seller", login: "Sign in", start: "Get started",
       kicker: "The global marketplace for small sellers",
       h1a: "Sell more.", h1b: "Sell everywhere.",
       lead: "Your online shop, seen by buyers on several continents. Payment by Mobile Money or card, in each customer’s language and currency.",
@@ -639,7 +651,7 @@ h1 span { display: block; }
       ]
     },
     es: {
-      nav1: "Cómo funciona", nav2: "Precios", nav3: "Escaparate", nav4: "Espacio vendedor", login: "Iniciar sesión", start: "Empezar",
+      nav1: "Cómo funciona", nav2: "Precios", nav3: "Escaparate", nav4: "Espacio vendedor", nav4s: "Vendedor", login: "Iniciar sesión", start: "Empezar",
       kicker: "El mercado mundial de los pequeños vendedores",
       h1a: "Vende más.", h1b: "Vende en todas partes.",
       lead: "Tu tienda en línea, vista por compradores de varios continentes. Pago con Mobile Money o tarjeta, en el idioma y la moneda de cada cliente.",
