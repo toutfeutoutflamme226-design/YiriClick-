@@ -176,6 +176,14 @@ et une notification signalent aussi chaque nouvelle commande (vérification tout
    Dans l’admin (onglet Essais), tu peux **prolonger l’essai de 14 jours** ou le refuser.
 5. Le badge « Vendeur vérifié » ne s’affiche que pour les vendeurs dont le dossier est validé (Actif).
 
+## Vitrine rapide (base v11)
+
+1. Supabase › **SQL Editor** : colle `supabase/schema-v11.sql`, puis **Run**.
+2. La vitrine ne charge plus tous les produits : la base fait la recherche, les filtres, le tri et les pages de 24 produits.
+   Recherche sans accents (« karite » trouve « Karité »), plusieurs mots possibles. Testé à 5 000 produits : moins de 0,1 seconde.
+3. Sans ce script, la vitrine continue de marcher comme avant (400 produits chargés d’un coup).
+4. Taux de change utilisés pour trier par prix : table `taux` (1 EUR = x).
+
 ## Pages du site
 
 - `index.html` : la vitrine, page d’accueil pour les acheteurs.

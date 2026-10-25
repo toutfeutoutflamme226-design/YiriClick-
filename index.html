@@ -337,6 +337,8 @@ section.block { margin-top: 28px; }
   function ld(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function sv(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
 
+  /* srv = the database does search, filters, sorting and paging (base v11); otherwise the page falls back to filtering a loaded list */
+  var srv = false, stats = null, nearItems = [], favItems = null, res = { list: [], total: 0, seq: 0 };
   var items = [], promos = [], country = ld("yc-country") || "", st = { view: "home", q: "", cat: "", fam: "", promo: false, fav: false, pays: "", min: "", max: "", stock: false, sort: "new", shown: 24 };
   var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
   var DISP = function () { return Y.prefs.cur || "XOF"; };
@@ -344,7 +346,22 @@ section.block { margin-top: 28px; }
   function famOf(c) { for (var i = 0; i < Y.FAMILIES.length; i++) if (Y.FAMILIES[i][1].indexOf(c) >= 0) return Y.FAMILIES[i][0]; return ""; }
 
   /* ---------- data ---------- */
+  var COLS = "id,boutique_id,nom,description,prix,devise,categorie,stock,photos,created_at,prix_avant,variantes,solde_prix,solde_debut,solde_fin,boutiques!inner(nom,slug,ville,pays,whatsapp,logo)";
   async function loadData() {
+    var a = await Y.sb.rpc("vitrine_produits", { p_tri: "new", p_limit: 48 });
+    if (!a.error && a.data && a.data.items) {
+      srv = true;
+      var r2 = await Y.sb.rpc("vitrine_produits", { p_promo: true, p_tri: "promo", p_limit: 24 }), s2 = await Y.sb.rpc("vitrine_stats");
+      var seen = {}; items = [];
+      a.data.items.concat(r2.error || !r2.data ? [] : r2.data.items || []).forEach(function (p) { if (!seen[p.id]) { seen[p.id] = 1; items.push(p); } });
+      Y.prep(items); stats = s2.error ? null : s2.data;
+      var pr0 = await Y.sb.from("promotions").select("*").order("ordre", { ascending: true }).order("created_at", { ascending: false });
+      promos = pr0.error ? [] : (pr0.data || []);
+      var d = promos.filter(function (p) { return p.type === "offre_jour" && p.produit_id; })[0];
+      if (d && !seen[d.produit_id]) { var one = await Y.sb.from("produits").select(COLS).eq("id", d.produit_id).maybeSingle(); if (one.data) items.push(Y.prep([one.data])[0]); }
+      await loadNear();
+      return;
+    }
     var cols = "id,boutique_id,nom,description,prix,devise,categorie,stock,photos,created_at,boutiques!inner(nom,slug,ville,pays,whatsapp,logo)";
     var r = await Y.sb.from("produits").select("prix_avant,variantes,solde_prix,solde_debut,solde_fin," + cols).order("created_at", { ascending: false }).limit(400);
     if (r.error) r = await Y.sb.from("produits").select("prix_avant,variantes," + cols).order("created_at", { ascending: false }).limit(400);
@@ -395,17 +412,33 @@ section.block { margin-top: 28px; }
     $("localeFlag").textContent = country ? flag(country) : "🌍";
   }
   $("favBtn").addEventListener("click", function () { go({ fav: true }); });
-  Y.onFavs(function () { paintHeader(); if (st.view === "results" && st.fav) renderResults(); });
+  Y.onFavs(function () { paintHeader(); if (st.view === "results" && st.fav) { if (srv && favItems && Y.favs().some(function (id) { return !favItems.some(function (p) { return p.id === id; }); })) favItems = null; renderResults(); } });
+
+  async function loadNear() {
+    nearItems = [];
+    if (!srv || !country || country === "ZZ") return;
+    var r = await Y.sb.rpc("vitrine_produits", { p_pays: namesOf(country), p_limit: 12 });
+    if (!r.error && r.data) nearItems = Y.prep(r.data.items || []);
+  }
+  function famCats(f) { for (var i = 0; i < Y.FAMILIES.length; i++) if (Y.FAMILIES[i][0] === f) return Y.FAMILIES[i][1]; return null; }
 
   /* ---------- search, suggestions, voice ---------- */
   var sugg = $("sugg"), sItems = [], sAct = -1;
   function closeSugg() { sugg.hidden = true; $("q").setAttribute("aria-expanded", "false"); sAct = -1; }
+  var suggTimer = null, suggSeq = 0;
   function openSugg() {
-    var q = Y.norm($("q").value.trim()); sugg.textContent = ""; sItems = [];
-    if (q.length < 2) return closeSugg();
-    var prods = items.filter(function (p) { return Y.norm(p.nom).indexOf(q) >= 0; }).slice(0, 5);
-    var shops = {}; items.forEach(function (p) { if (Y.norm(p.boutiques.nom).indexOf(q) >= 0) shops[p.boutiques.slug] = p.boutiques; });
-    var shopL = Object.keys(shops).slice(0, 3).map(function (k) { return shops[k]; });
+    var q = Y.norm($("q").value.trim());
+    if (q.length < 2) { sugg.textContent = ""; sItems = []; return closeSugg(); }
+    if (!srv) return paintSugg(q, items.filter(function (p) { return Y.norm(p.nom).indexOf(q) >= 0; }).slice(0, 5), (function () { var sh = {}; items.forEach(function (p) { if (Y.norm(p.boutiques.nom).indexOf(q) >= 0) sh[p.boutiques.slug] = p.boutiques; }); return Object.keys(sh).slice(0, 3).map(function (k) { return sh[k]; }); })());
+    clearTimeout(suggTimer); var my = ++suggSeq, raw = $("q").value.trim();
+    suggTimer = setTimeout(async function () {
+      var r = await Y.sb.rpc("vitrine_suggest", { p_q: raw });
+      if (my !== suggSeq || document.activeElement !== $("q")) return;
+      paintSugg(q, r.error || !r.data ? [] : Y.prep(r.data.produits || []), r.error || !r.data ? [] : r.data.boutiques || []);
+    }, 200);
+  }
+  function paintSugg(q, prods, shopL) {
+    sugg.textContent = ""; sItems = [];
     var cats = Object.keys(Y.CATS.fr).filter(function (c) { return Y.norm(Y.cat(c)).indexOf(q) >= 0; }).slice(0, 3);
     function hd(txt) { var h = el("li", "hd", txt); h.setAttribute("role", "presentation"); sugg.appendChild(h); }
     function opt(txt, small, act) { var li = el("li", null, txt); li.id = "sg" + sItems.length; li.setAttribute("role", "option"); li.setAttribute("aria-selected", "false"); if (small) li.appendChild(el("small", null, small)); li.addEventListener("mousedown", function (e) { e.preventDefault(); closeSugg(); act(); }); sugg.appendChild(li); sItems.push({ li: li, act: act }); }
@@ -474,7 +507,7 @@ section.block { margin-top: 28px; }
   }
   function renderChips() {
     var box = $("chips"); box.textContent = "";
-    var counts = {}; items.forEach(function (p) { counts[p.categorie] = (counts[p.categorie] || 0) + 1; });
+    var counts = {}; if (srv && stats) counts = stats.cats || {}; else items.forEach(function (p) { counts[p.categorie] = (counts[p.categorie] || 0) + 1; });
     var cats = Object.keys(Y.CATS.fr).sort(function (a, b) { return (counts[b] || 0) - (counts[a] || 0); }).slice(0, 12);
     cats.forEach(function (c) { var b = el("button", null, Y.cat(c)); b.type = "button"; b.addEventListener("click", function () { go({ cat: c }); }); box.appendChild(b); });
   }
@@ -494,7 +527,7 @@ section.block { margin-top: 28px; }
     else Y.FAMILIES.forEach(function (f, i) {
       var b = el("button", "tile c-" + TILE_COLORS[i % TILE_COLORS.length]); b.type = "button";
       b.appendChild(el("h3", null, t(f[0])));
-      var n = items.filter(function (p) { return f[1].indexOf(p.categorie) >= 0; }).length;
+      var n = srv && stats ? f[1].reduce(function (s, c) { return s + ((stats.cats || {})[c] || 0); }, 0) : items.filter(function (p) { return f[1].indexOf(p.categorie) >= 0; }).length;
       b.appendChild(el("p", null, n ? t("nProd", { n: n }) : t("tileSee")));
       var ic = el("span", "ico"); ic.innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#10232A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + FAM_ICON[f[0]] + "</svg>"; b.appendChild(ic);
       b.addEventListener("click", function () { go({ fam: f[0] }); });
@@ -530,10 +563,12 @@ section.block { margin-top: 28px; }
     var tg = $("trendGrid"); tg.textContent = "";
     if (!items.length) tg.appendChild(el("div", "empty-box", t("noProducts"))); else cards(items.slice(0, 12), tg);
     var near = [];
-    if (country && country !== "ZZ") { var ns = namesOf(country); near = items.filter(function (p) { return ns.indexOf(Y.norm(p.boutiques.pays || "")) >= 0; }); }
+    if (srv) near = nearItems;
+    else if (country && country !== "ZZ") { var ns = namesOf(country); near = items.filter(function (p) { return ns.indexOf(Y.norm(p.boutiques.pays || "")) >= 0; }); }
     $("nearRail").textContent = ""; cards(near.slice(0, 12), $("nearRail")); $("nearSec").hidden = !near.length;
     var shops = {}, order = [];
-    items.forEach(function (p) { var b = p.boutiques; if (!shops[b.slug]) { shops[b.slug] = { b: b, n: 0 }; order.push(b.slug); } shops[b.slug].n++; });
+    if (srv && stats) (stats.shops || []).forEach(function (b) { shops[b.slug] = { b: b, n: b.n }; order.push(b.slug); });
+    else items.forEach(function (p) { var b = p.boutiques; if (!shops[b.slug]) { shops[b.slug] = { b: b, n: 0 }; order.push(b.slug); } shops[b.slug].n++; });
     var sr = $("shopsRail"); sr.textContent = "";
     order.slice(0, 16).forEach(function (k) {
       var s = shops[k], a = el("a", "shop-card"); a.href = "boutique.html?b=" + encodeURIComponent(k);
@@ -555,10 +590,10 @@ section.block { margin-top: 28px; }
   }
 
   /* ---------- results ---------- */
-  function filtered() {
+  function filtered(source) {
     var favIds = Y.favs(), q = Y.norm(st.q);
     var min = parseFloat(st.min), max = parseFloat(st.max);
-    var list = items.filter(function (p) {
+    var list = (source || items).filter(function (p) {
       if (st.fav && favIds.indexOf(p.id) < 0) return false;
       if (st.cat && p.categorie !== st.cat) return false;
       if (st.fam && famOf(p.categorie) !== st.fam) return false;
@@ -586,24 +621,57 @@ section.block { margin-top: 28px; }
     var ss = $("sortSel"), sv0 = st.sort; ss.textContent = "";
     [["new", t("sNew")], ["asc", t("sAsc")], ["desc", t("sDesc")], ["promo", t("deals")]].forEach(function (o) { var op = el("option", null, o[1]); op.value = o[0]; ss.appendChild(op); }); ss.value = sv0;
     Y.catOptions($("fCat")); $("fCat").value = st.cat;
-    var pays = {}; items.forEach(function (p) { if (p.boutiques.pays) pays[p.boutiques.pays] = 1; });
+    var pays = {}; if (srv && stats) (stats.pays || []).forEach(function (k) { pays[k] = 1; }); else items.forEach(function (p) { if (p.boutiques.pays) pays[p.boutiques.pays] = 1; });
     var fp = $("fPays"), o0 = el("option", null, "—"); fp.textContent = ""; o0.value = ""; fp.appendChild(o0);
     Object.keys(pays).sort().forEach(function (k) { var op = el("option", null, k); op.value = k; fp.appendChild(op); }); fp.value = st.pays;
     var cur = { XOF: "FCFA", EUR: "€", USD: "$" }[DISP()];
     $("pMinL").textContent = t("pMin") + " (" + cur + ")"; $("pMaxL").textContent = t("pMax") + " (" + cur + ")";
     $("fMin").value = st.min; $("fMax").value = st.max; $("fStock").checked = st.stock; $("fPromo").checked = st.promo;
-    var list = filtered(), g = $("resGrid"); g.textContent = "";
+    if (srv && !st.fav) { fetchResults(false); return; }
+    if (srv && st.fav && favItems === null) { loadFavs(); return; }
+    var list = filtered(srv && st.fav ? favItems : null), g = $("resGrid"); g.textContent = "";
     $("resCount").textContent = t("results", { n: list.length });
     if (!list.length) { g.appendChild(el("div", "empty-box", st.fav ? t("favEmpty") : t("noRes"))); g.firstChild.style.gridColumn = "1 / -1"; }
     cards(list.slice(0, st.shown), g);
     $("moreBtn").hidden = list.length <= st.shown;
   }
-  $("moreBtn").addEventListener("click", function () { st.shown += 24; renderResults(); });
+  function resParams(offset) {
+    var cats = st.cat ? [st.cat] : st.fam ? famCats(st.fam) : null, qc = null;
+    if (st.q) { var q = Y.norm(st.q); qc = Object.keys(Y.CATS.fr).filter(function (c) { return q.length >= 3 && Y.norm(Y.cat(c)).indexOf(q) >= 0; }); if (!qc.length) qc = null; }
+    var min = parseFloat(st.min), max = parseFloat(st.max);
+    return { p_q: st.q || null, p_qcats: qc, p_cats: cats, p_promo: !!st.promo, p_pays: st.pays ? [Y.norm(st.pays)] : null, p_stock: !!st.stock,
+      p_min_eur: isFinite(min) ? Y.convert(min, DISP(), "EUR") * 0.999 : null, p_max_eur: isFinite(max) ? Y.convert(max, DISP(), "EUR") * 1.001 : null,
+      p_tri: st.sort, p_limit: 24, p_offset: offset };
+  }
+  async function fetchResults(append) {
+    var my = ++res.seq, g = $("resGrid");
+    if (!append) { g.textContent = ""; var ld0 = el("div", "empty-box", t("loading")); ld0.style.gridColumn = "1 / -1"; g.appendChild(ld0); $("moreBtn").hidden = true; }
+    else $("moreBtn").disabled = true;
+    var r = await Y.sb.rpc("vitrine_produits", resParams(append ? res.list.length : 0));
+    $("moreBtn").disabled = false;
+    if (my !== res.seq) return;
+    if (r.error || !r.data) { srv = false; renderResults(); return; }
+    var batch = Y.prep(r.data.items || []);
+    if (!append) { res.list = []; g.textContent = ""; }
+    res.list = res.list.concat(batch); res.total = r.data.total || 0;
+    $("resCount").textContent = t("results", { n: res.total });
+    if (!res.list.length) { var e0 = el("div", "empty-box", t("noRes")); e0.style.gridColumn = "1 / -1"; g.appendChild(e0); }
+    cards(batch, g);
+    $("moreBtn").hidden = res.list.length >= res.total;
+  }
+  async function loadFavs() {
+    var ids = Y.favs().slice(0, 200), g = $("resGrid"); g.textContent = "";
+    if (!ids.length) { favItems = []; renderResults(); return; }
+    var r = await Y.sb.from("produits").select(COLS).in("id", ids);
+    favItems = r.error ? [] : Y.prep(r.data || []); renderResults();
+  }
+  $("moreBtn").addEventListener("click", function () { if (srv && !st.fav) fetchResults(true); else { st.shown += 24; renderResults(); } });
   $("fToggle").addEventListener("click", function () { var p = $("fpanel"); p.hidden = !p.hidden; this.setAttribute("aria-expanded", String(!p.hidden)); });
   $("sortSel").addEventListener("change", function () { st.sort = this.value; renderResults(); });
   function fUpdate() { st.cat = $("fCat").value; st.pays = $("fPays").value; st.min = $("fMin").value; st.max = $("fMax").value; st.stock = $("fStock").checked; st.promo = $("fPromo").checked; if (st.cat) st.fam = ""; st.shown = 24; writeUrl(false); renderResults(); }
   ["fCat", "fPays", "fStock", "fPromo"].forEach(function (id) { $(id).addEventListener("change", fUpdate); });
-  ["fMin", "fMax"].forEach(function (id) { $(id).addEventListener("input", fUpdate); });
+  var fTimer = null;
+  ["fMin", "fMax"].forEach(function (id) { $(id).addEventListener("input", function () { clearTimeout(fTimer); fTimer = setTimeout(fUpdate, srv ? 350 : 0); }); });
   $("fReset").addEventListener("click", function () { st.cat = ""; st.fam = ""; st.pays = ""; st.min = ""; st.max = ""; st.stock = false; st.promo = false; writeUrl(false); renderResults(); });
   document.querySelectorAll("[data-go]").forEach(function (b) { b.addEventListener("click", function () { go(b.getAttribute("data-go") === "promo" ? { promo: true } : {}); }); });
 
@@ -633,7 +701,7 @@ section.block { margin-top: 28px; }
   }
   var pickCountry = country;
   function openChooser() { pickCountry = country; renderChooser(); $("chooser").hidden = false; document.body.style.overflow = "hidden"; var c = $("clist").querySelector("input:checked") || $("clist").querySelector("input"); if (c) c.focus(); }
-  $("chGo").addEventListener("click", function () { country = pickCountry || "ZZ"; sv("yc-country", country); $("chooser").hidden = true; document.body.style.overflow = ""; render(); });
+  $("chGo").addEventListener("click", function () { country = pickCountry || "ZZ"; sv("yc-country", country); $("chooser").hidden = true; document.body.style.overflow = ""; loadNear().then(render); });
   $("localeBtn").addEventListener("click", openChooser);
 
   /* ---------- add to home screen ---------- */
