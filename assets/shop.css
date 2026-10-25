@@ -184,3 +184,20 @@ footer a { color: var(--teal); }
 .pblock .cv { font-size: 12px; color: var(--soft); }
 .pblock.big .pr { font-size: 28px; }
 .mbody .pblock .pr { font-size: 28px; }
+
+/* Variants in the product sheet */
+.vpick { display: flex; flex-direction: column; gap: 12px; }
+.vgroup { display: flex; flex-direction: column; gap: 6px; }
+.vlab { font-size: 14px; font-weight: 800; }
+.vvals { display: flex; flex-wrap: wrap; gap: 8px; }
+.vval { min-width: 48px; min-height: 44px; padding: 0 14px; border: 2px solid var(--rule); background: var(--white); color: var(--ink); font-weight: 700; cursor: pointer; }
+.vval[aria-pressed="true"] { border-color: var(--navy); background: var(--navy); color: var(--white); }
+.vval.na { color: #8A979B; text-decoration: line-through; border-style: dashed; }
+.m-buy .btn:disabled { background: var(--rule); color: var(--soft); cursor: not-allowed; }
+/* Orders */
+.cart-var { font-size: 13px; color: var(--soft); font-weight: 700; }
+.order-no { margin: 0; font-weight: 800; font-variant-numeric: tabular-nums; }
+.order-top { display: flex; justify-content: space-between; gap: 10px; align-items: center; }
+.ostat { font-size: 12px; font-weight: 800; padding: 3px 8px; white-space: nowrap; }
+.ostat-nouvelle { background: #FFF2DC; color: #8A5300; } .ostat-confirmee { background: var(--tint); color: var(--teal-deep); }
+.ostat-expediee { background: #E8E4F6; color: #4B2E99; } .ostat-livree { background: #E5F4EC; color: #1E7F4F; } .ostat-annulee { background: #FCE8E6; color: #B3261E; }

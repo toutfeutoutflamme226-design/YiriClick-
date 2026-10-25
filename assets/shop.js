@@ -114,6 +114,22 @@ window.YC = (function () {
     ["fam_tech", ["tech", "info", "numerique"]], ["fam_alim", ["alim", "boissons", "agri"]], ["fam_famille", ["bebe", "jouets", "sport", "livres", "musique", "artisanat"]],
     ["fam_pro", ["auto", "btp", "services", "autre"]]];
 
+  function extendT(d) { Object.keys(d).forEach(function (L) { T[L] = T[L] || {}; Object.keys(d[L]).forEach(function (k) { T[L][k] = d[L][k]; }); }); }
+  /* Orders and variants */
+  extendT({
+    fr: { chooseVar: "Choisir", pickOpt: "Choisis : {o}", placeOrder: "Envoyer ma commande", placing: "Envoi en cours…", placeHelp: "Ta commande est enregistrée chez chaque vendeur avec un numéro. Tu pourras ensuite la lui envoyer sur WhatsApp.",
+      orderErr: "La commande n’a pas pu être enregistrée. Réessaie.", orderNo: "Commande n° {n}", orderedTitle: "Commande enregistrée", orderedHelp: "Merci ! Le vendeur a reçu ta commande. Envoie-la-lui aussi sur WhatsApp pour aller plus vite : il te confirme la disponibilité, la livraison et le paiement.",
+      noWaRec: "{s} a bien reçu ta commande sur Yiriclick et te contactera.", myOrders: "Mes commandes", ordersHelp: "Les commandes passées depuis ce téléphone ou cet ordinateur, avec leur suivi.",
+      st_nouvelle: "En attente", st_confirmee: "Confirmée", st_expediee: "Expédiée", st_livree: "Livrée", st_annulee: "Annulée" },
+    en: { chooseVar: "Choose", pickOpt: "Choose: {o}", placeOrder: "Send my order", placing: "Sending…", placeHelp: "Your order is recorded with each seller with a number. You can then send it to them on WhatsApp.",
+      orderErr: "The order could not be recorded. Please try again.", orderNo: "Order no. {n}", orderedTitle: "Order recorded", orderedHelp: "Thank you! The seller has received your order. Send it on WhatsApp too to speed things up: they will confirm availability, delivery and payment.",
+      noWaRec: "{s} has received your order on Yiriclick and will contact you.", myOrders: "My orders", ordersHelp: "Orders placed from this phone or computer, with their status.",
+      st_nouvelle: "Pending", st_confirmee: "Confirmed", st_expediee: "Shipped", st_livree: "Delivered", st_annulee: "Cancelled" },
+    es: { chooseVar: "Elegir", pickOpt: "Elige: {o}", placeOrder: "Enviar mi pedido", placing: "Enviando…", placeHelp: "Tu pedido queda registrado en cada vendedor con un número. Después podrás enviárselo por WhatsApp.",
+      orderErr: "No se pudo registrar el pedido. Inténtalo de nuevo.", orderNo: "Pedido n.º {n}", orderedTitle: "Pedido registrado", orderedHelp: "¡Gracias! El vendedor ha recibido tu pedido. Envíaselo también por WhatsApp para ir más rápido: te confirmará disponibilidad, entrega y pago.",
+      noWaRec: "{s} ha recibido tu pedido en Yiriclick y se pondrá en contacto contigo.", myOrders: "Mis pedidos", ordersHelp: "Los pedidos hechos desde este teléfono u ordenador, con su seguimiento.",
+      st_nouvelle: "Pendiente", st_confirmee: "Confirmado", st_expediee: "Enviado", st_livree: "Entregado", st_annulee: "Cancelado" }
+  });
   function load(k, d) { try { return localStorage.getItem(k) || d; } catch (e) { return d; } }
   function save(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
   var navLang = (navigator.language || "fr").slice(0, 2);
@@ -235,12 +251,12 @@ window.YC = (function () {
     c.appendChild(open);
     c.appendChild(favButton(p));
     var acts = el("div", "item-acts");
-    var out = p.stock === 0;
+    var out = p.stock === 0, vr = hasVar(p), lbl = out ? t("outStock") : vr ? t("chooseVar") : t("addLong");
     var buy = el("button", "btn btn-wa btn-buy"); buy.type = "button";
-    if (out) buy.disabled = true; else buy.addEventListener("click", function () { cartAdd(p, shop, 1, buy); });
+    if (out) buy.disabled = true; else buy.addEventListener("click", function () { if (vr) onOpen(p, shop); else cartAdd(p, shop, 1, buy); });
     buy.innerHTML = CART_SVG;
-    buy.appendChild(document.createTextNode(out ? t("outStock") : t("addLong")));
-    buy.setAttribute("aria-label", (out ? t("outStock") : t("addLong")) + " : " + p.nom);
+    buy.appendChild(document.createTextNode(lbl));
+    buy.setAttribute("aria-label", lbl + " : " + p.nom);
     var det = el("button", "btn btn-ghost btn-det", t("details")); det.type = "button";
     det.setAttribute("aria-label", t("details") + " : " + p.nom);
     det.addEventListener("click", function () { onOpen(p, shop); });
@@ -248,40 +264,65 @@ window.YC = (function () {
     return c;
   }
 
+  /* ===================== Variants =====================
+     p.variantes = { options: [{ nom, valeurs: [] }], combis: [{ v: [], stock, prix }] } */
+  function hasVar(p) { return !!(p && p.variantes && Array.isArray(p.variantes.options) && p.variantes.options.length); }
+  function combiOf(p, v) {
+    if (!hasVar(p) || !v) return null;
+    var cs = p.variantes.combis || [], k = JSON.stringify(v);
+    for (var i = 0; i < cs.length; i++) if (JSON.stringify(cs[i].v) === k) return cs[i];
+    return null;
+  }
+  function varPrice(p, v) { var c = combiOf(p, v); return c && typeof c.prix === "number" ? c.prix : Number(p.prix); }
+  function varStock(p, v) {
+    if (!hasVar(p)) return p.stock;
+    var cs = p.variantes.combis || []; if (!cs.length) return p.stock;
+    var c = combiOf(p, v); if (!c) return 0;
+    return typeof c.stock === "number" ? c.stock : null;
+  }
+  function vLabel(v) { return v && v.length ? v.join(" / ") : ""; }
+
   /* ===================== Cart =====================
-     Kept in this visitor's browser only. Checkout sends one WhatsApp order per seller,
-     since online payment is not connected yet. */
+     Kept in this visitor's browser. Checkout records one order per seller in Yiriclick
+     (prices and stock are checked by the database), then the visitor sends it on WhatsApp.
+     Online payment is not connected yet. */
   var CART_SVG = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h2l2 10h10l2-7H7"/><circle cx="10" cy="19" r="1.4"/><circle cx="17" cy="19" r="1.4"/></svg>';
-  var cart = [];
-  try { cart = JSON.parse(localStorage.getItem("yc-cart") || "[]"); if (!Array.isArray(cart)) cart = []; } catch (e) { cart = []; }
-  var buyer = {};
-  try { buyer = JSON.parse(localStorage.getItem("yc-buyer") || "{}") || {}; } catch (e) { buyer = {}; }
-  var cartView = "list", cartNotice = "";
-  var sentLog = [];
-  try { sentLog = JSON.parse(localStorage.getItem("yc-sent") || "[]"); if (!Array.isArray(sentLog)) sentLog = []; } catch (e) { sentLog = []; }
+  function readJSON(k, d) { try { var v = JSON.parse(localStorage.getItem(k) || "null"); return v == null ? d : v; } catch (e) { return d; } }
+  var cart = readJSON("yc-cart", []); if (!Array.isArray(cart)) cart = [];
+  cart.forEach(function (i) { if (!i.key) i.key = i.id; });
+  var buyer = readJSON("yc-buyer", {}) || {};
+  var cartView = "list", cartNotice = "", cartBusy = false;
+  var sentLog = readJSON("yc-sent", []); if (!Array.isArray(sentLog)) sentLog = [];
+  var myOrders = readJSON("yc-orders", []); if (!Array.isArray(myOrders)) myOrders = [];
+  var justOrdered = [];
   function sentSave() {
     var day = Date.now() - 24 * 3600 * 1000;
     sentLog = sentLog.filter(function (x) { return x.at > day; }).slice(-10);
     try { localStorage.setItem("yc-sent", JSON.stringify(sentLog)); } catch (e) {}
   }
   sentSave();
-  /* Called when the visitor taps "Envoyer à … sur WhatsApp": those products leave the cart */
+  function ordersSave() {
+    var old = Date.now() - 60 * 24 * 3600 * 1000;
+    myOrders = myOrders.filter(function (o) { return o.at > old; }).slice(-30);
+    try { localStorage.setItem("yc-orders", JSON.stringify(myOrders)); } catch (e) {}
+  }
+  /* Fallback (database not updated): tapping "Envoyer à … sur WhatsApp" takes those products out of the cart */
   function markSent(g) {
     sentLog.push({ at: Date.now(), shop: g.shop, items: g.items.map(function (i) { return JSON.parse(JSON.stringify(i)); }) });
-    var ids = g.items.map(function (i) { return i.id; });
-    cart = cart.filter(function (i) { return ids.indexOf(i.id) < 0; });
+    var keys = g.items.map(function (i) { return i.key; });
+    cart = cart.filter(function (i) { return keys.indexOf(i.key) < 0; });
     sentSave(); cartSave();
   }
   function restoreSent(entry) {
-    entry.items.forEach(function (it) { var ex = cart.filter(function (i) { return i.id === it.id; })[0]; if (ex) ex.qty += it.qty; else cart.push(it); });
+    entry.items.forEach(function (it) { if (!it.key) it.key = it.id; var ex = cart.filter(function (i) { return i.key === it.key; })[0]; if (ex) ex.qty += it.qty; else cart.push(it); });
     sentLog = sentLog.filter(function (x) { return x !== entry; }); sentSave(); cartSave();
   }
   function sentBlock(p, recentOnly) {
     var list = sentLog.slice().reverse().filter(function (x) { return !recentOnly || x.at > Date.now() - 2 * 3600 * 1000; });
     if (!list.length) return;
-    var box = el("section", "cart-sentbox"); box.appendChild(el("b", null, t("sentTitle")));
+    var box = el("div", "sent-box"); box.appendChild(el("h3", null, t("sentTitle")));
     list.forEach(function (x) {
-      var r = el("div", "cart-sentrow");
+      var r = el("div", "sent-row");
       var tm = new Date(x.at).toLocaleTimeString(LOCALE[prefs.lang], { hour: "2-digit", minute: "2-digit" });
       r.appendChild(el("span", null, "✓ " + t("sentLine", { s: x.shop.nom, h: tm, n: x.items.reduce(function (n, i) { return n + i.qty; }, 0) })));
       var b = el("button", "cart-rm", t("restore")); b.type = "button";
@@ -292,12 +333,14 @@ window.YC = (function () {
   }
   function cartSave() { try { localStorage.setItem("yc-cart", JSON.stringify(cart)); } catch (e) {} cartBadge(); }
   function cartCount() { return cart.reduce(function (n, i) { return n + i.qty; }, 0); }
-  function cartAdd(p, shop, q, fromBtn) {
+  function cartAdd(p, shop, q, fromBtn, v) {
     if (!shop) return;
-    var max = p.stock == null ? 99 : p.stock;
-    var it = cart.filter(function (i) { return i.id === p.id; })[0];
-    if (it) { it.qty = Math.min(max, it.qty + q); it.prix = p.prix; it.devise = p.devise; it.stock = p.stock; }
-    else cart.push({ id: p.id, qty: Math.min(max, q), nom: p.nom, prix: Number(p.prix), devise: p.devise, stock: p.stock, photo: p.photos && p.photos[0] || null, shop: { id: shopIdOf(p, shop), slug: shop.slug, nom: shop.nom, whatsapp: shop.whatsapp || "" } });
+    if (hasVar(p) && !v) { openProduct(p, shop, { showShop: !!fromBtn && fromBtn.closest && !!fromBtn.closest(".vitrine") }); return; }
+    var stock = varStock(p, v), max = stock == null ? 99 : stock, key = p.id + (v ? "|" + v.join("|") : "");
+    if (max <= 0) return;
+    var it = cart.filter(function (i) { return i.key === key; })[0], price = varPrice(p, v);
+    if (it) { it.qty = Math.min(max, it.qty + q); it.prix = price; it.devise = p.devise; it.stock = stock; }
+    else cart.push({ key: key, id: p.id, v: v || null, qty: Math.min(max, q), nom: p.nom, prix: price, devise: p.devise, stock: stock, photo: p.photos && p.photos[0] || null, shop: { id: shopIdOf(p, shop), slug: shop.slug, nom: shop.nom, whatsapp: shop.whatsapp || "" } });
     cartSave(); toast(t("added"), fromBtn); track("ajout_panier", shopIdOf(p, shop), p.id);
     var b = document.getElementById("cartBtn");
     if (b && b.animate && !matchMedia("(prefers-reduced-motion: reduce)").matches) b.animate([{ transform: "scale(1)" }, { transform: "scale(1.18)" }, { transform: "scale(1)" }], { duration: 380 });
@@ -318,7 +361,7 @@ window.YC = (function () {
     return order.map(function (k) { return g[k]; });
   }
 
-  var toastTimer = null, toastReturn = null;
+  var toastTimer = null;
   function toast(msg) {
     var tb = document.getElementById("ycToast");
     tb.querySelector(".tmsg").textContent = msg;
@@ -344,26 +387,42 @@ window.YC = (function () {
     cartBadge();
   }
   var cartLast = null;
-  async function openCart() {
-    cartLast = document.activeElement; cartView = "list";
+  async function openCart(view) {
+    cartLast = document.activeElement; cartView = view || "list";
     var d = document.getElementById("cartWrap"); d.hidden = false; document.body.style.overflow = "hidden";
-    renderCart(); document.querySelector("#cartPanel .mclose").focus();
-    await refreshCart(); renderCart();
+    renderCart(); var x = document.querySelector("#cartPanel .mclose"); if (x) x.focus();
+    await refreshCart(); await refreshOrders(); renderCart();
   }
   function closeCart() { document.getElementById("cartWrap").hidden = true; document.body.style.overflow = ""; if (cartLast && cartLast.focus) cartLast.focus(); }
   /* Refresh prices, stock and availability from the database before ordering */
   async function refreshCart() {
     if (!cart.length) return;
-    var r = await sb.from("produits").select("id,nom,prix,devise,stock,photos,boutique_id,boutiques(nom,slug,whatsapp)").in("id", cart.map(function (i) { return i.id; }));
+    var base = "id,nom,prix,devise,stock,photos,boutique_id,boutiques(nom,slug,whatsapp)", ids = cart.map(function (i) { return i.id; });
+    var r = await sb.from("produits").select("variantes," + base).in("id", ids);
+    if (r.error) r = await sb.from("produits").select(base).in("id", ids);
     if (r.error || !r.data) return;
     var map = {}; r.data.forEach(function (p) { map[p.id] = p; });
     var before = cart.length;
-    cart = cart.filter(function (i) { var p = map[i.id]; return p && p.boutiques && p.stock !== 0; }).map(function (i) {
-      var p = map[i.id]; var max = p.stock == null ? 99 : p.stock;
-      return { id: i.id, qty: Math.min(i.qty, max), nom: p.nom, prix: Number(p.prix), devise: p.devise, stock: p.stock, photo: p.photos && p.photos[0] || null, shop: { id: p.boutique_id, slug: p.boutiques.slug, nom: p.boutiques.nom, whatsapp: p.boutiques.whatsapp || "" } };
+    cart = cart.filter(function (i) {
+      var p = map[i.id]; if (!p || !p.boutiques) return false;
+      if (hasVar(p) && (!i.v || (p.variantes.combis || []).length && !combiOf(p, i.v))) return false;
+      return varStock(p, i.v) !== 0;
+    }).map(function (i) {
+      var p = map[i.id], stock = varStock(p, i.v), max = stock == null ? 99 : stock;
+      return { key: i.key, id: i.id, v: i.v || null, qty: Math.min(i.qty, max), nom: p.nom, prix: varPrice(p, i.v), devise: p.devise, stock: stock, photo: p.photos && p.photos[0] || null,
+        shop: { id: p.boutique_id, slug: p.boutiques.slug, nom: p.boutiques.nom, whatsapp: p.boutiques.whatsapp || "" } };
     });
     if (cart.length < before) cartNotice = t("gone");
     cartSave();
+  }
+  /* Order status, for the orders placed from this browser */
+  async function refreshOrders() {
+    var ids = myOrders.slice(-20).map(function (o) { return o.id; });
+    if (!ids.length) return;
+    var r = await sb.rpc("suivi_commandes", { ids: ids });
+    if (r.error || !r.data) return;
+    r.data.forEach(function (s) { myOrders.forEach(function (o) { if (o.id === s.id) o.statut = s.statut; }); });
+    ordersSave();
   }
   function head(p, title) {
     var h = el("div", "cart-head"), ti = el("h2", null, title); ti.id = "cartTitle"; h.appendChild(ti);
@@ -374,12 +433,15 @@ window.YC = (function () {
     var p = document.getElementById("cartPanel"); if (!p) return; p.textContent = "";
     if (cartView === "info") return renderInfo(p);
     if (cartView === "send") return renderSend(p);
+    if (cartView === "orders") return renderOrders(p);
     head(p, t("cartTitle") + (cartCount() ? " (" + cartCount() + ")" : ""));
     if (cartNotice) { p.appendChild(el("p", "cart-notice", cartNotice)); cartNotice = ""; }
     if (!cart.length) {
       sentBlock(p, false);
       p.appendChild(el("p", "cart-empty", t("cartEmpty")));
-      var k = el("a", "btn btn-navy", t("keepShopping")); k.href = "vitrine.html"; p.appendChild(k); return;
+      var k = el("a", "btn btn-navy", t("keepShopping")); k.href = "vitrine.html"; p.appendChild(k);
+      ordersLink(p);
+      return;
     }
     groups().forEach(function (g) {
       var sec = el("section", "cart-group");
@@ -387,7 +449,9 @@ window.YC = (function () {
       g.items.forEach(function (i) {
         var row = el("div", "cart-row");
         if (i.photo) { var im = el("img"); im.src = pub(i.photo); im.alt = ""; row.appendChild(im); } else row.appendChild(el("div", "cart-noim"));
-        var info = el("div", "cart-info"); info.appendChild(el("b", null, i.nom)); info.appendChild(el("span", "cart-unit", money(i.prix, i.devise)));
+        var info = el("div", "cart-info"); info.appendChild(el("b", null, i.nom));
+        if (i.v) info.appendChild(el("span", "cart-var", vLabel(i.v)));
+        info.appendChild(el("span", "cart-unit", money(i.prix, i.devise)));
         var ctl = el("div", "cart-ctl"), stp = el("div", "stepper"), max = i.stock == null ? 99 : i.stock;
         var mi = el("button", null, "−"), qv = el("span", "qv", String(i.qty)), pl = el("button", null, "+");
         mi.type = pl.type = "button"; mi.setAttribute("aria-label", t("less") + " : " + i.nom); pl.setAttribute("aria-label", t("more") + " : " + i.nom);
@@ -396,7 +460,7 @@ window.YC = (function () {
         pl.addEventListener("click", function () { i.qty = Math.min(max, i.qty + 1); cartSave(); renderCart(); });
         stp.appendChild(mi); stp.appendChild(qv); stp.appendChild(pl); ctl.appendChild(stp);
         var rm = el("button", "cart-rm", t("remove")); rm.type = "button"; rm.setAttribute("aria-label", t("remove") + " : " + i.nom);
-        rm.addEventListener("click", function () { cart = cart.filter(function (x) { return x.id !== i.id; }); cartSave(); renderCart(); });
+        rm.addEventListener("click", function () { cart = cart.filter(function (x) { return x.key !== i.key; }); cartSave(); renderCart(); });
         ctl.appendChild(rm); info.appendChild(ctl); row.appendChild(info);
         row.appendChild(el("span", "cart-line", money(i.prix * i.qty, i.devise)));
         sec.appendChild(row);
@@ -411,76 +475,136 @@ window.YC = (function () {
     var go = el("button", "btn btn-wa cart-go", t("checkout")); go.type = "button"; go.addEventListener("click", function () { cartView = "info"; renderCart(); var f = document.getElementById("cName"); if (f) f.focus(); });
     p.appendChild(go);
     var k2 = el("button", "cart-rm", t("keepShopping")); k2.type = "button"; k2.style.alignSelf = "center"; k2.addEventListener("click", closeCart); p.appendChild(k2);
+    ordersLink(p);
+  }
+  function ordersLink(p) {
+    if (!myOrders.length) return;
+    var b = el("button", "cart-rm", t("myOrders") + " (" + myOrders.length + ")"); b.type = "button"; b.style.alignSelf = "center";
+    b.addEventListener("click", function () { cartView = "orders"; renderCart(); }); p.appendChild(b);
   }
   function renderInfo(p) {
     head(p, t("yourInfo"));
+    if (cartNotice) { p.appendChild(el("p", "cart-notice", cartNotice)); cartNotice = ""; }
     var f = el("form", "cart-form"); f.noValidate = true;
-    function fld(id, key, type, area, opt) {
+    function fld(id, key, type, area) {
       var w = el("div", "cfield"), l = el("label", null, t(key)); l.setAttribute("for", id); w.appendChild(l);
       var i = el(area ? "textarea" : "input"); i.id = id; if (!area) i.type = type || "text"; else i.rows = 3; i.value = buyer[id] || "";
       if (type === "tel") { i.inputMode = "tel"; i.autocomplete = "tel"; } if (id === "cName") i.autocomplete = "name"; if (id === "cAddr") i.autocomplete = "street-address";
       w.appendChild(i); var e = el("span", "cerr"); e.id = id + "-err"; w.appendChild(e); f.appendChild(w); return i;
     }
     var n = fld("cName", "cName"), ph = fld("cPhone", "cPhone", "tel"), ad = fld("cAddr", "cAddr", "text", true), no = fld("cNote", "cNote", "text", true);
-    ph.placeholder = "+226 70 00 00 00";
-    var go = el("button", "btn btn-wa cart-go", t("checkout")); go.type = "submit"; f.appendChild(go);
+    ph.placeholder = "+226 70 00 00 00"; n.maxLength = 80; ad.maxLength = 300; no.maxLength = 600;
+    var go = el("button", "btn btn-wa cart-go", t("placeOrder")); go.type = "submit"; f.appendChild(go);
+    f.appendChild(el("p", "cart-help", t("placeHelp")));
     var bk = el("button", "cart-rm", t("cartTitle")); bk.type = "button"; bk.style.alignSelf = "center"; bk.addEventListener("click", function () { cartView = "list"; renderCart(); }); f.appendChild(bk);
-    f.addEventListener("submit", function (e) {
-      e.preventDefault(); var ok = true, first = null;
+    f.addEventListener("submit", async function (e) {
+      e.preventDefault(); if (cartBusy) return; var ok = true, first = null;
       function err(i, m) { document.getElementById(i.id + "-err").textContent = m || ""; if (m) { i.setAttribute("aria-invalid", "true"); ok = false; first = first || i; } else i.removeAttribute("aria-invalid"); }
-      err(n, n.value.trim() ? "" : t("eReq"));
+      err(n, n.value.trim().length >= 2 ? "" : t("eReq"));
       var pv = ph.value.trim(); err(ph, !pv ? t("eReq") : (/^\+?[0-9 ().-]{8,20}$/.test(pv) && pv.replace(/\D/g, "").length >= 8 ? "" : t("ePhone")));
-      err(ad, ad.value.trim() ? "" : t("eReq"));
+      err(ad, ad.value.trim().length >= 3 ? "" : t("eReq"));
       if (!ok) { first.focus(); return; }
       buyer = { cName: n.value.trim(), cPhone: pv, cAddr: ad.value.trim(), cNote: no.value.trim() };
       try { localStorage.setItem("yc-buyer", JSON.stringify(buyer)); } catch (x) {}
-      cartView = "send"; renderCart();
+      cartBusy = true; go.disabled = true; go.textContent = t("placing");
+      await placeOrders();
+      cartBusy = false;
+      renderCart();
     });
     p.appendChild(f);
   }
-  function orderText(g) {
-    var lines = [t("waCart", { s: g.shop.nom }), ""];
-    g.items.forEach(function (i) { lines.push("• " + i.qty + " × " + i.nom + " – " + money(i.prix, i.devise) + " = " + money(i.prix * i.qty, i.devise)); });
-    var to = g.items[0].devise, st = sumIn(g.items, to);
-    lines.push("", t("waTotal") + " : " + (st.approx ? t("approxSign") : "") + money(st.v, to), "");
+  /* Records one order per seller. If the database is not updated yet, falls back to WhatsApp only. */
+  async function placeOrders() {
+    justOrdered = [];
+    var gs = groups(), failed = null;
+    for (var k = 0; k < gs.length; k++) {
+      var g = gs[k]; if (!g.shop.id) continue;
+      var r = await sb.rpc("passer_commande", { p_boutique: g.shop.id, p_nom: buyer.cName, p_tel: buyer.cPhone, p_adresse: buyer.cAddr, p_note: buyer.cNote || "",
+        p_articles: g.items.map(function (i) { var a = { id: i.id, qty: i.qty }; if (i.v) a.v = i.v; return a; }), p_langue: prefs.lang });
+      if (r.error) {
+        if (/function|schema cache|does not exist|not found/i.test(r.error.message || "")) break; /* old database: WhatsApp only */
+        failed = r.error.message || t("orderErr"); break;
+      }
+      var row = Array.isArray(r.data) ? r.data[0] : r.data;
+      var st = sumIn(g.items, g.items[0].devise);
+      var o = { id: row.id, numero: row.numero, at: Date.now(), statut: "nouvelle", shop: g.shop, total: (st.approx ? t("approxSign") : "") + money(st.v, g.items[0].devise),
+        items: g.items.map(function (i) { return { nom: i.nom, v: i.v || null, qty: i.qty, prix: i.prix, devise: i.devise }; }) };
+      myOrders.push(o); justOrdered.push(o);
+      var keys = g.items.map(function (i) { return i.key; });
+      cart = cart.filter(function (i) { return keys.indexOf(i.key) < 0; });
+    }
+    ordersSave(); cartSave();
+    if (failed && !justOrdered.length) { cartNotice = failed; cartView = "info"; return; }
+    if (failed) cartNotice = failed;
+    cartView = "send";
+  }
+  function orderText(o) {
+    var lines = [t("waCart", { s: o.shop.nom })];
+    if (o.numero) lines.push(t("orderNo", { n: o.numero }));
+    lines.push("");
+    o.items.forEach(function (i) { lines.push("• " + i.qty + " × " + i.nom + (i.v ? " (" + vLabel(i.v) + ")" : "") + " – " + money(i.prix, i.devise) + " = " + money(i.prix * i.qty, i.devise)); });
+    lines.push("", t("waTotal") + " : " + o.total, "");
     lines.push(t("waName") + " : " + buyer.cName, t("waPhone") + " : " + buyer.cPhone, t("waAddr") + " : " + buyer.cAddr);
     if (buyer.cNote) lines.push(t("waNote") + " : " + buyer.cNote);
     lines.push("", t("waEnd"));
     return lines.join("\n");
   }
+  function waButton(sec, o, onClick) {
+    var d = String(o.shop.whatsapp || "").replace(/\D/g, "");
+    if (d.length < 8) { sec.appendChild(el("p", "wa-note", o.numero ? t("noWaRec", { s: o.shop.nom }) : t("noWaShop", { s: o.shop.nom }))); return; }
+    var a = el("a", "btn btn-wa cart-go", o.numero ? t("sendTo", { s: o.shop.nom }) : t("sendTo", { s: o.shop.nom }));
+    a.href = "https://wa.me/" + d + "?text=" + encodeURIComponent(orderText(o)); a.target = "_blank"; a.rel = "noopener";
+    a.addEventListener("click", onClick); sec.appendChild(a);
+  }
   function renderSend(p) {
-    head(p, t("sendTitle"));
-    var gs = groups();
-    if (!gs.length) {
-      var ok = el("div", "cart-done");
-      ok.appendChild(el("span", "cart-done-ic", "✓"));
-      ok.appendChild(el("h3", null, t("doneTitle")));
-      ok.appendChild(el("p", "cart-help", t("doneText")));
-      p.appendChild(ok);
-      sentBlock(p, true);
-      var k = el("a", "btn btn-navy cart-go", t("keepShopping")); k.href = "vitrine.html"; p.appendChild(k);
-      return;
+    var gs = groups().filter(function (g) { return !g.shop.id || !justOrdered.length; });
+    head(p, justOrdered.length ? t("orderedTitle") : t("sendTitle"));
+    if (cartNotice) { p.appendChild(el("p", "cart-notice", cartNotice)); cartNotice = ""; }
+    if (justOrdered.length) {
+      var ok = el("div", "cart-done"); ok.appendChild(el("span", "cart-done-ic", "✓")); ok.appendChild(el("p", "cart-help", t("orderedHelp"))); p.appendChild(ok);
+      justOrdered.forEach(function (o) {
+        var sec = el("section", "cart-group");
+        sec.appendChild(el("b", "cart-shop", o.shop.nom));
+        sec.appendChild(el("p", "order-no", t("orderNo", { n: o.numero })));
+        sec.appendChild(el("p", "cart-help", o.items.reduce(function (n, i) { return n + i.qty; }, 0) + " × · " + o.total));
+        waButton(sec, o, function () {});
+        p.appendChild(sec);
+      });
     }
-    if (gs.length > 1) p.appendChild(el("p", "cart-help", t("sendHelp")));
-    gs.forEach(function (g) {
-      var sec = el("section", "cart-group");
-      sec.appendChild(el("b", "cart-shop", g.shop.nom));
-      var to = g.items[0].devise, st = sumIn(g.items, to);
-      sec.appendChild(el("p", "cart-help", g.items.reduce(function (n, i) { return n + i.qty; }, 0) + " × · " + (st.approx ? t("approxSign") : "") + money(st.v, to)));
-      var d = String(g.shop.whatsapp || "").replace(/\D/g, "");
-      if (d.length < 8) { sec.appendChild(el("p", "wa-note", t("noWaShop", { s: g.shop.nom }))); }
-      else {
-        var a = el("a", "btn btn-wa cart-go", t("sendTo", { s: g.shop.nom }));
-        a.href = "https://wa.me/" + d + "?text=" + encodeURIComponent(orderText(g)); a.target = "_blank"; a.rel = "noopener";
-        a.addEventListener("click", function () { track("commande_envoyee", g.shop.id); markSent(g); setTimeout(renderCart, 300); });
-        sec.appendChild(a);
-      }
+    if (!justOrdered.length && !gs.length) {
+      var dn = el("div", "cart-done");
+      dn.appendChild(el("span", "cart-done-ic", "✓")); dn.appendChild(el("h3", null, t("doneTitle"))); dn.appendChild(el("p", "cart-help", t("doneText")));
+      p.appendChild(dn); sentBlock(p, true);
+    } else if (gs.length) {
+      if (gs.length > 1) p.appendChild(el("p", "cart-help", t("sendHelp")));
+      gs.forEach(function (g) {
+        var sec = el("section", "cart-group"); sec.appendChild(el("b", "cart-shop", g.shop.nom));
+        var st = sumIn(g.items, g.items[0].devise), o = { shop: g.shop, items: g.items, total: (st.approx ? t("approxSign") : "") + money(st.v, g.items[0].devise) };
+        sec.appendChild(el("p", "cart-help", g.items.reduce(function (n, i) { return n + i.qty; }, 0) + " × · " + o.total));
+        waButton(sec, o, function () { track("commande_envoyee", g.shop.id); markSent(g); setTimeout(renderCart, 300); });
+        p.appendChild(sec);
+      });
+      sentBlock(p, true);
+    }
+    var k = el("a", "btn btn-navy cart-go", t("keepShopping")); k.href = "vitrine.html"; p.appendChild(k);
+    if (!justOrdered.length && gs.length) { var ed = el("button", "cart-rm", t("editInfo")); ed.type = "button"; ed.style.alignSelf = "center"; ed.addEventListener("click", function () { cartView = "info"; renderCart(); }); p.appendChild(ed); }
+    ordersLink(p);
+  }
+  function renderOrders(p) {
+    head(p, t("myOrders"));
+    p.appendChild(el("p", "cart-help", t("ordersHelp")));
+    myOrders.slice().reverse().forEach(function (o) {
+      var sec = el("section", "cart-group order-card");
+      var top = el("div", "order-top"); top.appendChild(el("b", null, o.shop.nom)); top.appendChild(el("span", "ostat ostat-" + (o.statut || "nouvelle"), t("st_" + (o.statut || "nouvelle")))); sec.appendChild(top);
+      sec.appendChild(el("p", "order-no", t("orderNo", { n: o.numero }) + " · " + new Date(o.at).toLocaleDateString(LOCALE[prefs.lang], { day: "numeric", month: "short" })));
+      o.items.forEach(function (i) { sec.appendChild(el("p", "cart-help", i.qty + " × " + i.nom + (i.v ? " (" + vLabel(i.v) + ")" : ""))); });
+      sec.appendChild(el("p", "cart-help", t("waTotal") + " : " + o.total));
+      if (o.statut !== "livree" && o.statut !== "annulee") waButton(sec, o, function () {});
       p.appendChild(sec);
     });
-    sentBlock(p, true);
-    var ed = el("button", "cart-rm", t("editInfo")); ed.type = "button"; ed.style.alignSelf = "center"; ed.addEventListener("click", function () { cartView = "info"; renderCart(); }); p.appendChild(ed);
+    var bk = el("button", "cart-rm", t("cartTitle")); bk.type = "button"; bk.style.alignSelf = "center"; bk.addEventListener("click", function () { cartView = "list"; renderCart(); }); p.appendChild(bk);
   }
-  window.addEventListener("storage", function (e) { if (e.key === "yc-sent") { try { sentLog = JSON.parse(e.newValue || "[]"); } catch (x) { sentLog = []; } } if (e.key === "yc-cart") { try { cart = JSON.parse(e.newValue || "[]"); } catch (x) { cart = []; } cartBadge(); } });
+  window.addEventListener("storage", function (e) { if (e.key === "yc-sent") { try { sentLog = JSON.parse(e.newValue || "[]"); } catch (x) { sentLog = []; } } if (e.key === "yc-cart") { try { cart = JSON.parse(e.newValue || "[]"); } catch (x) { cart = []; } cart.forEach(function (i) { if (!i.key) i.key = i.id; }); cartBadge(); } if (e.key === "yc-orders") { myOrders = readJSON("yc-orders", []); } });
 
   var lastFocus = null;
   function openProduct(p, shop, opts) {
@@ -499,21 +623,60 @@ window.YC = (function () {
     if (opts.showShop && shop) { var sa = el("a", null, t("by", { s: shop.nom })); sa.href = "boutique.html?b=" + encodeURIComponent(shop.slug); sa.style.color = "var(--teal-deep)"; sa.style.fontWeight = "700"; bd.appendChild(sa); }
     var h = el("h2", null, p.nom); h.id = "pmTitle"; bd.appendChild(h);
     track("vue_produit", shopIdOf(p, shop), p.id);
-    var hr = el("div", "m-pricerow"); hr.appendChild(priceBlock(p, true)); hr.appendChild(favButton(p)); bd.appendChild(hr);
-    var meta = [cat(p.categorie)]; if (p.stock != null) meta.push(p.stock > 0 ? t("stock", { n: p.stock }) : t("outStock"));
-    bd.appendChild(el("div", "meta", meta.filter(Boolean).join(" · ")));
+    var vr = hasVar(p), sel = vr ? p.variantes.options.map(function () { return null; }) : null;
+    var hr = el("div", "m-pricerow"), pbox = el("div"); pbox.appendChild(priceBlock(p, true)); hr.appendChild(pbox); hr.appendChild(favButton(p)); bd.appendChild(hr);
+    var metaEl = el("div", "meta"); bd.appendChild(metaEl);
+    var vbox = null, row = null, q = 1, max = 99, ad = null, qv = null, mi = null, pl = null;
+    function chosen() { return sel && sel.every(function (x) { return x != null; }) ? sel.slice() : null; }
+    function curStock() { return vr ? (chosen() ? varStock(p, chosen()) : null) : p.stock; }
+    function update() {
+      var v = vr ? chosen() : null, s = curStock();
+      var meta = [cat(p.categorie)];
+      if (!vr || v) { if (s != null) meta.push(s > 0 ? t("stock", { n: s }) : t("outStock")); }
+      metaEl.textContent = meta.filter(Boolean).join(" · ");
+      if (vr) { pbox.textContent = ""; var pp = Object.assign({}, p); if (v) { pp.prix = varPrice(p, v); if (pp.prix_avant && Number(pp.prix_avant) <= pp.prix) pp.prix_avant = null; } pbox.appendChild(priceBlock(pp, true)); }
+      if (vbox) Array.prototype.forEach.call(vbox.querySelectorAll("[data-opt]"), function (b) {
+        var k = +b.getAttribute("data-opt"), val = b.getAttribute("data-val"), on = sel[k] === val;
+        b.setAttribute("aria-pressed", String(on));
+        var test = sel.slice(); test[k] = val;
+        var cs = p.variantes.combis || [], possible = !cs.length || cs.some(function (c) { return c.v.every(function (x, j) { return test[j] == null || x === test[j]; }) && c.stock !== 0; });
+        b.classList.toggle("na", !possible);
+      });
+      max = s == null ? 99 : s; if (q > max) q = Math.max(1, max); if (qv) qv.textContent = q;
+      if (ad) {
+        var need = vr && !v ? p.variantes.options[sel.indexOf(null)].nom : "";
+        ad.disabled = !!need || s === 0;
+        ad.lastChild.textContent = need ? t("pickOpt", { o: need }) : s === 0 ? t("outStock") : t("addLong");
+        mi.disabled = q <= 1; pl.disabled = q >= max;
+      }
+    }
+    if (vr) {
+      vbox = el("div", "vpick");
+      p.variantes.options.forEach(function (o, k) {
+        var g = el("div", "vgroup"), lab = el("span", "vlab", o.nom); lab.id = "vl" + k; g.appendChild(lab);
+        var list = el("div", "vvals"); list.setAttribute("role", "group"); list.setAttribute("aria-labelledby", "vl" + k);
+        o.valeurs.forEach(function (val) {
+          var b = el("button", "vval", val); b.type = "button"; b.setAttribute("data-opt", k); b.setAttribute("data-val", val);
+          b.addEventListener("click", function () { sel[k] = sel[k] === val ? null : val; q = 1; update(); });
+          list.appendChild(b);
+        });
+        g.appendChild(list); vbox.appendChild(g);
+      });
+      bd.appendChild(vbox);
+    }
     if (p.description) bd.appendChild(el("p", "desc", p.description));
     if (p.stock !== 0) {
-      var row = el("div", "m-buy"), q = 1, max = p.stock == null ? 99 : p.stock;
-      var stp = el("div", "stepper"), mi = el("button", null, "−"), qv = el("span", "qv", "1"), pl = el("button", null, "+");
+      row = el("div", "m-buy");
+      var stp = el("div", "stepper"); mi = el("button", null, "−"); qv = el("span", "qv", "1"); pl = el("button", null, "+");
       mi.type = pl.type = "button"; mi.setAttribute("aria-label", t("less")); pl.setAttribute("aria-label", t("more")); qv.setAttribute("aria-live", "polite");
-      mi.addEventListener("click", function () { q = Math.max(1, q - 1); qv.textContent = q; });
-      pl.addEventListener("click", function () { q = Math.min(max, q + 1); qv.textContent = q; });
+      mi.addEventListener("click", function () { q = Math.max(1, q - 1); update(); });
+      pl.addEventListener("click", function () { q = Math.min(max, q + 1); update(); });
       stp.appendChild(mi); stp.appendChild(qv); stp.appendChild(pl); row.appendChild(stp);
-      var ad = el("button", "btn btn-wa"); ad.type = "button"; ad.innerHTML = CART_SVG; ad.appendChild(document.createTextNode(t("addLong")));
-      ad.addEventListener("click", function () { cartAdd(p, shop, q, ad); });
+      ad = el("button", "btn btn-wa"); ad.type = "button"; ad.innerHTML = CART_SVG; ad.appendChild(document.createTextNode(t("addLong")));
+      ad.addEventListener("click", function () { cartAdd(p, shop, q, ad, vr ? chosen() : null); });
       row.appendChild(ad); bd.appendChild(row);
     }
+    update();
     var wa = shop ? waLink(shop, p) : "";
     if (wa && p.stock !== 0) { var w = el("a", "direct", t("orderDirect")); w.href = wa; w.target = "_blank"; w.rel = "noopener"; w.addEventListener("click", function () { track("clic_whatsapp", shopIdOf(p, shop), p.id); }); bd.appendChild(w); }
     else if (!wa) bd.appendChild(el("p", "wa-note", t("noWa")));
@@ -539,7 +702,7 @@ window.YC = (function () {
   /* Pages can add their own texts: YC.extend({ fr: {...}, en: {...}, es: {...} }) */
   function extend(d) { Object.keys(d).forEach(function (L) { T[L] = T[L] || {}; Object.keys(d[L]).forEach(function (k) { T[L][k] = d[L][k]; }); }); }
 
-  return { extend: extend, track: track, cartAdd: function (p, shop, q, b) { cartAdd(p, shop, q || 1, b); }, sb: sb, t: t, cat: cat, el: el, pub: pub, money: money, card: card, openProduct: openProduct, wirePrefs: wirePrefs, setPrefs: setPrefs, labels: labels, catOptions: catOptions, norm: norm, prefs: prefs,
+  return { extend: extend, track: track, hasVar: hasVar, cartAdd: function (p, shop, q, b, v) { cartAdd(p, shop, q || 1, b, v); }, openOrders: function () { openCart("orders"); }, sb: sb, t: t, cat: cat, el: el, pub: pub, money: money, card: card, openProduct: openProduct, wirePrefs: wirePrefs, setPrefs: setPrefs, labels: labels, catOptions: catOptions, norm: norm, prefs: prefs,
     convert: convert, discount: discount, priceBlock: priceBlock, favButton: favButton, isFav: isFav, favs: function () { return favs.slice(); }, onFavs: function (f) { favListeners.push(f); },
     openCart: function () { openCart(); }, CATS: CATS, FAMILIES: FAMILIES, THEMES: THEMES, LOCALE: LOCALE, URL_SB: URL_SB, HEART: HEART, CART_SVG: CART_SVG };
 })();

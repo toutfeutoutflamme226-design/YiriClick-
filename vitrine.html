@@ -339,7 +339,8 @@ section.block { margin-top: 28px; }
   /* ---------- data ---------- */
   async function loadData() {
     var cols = "id,boutique_id,nom,description,prix,devise,categorie,stock,photos,created_at,boutiques!inner(nom,slug,ville,pays,whatsapp,logo)";
-    var r = await Y.sb.from("produits").select("prix_avant," + cols).order("created_at", { ascending: false }).limit(400);
+    var r = await Y.sb.from("produits").select("prix_avant,variantes," + cols).order("created_at", { ascending: false }).limit(400);
+    if (r.error) r = await Y.sb.from("produits").select("prix_avant," + cols).order("created_at", { ascending: false }).limit(400);
     if (r.error) r = await Y.sb.from("produits").select(cols).order("created_at", { ascending: false }).limit(400);
     items = r.data || [];
     var pr = await Y.sb.from("promotions").select("*").order("ordre", { ascending: true }).order("created_at", { ascending: false });
@@ -591,7 +592,7 @@ section.block { margin-top: 28px; }
   var sideLast = null;
   function openSide() {
     sideLast = document.activeElement; var L = $("sideLinks"); L.textContent = "";
-    [["homeLink", function () { go({ home: true }); }], ["favsLink", function () { go({ fav: true }); }], ["deals", function () { go({ promo: true }); }], ["allProducts", function () { go({}); }], ["settings", openChooser]]
+    [["homeLink", function () { go({ home: true }); }], ["favsLink", function () { go({ fav: true }); }], ["myOrders", function () { Y.openOrders(); }], ["deals", function () { go({ promo: true }); }], ["allProducts", function () { go({}); }], ["settings", openChooser]]
       .forEach(function (x) { var b = el("button", null, t(x[0])); b.type = "button"; b.addEventListener("click", function () { closeSide(); x[1](); }); L.appendChild(b); });
     [["fSell2", "vendeur.html"], ["fSell3", "index.html#inscription"]].forEach(function (x) { var a = el("a", null, t(x[0])); a.href = x[1]; L.appendChild(a); });
     famAccordion($("sideCats"), function (o) { closeSide(); go(o); });

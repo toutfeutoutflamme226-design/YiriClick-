@@ -153,7 +153,8 @@
     if (b.error || !b.data) return notFound();
     shop = b.data;
     var cols = "id,boutique_id,nom,description,prix,devise,categorie,stock,photos,created_at";
-    var p = await Y.sb.from("produits").select("prix_avant,a_la_une," + cols).eq("boutique_id", shop.id).order("created_at", { ascending: false });
+    var p = await Y.sb.from("produits").select("prix_avant,a_la_une,variantes," + cols).eq("boutique_id", shop.id).order("created_at", { ascending: false });
+    if (p.error) p = await Y.sb.from("produits").select("prix_avant,a_la_une," + cols).eq("boutique_id", shop.id).order("created_at", { ascending: false });
     if (p.error) p = await Y.sb.from("produits").select("prix_avant," + cols).eq("boutique_id", shop.id).order("created_at", { ascending: false });
     if (p.error) p = await Y.sb.from("produits").select(cols).eq("boutique_id", shop.id).order("created_at", { ascending: false });
     items = p.data || [];

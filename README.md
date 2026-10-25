@@ -106,6 +106,17 @@ en haut du script de `vitrine.html` (objet `SOCIAL`).
    - **Partager** : lien, message prêt à envoyer, WhatsApp et Facebook ; QR code et affiche à imprimer (Pro et Entreprise).
 3. Les statistiques sont anonymes (table `evenements`) : visites, vues, ajouts au panier, favoris et contacts WhatsApp.
 
+## Commandes et variantes (base v6)
+
+1. Dans Supabase, **SQL Editor › New query** : colle `supabase/schema-v6.sql`, puis **Run**.
+2. Côté client : « Envoyer ma commande » enregistre une commande par vendeur avec un numéro (YC-XXXXXX).
+   Les prix et le stock sont vérifiés par la base, pas par le navigateur. Le client l’envoie ensuite sur WhatsApp
+   et suit son statut dans « Mes commandes » (menu de la vitrine ou panier).
+3. Côté vendeur, onglet **Commandes** : nouvelles, en cours, livrées, annulées ; confirmer, expédier, livrer,
+   annuler ; message WhatsApp prêt pour le client ; note interne ; bon de commande à imprimer ou enregistrer en PDF ;
+   vue **Clients** avec l’historique de chacun. Le stock baisse à la confirmation et revient en cas d’annulation.
+4. **Variantes** (Pro et Entreprise) : jusqu’à 2 options (ex. taille et couleur), stock et prix par combinaison.
+
 ## À modifier avant le lancement
 
 - Remplacer `[ADRESSE E-MAIL]` (et ses traductions) par ton adresse de contact,
