@@ -42,6 +42,7 @@
         <h1 id="sName"></h1>
         <p class="slogan" id="sSlogan" hidden></p>
         <p class="place" id="sPlace"></p>
+        <a class="rating" id="sRating" href="#secAvis" hidden></a>
         <span class="verified"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span data-t="verified"></span></span>
       </div>
       <div class="shop-acts">
@@ -68,6 +69,8 @@
       <div class="grid" id="grid"></div>
     </section>
 
+    <section class="ssec" id="secAvis" hidden><h2 data-t="reviews"></h2><div class="rev-sum" id="revSum"></div><div class="revs" id="revList"></div></section>
+
     <section class="ssec" id="secInfo" hidden style="padding-bottom:40px">
       <h2 data-t="sInfo"></h2>
       <div class="infos" id="infos"></div>
@@ -87,7 +90,7 @@
 <script src="assets/shop.js"></script>
 <script>
 (function () {
-  var Y = window.YC, shop = null, items = [];
+  var Y = window.YC, shop = null, items = [], reviews = [];
   var params = new URLSearchParams(location.search), slug = (params.get("b") || "").toLowerCase(), pid = params.get("p");
   Y.extend({
     fr: { contact: "Contacter sur WhatsApp", share: "Partager la boutique", copied: "Lien copié", sections: "Sections de la boutique", sUne: "À la une", sPromo: "Promotions", sNew: "Nouveautés",
@@ -125,7 +128,7 @@
     var g = $("grid"); g.textContent = "";
     if (!list.length) g.appendChild(Y.el("div", "empty", items.length ? Y.t("noMatch") : Y.t("noProducts")));
     else list.forEach(function (p) { g.appendChild(Y.card(p, shop, false, openP)); });
-    renderInfos(); renderNav();
+    renderInfos(); renderReviews(); renderNav();
   }
   function renderInfos() {
     var box = $("infos"); box.textContent = "";
@@ -138,9 +141,28 @@
     f.hidden = !faq.length;
     $("secInfo").hidden = !sec("infos") || (!box.children.length && !faq.length);
   }
+  function stars(n) { var r = Math.round(n); return "★★★★★".slice(0, r) + "☆☆☆☆☆".slice(0, 5 - r); }
+  function renderReviews() {
+    var n = reviews.length; $("secAvis").hidden = !n;
+    var rt = $("sRating"); rt.hidden = !n;
+    if (!n) return;
+    var avg = reviews.reduce(function (s, r) { return s + r.note; }, 0) / n, avgTxt = avg.toLocaleString(Y.LOCALE[Y.prefs.lang], { maximumFractionDigits: 1 });
+    rt.textContent = ""; rt.appendChild(Y.el("span", "stars", stars(avg))); rt.appendChild(document.createTextNode(" " + avgTxt + " · " + Y.t("nReviews", { n: n })));
+    rt.setAttribute("aria-label", avgTxt + " / 5 · " + Y.t("nReviews", { n: n }));
+    var sm = $("revSum"); sm.textContent = "";
+    sm.appendChild(Y.el("span", "big", avgTxt)); var w = Y.el("div"); var s1 = Y.el("div", "stars", stars(avg)); s1.setAttribute("aria-hidden", "true"); w.appendChild(s1); w.appendChild(Y.el("div", "who", Y.t("nReviews", { n: n }))); sm.appendChild(w);
+    var box = $("revList"); box.textContent = "";
+    reviews.slice(0, 20).forEach(function (r) {
+      var c = Y.el("article", "rev"), s2 = Y.el("span", "stars", stars(r.note)); s2.setAttribute("aria-label", r.note + " / 5"); c.appendChild(s2);
+      c.appendChild(Y.el("span", "who", r.nom + " · " + new Date(r.created_at).toLocaleDateString(Y.LOCALE[Y.prefs.lang], { day: "numeric", month: "long", year: "numeric" })));
+      if (r.commentaire) c.appendChild(Y.el("p", null, r.commentaire));
+      if (r.reponse) { var rp = Y.el("div", "reply"); rp.appendChild(Y.el("b", null, Y.t("sellerReply") + " : ")); rp.appendChild(document.createTextNode(r.reponse)); c.appendChild(rp); }
+      box.appendChild(c);
+    });
+  }
   function renderNav() {
     var n = $("shopNav"); n.textContent = "";
-    [["secUne", "sUne"], ["secPromo", "sPromo"], ["secNew", "sNew"], ["secAll", "sAll"], ["secInfo", "sInfo"]].forEach(function (x) {
+    [["secUne", "sUne"], ["secPromo", "sPromo"], ["secNew", "sNew"], ["secAll", "sAll"], ["secAvis", "reviews"], ["secInfo", "sInfo"]].forEach(function (x) {
       if ($(x[0]).hidden) return; var a = Y.el("a", null, Y.t(x[1])); a.href = "#" + x[0]; n.appendChild(a);
     });
     n.hidden = n.children.length < 3;
@@ -153,11 +175,14 @@
     if (b.error || !b.data) return notFound();
     shop = b.data;
     var cols = "id,boutique_id,nom,description,prix,devise,categorie,stock,photos,created_at";
-    var p = await Y.sb.from("produits").select("prix_avant,a_la_une,variantes," + cols).eq("boutique_id", shop.id).order("created_at", { ascending: false });
+    var p = await Y.sb.from("produits").select("prix_avant,a_la_une,variantes,solde_prix,solde_debut,solde_fin," + cols).eq("boutique_id", shop.id).order("created_at", { ascending: false });
+    if (p.error) p = await Y.sb.from("produits").select("prix_avant,a_la_une,variantes," + cols).eq("boutique_id", shop.id).order("created_at", { ascending: false });
     if (p.error) p = await Y.sb.from("produits").select("prix_avant,a_la_une," + cols).eq("boutique_id", shop.id).order("created_at", { ascending: false });
     if (p.error) p = await Y.sb.from("produits").select("prix_avant," + cols).eq("boutique_id", shop.id).order("created_at", { ascending: false });
     if (p.error) p = await Y.sb.from("produits").select(cols).eq("boutique_id", shop.id).order("created_at", { ascending: false });
-    items = p.data || [];
+    items = Y.prep(p.data || []);
+    var av = await Y.sb.from("avis").select("note,commentaire,nom,created_at,reponse").eq("boutique_id", shop.id).order("created_at", { ascending: false }).limit(60);
+    reviews = av.error ? [] : (av.data || []);
 
     var th = Y.THEMES[shop.theme] || Y.THEMES.teal;
     document.body.style.setProperty("--brand", th[0]); document.body.style.setProperty("--brand-ink", th[1]);

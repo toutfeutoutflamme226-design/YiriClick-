@@ -117,6 +117,17 @@ en haut du script de `vitrine.html` (objet `SOCIAL`).
    vue **Clients** avec l’historique de chacun. Le stock baisse à la confirmation et revient en cas d’annulation.
 4. **Variantes** (Pro et Entreprise) : jusqu’à 2 options (ex. taille et couleur), stock et prix par combinaison.
 
+## Marketing et avis (base v7)
+
+1. Dans Supabase, **SQL Editor › New query** : colle `supabase/schema-v7.sql`, puis **Run**.
+2. Espace vendeur, onglet **Marketing** :
+   - **Codes promo** (Pro et Entreprise) : % ou montant, achat minimum, dates, nombre d’utilisations ; vérifiés par la base ;
+   - **Soldes programmées** (Pro et Entreprise) : -X % sur tous les produits ou ceux à la une, avec début et fin ; aussi produit par produit ;
+   - **Visuels à partager** : image carrée ou verticale avec photo, prix et couleur de la boutique ;
+   - **Catalogue PDF** : `catalogue.html?b=adresse-boutique`, à imprimer ou enregistrer en PDF.
+3. **Avis clients** : après une commande livrée, le client note la boutique depuis « Mes commandes ».
+   Le vendeur répond ou signale (onglet Commandes › Avis) ; l’admin masque les avis abusifs.
+
 ## À modifier avant le lancement
 
 - Remplacer `[ADRESSE E-MAIL]` (et ses traductions) par ton adresse de contact,

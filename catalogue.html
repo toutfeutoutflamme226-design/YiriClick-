@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Catalogue Yiriclick</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800;900&display=swap">
+<style>
+/* A4 catalogue: header with shop identity and QR code, products grouped by category, 3 per row when printed */
+:root { --ink: #10232A; --soft: #4A5A5F; --rule: #D5DEE0; --bg: #F3F6F7; --brand: #0E6E78; --brand-ink: #fff; --font: 'Archivo', 'Helvetica Neue', Arial, sans-serif; }
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 14px; line-height: 1.4; }
+[hidden] { display: none !important; }
+.bar { position: sticky; top: 0; z-index: 5; background: #10232A; color: #fff; padding: 10px max(16px, env(safe-area-inset-left, 0px)); display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.bar p { margin: 0; font-size: 14px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 16px; border: 0; background: #FF7A2E; color: #10232A; font: inherit; font-weight: 800; cursor: pointer; }
+.page { max-width: 900px; margin: 16px auto; background: #fff; padding: 28px 24px; }
+.head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 16px; align-items: center; border-bottom: 4px solid var(--brand); padding-bottom: 16px; }
+.logo { width: 76px; height: 76px; background: var(--brand) center / cover no-repeat; color: var(--brand-ink); display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 900; }
+.head h1 { margin: 0; font-size: 28px; font-weight: 900; letter-spacing: -1px; line-height: 1.1; overflow-wrap: anywhere; }
+.head .slogan { margin: 2px 0 0; color: var(--brand); font-weight: 700; }
+.head .info { margin: 4px 0 0; color: var(--soft); font-size: 13px; }
+.qr { width: 104px; text-align: center; font-size: 10px; color: var(--soft); }
+.qr svg { width: 104px; height: 104px; display: block; }
+@media (max-width: 560px) { .head { grid-template-columns: auto minmax(0, 1fr); } .qr { grid-column: 1 / -1; justify-self: start; } }
+h2 { font-size: 17px; font-weight: 900; margin: 22px 0 10px; display: flex; gap: 8px; align-items: center; break-after: avoid; }
+h2::before { content: ""; width: 5px; height: 18px; background: var(--brand); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 180px), 1fr)); gap: 12px; }
+.it { border: 1px solid var(--rule); break-inside: avoid; display: flex; flex-direction: column; }
+.it .im { aspect-ratio: 1; background: #E6F4F5 center / cover no-repeat; }
+.it .b { padding: 8px 10px 10px; display: flex; flex-direction: column; gap: 2px; }
+.it h3 { margin: 0; font-size: 14px; font-weight: 800; overflow-wrap: anywhere; }
+.it .pr { font-size: 16px; font-weight: 900; font-variant-numeric: tabular-nums; }
+.it .pr s { font-size: 12px; font-weight: 500; color: var(--soft); margin-left: 6px; }
+.it .pr .sale { color: #C62828; }
+.it .v { font-size: 12px; color: var(--soft); }
+.it .out { font-size: 12px; font-weight: 800; color: #B3261E; }
+.foot { margin-top: 24px; border-top: 1px solid var(--rule); padding-top: 10px; font-size: 12px; color: var(--soft); display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.state { text-align: center; padding: 60px 16px; }
+@media print {
+  body { background: #fff; }
+  .bar { display: none; }
+  .page { margin: 0; padding: 0; max-width: none; }
+  .grid { grid-template-columns: repeat(3, 1fr); }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  @page { size: A4; margin: 12mm; }
+}
+</style>
+</head>
+<body>
+<div class="bar"><p id="barTxt">Catalogue</p><button class="btn" type="button" id="printBtn">Imprimer ou enregistrer en PDF</button></div>
+<div class="state" id="state">Chargement…</div>
+<main class="page" id="page" hidden>
+  <header class="head">
+    <div class="logo" id="logo" aria-hidden="true"></div>
+    <div><h1 id="name"></h1><p class="slogan" id="slogan" hidden></p><p class="info" id="info"></p></div>
+    <div class="qr"><div id="qr" role="img"></div><span id="qrTxt"></span></div>
+  </header>
+  <div id="cats"></div>
+  <div class="foot"><span id="date"></span><span id="url"></span></div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="assets/shop.js"></script>
+<script src="assets/qr.js"></script>
+<script>
+(function () {
+  var Y = window.YC, slug = (new URLSearchParams(location.search).get("b") || "").toLowerCase();
+  Y.extend({
+    fr: { cTitle: "Catalogue", cPrint: "Imprimer ou enregistrer en PDF", cHelp: "Sur téléphone : Partager › Imprimer, puis Enregistrer en PDF.", cScan: "Scanne pour commander", cDate: "Catalogue du {d} · prix susceptibles de changer", cNone: "Boutique introuvable.", cOut: "Épuisé" },
+    en: { cTitle: "Catalogue", cPrint: "Print or save as PDF", cHelp: "On a phone: Share › Print, then Save as PDF.", cScan: "Scan to order", cDate: "Catalogue of {d} · prices may change", cNone: "Shop not found.", cOut: "Sold out" },
+    es: { cTitle: "Catálogo", cPrint: "Imprimir o guardar en PDF", cHelp: "En el teléfono: Compartir › Imprimir y luego Guardar en PDF.", cScan: "Escanea para pedir", cDate: "Catálogo del {d} · precios sujetos a cambios", cNone: "Tienda no encontrada.", cOut: "Agotado" }
+  });
+  var t = Y.t, el = Y.el;
+  function $(id) { return document.getElementById(id); }
+  $("printBtn").textContent = t("cPrint");
+  $("printBtn").addEventListener("click", function () { window.print(); });
+  async function start() {
+    if (!/^[a-z0-9-]{3,40}$/.test(slug)) return none();
+    var b = await Y.sb.from("boutiques").select("*").eq("slug", slug).maybeSingle();
+    if (b.error || !b.data) return none();
+    var s = b.data, th = Y.THEMES[s.theme] || Y.THEMES.teal;
+    document.documentElement.style.setProperty("--brand", th[0]); document.documentElement.style.setProperty("--brand-ink", th[1]);
+    var cols = "id,nom,prix,devise,categorie,stock,photos,created_at,prix_avant";
+    var p = await Y.sb.from("produits").select(cols + ",variantes,solde_prix,solde_debut,solde_fin").eq("boutique_id", s.id).order("categorie").order("nom");
+    if (p.error) p = await Y.sb.from("produits").select(cols).eq("boutique_id", s.id).order("categorie").order("nom");
+    var items = Y.prep(p.data || []);
+    document.title = t("cTitle") + " · " + s.nom;
+    $("barTxt").textContent = t("cHelp");
+    $("name").textContent = s.nom;
+    if (s.slogan) { $("slogan").textContent = s.slogan; $("slogan").hidden = false; }
+    $("info").textContent = [[s.ville, s.pays].filter(Boolean).join(", "), s.whatsapp ? "WhatsApp " + s.whatsapp : ""].filter(Boolean).join(" · ");
+    if (s.logo) $("logo").style.backgroundImage = 'url("' + Y.pub(s.logo) + '")'; else $("logo").textContent = s.nom.charAt(0).toUpperCase();
+    var url = location.origin + location.pathname.replace(/catalogue\.html$/, "") + "boutique.html?b=" + s.slug;
+    $("qr").innerHTML = YQR.svg(url, "#10232A"); $("qr").setAttribute("aria-label", t("cScan")); $("qrTxt").textContent = t("cScan");
+    $("url").textContent = url.replace(/^https?:\/\//, "");
+    $("date").textContent = t("cDate", { d: new Date().toLocaleDateString(Y.LOCALE[Y.prefs.lang], { day: "numeric", month: "long", year: "numeric" }) });
+    var groups = {}, order = [];
+    items.forEach(function (it) { var k = it.categorie || "autre"; if (!groups[k]) { groups[k] = []; order.push(k); } groups[k].push(it); });
+    var box = $("cats");
+    order.forEach(function (k) {
+      box.appendChild(el("h2", null, Y.cat(k) || k));
+      var g = el("div", "grid");
+      groups[k].forEach(function (it) {
+        var c = el("article", "it"), im = el("div", "im"); if (it.photos && it.photos[0]) im.style.backgroundImage = 'url("' + Y.pub(it.photos[0]) + '")'; c.appendChild(im);
+        var bd = el("div", "b"); bd.appendChild(el("h3", null, it.nom));
+        var pr = el("div", "pr"), d = Y.discount(it); var main = el("span", d ? "sale" : null, Y.money(it.prix, it.devise)); pr.appendChild(main);
+        if (d) pr.appendChild(el("s", null, Y.money(it.prix_avant, it.devise)));
+        bd.appendChild(pr);
+        if (it.variantes && it.variantes.options) it.variantes.options.forEach(function (o) { bd.appendChild(el("span", "v", o.nom + " : " + o.valeurs.join(", "))); });
+        if (it.stock === 0) bd.appendChild(el("span", "out", t("cOut")));
+        c.appendChild(bd); g.appendChild(c);
+      });
+      box.appendChild(g);
+    });
+    $("state").hidden = true; $("page").hidden = false;
+  }
+  function none() { $("state").textContent = t("cNone"); }
+  start();
+})();
+</script>
+</body>
+</html>

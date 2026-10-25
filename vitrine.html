@@ -339,10 +339,11 @@ section.block { margin-top: 28px; }
   /* ---------- data ---------- */
   async function loadData() {
     var cols = "id,boutique_id,nom,description,prix,devise,categorie,stock,photos,created_at,boutiques!inner(nom,slug,ville,pays,whatsapp,logo)";
-    var r = await Y.sb.from("produits").select("prix_avant,variantes," + cols).order("created_at", { ascending: false }).limit(400);
+    var r = await Y.sb.from("produits").select("prix_avant,variantes,solde_prix,solde_debut,solde_fin," + cols).order("created_at", { ascending: false }).limit(400);
+    if (r.error) r = await Y.sb.from("produits").select("prix_avant,variantes," + cols).order("created_at", { ascending: false }).limit(400);
     if (r.error) r = await Y.sb.from("produits").select("prix_avant," + cols).order("created_at", { ascending: false }).limit(400);
     if (r.error) r = await Y.sb.from("produits").select(cols).order("created_at", { ascending: false }).limit(400);
-    items = r.data || [];
+    items = Y.prep(r.data || []);
     var pr = await Y.sb.from("promotions").select("*").order("ordre", { ascending: true }).order("created_at", { ascending: false });
     promos = pr.error ? [] : (pr.data || []);
   }

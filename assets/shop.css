@@ -201,3 +201,24 @@ footer a { color: var(--teal); }
 .ostat { font-size: 12px; font-weight: 800; padding: 3px 8px; white-space: nowrap; }
 .ostat-nouvelle { background: #FFF2DC; color: #8A5300; } .ostat-confirmee { background: var(--tint); color: var(--teal-deep); }
 .ostat-expediee { background: #E8E4F6; color: #4B2E99; } .ostat-livree { background: #E5F4EC; color: #1E7F4F; } .ostat-annulee { background: #FCE8E6; color: #B3261E; }
+/* Sales, promo codes, reviews */
+.bdg-solde { background: #C62828; color: #fff; }
+.promo-box summary { cursor: pointer; font-size: 14px; font-weight: 700; color: var(--teal-deep); min-height: 36px; display: flex; align-items: center; }
+.promo-form { display: flex; gap: 8px; margin-top: 4px; }
+.promo-form input { flex: 1; min-width: 0; min-height: 44px; border: 2px solid var(--rule); padding: 0 10px; text-transform: uppercase; }
+.promo-form .btn { min-height: 44px; }
+.promo-on { color: #1E7F4F; }
+.rev-form { display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--rule); padding-top: 10px; margin-top: 4px; }
+.rev-form textarea { width: 100%; border: 2px solid var(--rule); padding: 8px; font: inherit; font-size: 16px; }
+.rev-stars { display: flex; gap: 4px; }
+.rev-stars button { width: 44px; height: 44px; border: 0; background: none; font-size: 30px; color: #C9D3D5; cursor: pointer; line-height: 1; }
+.rev-stars button.on { color: #E0A526; }
+.stars { color: #E0A526; letter-spacing: 1px; }
+.rating { display: inline-flex; gap: 6px; align-items: center; font-size: 14px; font-weight: 700; color: var(--ink); text-decoration: none; margin-top: 6px; }
+.revs { display: flex; flex-direction: column; gap: 10px; }
+.rev { background: var(--white); border: 1px solid var(--rule); padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+.rev .who { font-size: 13px; color: var(--soft); }
+.rev p { margin: 0; white-space: pre-line; overflow-wrap: anywhere; }
+.rev .reply { background: var(--bg); padding: 8px 10px; font-size: 14px; border-left: 3px solid var(--brand, #0E6E78); }
+.rev-sum { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 12px; }
+.rev-sum .big { font-size: 40px; font-weight: 900; letter-spacing: -1px; }

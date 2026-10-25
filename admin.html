@@ -194,6 +194,12 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
     <div class="table-box"><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
   </div>
 
+  <div class="card" id="avisCard" hidden>
+    <h2>Avis signalés par les vendeurs</h2>
+    <p class="notice">Masque un avis seulement s’il est injurieux, faux ou hors sujet. Un avis négatif mais honnête doit rester visible.</p>
+    <div id="avisAdm" style="display:flex;flex-direction:column;gap:10px"></div>
+  </div>
+
   <div class="card" id="promoCard">
     <div class="head" style="align-items:center"><h2>Promotions de la vitrine</h2><button class="btn btn-orange" type="button" id="pmNew">Ajouter une promotion</button></div>
     <p class="notice">Bannières en haut de la vitrine, tuiles en dessous, et une offre du jour avec compte à rebours. Sans bannière ni tuile, la vitrine affiche celles de Yiriclick par défaut.</p>
@@ -310,7 +316,7 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
     data.dossiers = r[0].data || []; data.inscriptions = r[1].data || []; data.visites = r[2].data || [];
     data.produits = (r[3].data || []).map(function (p) { p.statut = p.masque_admin ? "masque" : "visible"; p.boutique = p.boutiques ? p.boutiques.nom : ""; return p; });
     $("updated").textContent = "Mis à jour le " + fmtDate(new Date(), true);
-    renderKpis(); renderChart(); renderBreakdowns(); renderTable(); loadPromos();
+    renderKpis(); renderChart(); renderBreakdowns(); renderTable(); loadPromos(); loadAvisAdm();
   }
 
   /* ---------- KPIs ---------- */
@@ -487,6 +493,25 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
   /* ---------- vitrine promotions ---------- */
   var promoList = [], PROMO_PUB = SUPABASE_URL + "/storage/v1/object/public/promos/";
   var TYPE_L = { banniere: "Bannière", tuile: "Tuile", offre_jour: "Offre du jour" };
+  /* Reported reviews: hide or keep */
+  async function loadAvisAdm() {
+    var r = await sb.from("avis").select("id,note,commentaire,nom,created_at,masque,signale,boutiques(nom,slug)").eq("signale", true).order("created_at", { ascending: false }).limit(50);
+    var card = $("avisCard"), box = $("avisAdm");
+    if (r.error || !r.data || !r.data.length) { card.hidden = true; return; }
+    card.hidden = false; box.textContent = "";
+    r.data.forEach(function (a) {
+      var d = el("div"); d.style.cssText = "border:1px solid var(--rule);padding:12px;display:flex;flex-direction:column;gap:6px";
+      d.appendChild(el("b", null, "★".repeat(a.note) + " · " + a.nom + " → " + (a.boutiques ? a.boutiques.nom : "") + (a.masque ? " · MASQUÉ" : "")));
+      if (a.commentaire) d.appendChild(el("p", null, a.commentaire));
+      var row = el("div"); row.style.cssText = "display:flex;gap:8px;flex-wrap:wrap";
+      [[a.masque ? "Réafficher" : "Masquer", { masque: !a.masque }], ["Garder et clore", { signale: false, masque: false }]].forEach(function (x) {
+        var b = el("button", "btn btn-ghost", x[0]); b.type = "button";
+        b.addEventListener("click", async function () { b.disabled = true; await sb.from("avis").update(x[1]).eq("id", a.id); loadAvisAdm(); });
+        row.appendChild(b);
+      });
+      d.appendChild(row); box.appendChild(d);
+    });
+  }
   async function loadPromos() {
     var r = await sb.from("promotions").select("*").order("type").order("ordre").order("created_at", { ascending: false });
     $("pmLoadErr").textContent = r.error ? "Promotions indisponibles : exécute le script supabase/schema-v4.sql. (" + r.error.message + ")" : "";

@@ -120,15 +120,27 @@ window.YC = (function () {
     fr: { chooseVar: "Choisir", pickOpt: "Choisis : {o}", placeOrder: "Envoyer ma commande", placing: "Envoi en cours…", placeHelp: "Ta commande est enregistrée chez chaque vendeur avec un numéro. Tu pourras ensuite la lui envoyer sur WhatsApp.",
       orderErr: "La commande n’a pas pu être enregistrée. Réessaie.", orderNo: "Commande n° {n}", orderedTitle: "Commande enregistrée", orderedHelp: "Merci ! Le vendeur a reçu ta commande. Envoie-la-lui aussi sur WhatsApp pour aller plus vite : il te confirme la disponibilité, la livraison et le paiement.",
       noWaRec: "{s} a bien reçu ta commande sur Yiriclick et te contactera.", myOrders: "Mes commandes", ordersHelp: "Les commandes passées depuis ce téléphone ou cet ordinateur, avec leur suivi.",
-      st_nouvelle: "En attente", st_confirmee: "Confirmée", st_expediee: "Expédiée", st_livree: "Livrée", st_annulee: "Annulée" },
+      st_nouvelle: "En attente", st_confirmee: "Confirmée", st_expediee: "Expédiée", st_livree: "Livrée", st_annulee: "Annulée",
+      soldes: "Soldes", saleEndsH: "fin dans {n} h", saleEndsD: "fin dans {n} j", promoHave: "J’ai un code promo", promoCode: "Code", promoPh: "EX. BIENVENUE10", promoApply: "Appliquer",
+      promoBad: "Ce code n’est pas valable pour cette boutique.", promoMin: "dès {m} d’achat", afterPromo: "Après réduction", promoRemove: "Retirer le code",
+      revTitle: "Ton avis sur {s}", revNote: "Note sur 5", revPh: "Qu’as-tu pensé du produit et du vendeur ? (facultatif)", revSend: "Publier mon avis", revPick: "Choisis une note de 1 à 5 étoiles.", revThanks: "Merci pour ton avis !",
+      reviews: "Avis clients", nReviews: "{n} avis", noReviews: "Pas encore d’avis.", sellerReply: "Réponse du vendeur" },
     en: { chooseVar: "Choose", pickOpt: "Choose: {o}", placeOrder: "Send my order", placing: "Sending…", placeHelp: "Your order is recorded with each seller with a number. You can then send it to them on WhatsApp.",
       orderErr: "The order could not be recorded. Please try again.", orderNo: "Order no. {n}", orderedTitle: "Order recorded", orderedHelp: "Thank you! The seller has received your order. Send it on WhatsApp too to speed things up: they will confirm availability, delivery and payment.",
       noWaRec: "{s} has received your order on Yiriclick and will contact you.", myOrders: "My orders", ordersHelp: "Orders placed from this phone or computer, with their status.",
-      st_nouvelle: "Pending", st_confirmee: "Confirmed", st_expediee: "Shipped", st_livree: "Delivered", st_annulee: "Cancelled" },
+      st_nouvelle: "Pending", st_confirmee: "Confirmed", st_expediee: "Shipped", st_livree: "Delivered", st_annulee: "Cancelled",
+      soldes: "Sale", saleEndsH: "ends in {n} h", saleEndsD: "ends in {n} d", promoHave: "I have a promo code", promoCode: "Code", promoPh: "E.G. WELCOME10", promoApply: "Apply",
+      promoBad: "This code is not valid for this shop.", promoMin: "from {m} spent", afterPromo: "After discount", promoRemove: "Remove code",
+      revTitle: "Your review of {s}", revNote: "Rating out of 5", revPh: "What did you think of the product and the seller? (optional)", revSend: "Post my review", revPick: "Choose a rating from 1 to 5 stars.", revThanks: "Thank you for your review!",
+      reviews: "Customer reviews", nReviews: "{n} reviews", noReviews: "No reviews yet.", sellerReply: "Seller’s reply" },
     es: { chooseVar: "Elegir", pickOpt: "Elige: {o}", placeOrder: "Enviar mi pedido", placing: "Enviando…", placeHelp: "Tu pedido queda registrado en cada vendedor con un número. Después podrás enviárselo por WhatsApp.",
       orderErr: "No se pudo registrar el pedido. Inténtalo de nuevo.", orderNo: "Pedido n.º {n}", orderedTitle: "Pedido registrado", orderedHelp: "¡Gracias! El vendedor ha recibido tu pedido. Envíaselo también por WhatsApp para ir más rápido: te confirmará disponibilidad, entrega y pago.",
       noWaRec: "{s} ha recibido tu pedido en Yiriclick y se pondrá en contacto contigo.", myOrders: "Mis pedidos", ordersHelp: "Los pedidos hechos desde este teléfono u ordenador, con su seguimiento.",
-      st_nouvelle: "Pendiente", st_confirmee: "Confirmado", st_expediee: "Enviado", st_livree: "Entregado", st_annulee: "Cancelado" }
+      st_nouvelle: "Pendiente", st_confirmee: "Confirmado", st_expediee: "Enviado", st_livree: "Entregado", st_annulee: "Cancelado",
+      soldes: "Rebajas", saleEndsH: "termina en {n} h", saleEndsD: "termina en {n} d", promoHave: "Tengo un código promocional", promoCode: "Código", promoPh: "EJ. BIENVENIDA10", promoApply: "Aplicar",
+      promoBad: "Este código no es válido para esta tienda.", promoMin: "a partir de {m}", afterPromo: "Tras el descuento", promoRemove: "Quitar el código",
+      revTitle: "Tu opinión sobre {s}", revNote: "Nota sobre 5", revPh: "¿Qué te parecieron el producto y el vendedor? (opcional)", revSend: "Publicar mi opinión", revPick: "Elige una nota de 1 a 5 estrellas.", revThanks: "¡Gracias por tu opinión!",
+      reviews: "Opiniones de clientes", nReviews: "{n} opiniones", noReviews: "Todavía no hay opiniones.", sellerReply: "Respuesta del vendedor" }
   });
   function load(k, d) { try { return localStorage.getItem(k) || d; } catch (e) { return d; } }
   function save(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
@@ -216,6 +228,24 @@ window.YC = (function () {
     return b;
   }
   function discount(p) { return p.prix_avant && Number(p.prix_avant) > Number(p.prix) ? Math.round((1 - Number(p.prix) / Number(p.prix_avant)) * 100) : 0; }
+  /* Scheduled sales: during the period the sale price becomes the price, the normal price is shown crossed out */
+  function saleOn(p) {
+    if (p.solde_prix == null || !(Number(p.solde_prix) < Number(p.prix))) return false;
+    var n = Date.now();
+    return (!p.solde_debut || new Date(p.solde_debut).getTime() <= n) && (!p.solde_fin || new Date(p.solde_fin).getTime() > n);
+  }
+  function prep(list) {
+    (list || []).forEach(function (p) {
+      if (p._prep) return; p._prep = true;
+      if (saleOn(p)) { var base = Number(p.prix); p.solde_ratio = Number(p.solde_prix) / base; p.prix_avant = Math.max(Number(p.prix_avant) || 0, base); p.prix = Number(p.solde_prix); p.en_solde = true; }
+    });
+    return list;
+  }
+  function endsIn(p) {
+    if (!p.en_solde || !p.solde_fin) return "";
+    var h = Math.max(1, Math.round((new Date(p.solde_fin).getTime() - Date.now()) / 3600e3));
+    return h < 48 ? t("saleEndsH", { n: h }) : t("saleEndsD", { n: Math.round(h / 24) });
+  }
   function isNew(p) { return p.created_at && (Date.now() - new Date(p.created_at).getTime()) < 7 * 24 * 3600 * 1000; }
   function priceBlock(p, big) {
     var w = el("div", "pblock" + (big ? " big" : "")), d = discount(p);
@@ -238,6 +268,7 @@ window.YC = (function () {
     else media.appendChild(el("div", "noim"));
     var badges = el("div", "badges"), d = discount(p);
     if (d) badges.appendChild(el("span", "bdg bdg-sale", t("off", { n: d })));
+    if (p.en_solde) badges.appendChild(el("span", "bdg bdg-solde", t("soldes") + (endsIn(p) ? " · " + endsIn(p) : "")));
     if (isNew(p)) badges.appendChild(el("span", "bdg bdg-new", t("newB")));
     if (p.stock != null && p.stock > 0 && p.stock <= 3) badges.appendChild(el("span", "bdg bdg-low", t("lowB")));
     if (badges.children.length) media.appendChild(badges);
@@ -273,7 +304,7 @@ window.YC = (function () {
     for (var i = 0; i < cs.length; i++) if (JSON.stringify(cs[i].v) === k) return cs[i];
     return null;
   }
-  function varPrice(p, v) { var c = combiOf(p, v); return c && typeof c.prix === "number" ? c.prix : Number(p.prix); }
+  function varPrice(p, v) { var c = combiOf(p, v); return c && typeof c.prix === "number" ? Math.round(c.prix * (p.solde_ratio || 1) * 100) / 100 : Number(p.prix); }
   function varStock(p, v) {
     if (!hasVar(p)) return p.stock;
     var cs = p.variantes.combis || []; if (!cs.length) return p.stock;
@@ -398,9 +429,11 @@ window.YC = (function () {
   async function refreshCart() {
     if (!cart.length) return;
     var base = "id,nom,prix,devise,stock,photos,boutique_id,boutiques(nom,slug,whatsapp)", ids = cart.map(function (i) { return i.id; });
-    var r = await sb.from("produits").select("variantes," + base).in("id", ids);
+    var r = await sb.from("produits").select("variantes,solde_prix,solde_debut,solde_fin," + base).in("id", ids);
+    if (r.error) r = await sb.from("produits").select("variantes," + base).in("id", ids);
     if (r.error) r = await sb.from("produits").select(base).in("id", ids);
     if (r.error || !r.data) return;
+    prep(r.data);
     var map = {}; r.data.forEach(function (p) { map[p.id] = p; });
     var before = cart.length;
     cart = cart.filter(function (i) {
@@ -421,7 +454,7 @@ window.YC = (function () {
     if (!ids.length) return;
     var r = await sb.rpc("suivi_commandes", { ids: ids });
     if (r.error || !r.data) return;
-    r.data.forEach(function (s) { myOrders.forEach(function (o) { if (o.id === s.id) o.statut = s.statut; }); });
+    r.data.forEach(function (s) { myOrders.forEach(function (o) { if (o.id === s.id) { o.statut = s.statut; if (s.a_avis != null) o.a_avis = s.a_avis; } }); });
     ordersSave();
   }
   function head(p, title) {
@@ -467,15 +500,54 @@ window.YC = (function () {
       });
       var to = g.items[0].devise, st = sumIn(g.items, to);
       var sub = el("div", "cart-sub"); sub.appendChild(el("span", null, t("subtotal"))); sub.appendChild(el("b", null, (st.approx ? t("approxSign") : "") + money(st.v, to)));
-      sec.appendChild(sub); p.appendChild(sec);
+      sec.appendChild(sub);
+      promoBlock(sec, g, st, to);
+      p.appendChild(sec);
     });
     var cur = prefs.cur || cart[0].devise, tot = sumIn(cart, cur);
+    groups().forEach(function (g) { var to = g.items[0].devise, amt = promoAmount(g, sumIn(g.items, to)); if (amt) tot.v -= convert(amt, to, cur); });
     var tr = el("div", "cart-total"); tr.appendChild(el("span", null, t("total"))); tr.appendChild(el("b", null, (tot.approx ? t("approxSign") : "") + money(tot.v, cur)));
     p.appendChild(tr);
     var go = el("button", "btn btn-wa cart-go", t("checkout")); go.type = "button"; go.addEventListener("click", function () { cartView = "info"; renderCart(); var f = document.getElementById("cName"); if (f) f.focus(); });
     p.appendChild(go);
     var k2 = el("button", "cart-rm", t("keepShopping")); k2.type = "button"; k2.style.alignSelf = "center"; k2.addEventListener("click", closeCart); p.appendChild(k2);
     ordersLink(p);
+  }
+  /* Promo code per seller: checked by the database, applied again when the order is recorded */
+  var promos = {}, promoOff = false;
+  function promoAmount(g, st) {
+    var c = promos[g.shop.id]; if (!c) return 0;
+    if (st.v < Number(c.min_achat)) return 0;
+    return c.type === "pct" ? Math.round(st.v * Number(c.valeur)) / 100 : Math.min(Number(c.valeur), st.v);
+  }
+  function promoBlock(sec, g, st, to) {
+    if (promoOff || !g.shop.id) return;
+    var c = promos[g.shop.id];
+    if (c) {
+      var r = el("div", "cart-sub promo-on"), amt = promoAmount(g, st);
+      var l = el("span", null, t("promoCode") + " " + c.code); r.appendChild(l);
+      if (amt) r.appendChild(el("b", null, "− " + money(amt, to)));
+      else r.appendChild(el("span", "cart-help", t("promoMin", { m: money(c.min_achat, to) })));
+      sec.appendChild(r);
+      if (amt) { var nt = el("div", "cart-sub"); nt.appendChild(el("span", null, t("afterPromo"))); nt.appendChild(el("b", null, money(st.v - amt, to))); sec.appendChild(nt); }
+      var x = el("button", "cart-rm", t("promoRemove")); x.type = "button"; x.addEventListener("click", function () { delete promos[g.shop.id]; renderCart(); }); sec.appendChild(x);
+      return;
+    }
+    var d = el("details", "promo-box"), sm = el("summary", null, t("promoHave")); d.appendChild(sm);
+    var f = el("form", "promo-form"); f.noValidate = true;
+    var lab = el("label", "vh", t("promoCode")), inp = el("input"); inp.id = "pc-" + g.shop.id; lab.setAttribute("for", inp.id); inp.autocapitalize = "characters"; inp.maxLength = 20; inp.placeholder = t("promoPh");
+    var b = el("button", "btn btn-navy", t("promoApply")); b.type = "submit";
+    var err = el("p", "wa-note"); err.setAttribute("role", "status");
+    f.appendChild(lab); f.appendChild(inp); f.appendChild(b); d.appendChild(f); d.appendChild(err);
+    f.addEventListener("submit", async function (e) {
+      e.preventDefault(); var code = inp.value.trim().toUpperCase(); if (!code) return;
+      b.disabled = true; var r = await sb.rpc("verifier_code", { p_boutique: g.shop.id, p_code: code }); b.disabled = false;
+      if (r.error) { if (/function|schema cache|not found/i.test(r.error.message || "")) { promoOff = true; renderCart(); return; } err.textContent = t("orderErr"); return; }
+      var row = Array.isArray(r.data) ? r.data[0] : r.data;
+      if (!row) { err.textContent = t("promoBad"); return; }
+      promos[g.shop.id] = row; renderCart();
+    });
+    sec.appendChild(d);
   }
   function ordersLink(p) {
     if (!myOrders.length) return;
@@ -519,15 +591,20 @@ window.YC = (function () {
     var gs = groups(), failed = null;
     for (var k = 0; k < gs.length; k++) {
       var g = gs[k]; if (!g.shop.id) continue;
-      var r = await sb.rpc("passer_commande", { p_boutique: g.shop.id, p_nom: buyer.cName, p_tel: buyer.cPhone, p_adresse: buyer.cAddr, p_note: buyer.cNote || "",
-        p_articles: g.items.map(function (i) { var a = { id: i.id, qty: i.qty }; if (i.v) a.v = i.v; return a; }), p_langue: prefs.lang });
+      var args = { p_boutique: g.shop.id, p_nom: buyer.cName, p_tel: buyer.cPhone, p_adresse: buyer.cAddr, p_note: buyer.cNote || "",
+        p_articles: g.items.map(function (i) { var a = { id: i.id, qty: i.qty }; if (i.v) a.v = i.v; return a; }), p_langue: prefs.lang };
+      if (promos[g.shop.id]) args.p_code = promos[g.shop.id].code;
+      var r = await sb.rpc("passer_commande", args);
       if (r.error) {
         if (/function|schema cache|does not exist|not found/i.test(r.error.message || "")) break; /* old database: WhatsApp only */
         failed = r.error.message || t("orderErr"); break;
       }
       var row = Array.isArray(r.data) ? r.data[0] : r.data;
       var st = sumIn(g.items, g.items[0].devise);
-      var o = { id: row.id, numero: row.numero, at: Date.now(), statut: "nouvelle", shop: g.shop, total: (st.approx ? t("approxSign") : "") + money(st.v, g.items[0].devise),
+      var tot = row.total != null ? money(row.total, g.items[0].devise) : (st.approx ? t("approxSign") : "") + money(st.v, g.items[0].devise);
+      if (row.remise && Number(row.remise) > 0) tot += " (" + t("promoCode") + " " + promos[g.shop.id].code + " : − " + money(row.remise, g.items[0].devise) + ")";
+      delete promos[g.shop.id];
+      var o = { id: row.id, numero: row.numero, at: Date.now(), statut: "nouvelle", shop: g.shop, total: tot,
         items: g.items.map(function (i) { return { nom: i.nom, v: i.v || null, qty: i.qty, prix: i.prix, devise: i.devise }; }) };
       myOrders.push(o); justOrdered.push(o);
       var keys = g.items.map(function (i) { return i.key; });
@@ -600,9 +677,32 @@ window.YC = (function () {
       o.items.forEach(function (i) { sec.appendChild(el("p", "cart-help", i.qty + " × " + i.nom + (i.v ? " (" + vLabel(i.v) + ")" : ""))); });
       sec.appendChild(el("p", "cart-help", t("waTotal") + " : " + o.total));
       if (o.statut !== "livree" && o.statut !== "annulee") waButton(sec, o, function () {});
+      if (o.statut === "livree" && o.a_avis === false) reviewForm(sec, o);
+      if (o.a_avis) sec.appendChild(el("p", "cart-help", "✓ " + t("revThanks")));
       p.appendChild(sec);
     });
     var bk = el("button", "cart-rm", t("cartTitle")); bk.type = "button"; bk.style.alignSelf = "center"; bk.addEventListener("click", function () { cartView = "list"; renderCart(); }); p.appendChild(bk);
+  }
+  function reviewForm(sec, o) {
+    var f = el("form", "rev-form"); f.noValidate = true; var note = 0;
+    f.appendChild(el("b", null, t("revTitle", { s: o.shop.nom })));
+    var stars = el("div", "rev-stars"); stars.setAttribute("role", "radiogroup"); stars.setAttribute("aria-label", t("revNote"));
+    for (var i = 1; i <= 5; i++) (function (n) {
+      var b = el("button", null, "★"); b.type = "button"; b.setAttribute("role", "radio"); b.setAttribute("aria-checked", "false"); b.setAttribute("aria-label", n + " / 5");
+      b.addEventListener("click", function () { note = n; Array.prototype.forEach.call(stars.children, function (x, k) { x.classList.toggle("on", k < n); x.setAttribute("aria-checked", String(k === n - 1)); }); });
+      stars.appendChild(b);
+    })(i);
+    f.appendChild(stars);
+    var ta = el("textarea"); ta.rows = 3; ta.maxLength = 1000; ta.placeholder = t("revPh"); ta.setAttribute("aria-label", t("revPh")); f.appendChild(ta);
+    var err = el("p", "wa-note"); err.setAttribute("role", "status"); f.appendChild(err);
+    var go = el("button", "btn btn-navy", t("revSend")); go.type = "submit"; f.appendChild(go);
+    f.addEventListener("submit", async function (e) {
+      e.preventDefault(); if (!note) { err.textContent = t("revPick"); return; }
+      go.disabled = true; var r = await sb.rpc("laisser_avis", { p_commande: o.id, p_note: note, p_commentaire: ta.value.trim() }); go.disabled = false;
+      if (r.error) { err.textContent = r.error.message || t("orderErr"); return; }
+      o.a_avis = true; ordersSave(); renderCart();
+    });
+    sec.appendChild(f);
   }
   window.addEventListener("storage", function (e) { if (e.key === "yc-sent") { try { sentLog = JSON.parse(e.newValue || "[]"); } catch (x) { sentLog = []; } } if (e.key === "yc-cart") { try { cart = JSON.parse(e.newValue || "[]"); } catch (x) { cart = []; } cart.forEach(function (i) { if (!i.key) i.key = i.id; }); cartBadge(); } if (e.key === "yc-orders") { myOrders = readJSON("yc-orders", []); } });
 
@@ -702,7 +802,7 @@ window.YC = (function () {
   /* Pages can add their own texts: YC.extend({ fr: {...}, en: {...}, es: {...} }) */
   function extend(d) { Object.keys(d).forEach(function (L) { T[L] = T[L] || {}; Object.keys(d[L]).forEach(function (k) { T[L][k] = d[L][k]; }); }); }
 
-  return { extend: extend, track: track, hasVar: hasVar, cartAdd: function (p, shop, q, b, v) { cartAdd(p, shop, q || 1, b, v); }, openOrders: function () { openCart("orders"); }, sb: sb, t: t, cat: cat, el: el, pub: pub, money: money, card: card, openProduct: openProduct, wirePrefs: wirePrefs, setPrefs: setPrefs, labels: labels, catOptions: catOptions, norm: norm, prefs: prefs,
+  return { extend: extend, track: track, hasVar: hasVar, prep: prep, cartAdd: function (p, shop, q, b, v) { cartAdd(p, shop, q || 1, b, v); }, openOrders: function () { openCart("orders"); }, sb: sb, t: t, cat: cat, el: el, pub: pub, money: money, card: card, openProduct: openProduct, wirePrefs: wirePrefs, setPrefs: setPrefs, labels: labels, catOptions: catOptions, norm: norm, prefs: prefs,
     convert: convert, discount: discount, priceBlock: priceBlock, favButton: favButton, isFav: isFav, favs: function () { return favs.slice(); }, onFavs: function (f) { favListeners.push(f); },
     openCart: function () { openCart(); }, CATS: CATS, FAMILIES: FAMILIES, THEMES: THEMES, LOCALE: LOCALE, URL_SB: URL_SB, HEART: HEART, CART_SVG: CART_SVG };
 })();

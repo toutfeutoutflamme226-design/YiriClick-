@@ -67,7 +67,7 @@ img { max-width: 100%; }
 /* Shell */
 .shell { display: grid; grid-template-columns: minmax(0, 1fr); }
 .side { position: fixed; left: 0; right: 0; bottom: 0; z-index: 25; background: var(--white); border-top: 1px solid var(--rule); display: grid; grid-template-columns: repeat(5, 1fr); padding-bottom: env(safe-area-inset-bottom, 0px); }
-.side button { position: relative; background: none; border: 0; min-height: var(--navh); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 12px; font-weight: 800; color: var(--soft); cursor: pointer; padding: 6px 2px; }
+.side button { position: relative; background: none; border: 0; min-height: var(--navh); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11.5px; letter-spacing: -.2px; font-weight: 800; color: var(--soft); cursor: pointer; padding: 6px 2px; }
 .side button svg { width: 24px; height: 24px; }
 .side button[aria-current="page"] { color: var(--navy); box-shadow: inset 0 3px 0 var(--orange); }
 .side .side-extra { display: none; }
@@ -220,7 +220,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
 .seg { display: inline-flex; border: 2px solid var(--navy); align-self: flex-start; }
 .seg button { border: 0; background: var(--white); color: var(--navy); font-weight: 800; min-height: 40px; padding: 0 16px; cursor: pointer; }
 .seg button[aria-selected="true"] { background: var(--navy); color: var(--white); }
-.fchips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; }
+.fchips { display: flex; gap: 8px; flex-wrap: wrap; }
 .fchips button { flex: none; min-height: 40px; padding: 0 14px; border: 2px solid var(--rule); background: var(--white); font-weight: 800; font-size: 14px; cursor: pointer; color: var(--ink); }
 .fchips button[aria-pressed="true"] { border-color: var(--navy); background: var(--navy); color: var(--white); }
 .ocard { background: var(--white); border: 1px solid var(--rule); border-left: 5px solid var(--rule); padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
@@ -247,6 +247,21 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
 .vtable th, .vtable td { padding: 6px 4px; border-bottom: 1px solid var(--rule); text-align: left; }
 .vtable input { width: 100%; min-height: 40px; padding: 6px 8px; border: 2px solid var(--rule); font-size: 16px; }
 .vtable td:first-child { font-weight: 700; overflow-wrap: anywhere; }
+
+/* Marketing */
+.chiplink { flex: none; min-height: 40px; padding: 0 14px; border: 2px solid var(--rule); background: var(--white); font-weight: 800; font-size: 14px; color: var(--ink); text-decoration: none; display: inline-flex; align-items: center; }
+#mkShare, #mkCodes, #mkSoldes, #mkVisuels, #mkCat { scroll-margin-top: 80px; }
+.mkform > summary { list-style: none; width: 100%; } .mkform > summary::-webkit-details-marker { display: none; }
+.coderow { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 10px 12px; background: var(--bg); }
+.coderow code { font-size: 16px; font-weight: 900; letter-spacing: .5px; }
+.coderow .meta { font-size: 13px; color: var(--soft); flex: 1 1 200px; }
+.gprev { background: var(--bg); padding: 10px; display: flex; justify-content: center; }
+.gprev canvas { width: 100%; max-width: 360px; height: auto; box-shadow: 0 6px 18px rgba(16, 35, 42, .15); }
+.arev { background: var(--white); border: 1px solid var(--rule); padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+.arev .stars, .avg .stars { color: #C78A00; letter-spacing: 1px; font-size: 18px; }
+.arev .who { font-size: 13px; color: var(--soft); }
+.arev p { margin: 0; white-space: pre-line; overflow-wrap: anywhere; }
+.avg { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; } .avg .big { font-size: 40px; font-weight: 900; letter-spacing: -1px; }
 
 /* Share */
 .share { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; background: var(--tint); padding: 12px; }
@@ -361,7 +376,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     <button type="button" data-tab="orders"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h12l2 4v15a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6zM4 6h16M9 11h6M9 15h6"/></svg>Commandes<span class="nbadge" id="ordBadge" hidden></span></button>
     <button type="button" data-tab="shop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l1.5-5h15L21 9M3 9v11h18V9M3 9h18M9 20v-6h6v6"/></svg>Boutique</button>
     <button type="button" data-tab="prod"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8"/></svg>Produits</button>
-    <button type="button" data-tab="share"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>Partager</button>
+    <button type="button" data-tab="share"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>Marketing</button>
     <div class="side-extra">
       <div class="plan"><b id="sidePlan"></b></div>
       <div class="meter" id="sideMeter"></div>
@@ -441,6 +456,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
         <div class="seg" role="tablist" aria-label="Affichage">
           <button type="button" role="tab" id="segOrd" aria-selected="true">Commandes</button>
           <button type="button" role="tab" id="segCli" aria-selected="false">Clients</button>
+          <button type="button" role="tab" id="segAvis" aria-selected="false">Avis</button>
         </div>
         <div id="ordView" style="display:flex;flex-direction:column;gap:14px">
           <div class="fchips" id="ordChips" role="group" aria-label="Filtrer par statut"></div>
@@ -451,6 +467,11 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
           <div class="ptools"><label class="vh" for="cq">Rechercher un client</label><input id="cq" type="search" placeholder="Nom ou téléphone…"></div>
           <div class="card" style="padding:0;overflow-x:auto"><table class="tbl" id="cliTable"><thead><tr><th>Client</th><th class="n">Commandes</th><th class="n">Achats</th><th>Dernière</th></tr></thead><tbody id="cliBody"></tbody></table></div>
           <p class="hint" style="margin:0">Achats = commandes confirmées, expédiées ou livrées. Touche un client pour voir ses commandes.</p>
+        </div>
+        <div id="avisView" hidden style="display:flex;flex-direction:column;gap:12px">
+          <div class="card" id="avisSum"></div>
+          <div id="avisList" style="display:flex;flex-direction:column;gap:10px"></div>
+          <p class="hint" style="margin:0">Les clients peuvent noter ta boutique après une commande livrée. Tu peux répondre publiquement, ou signaler un avis abusif à Yiriclick.</p>
         </div>
       </div>
     </section>
@@ -566,10 +587,11 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     <!-- ===== Share ===== -->
     <section id="pShare" hidden>
       <div style="display:flex;flex-direction:column;gap:18px">
-        <div class="phead"><div><h1>Partager ma boutique</h1><p>Plus ta boutique circule, plus tu vends.</p></div></div>
+        <div class="phead"><div><h1>Marketing</h1><p>Fais connaître ta boutique et donne envie d’acheter.</p></div></div>
+        <nav class="fchips" aria-label="Outils marketing"><a class="chiplink" href="#mkShare">Partager</a><a class="chiplink" href="#mkCodes">Codes promo</a><a class="chiplink" href="#mkSoldes">Soldes</a><a class="chiplink" href="#mkVisuels">Visuels</a><a class="chiplink" href="#mkCat">Catalogue PDF</a></nav>
         <div class="card" id="shareNone" hidden><p style="margin:0">Crée d’abord ta boutique pour obtenir ton lien.</p><button class="btn btn-orange" type="button" data-goto="shop">Créer ma boutique</button></div>
         <div id="shareAll" style="display:flex;flex-direction:column;gap:18px">
-          <div class="card">
+          <div class="card" id="mkShare">
             <h2>Ton lien</h2>
             <div class="share"><code id="shareUrl"></code><button class="btn btn-ghost btn-sm" type="button" id="copyLink">Copier le lien</button></div>
             <div class="sharebtns">
@@ -602,6 +624,75 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
               <a class="btn btn-ghost" href="./#tarifs" target="_blank" rel="noopener">Voir les formules</a>
             </div>
           </div>
+
+          <div class="card" id="mkCodes">
+            <h2>Codes promo</h2>
+            <p class="sub">Un code que tes clients tapent dans le panier : -10 %, -2 000 FCFA… La réduction est vérifiée par Yiriclick.</p>
+            <div id="codesPro" style="display:flex;flex-direction:column;gap:14px">
+              <div id="codesList" style="display:flex;flex-direction:column;gap:8px"></div>
+              <details class="mkform"><summary class="btn btn-orange">Créer un code</summary>
+                <form id="codeForm" novalidate style="display:flex;flex-direction:column;gap:12px;margin-top:12px">
+                  <div class="two">
+                    <div class="field"><label for="kCode">Code</label><input id="kCode" maxlength="20" autocapitalize="characters" spellcheck="false" placeholder="BIENVENUE10" style="text-transform:uppercase"><span class="hint">3 à 20 lettres, chiffres ou tirets.</span></div>
+                    <div class="field"><label for="kType">Réduction</label><select id="kType"><option value="pct">En pourcentage (%)</option><option value="montant">Montant fixe</option></select></div>
+                  </div>
+                  <div class="two">
+                    <div class="field"><label for="kVal" id="kValL">Pourcentage</label><input id="kVal" type="number" inputmode="decimal" min="1" step="any"></div>
+                    <div class="field"><label for="kMin">Achat minimum (facultatif)</label><input id="kMin" type="number" inputmode="decimal" min="0" step="any"></div>
+                  </div>
+                  <div class="two">
+                    <div class="field"><label for="kDeb">Début (facultatif)</label><input id="kDeb" type="datetime-local"></div>
+                    <div class="field"><label for="kFin">Fin (facultatif)</label><input id="kFin" type="datetime-local"></div>
+                  </div>
+                  <div class="field"><label for="kMax">Nombre d’utilisations maximum (facultatif)</label><input id="kMax" type="number" inputmode="numeric" min="1" step="1"><span class="hint">Ex. 50 pour les 50 premiers clients.</span></div>
+                  <p class="err" id="kErr"></p>
+                  <button class="btn btn-orange" type="submit" id="kSave">Créer le code</button>
+                </form>
+              </details>
+            </div>
+            <div class="locked" id="codesLocked" hidden><h3>Disponible avec les formules Pro et Entreprise</h3><a class="btn btn-ghost" href="./#tarifs" target="_blank" rel="noopener">Voir les formules</a></div>
+          </div>
+
+          <div class="card" id="mkSoldes">
+            <h2>Soldes programmées</h2>
+            <p class="sub">Baisse les prix d’un coup, avec une date de début et de fin : le prix normal s’affiche barré, avec un compte à rebours. Tout revient automatiquement à la fin.</p>
+            <div id="soldesPro" style="display:flex;flex-direction:column;gap:12px">
+              <p class="hint" id="soldesNow" style="margin:0"></p>
+              <form id="soldeForm" novalidate style="display:flex;flex-direction:column;gap:12px">
+                <div class="two">
+                  <div class="field"><label for="sPct">Réduction (%)</label><input id="sPct" type="number" inputmode="numeric" min="1" max="90" step="1" placeholder="20"></div>
+                  <div class="field"><label for="sScope">Produits concernés</label><select id="sScope"><option value="all">Tous mes produits</option><option value="une">Mes produits à la une</option></select></div>
+                </div>
+                <div class="two">
+                  <div class="field"><label for="sDeb">Début</label><input id="sDeb" type="datetime-local"></div>
+                  <div class="field"><label for="sFin">Fin</label><input id="sFin" type="datetime-local"></div>
+                </div>
+                <p class="err" id="sErr"></p><p class="ok" id="sOkMsg"></p>
+                <div class="quick"><button class="btn btn-orange" type="submit" id="sGo">Lancer les soldes</button><button class="btn btn-danger" type="button" id="sStop">Arrêter toutes les soldes</button></div>
+              </form>
+              <p class="hint" style="margin:0">Pour un seul produit : ouvre-le dans « Produits » et remplis « Soldes programmées ».</p>
+            </div>
+            <div class="locked" id="soldesLocked" hidden><h3>Disponible avec les formules Pro et Entreprise</h3><a class="btn btn-ghost" href="./#tarifs" target="_blank" rel="noopener">Voir les formules</a></div>
+          </div>
+
+          <div class="card" id="mkVisuels">
+            <h2>Visuels à partager</h2>
+            <p class="sub">Une image prête pour ton statut WhatsApp, Instagram ou Facebook, avec la photo, le prix et ta couleur.</p>
+            <div class="two">
+              <div class="field"><label for="gProd">Produit</label><select id="gProd"></select></div>
+              <div class="field"><label for="gFmt">Format</label><select id="gFmt"><option value="post">Carré (publication)</option><option value="story">Vertical (statut, story)</option></select></div>
+            </div>
+            <div class="gprev"><canvas id="gCanvas" width="1080" height="1080" role="img" aria-label="Aperçu du visuel"></canvas></div>
+            <p class="err" id="gErr"></p>
+            <div class="quick"><a class="btn btn-navy" id="gDl" download="visuel.png">Télécharger l’image</a><button class="btn btn-ghost" type="button" id="gShare">Partager l’image</button></div>
+          </div>
+
+          <div class="card" id="mkCat">
+            <h2>Catalogue PDF</h2>
+            <p class="sub">Tous tes produits visibles, rangés par catégorie, avec les prix et un QR code vers ta boutique. À envoyer aux clients ou à imprimer.</p>
+            <a class="btn btn-orange" id="catLink" target="_blank" rel="noopener">Ouvrir le catalogue</a>
+            <span class="hint">Il s’ouvre dans un nouvel onglet : touche « Imprimer ou enregistrer en PDF ».</span>
+          </div>
         </div>
       </div>
     </section>
@@ -623,6 +714,15 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     <div class="field"><label for="ePrixAvant">Prix avant réduction (facultatif)</label><input id="ePrixAvant" type="number" inputmode="decimal" min="0" step="any"><span class="hint">Pour une promotion : l’ancien prix apparaît barré avec le pourcentage. Laisse vide sinon.</span></div>
     <div class="field"><label for="eCout">Ton coût d’achat (privé, facultatif)</label><input id="eCout" type="number" inputmode="decimal" min="0" step="any"><span class="hint">Jamais enregistré ni montré aux clients : sert seulement à calculer ta marge ci-dessous.</span></div>
     <div class="calc" id="calc" hidden></div>
+    <div class="field" id="soldeZone">
+      <span class="flabel">Soldes programmées (facultatif)</span>
+      <div class="two">
+        <div class="field"><label for="eSolde">Prix soldé</label><input id="eSolde" type="number" inputmode="decimal" min="0" step="any"></div>
+        <div class="field"><label for="eSDeb">Début</label><input id="eSDeb" type="datetime-local"></div>
+        <div class="field"><label for="eSFin">Fin</label><input id="eSFin" type="datetime-local"></div>
+      </div>
+      <span class="hint" id="soldeHint">Pendant cette période, ce prix remplace le prix de vente et le prix normal s’affiche barré.</span>
+    </div>
     <div class="two">
       <div class="field"><label for="eCat">Catégorie</label><select id="eCat"></select></div>
       <div class="field"><label for="eStock">Stock</label><input id="eStock" type="number" inputmode="numeric" min="0" step="1"><span class="hint">Vide = non affiché.</span></div>
@@ -674,7 +774,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
   var SECS = { une: true, promos: true, nouveautes: true, infos: true };
   var NETS = { facebook: "https://www.facebook.com/", instagram: "https://www.instagram.com/", tiktok: "https://www.tiktok.com/@", youtube: "https://www.youtube.com/@" };
   var CUR = { XOF: "FCFA", EUR: "€", USD: "$" };
-  var st = { user: null, plan: null, shop: null, products: [], ed: null, stats: null, v5: true, v6: true, tab: "dash", orders: [], ordersOk: true };
+  var st = { user: null, plan: null, shop: null, products: [], ed: null, stats: null, v5: true, v6: true, v7: true, tab: "dash", orders: [], ordersOk: true };
 
   function $(id) { return document.getElementById(id); }
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
@@ -775,7 +875,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
   });
   $("logout").addEventListener("click", async function () {
     if (dirty && !confirmLeave()) return;
-    await sb.auth.signOut(); st = { user: null, plan: null, shop: null, products: [], ed: null, stats: null, v5: true, v6: true, tab: "dash", orders: [], ordersOk: true }; dirty = false; ordBadge(); view("vAuth"); form("fLogin");
+    await sb.auth.signOut(); st = { user: null, plan: null, shop: null, products: [], ed: null, stats: null, v5: true, v6: true, v7: true, tab: "dash", orders: [], ordersOk: true }; dirty = false; ordBadge(); view("vAuth"); form("fLogin");
   });
   $("recheck").addEventListener("click", boot);
 
@@ -808,8 +908,10 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
       if (p.error) $("pErr").textContent = niceErr(p.error);
       if (st.products.length && !("a_la_une" in st.products[0])) st.v5 = false;
       st.v6 = !st.products.length || "variantes" in st.products[0];
+      st.v7 = !st.products.length || "solde_prix" in st.products[0];
     } else st.products = [];
-    await loadStats(); await loadOrders(true);
+    await loadStats(); await loadOrders(true); await loadCodes(); await loadAvis();
+    if (!st.products.length) st.v7 = st.codesOk;
     $("dbNotice").hidden = st.v5;
     fillShop(); renderHead(); renderProducts();
     var want = (location.hash || "").slice(1);
@@ -1122,6 +1224,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
       if (!p.visible) chips.appendChild(el("span", "chip off", "Masqué"));
       if (p.masque_admin) chips.appendChild(el("span", "chip off", "Masqué par Yiriclick"));
       if (p.a_la_une) chips.appendChild(el("span", "chip une", "À la une"));
+      if (p.solde_prix != null && (!p.solde_fin || new Date(p.solde_fin) > new Date())) chips.appendChild(el("span", "chip sale", (p.solde_debut && new Date(p.solde_debut) > new Date() ? "Soldes à venir" : "En soldes") + " · " + money(p.solde_prix, p.devise)));
       if (p.prix_avant && Number(p.prix_avant) > Number(p.prix)) chips.appendChild(el("span", "chip sale", "-" + Math.round((1 - p.prix / p.prix_avant) * 100) + " %"));
       if (p.stock === 0) chips.appendChild(el("span", "chip off", "Rupture")); else if (p.stock > 0 && p.stock <= 3) chips.appendChild(el("span", "chip low", "Stock bas"));
       if (chips.children.length) b.appendChild(chips);
@@ -1153,6 +1256,10 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     $("eVisible").checked = p ? p.visible : true; $("eUne").checked = !!(p && p.a_la_une); $("eUne").closest("label").hidden = !st.v5; $("eErr").textContent = "";
     $("delZone").hidden = isNew; $("delConfirm").hidden = true; $("eDel").hidden = false;
     renderPhotos(); calc(); counts(); loadVar(p);
+    $("soldeZone").hidden = !st.v7;
+    $("eSolde").value = p && p.solde_prix != null ? p.solde_prix : ""; $("eSDeb").value = toInput(p && p.solde_debut); $("eSFin").value = toInput(p && p.solde_fin);
+    ["eSolde", "eSDeb", "eSFin"].forEach(function (id) { $(id).disabled = !isPro(); });
+    $("soldeHint").textContent = isPro() ? "Pendant cette période, ce prix remplace le prix de vente et le prix normal s’affiche barré." : "Disponible avec les formules Pro et Entreprise.";
     $("editor").hidden = false; document.body.style.overflow = "hidden"; setTimeout(function () { $("eNom").focus(); }, 50);
   }
   function closeEditor() { $("editor").hidden = true; document.body.style.overflow = ""; st.ed = null; }
@@ -1221,6 +1328,12 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
       var prev = st.products.filter(function (x) { return x.id === st.ed.id; })[0];
       if (avant != null || (prev && prev.prix_avant != null)) row.prix_avant = avant;
       if (st.v5) row.a_la_une = $("eUne").checked;
+      if (st.v7 && isPro()) {
+        var sp = $("eSolde").value === "" ? null : num($("eSolde").value), sd = fromInput($("eSDeb").value), sf = fromInput($("eSFin").value);
+        if (sp != null && !(sp >= 0 && sp < prix)) throw new Error("Le prix soldé doit être plus bas que le prix de vente.");
+        if (sp != null && sd && sf && sf <= sd) throw new Error("La fin des soldes doit être après le début.");
+        row.solde_prix = sp; row.solde_debut = sp == null ? null : sd; row.solde_fin = sp == null ? null : sf;
+      }
       if (st.v6 && isPro()) { var vp = varPayload(); if (vp.err) throw new Error(vp.err); row.variantes = vp.ok; if (vp.ok.options) row.stock = null; }
       var r;
       function sendP(r0) { return st.ed.isNew ? sb.from("produits").insert(Object.assign({ id: st.ed.id, boutique_id: st.shop.id }, r0)).select().single() : sb.from("produits").update(r0).eq("id", st.ed.id).select().single(); }
@@ -1277,7 +1390,12 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
   }
   setInterval(function () { if (document.visibilityState === "visible" && st.shop && st.user) loadOrders(false); }, 60000);
   $("ordRefresh").addEventListener("click", function () { loadOrders(true); });
-  function setSeg(v) { seg = v; $("segOrd").setAttribute("aria-selected", String(v === "ord")); $("segCli").setAttribute("aria-selected", String(v === "cli")); $("ordView").hidden = v !== "ord"; $("cliView").hidden = v !== "cli"; renderOrders(); }
+  function setSeg(v) {
+    seg = v; $("segOrd").setAttribute("aria-selected", String(v === "ord")); $("segCli").setAttribute("aria-selected", String(v === "cli")); $("segAvis").setAttribute("aria-selected", String(v === "avis"));
+    $("ordView").hidden = v !== "ord"; $("cliView").hidden = v !== "cli"; $("avisView").hidden = v !== "avis";
+    if (v === "avis") { renderAvis(); loadAvis().then(renderAvis); } else renderOrders();
+  }
+  $("segAvis").addEventListener("click", function () { setSeg("avis"); });
   $("segOrd").addEventListener("click", function () { setSeg("ord"); });
   $("segCli").addEventListener("click", function () { setSeg("cli"); });
   $("oq").addEventListener("input", function () { renderOrders(); });
@@ -1287,6 +1405,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
   function renderOrders() {
     $("ordNotice").hidden = st.ordersOk;
     if (seg === "cli") return renderClients();
+    if (seg === "avis") return renderAvis();
     var chips = $("ordChips"); chips.textContent = "";
     FILTERS.forEach(function (f) {
       var n = st.orders.filter(function (o) { return matchOrd(o, f[0]); }).length;
@@ -1479,6 +1598,192 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     return { ok: { options: vState.options.map(function (o) { return { nom: o.nom, valeurs: o.valeurs }; }), combis: vState.combis } };
   }
 
+  /* ---------- reviews (in the Orders tab) ---------- */
+  st.avis = []; st.avisOk = true;
+  async function loadAvis() {
+    if (!st.shop) return;
+    var r = await sb.from("avis").select("*").eq("boutique_id", st.shop.id).order("created_at", { ascending: false }).limit(200);
+    if (r.error) { st.avisOk = false; st.avis = []; } else { st.avisOk = true; st.avis = r.data || []; }
+  }
+  function starTxt(n) { var r = Math.round(n); return "★★★★★".slice(0, r) + "☆☆☆☆☆".slice(0, 5 - r); }
+  function renderAvis() {
+    var sum = $("avisSum"), box = $("avisList"); sum.textContent = ""; box.textContent = "";
+    if (!st.avisOk) { sum.appendChild(el("p", "notice", "Les avis clients arrivent avec la mise à jour schema-v7.sql de la base.")); return; }
+    var n = st.avis.length;
+    if (!n) { sum.appendChild(el("p", null, "Pas encore d’avis. Ils apparaissent quand un client note une commande livrée.")); return; }
+    var avg = st.avis.reduce(function (s, a) { return s + a.note; }, 0) / n, w = el("div", "avg");
+    w.appendChild(el("span", "big", avg.toLocaleString("fr-FR", { maximumFractionDigits: 1 }))); var d = el("div"); d.appendChild(el("div", "stars", starTxt(avg))); d.appendChild(el("div", "hint", n + " avis")); w.appendChild(d); sum.appendChild(w);
+    st.avis.forEach(function (a) {
+      var c = el("article", "arev"), s = el("span", "stars", starTxt(a.note)); s.setAttribute("aria-label", a.note + " sur 5"); c.appendChild(s);
+      c.appendChild(el("span", "who", a.nom + " · " + new Date(a.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long" }) + (a.masque ? " · masqué par Yiriclick" : "") + (a.signale && !a.masque ? " · signalé" : "")));
+      if (a.commentaire) c.appendChild(el("p", null, a.commentaire));
+      var f = el("div", "field"), ta = el("textarea"); ta.rows = 2; ta.maxLength = 1000; ta.value = a.reponse || ""; ta.placeholder = "Réponds publiquement (merci, précision…)"; ta.setAttribute("aria-label", "Ta réponse à " + a.nom);
+      f.appendChild(ta); c.appendChild(f);
+      var acts = el("div", "oacts");
+      var sv = el("button", "btn btn-navy btn-sm", a.reponse ? "Modifier ma réponse" : "Publier ma réponse"); sv.type = "button";
+      sv.addEventListener("click", async function () { sv.disabled = true; var r = await sb.from("avis").update({ reponse: ta.value.trim() || null }).eq("id", a.id).select().single(); sv.disabled = false; if (r.error) { c.appendChild(el("p", "err", niceErr(r.error))); return; } Object.assign(a, r.data); renderAvis(); });
+      acts.appendChild(sv);
+      if (!a.signale) {
+        var rp = el("button", "btn btn-ghost btn-sm", "Signaler à Yiriclick"); rp.type = "button";
+        rp.addEventListener("click", async function () { if (!window.confirm("Signaler cet avis comme abusif ? L’équipe Yiriclick le vérifiera.")) return; var r = await sb.from("avis").update({ signale: true }).eq("id", a.id).select().single(); if (!r.error) { Object.assign(a, r.data); renderAvis(); } });
+        acts.appendChild(rp);
+      }
+      c.appendChild(acts); box.appendChild(c);
+    });
+  }
+
+  /* ---------- marketing: promo codes ---------- */
+  function toInput(iso) { if (!iso) return ""; var d = new Date(iso), z = function (n) { return (n < 10 ? "0" : "") + n; }; return d.getFullYear() + "-" + z(d.getMonth() + 1) + "-" + z(d.getDate()) + "T" + z(d.getHours()) + ":" + z(d.getMinutes()); }
+  function fromInput(v) { return v ? new Date(v).toISOString() : null; }
+  function shortDate(iso) { return new Date(iso).toLocaleString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }); }
+  st.codes = []; st.codesOk = true;
+  async function loadCodes() {
+    if (!st.shop) return;
+    var r = await sb.from("codes_promo").select("*").eq("boutique_id", st.shop.id).order("created_at", { ascending: false });
+    if (r.error) { st.codesOk = false; st.codes = []; } else { st.codesOk = true; st.codes = r.data || []; }
+  }
+  function renderCodes() {
+    var pro = isPro(); $("codesPro").hidden = !pro; $("codesLocked").hidden = pro;
+    var box = $("codesList"); box.textContent = "";
+    if (!st.codesOk) { box.appendChild(el("p", "notice", "Les codes promo arrivent avec la mise à jour schema-v7.sql de la base.")); return; }
+    if (!st.codes.length) { box.appendChild(el("p", "hint", "Aucun code pour l’instant.")); return; }
+    var dev = st.shop.devise || "XOF";
+    st.codes.forEach(function (c) {
+      var r = el("div", "coderow"); r.appendChild(el("code", null, c.code));
+      var bits = [c.type === "pct" ? "-" + Number(c.valeur) + " %" : "-" + money(c.valeur, dev)];
+      if (Number(c.min_achat) > 0) bits.push("dès " + money(c.min_achat, dev));
+      if (c.fin) bits.push("jusqu’au " + shortDate(c.fin)); if (c.debut && new Date(c.debut) > new Date()) bits.push("à partir du " + shortDate(c.debut));
+      bits.push(c.utilisations + (c.max_utilisations ? " / " + c.max_utilisations : "") + " utilisation(s)");
+      var expired = (c.fin && new Date(c.fin) < new Date()) || (c.max_utilisations && c.utilisations >= c.max_utilisations);
+      if (!c.actif) bits.push("désactivé"); else if (expired) bits.push("terminé");
+      r.appendChild(el("span", "meta", bits.join(" · ")));
+      var tg = el("button", "btn btn-ghost btn-sm", c.actif ? "Désactiver" : "Activer"); tg.type = "button";
+      tg.addEventListener("click", async function () { tg.disabled = true; var x = await sb.from("codes_promo").update({ actif: !c.actif }).eq("id", c.id).select().single(); if (!x.error) Object.assign(c, x.data); renderCodes(); });
+      var del = el("button", "btn btn-danger btn-sm", "Supprimer"); del.type = "button";
+      del.addEventListener("click", async function () { if (!window.confirm("Supprimer le code " + c.code + " ?")) return; var x = await sb.from("codes_promo").delete().eq("id", c.id); if (!x.error) st.codes = st.codes.filter(function (k) { return k.id !== c.id; }); renderCodes(); });
+      r.appendChild(tg); r.appendChild(del); box.appendChild(r);
+    });
+  }
+  $("kType").addEventListener("change", function () { $("kValL").textContent = this.value === "pct" ? "Pourcentage" : "Montant (" + CUR[(st.shop && st.shop.devise) || "XOF"] + ")"; });
+  $("codeForm").addEventListener("submit", async function (e) {
+    e.preventDefault(); $("kErr").textContent = "";
+    var code = $("kCode").value.trim().toUpperCase().replace(/\s+/g, ""), type = $("kType").value, val = num($("kVal").value), min = num($("kMin").value) || 0, max = $("kMax").value ? parseInt($("kMax").value, 10) : null;
+    var deb = fromInput($("kDeb").value), fin = fromInput($("kFin").value);
+    if (!/^[A-Z0-9-]{3,20}$/.test(code)) { $("kErr").textContent = "Le code doit faire 3 à 20 lettres, chiffres ou tirets."; $("kCode").focus(); return; }
+    if (!val || val <= 0 || (type === "pct" && val > 90)) { $("kErr").textContent = type === "pct" ? "Indique un pourcentage entre 1 et 90." : "Indique un montant."; $("kVal").focus(); return; }
+    if (deb && fin && fin <= deb) { $("kErr").textContent = "La fin doit être après le début."; return; }
+    $("kSave").disabled = true;
+    var r = await sb.from("codes_promo").insert({ boutique_id: st.shop.id, code: code, type: type, valeur: val, min_achat: min, debut: deb, fin: fin, max_utilisations: max }).select().single();
+    $("kSave").disabled = false;
+    if (r.error) { $("kErr").textContent = /duplicate|unique/i.test(r.error.message) ? "Ce code existe déjà." : niceErr(r.error); return; }
+    st.codes.unshift(r.data); $("codeForm").reset(); $("kValL").textContent = "Pourcentage"; $("codeForm").closest("details").open = false; renderCodes();
+  });
+
+  /* ---------- marketing: scheduled sales ---------- */
+  function roundFor(v, d) { return d === "XOF" ? Math.round(v / 5) * 5 : Math.round(v * 100) / 100; }
+  function renderSoldes() {
+    var pro = isPro() && st.v7; $("soldesPro").hidden = !pro; $("soldesLocked").hidden = isPro();
+    if (isPro() && !st.v7) { $("soldesLocked").hidden = false; $("soldesLocked").querySelector("h3").textContent = "Les soldes programmées arrivent avec la mise à jour schema-v7.sql de la base."; }
+    var on = st.products.filter(function (p) { return p.solde_prix != null; });
+    $("soldesNow").textContent = on.length ? on.length + " produit(s) avec des soldes programmées." : "Aucune solde en cours.";
+    $("sStop").hidden = !on.length;
+    if (!$("sDeb").value) $("sDeb").value = toInput(new Date().toISOString());
+  }
+  $("soldeForm").addEventListener("submit", async function (e) {
+    e.preventDefault(); $("sErr").textContent = ""; $("sOkMsg").textContent = "";
+    var pct = parseInt($("sPct").value, 10), deb = fromInput($("sDeb").value), fin = fromInput($("sFin").value);
+    if (!(pct >= 1 && pct <= 90)) { $("sErr").textContent = "Indique une réduction entre 1 et 90 %."; $("sPct").focus(); return; }
+    if (!fin) { $("sErr").textContent = "Choisis une date de fin."; $("sFin").focus(); return; }
+    if (deb && fin <= deb) { $("sErr").textContent = "La fin doit être après le début."; return; }
+    var list = st.products.filter(function (p) { return $("sScope").value === "une" ? p.a_la_une : true; });
+    if (!list.length) { $("sErr").textContent = "Aucun produit concerné."; return; }
+    $("sGo").disabled = true; var fails = 0;
+    for (var i = 0; i < list.length; i++) {
+      var p = list[i], sp = roundFor(Number(p.prix) * (1 - pct / 100), p.devise);
+      if (!(sp < Number(p.prix))) continue;
+      var r = await sb.from("produits").update({ solde_prix: sp, solde_debut: deb, solde_fin: fin }).eq("id", p.id).select().single();
+      if (r.error) fails++; else Object.assign(p, r.data);
+      $("sGo").textContent = "Mise à jour " + (i + 1) + " / " + list.length + "…";
+    }
+    $("sGo").disabled = false; $("sGo").textContent = "Lancer les soldes";
+    if (fails) $("sErr").textContent = fails + " produit(s) n’ont pas pu être mis à jour."; else $("sOkMsg").textContent = "Soldes de -" + pct + " % programmées sur " + list.length + " produit(s) ✓";
+    renderSoldes(); renderProducts();
+  });
+  $("sStop").addEventListener("click", async function () {
+    if (!window.confirm("Arrêter toutes les soldes ? Les prix normaux reviennent tout de suite.")) return;
+    var on = st.products.filter(function (p) { return p.solde_prix != null; }); this.disabled = true;
+    for (var i = 0; i < on.length; i++) { var r = await sb.from("produits").update({ solde_prix: null, solde_debut: null, solde_fin: null }).eq("id", on[i].id).select().single(); if (!r.error) Object.assign(on[i], r.data); }
+    this.disabled = false; $("sOkMsg").textContent = "Soldes arrêtées."; renderSoldes(); renderProducts();
+  });
+
+  /* ---------- marketing: share images ---------- */
+  var gBlob = null;
+  function renderVisuelsList() {
+    var sel = $("gProd"), keep = sel.value; sel.textContent = "";
+    var vis = st.products.filter(function (p) { return p.visible && !p.masque_admin; });
+    if (!vis.length) { var o = el("option", null, "Aucun produit visible"); o.value = ""; sel.appendChild(o); }
+    vis.forEach(function (p) { var o = el("option", null, p.nom); o.value = p.id; sel.appendChild(o); });
+    if (keep && vis.some(function (p) { return p.id === keep; })) sel.value = keep;
+    drawVisuel();
+  }
+  function loadImg(src) { return new Promise(function (res) { if (!src) return res(null); var i = new Image(); i.crossOrigin = "anonymous"; i.onload = function () { res(i); }; i.onerror = function () { res(null); }; i.src = src; }); }
+  function wrap(g, text, maxW, maxLines) {
+    var words = String(text).split(/\s+/), lines = [], cur = "";
+    words.forEach(function (w) { var tst = cur ? cur + " " + w : w; if (g.measureText(tst).width > maxW && cur) { lines.push(cur); cur = w; } else cur = tst; });
+    if (cur) lines.push(cur);
+    if (lines.length > maxLines) { lines = lines.slice(0, maxLines); lines[maxLines - 1] = lines[maxLines - 1].replace(/\s*\S*$/, "") + "…"; }
+    return lines;
+  }
+  function cover(g, img, x, y, w, h) { var r = Math.max(w / img.width, h / img.height), sw = w / r, sh = h / r; g.drawImage(img, (img.width - sw) / 2, (img.height - sh) / 2, sw, sh, x, y, w, h); }
+  var drawSeq = 0;
+  async function drawVisuel() {
+    var my = ++drawSeq, cv = $("gCanvas"), p = st.products.filter(function (x) { return x.id === $("gProd").value; })[0];
+    $("gErr").textContent = ""; gBlob = null; $("gDl").removeAttribute("href");
+    if (!p || !st.shop) return;
+    var story = $("gFmt").value === "story", W = 1080, H = story ? 1920 : 1080; cv.width = W; cv.height = H;
+    var th = THEMES.filter(function (x) { return x[0] === (st.shop.theme || "teal"); })[0] || THEMES[0];
+    try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch (e) {}
+    var img = await loadImg(p.photos && p.photos[0] ? pub(p.photos[0]) : ""), logo = await loadImg(st.shop.logo ? pub(st.shop.logo) : "");
+    if (my !== drawSeq) return;
+    var g = cv.getContext("2d"), F = "Archivo, 'Helvetica Neue', Arial, sans-serif";
+    g.fillStyle = "#FFFFFF"; g.fillRect(0, 0, W, H);
+    var top = story ? 220 : 0, ph = story ? 1080 : 700;
+    if (story) {
+      g.fillStyle = th[1]; g.fillRect(0, 0, W, top);
+      var lx = 60; if (logo) { cover(g, logo, 60, 50, 120, 120); lx = 210; }
+      g.fillStyle = th[2]; g.font = "900 64px " + F; g.textBaseline = "middle"; g.fillText(wrap(g, st.shop.nom, W - lx - 60, 1)[0], lx, 110);
+    }
+    if (img) cover(g, img, 0, top, W, ph); else { g.fillStyle = "#E6F4F5"; g.fillRect(0, top, W, ph); g.fillStyle = th[1]; g.font = "900 300px " + F; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(p.nom.charAt(0).toUpperCase(), W / 2, top + ph / 2); g.textAlign = "left"; }
+    var sale = p.solde_prix != null && Number(p.solde_prix) < Number(p.prix) && (!p.solde_fin || new Date(p.solde_fin) > new Date()) && (!p.solde_debut || new Date(p.solde_debut) <= new Date());
+    var price = sale ? Number(p.solde_prix) : Number(p.prix), old = sale ? Number(p.prix) : (p.prix_avant && Number(p.prix_avant) > price ? Number(p.prix_avant) : null);
+    if (old) {
+      var pct = "-" + Math.round((1 - price / old) * 100) + " %";
+      g.font = "900 64px " + F; var bw = g.measureText(pct).width + 60;
+      g.fillStyle = "#C62828"; g.fillRect(40, top + 40, bw, 100); g.fillStyle = "#FFFFFF"; g.textBaseline = "middle"; g.fillText(pct, 70, top + 92);
+    }
+    var y = top + ph, band = H - y;
+    g.fillStyle = th[1]; g.fillRect(0, y, W, band);
+    g.fillStyle = th[2]; g.textBaseline = "alphabetic"; g.font = "800 58px " + F;
+    var lines = wrap(g, p.nom, W - 120, 2), ty = y + 90;
+    lines.forEach(function (l) { g.fillText(l, 60, ty); ty += 70; });
+    g.font = "900 96px " + F; g.fillText(money(price, p.devise), 60, ty + 70);
+    if (old) { var pw = g.measureText(money(price, p.devise)).width; g.font = "500 52px " + F; g.globalAlpha = .8; var ox = 60 + pw + 30, ot = money(old, p.devise); g.fillText(ot, ox, ty + 66); var ow = g.measureText(ot).width; g.fillRect(ox, ty + 48, ow, 5); g.globalAlpha = 1; }
+    g.font = "700 38px " + F; g.globalAlpha = .9;
+    var foot = story ? "Commande sur Yiriclick · lien dans la bio" : (st.shop.nom + " · sur Yiriclick");
+    g.fillText(wrap(g, foot, W - 120, 1)[0], 60, H - 50); g.globalAlpha = 1;
+    try {
+      cv.toBlob(function (b) { if (my !== drawSeq || !b) return; gBlob = b; $("gDl").href = URL.createObjectURL(b); $("gDl").download = "yiriclick-" + (p.nom || "produit").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").slice(0, 40) + ".png"; }, "image/png");
+    } catch (e) { $("gErr").textContent = "La photo ne peut pas être utilisée dans l’image. Réessaie plus tard."; }
+  }
+  $("gProd").addEventListener("change", drawVisuel); $("gFmt").addEventListener("change", drawVisuel);
+  $("gShare").addEventListener("click", async function () {
+    if (!gBlob) return;
+    var f = new File([gBlob], $("gDl").download || "visuel.png", { type: "image/png" });
+    if (navigator.canShare && navigator.canShare({ files: [f] })) { try { await navigator.share({ files: [f], text: shopUrl() }); } catch (e) {} }
+    else $("gDl").click();
+  });
+  document.querySelectorAll(".chiplink").forEach(function (a) { a.addEventListener("click", function (e) { e.preventDefault(); var t = document.querySelector(a.getAttribute("href")); if (t) t.scrollIntoView({ behavior: "smooth", block: "start" }); }); });
+
   /* ---------- share ---------- */
   var msgTouched = false;
   function defaultMsg() {
@@ -1494,6 +1799,8 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     $("shWa").href = "https://wa.me/?text=" + encodeURIComponent($("shMsg").value);
     $("shFb").href = "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(u);
     $("shNative").hidden = !navigator.share;
+    $("catLink").href = SITE + "catalogue.html?b=" + st.shop.slug;
+    renderCodes(); renderSoldes(); renderVisuelsList();
     var pro = isPro(); $("qrPro").hidden = !pro; $("qrLocked").hidden = pro;
     if (pro) {
       $("qr").innerHTML = YQR.svg(u, "#10232A");
