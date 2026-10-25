@@ -64,6 +64,53 @@ window.YC = (function () {
     es: { mode: "Moda y ropa", chaussures: "Calzado y marroquinería", bijoux: "Joyas y accesorios", textile: "Telas y wax", beaute: "Belleza y cosmética", sante: "Salud y bienestar", alim: "Alimentación y supermercado", boissons: "Bebidas", agri: "Productos agrícolas y ganadería", artisanat: "Artesanía y arte", deco: "Hogar y decoración", meubles: "Muebles", electromenager: "Electrodomésticos", tech: "Teléfonos y electrónica", info: "Informática", auto: "Coches y motos", btp: "Construcción y materiales", bebe: "Bebés y niños", jouets: "Juguetes y juegos", sport: "Deporte y ocio", livres: "Libros y material escolar", musique: "Música e instrumentos", animaux: "Animales", numerique: "Productos digitales", services: "Servicios", autre: "Otro" }
   };
 
+  /* Showcase, favourites and promotion texts */
+  var T2 = {
+    fr: { searchBig: "Que cherches-tu ?", voice: "Recherche vocale", voiceOn: "Je t’écoute…", doSearch: "Rechercher", menu: "Menu", login: "Se connecter", favs: "Favoris", favTitle: "Mes favoris",
+      favEmpty: "Touche le cœur d’un produit pour le retrouver ici.", favAdd: "Ajouter aux favoris", favDel: "Retirer des favoris",
+      sale: "à prix réduit", usually: "En général {p}", off: "-{n} %", newB: "Nouveau", lowB: "Stock limité", trends: "Tendances du moment", deals: "Petits prix",
+      near: "Près de chez toi", nearIn: "Vendeurs : {c}", shops: "Boutiques à découvrir", seeAll: "Tout voir", dealDay: "Offre du jour", endsIn: "Se termine dans",
+      discover: "Découvrez tout Yiriclick", results: "{n} résultat(s)", resultsFor: "Résultats pour « {q} »", filters: "Filtres", sort: "Trier", sNew: "Plus récents", sAsc: "Prix croissant", sDesc: "Prix décroissant",
+      pMin: "Prix min", pMax: "Prix max", inStock: "En stock uniquement", reset: "Effacer les filtres", more: "Voir plus", backHome: "Retour à l’accueil", suggest: "Suggestions",
+      welcome: "Bienvenue sur Yiriclick", choose: "Choisis ton pays et ta langue", country: "Pays", language: "Langue", welcomeP: "Les prix s’affichent dans la monnaie de ton pays. Tu peux changer à tout moment dans le menu.", go: "Continuer",
+      service: "Service et contact", sv1T: "Commander simplement", sv1: "Ajoute au panier, puis envoie ta commande au vendeur sur WhatsApp.", sv2T: "Besoin d’aide ?", sv2: "Écris-nous : [ADRESSE E-MAIL]",
+      fHelp: "Aide", fHelp1: "Comment commander", fHelp2: "Paiement et livraison", fHelp3: "Vendeurs vérifiés", fSell: "Vendre sur Yiriclick", fSell1: "Nos formules", fSell2: "Espace vendeur", fSell3: "Ouvrir ma boutique",
+      fAbout: "À propos", fAbout1: "Qui sommes-nous", fAbout2: "Conditions", fAbout3: "Confidentialité", tagline: "la place de marché des petits vendeurs, partout dans le monde",
+      install: "Ajoute Yiriclick à ton écran d’accueil", installP: "Comme une appli, en un geste.", installBtn: "Ajouter", installIos: "Sur iPhone : touche Partager, puis « Sur l’écran d’accueil ».",
+      settings: "Pays, langue et monnaie", catTitle: "Catégories", allProducts: "Tous les produits", seeShop: "Voir la boutique", home: "Accueil",
+      fam_mode: "Mode et beauté", fam_maison: "Maison et jardin", fam_tech: "Électronique", fam_alim: "Alimentation et agriculture", fam_famille: "Famille et loisirs", fam_pro: "Auto, bâtiment et services" },
+    en: { searchBig: "What are you looking for?", voice: "Voice search", voiceOn: "Listening…", doSearch: "Search", menu: "Menu", login: "Sign in", favs: "Favourites", favTitle: "My favourites",
+      favEmpty: "Tap the heart on a product to find it here.", favAdd: "Add to favourites", favDel: "Remove from favourites",
+      sale: "reduced price", usually: "Usually {p}", off: "-{n}%", newB: "New", lowB: "Limited stock", trends: "Trending now", deals: "Low prices",
+      near: "Near you", nearIn: "Sellers: {c}", shops: "Shops to discover", seeAll: "See all", dealDay: "Deal of the day", endsIn: "Ends in",
+      discover: "Discover all of Yiriclick", results: "{n} result(s)", resultsFor: "Results for “{q}”", filters: "Filters", sort: "Sort", sNew: "Newest", sAsc: "Price: low to high", sDesc: "Price: high to low",
+      pMin: "Min price", pMax: "Max price", inStock: "In stock only", reset: "Clear filters", more: "Show more", backHome: "Back to home", suggest: "Suggestions",
+      welcome: "Welcome to Yiriclick", choose: "Choose your country and language", country: "Country", language: "Language", welcomeP: "Prices are shown in your country’s currency. You can change this any time in the menu.", go: "Continue",
+      service: "Service and contact", sv1T: "Ordering made simple", sv1: "Add to cart, then send your order to the seller on WhatsApp.", sv2T: "Need help?", sv2: "Write to us: [EMAIL ADDRESS]",
+      fHelp: "Help", fHelp1: "How to order", fHelp2: "Payment and delivery", fHelp3: "Verified sellers", fSell: "Sell on Yiriclick", fSell1: "Our plans", fSell2: "Seller space", fSell3: "Open my shop",
+      fAbout: "About", fAbout1: "About us", fAbout2: "Terms", fAbout3: "Privacy", tagline: "the marketplace for small sellers, everywhere in the world",
+      install: "Add Yiriclick to your home screen", installP: "Just like an app, in one tap.", installBtn: "Add", installIos: "On iPhone: tap Share, then “Add to Home Screen”.",
+      settings: "Country, language and currency", catTitle: "Categories", allProducts: "All products", seeShop: "See the shop", home: "Home",
+      fam_mode: "Fashion and beauty", fam_maison: "Home and garden", fam_tech: "Electronics", fam_alim: "Food and farming", fam_famille: "Family and leisure", fam_pro: "Cars, building and services" },
+    es: { searchBig: "¿Qué estás buscando?", voice: "Búsqueda por voz", voiceOn: "Te escucho…", doSearch: "Buscar", menu: "Menú", login: "Iniciar sesión", favs: "Favoritos", favTitle: "Mis favoritos",
+      favEmpty: "Toca el corazón de un producto para encontrarlo aquí.", favAdd: "Añadir a favoritos", favDel: "Quitar de favoritos",
+      sale: "precio rebajado", usually: "Normalmente {p}", off: "-{n} %", newB: "Nuevo", lowB: "Pocas unidades", trends: "Tendencias del momento", deals: "Precios bajos",
+      near: "Cerca de ti", nearIn: "Vendedores: {c}", shops: "Tiendas para descubrir", seeAll: "Ver todo", dealDay: "Oferta del día", endsIn: "Termina en",
+      discover: "Descubre todo Yiriclick", results: "{n} resultado(s)", resultsFor: "Resultados para «{q}»", filters: "Filtros", sort: "Ordenar", sNew: "Más recientes", sAsc: "Precio ascendente", sDesc: "Precio descendente",
+      pMin: "Precio mín.", pMax: "Precio máx.", inStock: "Solo con stock", reset: "Borrar filtros", more: "Ver más", backHome: "Volver al inicio", suggest: "Sugerencias",
+      welcome: "Bienvenido a Yiriclick", choose: "Elige tu país y tu idioma", country: "País", language: "Idioma", welcomeP: "Los precios se muestran en la moneda de tu país. Puedes cambiarlo cuando quieras en el menú.", go: "Continuar",
+      service: "Servicio y contacto", sv1T: "Pedir es sencillo", sv1: "Añade al carrito y envía tu pedido al vendedor por WhatsApp.", sv2T: "¿Necesitas ayuda?", sv2: "Escríbenos: [CORREO ELECTRÓNICO]",
+      fHelp: "Ayuda", fHelp1: "Cómo pedir", fHelp2: "Pago y entrega", fHelp3: "Vendedores verificados", fSell: "Vender en Yiriclick", fSell1: "Nuestros planes", fSell2: "Espacio vendedor", fSell3: "Abrir mi tienda",
+      fAbout: "Acerca de", fAbout1: "Quiénes somos", fAbout2: "Condiciones", fAbout3: "Privacidad", tagline: "el mercado de los pequeños vendedores, en todo el mundo",
+      install: "Añade Yiriclick a tu pantalla de inicio", installP: "Como una app, en un gesto.", installBtn: "Añadir", installIos: "En iPhone: toca Compartir y luego «Añadir a pantalla de inicio».",
+      settings: "País, idioma y moneda", catTitle: "Categorías", allProducts: "Todos los productos", seeShop: "Ver la tienda", home: "Inicio",
+      fam_mode: "Moda y belleza", fam_maison: "Hogar y jardín", fam_tech: "Electrónica", fam_alim: "Alimentación y agricultura", fam_famille: "Familia y ocio", fam_pro: "Motor, construcción y servicios" }
+  };
+  Object.keys(T2).forEach(function (L) { Object.keys(T2[L]).forEach(function (k) { T[L][k] = T2[L][k]; }); });
+  var FAMILIES = [["fam_mode", ["mode", "chaussures", "bijoux", "textile", "beaute", "sante"]], ["fam_maison", ["deco", "meubles", "electromenager", "animaux"]],
+    ["fam_tech", ["tech", "info", "numerique"]], ["fam_alim", ["alim", "boissons", "agri"]], ["fam_famille", ["bebe", "jouets", "sport", "livres", "musique", "artisanat"]],
+    ["fam_pro", ["auto", "btp", "services", "autre"]]];
+
   function load(k, d) { try { return localStorage.getItem(k) || d; } catch (e) { return d; } }
   function save(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
   var navLang = (navigator.language || "fr").slice(0, 2);
@@ -94,12 +141,20 @@ window.YC = (function () {
   }
 
   /* Header preferences: language and currency selects */
+  var prefsListeners = [];
   function wirePrefs(onChange) {
+    if (onChange) prefsListeners.push(onChange);
     var ls = document.getElementById("prefLang"), cs = document.getElementById("prefCur");
-    ls.value = prefs.lang; cs.value = prefs.cur;
-    ls.addEventListener("change", function () { prefs.lang = ls.value; save("yc-lang", prefs.lang); document.documentElement.lang = prefs.lang; onChange(); });
-    cs.addEventListener("change", function () { prefs.cur = cs.value; save("yc-cur", prefs.cur); onChange(); });
+    if (ls) { ls.value = prefs.lang; ls.addEventListener("change", function () { setPrefs(ls.value, null); }); }
+    if (cs) { cs.value = prefs.cur; cs.addEventListener("change", function () { setPrefs(null, cs.value); }); }
     document.documentElement.lang = prefs.lang;
+  }
+  function setPrefs(lang, cur) {
+    if (lang && T[lang]) { prefs.lang = lang; save("yc-lang", lang); document.documentElement.lang = lang; }
+    if (cur != null) { prefs.cur = cur; save("yc-cur", cur); }
+    var ls = document.getElementById("prefLang"), cs = document.getElementById("prefCur");
+    if (ls) ls.value = prefs.lang; if (cs) cs.value = prefs.cur;
+    prefsListeners.forEach(function (f) { f(); });
   }
   function labels() {
     document.querySelectorAll("[data-t]").forEach(function (n) { n.textContent = t(n.getAttribute("data-t")); });
@@ -110,20 +165,59 @@ window.YC = (function () {
     var cw = document.getElementById("cartWrap"); if (cw && !cw.hidden) renderCart();
   }
 
+  /* Favourites: kept in this visitor's browser */
+  var favs = [];
+  try { favs = JSON.parse(localStorage.getItem("yc-favs") || "[]"); if (!Array.isArray(favs)) favs = []; } catch (e) { favs = []; }
+  var favListeners = [];
+  function isFav(id) { return favs.indexOf(id) >= 0; }
+  function toggleFav(id) {
+    if (isFav(id)) favs = favs.filter(function (x) { return x !== id; }); else favs.unshift(id);
+    try { localStorage.setItem("yc-favs", JSON.stringify(favs.slice(0, 200))); } catch (e) {}
+    document.querySelectorAll('[data-fav="' + id + '"]').forEach(function (b) { favPaint(b, id); });
+    favListeners.forEach(function (f) { f(); });
+  }
+  var HEART = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-9-8.6C1.6 8.3 3.6 5 6.8 5c2 0 3.4 1.1 4.2 2.4h2C13.8 6.1 15.2 5 17.2 5c3.2 0 5.2 3.3 3.8 6.4C19 15.6 12 20 12 20z"/></svg>';
+  function favPaint(b, id) { var on = isFav(id); b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on)); b.setAttribute("aria-label", on ? t("favDel") : t("favAdd")); }
+  function favButton(p) {
+    var b = el("button", "fav"); b.type = "button"; b.setAttribute("data-fav", p.id); b.innerHTML = HEART; favPaint(b, p.id);
+    b.addEventListener("click", function (e) { e.stopPropagation(); toggleFav(p.id); if (b.animate && isFav(p.id)) b.animate([{ transform: "scale(1)" }, { transform: "scale(1.3)" }, { transform: "scale(1)" }], { duration: 300 }); });
+    return b;
+  }
+  function discount(p) { return p.prix_avant && Number(p.prix_avant) > Number(p.prix) ? Math.round((1 - Number(p.prix) / Number(p.prix_avant)) * 100) : 0; }
+  function isNew(p) { return p.created_at && (Date.now() - new Date(p.created_at).getTime()) < 7 * 24 * 3600 * 1000; }
+  function priceBlock(p, big) {
+    var w = el("div", "pblock" + (big ? " big" : "")), d = discount(p);
+    var pr = el("span", d ? "pr pr-sale" : "pr", money(p.prix, p.devise)); w.appendChild(pr);
+    if (d) {
+      w.appendChild(el("span", "sale-l", t("sale") + " · " + t("off", { n: d })));
+      var u = el("span", "usual"); u.appendChild(document.createTextNode(t("usually", { p: "" }).replace(/\s*$/, "") + " "));
+      u.appendChild(el("s", null, money(p.prix_avant, p.devise))); w.appendChild(u);
+    }
+    var a = approx(p); if (a) w.appendChild(el("span", "cv", a));
+    return w;
+  }
+
   /* Product card: photo and title open the details; "Commander" goes straight to WhatsApp with a ready message */
   function card(p, shop, showShop, onOpen) {
     var c = el("article", "item");
+    var media = el("div", "media");
     var open = el("button", "item-open"); open.type = "button";
-    if (p.photos && p.photos[0]) { var im = el("img", "im"); im.src = pub(p.photos[0]); im.alt = ""; im.loading = "lazy"; open.appendChild(im); }
-    else open.appendChild(el("div", "noim"));
+    if (p.photos && p.photos[0]) { var im = el("img", "im"); im.src = pub(p.photos[0]); im.alt = ""; im.loading = "lazy"; media.appendChild(im); }
+    else media.appendChild(el("div", "noim"));
+    var badges = el("div", "badges"), d = discount(p);
+    if (d) badges.appendChild(el("span", "bdg bdg-sale", t("off", { n: d })));
+    if (isNew(p)) badges.appendChild(el("span", "bdg bdg-new", t("newB")));
+    if (p.stock != null && p.stock > 0 && p.stock <= 3) badges.appendChild(el("span", "bdg bdg-low", t("lowB")));
+    if (badges.children.length) media.appendChild(badges);
+    open.appendChild(media);
     var ib = el("div", "ib");
     if (showShop && shop) ib.appendChild(el("span", "shopname", shop.nom));
     ib.appendChild(el("h3", null, p.nom));
-    ib.appendChild(el("span", "pr", money(p.prix, p.devise)));
-    var a = approx(p); if (a) ib.appendChild(el("span", "cv", a));
+    ib.appendChild(priceBlock(p));
     open.appendChild(ib);
     open.addEventListener("click", function () { onOpen(p, shop); });
     c.appendChild(open);
+    c.appendChild(favButton(p));
     var acts = el("div", "item-acts");
     var out = p.stock === 0;
     var buy = el("button", "btn btn-wa btn-buy"); buy.type = "button";
@@ -388,8 +482,7 @@ window.YC = (function () {
     var bd = el("div", "mbody");
     if (opts.showShop && shop) { var sa = el("a", null, t("by", { s: shop.nom })); sa.href = "boutique.html?b=" + encodeURIComponent(shop.slug); sa.style.color = "var(--teal-deep)"; sa.style.fontWeight = "700"; bd.appendChild(sa); }
     var h = el("h2", null, p.nom); h.id = "pmTitle"; bd.appendChild(h);
-    bd.appendChild(el("div", "pr", money(p.prix, p.devise)));
-    var a = approx(p); if (a) bd.appendChild(el("div", "cv", a));
+    var hr = el("div", "m-pricerow"); hr.appendChild(priceBlock(p, true)); hr.appendChild(favButton(p)); bd.appendChild(hr);
     var meta = [cat(p.categorie)]; if (p.stock != null) meta.push(p.stock > 0 ? t("stock", { n: p.stock }) : t("outStock"));
     bd.appendChild(el("div", "meta", meta.filter(Boolean).join(" · ")));
     if (p.description) bd.appendChild(el("p", "desc", p.description));
@@ -426,5 +519,10 @@ window.YC = (function () {
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", setupCart); else setupCart();
 
-  return { sb: sb, t: t, cat: cat, el: el, pub: pub, money: money, card: card, openProduct: openProduct, wirePrefs: wirePrefs, labels: labels, catOptions: catOptions, norm: norm, prefs: prefs };
+  /* Pages can add their own texts: YC.extend({ fr: {...}, en: {...}, es: {...} }) */
+  function extend(d) { Object.keys(d).forEach(function (L) { T[L] = T[L] || {}; Object.keys(d[L]).forEach(function (k) { T[L][k] = d[L][k]; }); }); }
+
+  return { extend: extend, sb: sb, t: t, cat: cat, el: el, pub: pub, money: money, card: card, openProduct: openProduct, wirePrefs: wirePrefs, setPrefs: setPrefs, labels: labels, catOptions: catOptions, norm: norm, prefs: prefs,
+    convert: convert, discount: discount, priceBlock: priceBlock, favButton: favButton, isFav: isFav, favs: function () { return favs.slice(); }, onFavs: function (f) { favListeners.push(f); },
+    openCart: function () { openCart(); }, CATS: CATS, FAMILIES: FAMILIES, LOCALE: LOCALE, URL_SB: URL_SB, HEART: HEART, CART_SVG: CART_SVG };
 })();

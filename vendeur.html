@@ -212,6 +212,7 @@ main { padding-block: 24px 48px; display: flex; flex-direction: column; gap: 20p
       <div class="field"><label for="ePrix">Prix</label><input id="ePrix" type="number" inputmode="decimal" min="0" step="any"></div>
       <div class="field"><label for="eDevise">Monnaie</label><select id="eDevise"><option value="XOF">FCFA</option><option value="EUR">Euro (€)</option><option value="USD">Dollar ($)</option></select></div>
     </div>
+    <div class="field"><label for="ePrixAvant">Prix avant réduction (facultatif)</label><input id="ePrixAvant" type="number" inputmode="decimal" min="0" step="any"><span class="hint" id="promoHint">Pour afficher une promotion : l’ancien prix apparaît barré, avec le pourcentage de réduction. Laisse vide s’il n’y a pas de promotion.</span></div>
     <div class="two">
       <div class="field"><label for="eCat">Catégorie</label><select id="eCat"></select></div>
       <div class="field"><label for="eStock">Stock</label><input id="eStock" type="number" inputmode="numeric" min="0" step="1"><span class="hint">Laisse vide si tu ne veux pas l’afficher.</span></div>
@@ -429,6 +430,7 @@ main { padding-block: 24px 48px; display: flex; flex-direction: column; gap: 20p
       if (p.masque_admin) b.appendChild(el("span", "badge-off", "Masqué par Yiriclick"));
       b.appendChild(el("h3", null, p.nom));
       b.appendChild(el("span", "price", money(p.prix, p.devise)));
+      if (p.prix_avant) { var pa = el("span", "meta"); pa.appendChild(el("s", null, money(p.prix_avant, p.devise))); pa.appendChild(document.createTextNode(" · -" + Math.round((1 - p.prix / p.prix_avant) * 100) + " %")); b.appendChild(pa); }
       b.appendChild(el("span", "meta", (p.stock != null ? "Stock : " + p.stock + " · " : "") + (p.photos ? p.photos.length : 0) + " photo(s)"));
       var a = el("div", "acts");
       var ed = el("button", "btn btn-navy", "Modifier"); ed.type = "button"; ed.addEventListener("click", function () { openEditor(p); });
@@ -444,7 +446,7 @@ main { padding-block: 24px 48px; display: flex; flex-direction: column; gap: 20p
     st.ed = { id: p ? p.id : uid(), isNew: isNew, photos: (p && p.photos ? p.photos.slice() : []).map(function (x) { return { path: x }; }), removed: [] };
     $("edTitle").textContent = isNew ? "Nouveau produit" : "Modifier le produit";
     $("eNom").value = p ? p.nom : ""; $("eDesc").value = p && p.description ? p.description : "";
-    $("ePrix").value = p ? p.prix : ""; $("eDevise").value = p ? p.devise : (st.shop ? st.shop.devise : "XOF");
+    $("ePrix").value = p ? p.prix : ""; $("ePrixAvant").value = p && p.prix_avant != null ? p.prix_avant : ""; $("eDevise").value = p ? p.devise : (st.shop ? st.shop.devise : "XOF");
     $("eCat").value = p && p.categorie ? p.categorie : "autre"; $("eStock").value = p && p.stock != null ? p.stock : "";
     $("eVisible").checked = p ? p.visible : true; $("eErr").textContent = "";
     $("delZone").hidden = isNew; $("delConfirm").hidden = true; $("eDel").hidden = false;
@@ -482,6 +484,8 @@ main { padding-block: 24px 48px; display: flex; flex-direction: column; gap: 20p
     var nom = $("eNom").value.trim(), prix = parseFloat(String($("ePrix").value).replace(",", "."));
     if (nom.length < 2) { $("eErr").textContent = "Donne un nom au produit."; $("eNom").focus(); return; }
     if (!isFinite(prix) || prix < 0) { $("eErr").textContent = "Indique un prix valide."; $("ePrix").focus(); return; }
+    var avant = $("ePrixAvant").value === "" ? null : parseFloat(String($("ePrixAvant").value).replace(",", "."));
+    if (avant != null && (!isFinite(avant) || avant <= prix)) { $("eErr").textContent = "Le prix avant réduction doit être plus élevé que le prix actuel."; $("ePrixAvant").focus(); return; }
     var stock = $("eStock").value === "" ? null : parseInt($("eStock").value, 10);
     if (stock != null && (!isFinite(stock) || stock < 0)) { $("eErr").textContent = "Le stock doit être un nombre positif."; $("eStock").focus(); return; }
     var btn = $("eSave"); btn.disabled = true; btn.textContent = "Envoi des photos…";
@@ -495,6 +499,8 @@ main { padding-block: 24px 48px; display: flex; flex-direction: column; gap: 20p
       }
       btn.textContent = "Enregistrement…";
       var row = { nom: nom, description: $("eDesc").value.trim() || null, prix: prix, devise: $("eDevise").value, categorie: $("eCat").value, stock: stock, photos: paths, visible: $("eVisible").checked };
+      var prev = st.products.filter(function (x) { return x.id === st.ed.id; })[0];
+      if (avant != null || (prev && prev.prix_avant != null)) row.prix_avant = avant;
       var r;
       if (st.ed.isNew) { row.id = st.ed.id; row.boutique_id = st.shop.id; r = await sb.from("produits").insert(row).select().single(); }
       else r = await sb.from("produits").update(row).eq("id", st.ed.id).select().single();

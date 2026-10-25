@@ -107,6 +107,17 @@ dd { margin: 0; overflow-wrap: anywhere; }
 .ok-msg { color: var(--ok); font-weight: 700; font-size: 14px; margin: 0; }
 .ok-msg:empty { display: none; }
 @media (max-width: 480px) { dl { grid-template-columns: 1fr; } dt { margin-top: 6px; } }
+.pm-form { display: flex; flex-direction: column; gap: 12px; border: 1px solid var(--rule); background: var(--bg); padding: 14px; }
+.pm-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.pm-list { display: flex; flex-direction: column; gap: 10px; }
+.pm-item { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 12px; align-items: start; border: 1px solid var(--rule); padding: 10px; }
+.pm-thumb { width: 64px; height: 64px; background: var(--tint) center / cover no-repeat; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; text-align: center; color: var(--navy); }
+.pm-thumb.c-navy { background-color: #10232A; color: #fff; } .pm-thumb.c-teal { background-color: #D3ECEE; } .pm-thumb.c-orange { background-color: #FFD9BF; } .pm-thumb.c-sand { background-color: #FCE9C8; } .pm-thumb.c-mint { background-color: #CDEFD9; } .pm-thumb.c-rose { background-color: #FBD9D3; }
+.pm-item b { display: block; overflow-wrap: anywhere; }
+.pm-item small { display: block; color: var(--soft); font-size: 13px; overflow-wrap: anywhere; }
+.pm-acts { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.pm-acts .btn { min-height: 40px; padding: 0 12px; font-size: 14px; }
+code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
 </style>
 </head>
 <body>
@@ -181,6 +192,33 @@ dd { margin: 0; overflow-wrap: anywhere; }
       <select id="fStatut"></select>
     </div>
     <div class="table-box"><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+  </div>
+
+  <div class="card" id="promoCard">
+    <div class="head" style="align-items:center"><h2>Promotions de la vitrine</h2><button class="btn btn-orange" type="button" id="pmNew">Ajouter une promotion</button></div>
+    <p class="notice">Bannières en haut de la vitrine, tuiles en dessous, et une offre du jour avec compte à rebours. Sans bannière ni tuile, la vitrine affiche celles de Yiriclick par défaut.</p>
+    <p class="err" id="pmLoadErr"></p>
+    <form id="pmForm" class="pm-form" novalidate hidden>
+      <div class="pm-grid">
+        <div class="field"><label for="pmType">Type</label><select id="pmType"><option value="banniere">Bannière (grande, en haut)</option><option value="tuile">Tuile (carré, sous les bannières)</option><option value="offre_jour">Offre du jour (avec compte à rebours)</option></select></div>
+        <div class="field"><label for="pmColor">Couleur de fond</label><select id="pmColor"><option value="navy">Bleu nuit</option><option value="teal">Turquoise clair</option><option value="orange">Orange clair</option><option value="sand">Sable</option><option value="mint">Menthe</option><option value="rose">Rose</option></select></div>
+      </div>
+      <div class="field"><label for="pmTitle">Titre</label><input id="pmTitle" maxlength="80" placeholder="Ex. : Soldes mode jusqu’à -30 %"></div>
+      <div class="field"><label for="pmSub">Sous-titre (facultatif)</label><input id="pmSub" maxlength="140"></div>
+      <div class="field" id="pmLinkWrap"><label for="pmLink">Lien (facultatif)</label><input id="pmLink" maxlength="300" placeholder="vitrine.html?cat=mode"><span class="notice">Exemples : <code>vitrine.html?cat=mode</code> (une catégorie), <code>vitrine.html?promo=1</code> (les petits prix), <code>boutique.html?b=fougueux-shop</code> (une boutique).</span></div>
+      <div class="field" id="pmImgWrap"><label for="pmImg">Image (facultatif)</label><input id="pmImg" type="file" accept="image/jpeg,image/png,image/webp"><span class="notice">Format paysage pour une bannière, carré ou portrait pour une tuile. L’image est réduite automatiquement.</span></div>
+      <div class="pm-grid" id="pmDealWrap" hidden>
+        <div class="field"><label for="pmProd">Produit en offre</label><select id="pmProd"></select></div>
+        <div class="field"><label for="pmEnd">Fin de l’offre</label><input id="pmEnd" type="datetime-local"></div>
+      </div>
+      <div class="pm-grid">
+        <div class="field"><label for="pmOrder">Ordre d’affichage</label><input id="pmOrder" type="number" inputmode="numeric" value="0"><span class="notice">Le plus petit s’affiche en premier.</span></div>
+        <div class="field"><label for="pmEndAll">Fin d’affichage (facultatif)</label><input id="pmEndAll" type="datetime-local"></div>
+      </div>
+      <p class="err" id="pmErr"></p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-orange" type="submit" id="pmSave">Publier la promotion</button><button class="btn btn-ghost" type="button" id="pmCancel">Annuler</button></div>
+    </form>
+    <div class="pm-list" id="pmList"></div>
   </div>
 </main>
 
@@ -272,7 +310,7 @@ dd { margin: 0; overflow-wrap: anywhere; }
     data.dossiers = r[0].data || []; data.inscriptions = r[1].data || []; data.visites = r[2].data || [];
     data.produits = (r[3].data || []).map(function (p) { p.statut = p.masque_admin ? "masque" : "visible"; p.boutique = p.boutiques ? p.boutiques.nom : ""; return p; });
     $("updated").textContent = "Mis à jour le " + fmtDate(new Date(), true);
-    renderKpis(); renderChart(); renderBreakdowns(); renderTable();
+    renderKpis(); renderChart(); renderBreakdowns(); renderTable(); loadPromos();
   }
 
   /* ---------- KPIs ---------- */
@@ -444,6 +482,91 @@ dd { margin: 0; overflow-wrap: anywhere; }
     if (current.table === "produits") { current.row.masque_admin = patch.masque_admin; current.row.statut = patch.masque_admin ? "masque" : "visible"; }
     else { current.row.statut = patch.statut; current.row.note_admin = patch.note_admin; current.row.email = patch.email; }
     $("dOk").textContent = "Enregistré."; renderKpis(); renderTable();
+  });
+
+  /* ---------- vitrine promotions ---------- */
+  var promoList = [], PROMO_PUB = SUPABASE_URL + "/storage/v1/object/public/promos/";
+  var TYPE_L = { banniere: "Bannière", tuile: "Tuile", offre_jour: "Offre du jour" };
+  async function loadPromos() {
+    var r = await sb.from("promotions").select("*").order("type").order("ordre").order("created_at", { ascending: false });
+    $("pmLoadErr").textContent = r.error ? "Promotions indisponibles : exécute le script supabase/schema-v4.sql. (" + r.error.message + ")" : "";
+    promoList = r.data || []; renderPromos();
+  }
+  function localInput(d) { var x = new Date(d); x.setMinutes(x.getMinutes() - x.getTimezoneOffset()); return x.toISOString().slice(0, 16); }
+  function renderPromos() {
+    var box = $("pmList"); box.textContent = "";
+    if (!promoList.length) { box.appendChild(el("p", "notice", "Aucune promotion pour l’instant.")); return; }
+    promoList.forEach(function (p) {
+      var it = el("div", "pm-item"), th = el("div", "pm-thumb c-" + p.couleur);
+      if (p.image) th.style.backgroundImage = "url(\"" + PROMO_PUB + p.image.split("/").map(encodeURIComponent).join("/") + "\")"; else th.textContent = TYPE_L[p.type];
+      it.appendChild(th);
+      var tx = el("div"); tx.appendChild(el("b", null, p.titre));
+      var over = p.fin && new Date(p.fin) <= new Date();
+      var prod = p.produit_id ? data.produits.filter(function (x) { return x.id === p.produit_id; })[0] : null;
+      tx.appendChild(el("small", null, TYPE_L[p.type] + " · " + (p.actif && !over ? "En ligne" : over ? "Terminée" : "Désactivée") + (p.fin ? " · fin " + fmtDate(p.fin, true) : "") + (prod ? " · " + prod.nom : "") + " · ordre " + p.ordre));
+      if (p.lien) tx.appendChild(el("small", null, "Lien : " + p.lien));
+      var a = el("div", "pm-acts");
+      var tg = el("button", "btn btn-ghost", p.actif ? "Désactiver" : "Activer"); tg.type = "button";
+      tg.addEventListener("click", async function () { tg.disabled = true; var r = await sb.from("promotions").update({ actif: !p.actif }).eq("id", p.id); if (r.error) { $("pmLoadErr").textContent = r.error.message; tg.disabled = false; return; } p.actif = !p.actif; renderPromos(); });
+      var del = el("button", "btn btn-ghost", "Supprimer"); del.type = "button"; del.style.color = "var(--bad)";
+      del.addEventListener("click", function () {
+        a.textContent = ""; a.appendChild(el("span", null, "Supprimer définitivement ? "));
+        var y = el("button", "btn btn-ghost", "Oui, supprimer"); y.type = "button"; y.style.color = "var(--bad)";
+        var n = el("button", "btn btn-ghost", "Non"); n.type = "button"; n.addEventListener("click", renderPromos);
+        y.addEventListener("click", async function () { y.disabled = true; var r = await sb.from("promotions").delete().eq("id", p.id); if (r.error) { $("pmLoadErr").textContent = r.error.message; return; } if (p.image) await sb.storage.from("promos").remove([p.image]); promoList = promoList.filter(function (x) { return x.id !== p.id; }); renderPromos(); });
+        a.appendChild(y); a.appendChild(n);
+      });
+      a.appendChild(tg); a.appendChild(del); tx.appendChild(a); it.appendChild(tx); box.appendChild(it);
+    });
+  }
+  function pmTypeUI() {
+    var deal = $("pmType").value === "offre_jour";
+    $("pmDealWrap").hidden = !deal; $("pmImgWrap").hidden = deal; $("pmLinkWrap").hidden = deal;
+    if (deal) {
+      var s = $("pmProd"), v = s.value; s.textContent = "";
+      data.produits.filter(function (p) { return p.visible && !p.masque_admin; }).forEach(function (p) { var o = el("option", null, p.nom + " · " + p.boutique + " · " + money(p.prix, p.devise)); o.value = p.id; s.appendChild(o); });
+      if (!s.options.length) { var o = el("option", null, "Aucun produit en ligne"); o.value = ""; s.appendChild(o); }
+      if (v) s.value = v;
+      if (!$("pmEnd").value) { var e = new Date(); e.setHours(23, 59, 0, 0); $("pmEnd").value = localInput(e); }
+      if (!$("pmTitle").value) $("pmTitle").value = "Offre du jour";
+    }
+  }
+  $("pmType").addEventListener("change", pmTypeUI);
+  $("pmNew").addEventListener("click", function () { $("pmForm").reset(); $("pmErr").textContent = ""; $("pmForm").hidden = false; pmTypeUI(); $("pmTitle").focus(); });
+  $("pmCancel").addEventListener("click", function () { $("pmForm").hidden = true; });
+  function shrink(file, max) {
+    return new Promise(function (res, rej) {
+      var img = new Image(), u = URL.createObjectURL(file);
+      img.onload = function () { var s = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight)), c = document.createElement("canvas"); c.width = Math.round(img.naturalWidth * s); c.height = Math.round(img.naturalHeight * s); c.getContext("2d").drawImage(img, 0, 0, c.width, c.height); c.toBlob(function (b) { URL.revokeObjectURL(u); b ? res(b) : rej(new Error("Image illisible.")); }, "image/jpeg", .85); };
+      img.onerror = function () { URL.revokeObjectURL(u); rej(new Error("Ce fichier n’est pas une image lisible.")); };
+      img.src = u;
+    });
+  }
+  $("pmForm").addEventListener("submit", async function (e) {
+    e.preventDefault(); $("pmErr").textContent = "";
+    var type = $("pmType").value, titre = $("pmTitle").value.trim();
+    if (!titre) { $("pmErr").textContent = "Donne un titre à la promotion."; $("pmTitle").focus(); return; }
+    var row = { type: type, titre: titre, sous_titre: $("pmSub").value.trim() || null, couleur: $("pmColor").value, ordre: parseInt($("pmOrder").value, 10) || 0, actif: true };
+    if (type === "offre_jour") {
+      if (!$("pmProd").value) { $("pmErr").textContent = "Choisis un produit en ligne."; return; }
+      var end = new Date($("pmEnd").value); if (!$("pmEnd").value || !(end > new Date())) { $("pmErr").textContent = "La fin de l’offre doit être dans le futur."; $("pmEnd").focus(); return; }
+      row.produit_id = $("pmProd").value; row.fin = end.toISOString();
+    } else {
+      row.lien = $("pmLink").value.trim() || null;
+      if ($("pmEndAll").value) { var f = new Date($("pmEndAll").value); if (!(f > new Date())) { $("pmErr").textContent = "La fin d’affichage doit être dans le futur."; return; } row.fin = f.toISOString(); }
+    }
+    var btn = $("pmSave"); btn.disabled = true; btn.textContent = "Publication…";
+    try {
+      var file = $("pmImg").files && $("pmImg").files[0];
+      if (file && type !== "offre_jour") {
+        var blob = await shrink(file, 1800), path = (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36)) + ".jpg";
+        var up = await sb.storage.from("promos").upload(path, blob, { contentType: "image/jpeg" }); if (up.error) throw up.error;
+        row.image = path;
+      }
+      var r = await sb.from("promotions").insert(row).select().single(); if (r.error) throw r.error;
+      promoList.unshift(r.data); $("pmForm").hidden = true; renderPromos();
+    } catch (err) { $("pmErr").textContent = "Publication impossible : " + (err.message || err); }
+    btn.disabled = false; btn.textContent = "Publier la promotion";
   });
 
   setTab("dossiers");

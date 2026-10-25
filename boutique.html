@@ -6,6 +6,9 @@
 <title>Boutique Yiriclick</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800;900&display=swap">
 <link rel="stylesheet" href="assets/shop.css">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<meta name="theme-color" content="#10232A">
 </head>
 <body>
 <header class="top">
@@ -83,7 +86,9 @@
     var b = await Y.sb.from("boutiques").select("id,slug,nom,description,whatsapp,ville,pays,devise,logo,couverture").eq("slug", slug).maybeSingle();
     if (b.error || !b.data) return notFound();
     shop = b.data;
-    var p = await Y.sb.from("produits").select("id,nom,description,prix,devise,categorie,stock,photos,created_at").eq("boutique_id", shop.id).order("created_at", { ascending: false });
+    var cols = "id,nom,description,prix,devise,categorie,stock,photos,created_at";
+    var p = await Y.sb.from("produits").select("prix_avant," + cols).eq("boutique_id", shop.id).order("created_at", { ascending: false });
+    if (p.error) p = await Y.sb.from("produits").select(cols).eq("boutique_id", shop.id).order("created_at", { ascending: false });
     items = p.data || [];
     document.title = shop.nom + " · Yiriclick";
     document.getElementById("sName").textContent = shop.nom;

@@ -84,6 +84,17 @@ Fonctionnement :
 - Les e-mails de confirmation partent du service d'e-mail intégré de Supabase, limité à un petit nombre
   d'e-mails par heure : avant le vrai lancement, configure ton propre service d'envoi (Authentication › Emails › SMTP).
 
+## Vitrine façon grand magasin et promotions (base v4)
+
+1. Dans Supabase, **SQL Editor › New query** : colle `supabase/schema-v4.sql`, puis **Run**.
+2. Dans l'admin, section **Promotions de la vitrine** : ajoute des bannières, des tuiles et une offre du jour.
+3. Dans l'espace vendeur, le champ **Prix avant réduction** affiche un prix barré et le pourcentage de réduction.
+
+La vitrine (`vitrine.html`) propose : choix du pays et de la langue à la première visite, recherche avec
+suggestions et recherche vocale, favoris, bannières, tuiles, offre du jour, petits prix, tendances,
+« Près de chez toi », boutiques, catégories, filtres et tri. Les liens des réseaux sociaux se renseignent
+en haut du script de `vitrine.html` (objet `SOCIAL`).
+
 ## À modifier avant le lancement
 
 - Remplacer `[ADRESSE E-MAIL]` (et ses traductions) par ton adresse de contact,
