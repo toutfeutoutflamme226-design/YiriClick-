@@ -130,6 +130,7 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
       <span class="tag">Admin</span>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <a class="btn btn-line" href="avis-admin.html">Avis clients</a>
       <a class="btn btn-line" href="./">Voir le site</a>
       <button class="btn btn-line" id="logout" type="button" hidden>Se déconnecter</button>
     </div>
@@ -196,7 +197,7 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
 
   <div class="card" id="avisCard" hidden>
     <h2>Avis signalés par les vendeurs</h2>
-    <p class="notice">Masque un avis seulement s’il est injurieux, faux ou hors sujet. Un avis négatif mais honnête doit rester visible.</p>
+    <p class="notice">Masque un avis seulement s’il est injurieux, faux ou hors sujet. Un avis négatif mais honnête doit rester visible. Tous les avis, leur analyse et le tableau de bord : <a href="avis-admin.html">page Avis clients</a>.</p>
     <div id="avisAdm" style="display:flex;flex-direction:column;gap:10px"></div>
   </div>
 
@@ -533,7 +534,9 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
       d.appendChild(el("b", null, "★".repeat(a.note) + " · " + a.nom + " → " + (a.boutiques ? a.boutiques.nom : "") + (a.masque ? " · MASQUÉ" : "")));
       if (a.commentaire) d.appendChild(el("p", null, a.commentaire));
       var row = el("div"); row.style.cssText = "display:flex;gap:8px;flex-wrap:wrap";
-      [[a.masque ? "Réafficher" : "Masquer", { masque: !a.masque }], ["Garder et clore", { signale: false, masque: false }]].forEach(function (x) {
+      /* base v14: hiding needs a reason, so it happens on the review's analysis page */
+      var op = el("a", "btn btn-navy", "Ouvrir l’analyse"); op.href = "avis-admin.html?id=" + a.id; row.appendChild(op);
+      [["Garder et clore", { signale: false }]].forEach(function (x) {
         var b = el("button", "btn btn-ghost", x[0]); b.type = "button";
         b.addEventListener("click", async function () { b.disabled = true; await sb.from("avis").update(x[1]).eq("id", a.id); loadAvisAdm(); });
         row.appendChild(b);

@@ -1817,7 +1817,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
   async function loadAvis() {
     if (!st.shop) return;
     var r = await sb.from("avis").select("*").eq("boutique_id", st.shop.id).order("created_at", { ascending: false }).limit(200);
-    if (r.error) { st.avisOk = false; st.avis = []; } else { st.avisOk = true; st.avis = r.data || []; }
+    if (r.error) { st.avisOk = false; st.avis = []; } else { st.avisOk = true; st.avis = (r.data || []).filter(function (a) { return (a.cible || "boutique") === "boutique"; }); }
   }
   function starTxt(n) { var r = Math.round(n); return "★★★★★".slice(0, r) + "☆☆☆☆☆".slice(0, 5 - r); }
   function renderAvis() {

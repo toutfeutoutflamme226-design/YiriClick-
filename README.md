@@ -250,6 +250,44 @@ ou un dossier ZIP qui contient les deux. Le code est dans `assets/import.js`.
 - Les photos venant d'un autre site peuvent être bloquées par celui-ci : le vendeur est prévenu et les ajoute à la main.
 - Les bibliothèques ZIP (JSZip) et Excel (SheetJS) ne sont chargées que si un tel fichier est choisi.
 
+## Avis clients complets et analyse automatique (base v14)
+
+Ce que ça ajoute :
+- **Formulaire d’avis détaillé** (dans « Mes commandes », après livraison) : note globale, notes par critère
+  (conformité, qualité, livraison, emballage, vendeur, prix), causes d’insatisfaction à cocher quand la note est basse,
+  demande de rappel sur WhatsApp, recommandation de 0 à 10, et un avis facultatif sur Yiriclick lui-même.
+- **Avis sur Yiriclick** : nouvelle page publique `avis.html` (lien « Avis clients » en bas de l’accueil).
+- **Tri des avis** sur les boutiques et sur `avis.html` : les plus pertinents, les plus récents, meilleures notes, notes les plus basses.
+  Les avis mis en avant portent le badge « Mis en avant par Yiriclick ». Une phrase explique comment les avis sont vérifiés (obligation légale).
+- **Page admin `avis-admin.html`** (bouton « Avis clients » dans l’admin) :
+  compte rendu écrit de la période, causes d’insatisfaction, notes par critère, note par mois, classement des boutiques,
+  liste filtrable des avis et, pour chaque avis, une page d’analyse avec la commande, le compte rendu automatique,
+  l’analyse IA, le message proposé au client (copier ou envoyer sur WhatsApp), le suivi, la mise en avant, le masquage avec motif et le journal.
+- **Analyse par règles** (gratuite, immédiate) : sentiment, causes (cochées et repérées dans le texte en français, anglais et espagnol),
+  cause principale, urgence, responsable probable, actions et message proposé. Les avis positifs sans alerte sont classés « traités » tout seuls.
+- **Analyse par IA** (facultative) : cause racine, nuances du texte, actions et message rédigés par Claude (Anthropic).
+- **Alerte e-mail** à l’admin pour chaque avis urgent (si les e-mails de la base v9 sont configurés).
+- **Masquage encadré** : un avis ne peut être masqué qu’avec un motif autorisé (injurieux, données personnelles, hors sujet,
+  faux, spam, sans achat, illégal). Chaque décision est enregistrée, et un bouton prépare le message WhatsApp qui explique le motif au client.
+
+Installation :
+1. **Base** : dans Supabase, **SQL Editor › New query**, colle `supabase/schema-v14.sql`, puis **Run**.
+   Les avis déjà publiés sont analysés tout de suite.
+2. **Site** : envoie sur GitHub les fichiers modifiés (`admin.html`, `boutique.html`, `index.html`, `vendeur.html`,
+   `assets/shop.js`, `assets/shop.css`) et les nouveaux (`avis.html`, `avis-admin.html`, `supabase/schema-v14.sql`).
+   Fais l’étape 1 avant l’étape 2.
+3. **IA (facultatif)** :
+   - crée une clé sur **console.anthropic.com › API Keys** (un moyen de paiement est demandé ; tu paies selon l’usage) ;
+   - dans Supabase, **SQL Editor › New query**, lance (avec ta clé à la place de `sk-ant-...`) :
+     `select vault.create_secret('sk-ant-...', 'anthropic_api_key');`
+   - dans `avis-admin.html`, bouton **Analyser avec l’IA** sur un avis, ou coche **Analyse IA automatique** dans les réglages.
+   - Le nom du modèle se change dans les réglages de la page si Anthropic en publie un nouveau.
+4. **Confidentialité** : ajoute dans ta déclaration de confidentialité que les avis sont analysés automatiquement et,
+   si tu actives l’IA, que la note et le commentaire (sans nom ni téléphone) sont envoyés à Anthropic pour analyse.
+
+Tester : passe une commande, mets-la en « livrée » dans l’espace vendeur, ouvre « Mes commandes » sur le site
+et laisse un avis avec 2 étoiles ; il apparaît en urgence dans `avis-admin.html`.
+
 ## À modifier avant le lancement
 
 - Remplacer `[ADRESSE E-MAIL]` (et ses traductions) par ton adresse de contact,

@@ -185,16 +185,8 @@
     var avg = reviews.reduce(function (s, r) { return s + r.note; }, 0) / n, avgTxt = avg.toLocaleString(Y.LOCALE[Y.prefs.lang], { maximumFractionDigits: 1 });
     rt.textContent = ""; rt.appendChild(Y.el("span", "stars", stars(avg))); rt.appendChild(document.createTextNode(" " + avgTxt + " · " + Y.t("nReviews", { n: n })));
     rt.setAttribute("aria-label", avgTxt + " / 5 · " + Y.t("nReviews", { n: n }));
-    var sm = $("revSum"); sm.textContent = "";
-    sm.appendChild(Y.el("span", "big", avgTxt)); var w = Y.el("div"); var s1 = Y.el("div", "stars", stars(avg)); s1.setAttribute("aria-hidden", "true"); w.appendChild(s1); w.appendChild(Y.el("div", "who", Y.t("nReviews", { n: n }))); sm.appendChild(w);
-    var box = $("revList"); box.textContent = "";
-    reviews.slice(0, 20).forEach(function (r) {
-      var c = Y.el("article", "rev"), s2 = Y.el("span", "stars", stars(r.note)); s2.setAttribute("aria-label", r.note + " / 5"); c.appendChild(s2);
-      c.appendChild(Y.el("span", "who", r.nom + " · " + new Date(r.created_at).toLocaleDateString(Y.LOCALE[Y.prefs.lang], { day: "numeric", month: "long", year: "numeric" })));
-      if (r.commentaire) c.appendChild(Y.el("p", null, r.commentaire));
-      if (r.reponse) { var rp = Y.el("div", "reply"); rp.appendChild(Y.el("b", null, Y.t("sellerReply") + " : ")); rp.appendChild(document.createTextNode(r.reponse)); c.appendChild(rp); }
-      box.appendChild(c);
-    });
+    $("revSum").textContent = "";
+    Y.reviewsUI($("revList"), reviews, { cible: "boutique" });
   }
   function renderNav() {
     var n = $("shopNav"); n.textContent = "";
@@ -217,7 +209,9 @@
     if (p.error) p = await Y.sb.from("produits").select("prix_avant," + cols).eq("boutique_id", shop.id).order("created_at", { ascending: false });
     if (p.error) p = await Y.sb.from("produits").select(cols).eq("boutique_id", shop.id).order("created_at", { ascending: false });
     items = Y.prep(p.data || []);
-    var av = await Y.sb.from("avis").select("note,commentaire,nom,created_at,reponse").eq("boutique_id", shop.id).order("created_at", { ascending: false }).limit(60);
+    /* base v14: reviews about the shop only (the Yiriclick ones live on avis.html), with criteria and highlights */
+    var av = await Y.sb.from("avis").select("note,commentaire,nom,created_at,reponse,cible,criteres,mis_en_avant").eq("boutique_id", shop.id).eq("cible", "boutique").order("created_at", { ascending: false }).limit(300);
+    if (av.error) av = await Y.sb.from("avis").select("note,commentaire,nom,created_at,reponse").eq("boutique_id", shop.id).order("created_at", { ascending: false }).limit(60);
     reviews = av.error ? [] : (av.data || []);
 
     var th = Y.THEMES[shop.theme] || Y.THEMES.teal;

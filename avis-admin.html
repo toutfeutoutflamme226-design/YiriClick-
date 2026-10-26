@@ -1,0 +1,668 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Yiriclick Admin · Avis clients</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800;900&display=swap">
+<style>
+/* Layout: navy top bar; list view = summary, report, causes and shops, then filtered review cards;
+   detail view = one review with its order, the automatic report, the AI report and the decisions */
+:root {
+  --navy: #10232A; --navy-2: #172F37; --line: #2A3B42;
+  --teal: #4FC7CF; --teal-deep: #0E6E78; --orange: #FF7A2E;
+  --bg: #F3F6F7; --white: #FFFFFF; --ink: #10232A; --soft: #4A5A5F; --rule: #D5DEE0; --tint: #E6F4F5;
+  --ok: #1E7F4F; --ok-bg: #E3F4EA; --warn: #9A5B00; --warn-bg: #FFF1E0; --bad: #B3261E; --bad-bg: #FCE8E6; --star: #E0A526;
+  --font: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.45; padding-bottom: env(safe-area-inset-bottom, 0px); }
+[hidden] { display: none !important; }
+button, input, select, textarea { font-family: var(--font); font-size: 16px; color: var(--ink); }
+:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
+.wrap { max-width: 1200px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.top { background: var(--navy); color: var(--white); padding-top: env(safe-area-inset-top, 0px); }
+.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 14px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 10px; }
+.word { font-size: 22px; font-weight: 900; letter-spacing: -1px; }
+.word .a { color: var(--orange); } .word .b { color: var(--teal); }
+.tag { font-size: 12px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--teal); border: 1px solid var(--line); padding: 4px 8px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 16px; border: 2px solid transparent; font-weight: 700; cursor: pointer; text-decoration: none; background: none; }
+.btn-sm { min-height: 38px; padding: 0 12px; font-size: 14px; }
+.btn-orange { background: var(--orange); color: var(--navy); }
+.btn-navy { background: var(--navy); color: var(--white); }
+.btn-line { color: var(--white); border-color: var(--line); }
+.btn-ghost { background: var(--white); color: var(--navy); border-color: var(--rule); }
+.btn-bad { background: var(--white); color: var(--bad); border-color: #EDB7B2; }
+.btn:disabled { opacity: .6; cursor: wait; }
+.state { max-width: 460px; margin: 48px auto; background: var(--white); padding: 28px 24px; border: 1px solid var(--rule); display: flex; flex-direction: column; gap: 14px; }
+.state h1 { margin: 0; font-size: 24px; font-weight: 900; }
+.state p { margin: 0; color: var(--soft); }
+main { padding-block: 24px 56px; display: flex; flex-direction: column; gap: 20px; }
+.head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; }
+.head h1 { margin: 0; font-size: clamp(26px, 5vw, 34px); font-weight: 900; letter-spacing: -1px; }
+.head p { margin: 4px 0 0; color: var(--soft); font-size: 14px; }
+.head .acts { display: flex; gap: 8px; flex-wrap: wrap; }
+.err { margin: 0; color: var(--bad); font-size: 14px; } .err:empty { display: none; }
+.okm { margin: 0; color: var(--ok); font-size: 14px; font-weight: 700; } .okm:empty { display: none; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.kpi { background: var(--white); border: 1px solid var(--rule); padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; }
+.kpi span { font-size: 13px; font-weight: 700; color: var(--soft); }
+.kpi b { font-size: 28px; font-weight: 900; font-variant-numeric: tabular-nums; }
+.kpi small { font-size: 12px; color: var(--soft); }
+.kpi.alert { border-color: var(--orange); box-shadow: inset 4px 0 0 var(--orange); }
+.card { background: var(--white); border: 1px solid var(--rule); padding: 18px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.card h2 { margin: 0; font-size: 18px; font-weight: 800; }
+.card h3 { margin: 0; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: var(--teal-deep); }
+.split { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.report { margin: 0; font-size: 15px; max-width: 75ch; }
+.report b { font-weight: 800; }
+.bars { display: flex; flex-direction: column; gap: 8px; }
+.bar-row { display: grid; grid-template-columns: minmax(0, 190px) minmax(0, 1fr) 36px; gap: 10px; align-items: center; font-size: 14px; }
+.bar-row > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar-track { height: 12px; background: var(--tint); }
+.bar-fill { height: 100%; background: var(--teal-deep); }
+.bar-fill.warm { background: var(--orange); }
+.bar-row b { text-align: right; font-variant-numeric: tabular-nums; }
+.trend { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; align-items: end; height: 150px; }
+.trend div { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; height: 100%; font-size: 12px; color: var(--soft); font-variant-numeric: tabular-nums; }
+.trend i { display: block; width: 100%; max-width: 42px; background: var(--teal-deep); min-height: 2px; }
+.trend b { color: var(--ink); font-size: 13px; }
+.table-box { overflow-x: auto; border: 1px solid var(--rule); }
+table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 620px; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { background: var(--bg); font-size: 12px; text-transform: uppercase; letter-spacing: .5px; color: var(--soft); }
+td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; }
+.tools input { flex: 1 1 220px; min-width: 0; padding: 10px 12px; border: 2px solid var(--rule); }
+.tools select { padding: 10px 8px; border: 2px solid var(--rule); background: var(--white); max-width: 100%; }
+.vh { position: absolute; left: -9999px; }
+.count { font-size: 14px; color: var(--soft); margin: 0; }
+.list { display: flex; flex-direction: column; gap: 10px; }
+.rv { background: var(--white); border: 1px solid var(--rule); border-left-width: 5px; padding: 12px 14px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 14px; align-items: start; }
+.rv.u-haute { border-left-color: var(--bad); } .rv.u-moyenne { border-left-color: var(--orange); } .rv.u-basse { border-left-color: var(--ok); }
+.rv .meta { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; font-size: 13px; color: var(--soft); }
+.rv p { margin: 0; overflow-wrap: anywhere; font-size: 14px; }
+.rv .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.rv .go { align-self: center; }
+@media (max-width: 560px) { .rv { grid-template-columns: 1fr; } .rv .go { justify-self: start; } }
+.stars { color: var(--star); letter-spacing: 1px; font-size: 16px; }
+.pill { display: inline-block; font-size: 12px; font-weight: 800; padding: 3px 8px; white-space: nowrap; background: var(--tint); color: var(--teal-deep); }
+.pill.bad { background: var(--bad-bg); color: var(--bad); } .pill.warn { background: var(--warn-bg); color: var(--warn); } .pill.ok { background: var(--ok-bg); color: var(--ok); }
+.pill.grey { background: #EEF1F2; color: var(--soft); } .pill.navy { background: var(--navy); color: var(--white); }
+.empty { padding: 28px 12px; text-align: center; color: var(--soft); background: var(--white); border: 1px solid var(--rule); }
+.more { align-self: center; }
+/* detail */
+.dhead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.dhead h1 { margin: 0; font-size: clamp(22px, 4.5vw, 30px); font-weight: 900; letter-spacing: -.5px; overflow-wrap: anywhere; }
+.dgrid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 16px; align-items: start; }
+.dcol { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+@media (max-width: 860px) { .dgrid { grid-template-columns: 1fr; } }
+.quote { margin: 0; font-size: 16px; white-space: pre-line; overflow-wrap: anywhere; background: var(--bg); padding: 12px 14px; border-left: 4px solid var(--teal-deep); }
+.quote.none { color: var(--soft); font-style: italic; border-left-color: var(--rule); }
+dl { margin: 0; display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 6px 12px; font-size: 14px; }
+dt { color: var(--soft); } dd { margin: 0; overflow-wrap: anywhere; }
+@media (max-width: 480px) { dl { grid-template-columns: 1fr; } dt { margin-top: 6px; } }
+.crit { display: flex; flex-direction: column; gap: 6px; }
+.crit .bar-row { grid-template-columns: minmax(0, 200px) minmax(0, 1fr) 32px; }
+.c-lo .bar-fill { background: var(--bad); } .c-mid .bar-fill { background: var(--orange); } .c-hi .bar-fill { background: var(--ok); }
+.summary { margin: 0; font-size: 16px; font-weight: 500; }
+ul.acts { margin: 0; padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+ul.acts li { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; }
+ul.acts input { width: 20px; height: 20px; margin: 0; flex: none; accent-color: var(--navy); }
+.reply { display: flex; flex-direction: column; gap: 8px; }
+.reply textarea, .note textarea { width: 100%; border: 2px solid var(--rule); padding: 10px; font-size: 15px; resize: vertical; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.ai-state { font-size: 14px; color: var(--soft); margin: 0; }
+.seg { display: flex; flex-wrap: wrap; border: 2px solid var(--rule); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: var(--white); padding: 8px 14px; font-weight: 700; cursor: pointer; min-height: 40px; }
+.seg button[aria-pressed="true"] { background: var(--navy); color: var(--white); }
+.hidebox { display: flex; flex-direction: column; gap: 8px; border: 1px solid #EDB7B2; background: var(--bad-bg); padding: 12px; }
+.hidebox select { padding: 10px; border: 2px solid var(--rule); background: var(--white); max-width: 100%; }
+.journal { margin: 0; padding: 0; list-style: none; font-size: 13px; color: var(--soft); display: flex; flex-direction: column; gap: 4px; }
+.notice { font-size: 13px; color: var(--soft); margin: 0; }
+.switch { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; cursor: pointer; }
+.switch input { width: 20px; height: 20px; margin: 1px 0 0; flex: none; accent-color: var(--navy); }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font-size: 14px; font-weight: 700; }
+.field input { padding: 10px 12px; border: 2px solid var(--rule); }
+code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <svg width="30" height="30" viewBox="0 0 160 160" aria-hidden="true"><path d="M76 146 V92 L34 40" fill="none" stroke="#4FC7CF" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/><path d="M76 92 L124 34" fill="none" stroke="#FF7A2E" stroke-width="22" stroke-linecap="round"/><path d="M96 30 H128 V62" fill="none" stroke="#FF7A2E" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="word"><span class="a">yiri</span><span class="b">click</span></span>
+      <span class="tag">Avis</span>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <a class="btn btn-line" href="admin.html">Tableau de bord</a>
+      <a class="btn btn-line" href="avis.html">Page publique</a>
+    </div>
+  </div>
+</header>
+
+<section id="vLogin" class="wrap" hidden>
+  <div class="state"><h1>Connexion nécessaire</h1><p>Connecte-toi d’abord dans l’espace admin, puis reviens sur cette page.</p><a class="btn btn-orange" href="admin.html">Aller à l’espace admin</a></div>
+</section>
+<section id="vDenied" class="wrap" hidden>
+  <div class="state"><h1>Accès refusé</h1><p>Ce compte n’est pas administrateur.</p><a class="btn btn-navy" href="admin.html">Changer de compte</a></div>
+</section>
+<section id="vSetup" class="wrap" hidden>
+  <div class="state"><h1>Mise à jour de la base nécessaire</h1><p>Lance le script <code>supabase/schema-v14.sql</code> dans Supabase (SQL Editor), puis recharge cette page.</p><p class="err" id="setupErr"></p></div>
+</section>
+
+<!-- List view -->
+<main id="vList" class="wrap" hidden>
+  <div class="head">
+    <div><h1>Avis clients</h1><p id="updated">Chargement…</p></div>
+    <div class="acts">
+      <label class="vh" for="period">Période</label>
+      <select id="period" class="btn btn-ghost"><option value="30">30 derniers jours</option><option value="90">90 derniers jours</option><option value="365">12 derniers mois</option><option value="0">Depuis le début</option></select>
+      <button class="btn btn-ghost" type="button" id="refresh">Actualiser</button>
+    </div>
+  </div>
+  <p class="err" id="loadErr"></p>
+  <div class="kpis" id="kpis"></div>
+
+  <div class="card">
+    <h2>Compte rendu de la période</h2>
+    <p class="report" id="report"></p>
+  </div>
+
+  <div class="split">
+    <div class="card"><h2>Causes d’insatisfaction</h2><div class="bars" id="causes"></div></div>
+    <div class="card"><h2>Notes par critère</h2><div class="bars" id="criteria"></div></div>
+    <div class="card"><h2>Note moyenne par mois</h2><div class="trend" id="trend" role="img"></div></div>
+  </div>
+
+  <div class="card">
+    <h2>Boutiques</h2>
+    <p class="notice">Classées de la plus mal notée à la mieux notée sur la période.</p>
+    <div class="table-box"><table><thead><tr><th>Boutique</th><th>Avis</th><th>Moyenne</th><th>Avis négatifs</th><th>Cause n° 1</th><th>À traiter</th></tr></thead><tbody id="shops"></tbody></table></div>
+  </div>
+
+  <div class="card">
+    <h2>Tous les avis</h2>
+    <div class="tools">
+      <label class="vh" for="q">Rechercher</label><input id="q" type="search" placeholder="Rechercher un mot, un client, une boutique…">
+      <label class="vh" for="fStatut">Statut</label><select id="fStatut"><option value="ouvert">À traiter et en cours</option><option value="a_traiter">À traiter</option><option value="en_cours">En cours</option><option value="traite">Traités</option><option value="">Tous les statuts</option></select>
+      <label class="vh" for="fCible">Sujet</label><select id="fCible"><option value="">Boutiques et Yiriclick</option><option value="boutique">Avis sur les boutiques</option><option value="yiriclick">Avis sur Yiriclick</option></select>
+      <label class="vh" for="fNote">Note</label><select id="fNote"><option value="">Toutes les notes</option><option value="neg">1 à 2 étoiles</option><option value="mid">3 étoiles</option><option value="pos">4 à 5 étoiles</option></select>
+      <label class="vh" for="fVis">Visibilité</label><select id="fVis"><option value="">Toute visibilité</option><option value="visible">Visibles</option><option value="avant">Mis en avant</option><option value="masque">Masqués</option><option value="signale">Signalés par un vendeur</option><option value="drapeau">À vérifier (modération)</option></select>
+      <label class="vh" for="fTri">Tri</label><select id="fTri"><option value="urgence">Urgence d’abord</option><option value="recent">Plus récents</option><option value="worst">Notes les plus basses</option><option value="best">Meilleures notes</option></select>
+    </div>
+    <p class="count" id="count"></p>
+    <div class="list" id="list"></div>
+    <button class="btn btn-ghost more" type="button" id="more" hidden>Voir plus</button>
+  </div>
+
+  <div class="card">
+    <h2>Réglages de l’analyse</h2>
+    <label class="switch"><input type="checkbox" id="sIaAuto"><span><b>Analyse IA automatique</b> : chaque nouvel avis est aussi envoyé à l’IA. Sinon, tu lances l’analyse IA avis par avis.</span></label>
+    <label class="switch"><input type="checkbox" id="sAlert"><span><b>E-mail pour les avis urgents</b> (adresse admin des réglages e-mail de la base v9).</span></label>
+    <div class="field"><label for="sModel">Modèle d’IA</label><input id="sModel" type="text" autocomplete="off" spellcheck="false"></div>
+    <div class="row"><button class="btn btn-navy" type="button" id="sSave">Enregistrer</button><button class="btn btn-ghost" type="button" id="bulkAi">Analyser avec l’IA les avis à traiter</button></div>
+    <p class="okm" id="sOk"></p><p class="err" id="sErr"></p>
+    <p class="notice">L’analyse par règles est gratuite et toujours active. L’analyse IA envoie seulement la note, les critères, les causes et le commentaire (jamais le nom ni le téléphone) à Anthropic. Mentionne-le dans ta déclaration de confidentialité.</p>
+  </div>
+</main>
+
+<!-- Detail view -->
+<main id="vDetail" class="wrap" hidden>
+  <div class="dhead">
+    <button class="btn btn-ghost" type="button" id="back">← Tous les avis</button>
+    <div class="row"><button class="btn btn-ghost btn-sm" type="button" id="prev">‹ Précédent</button><span class="notice" id="pos"></span><button class="btn btn-ghost btn-sm" type="button" id="next">Suivant ›</button></div>
+  </div>
+  <div><h1 id="dTitle"></h1><div class="row" id="dChips" style="margin-top:8px"></div></div>
+  <p class="err" id="dErr"></p>
+  <div class="dgrid">
+    <div class="dcol">
+      <div class="card"><h2>L’avis</h2><div id="dReview" style="display:flex;flex-direction:column;gap:12px"></div></div>
+      <div class="card"><h2>La commande</h2><div id="dOrder"></div></div>
+      <div class="card"><h2>Décision</h2><div id="dDecide" style="display:flex;flex-direction:column;gap:14px"></div></div>
+    </div>
+    <div class="dcol">
+      <div class="card"><div class="row" style="justify-content:space-between"><h2>Compte rendu automatique</h2><button class="btn btn-ghost btn-sm" type="button" id="reanalyse">Refaire l’analyse</button></div><div id="dRules" style="display:flex;flex-direction:column;gap:12px"></div></div>
+      <div class="card"><div class="row" style="justify-content:space-between"><h2>Analyse IA</h2><button class="btn btn-navy btn-sm" type="button" id="aiRun">Analyser avec l’IA</button></div><div id="dAi" style="display:flex;flex-direction:column;gap:12px"></div></div>
+    </div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+(function () {
+  var SUPABASE_URL = "https://vtiakxfnechkoomagddl.supabase.co";
+  var SUPABASE_KEY = "sb_publishable_415c2KQSDRx0SMofnkHKQA_PJ2IrzBA";
+  var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  var SITE = location.href.replace(/avis-admin\.html.*$/, "");
+
+  var CAUSE = { abime: "Produit abîmé", non_conforme: "Différent de la description", qualite: "Qualité décevante", taille: "Mauvaise taille", manquant: "Article manquant",
+    retard: "Livraison en retard", vendeur_injoignable: "Vendeur difficile à joindre", vendeur_impoli: "Vendeur peu aimable", prix: "Prix trop élevé", emballage: "Emballage insuffisant",
+    paiement: "Paiement ou remboursement", fraude: "Soupçon d’arnaque", site_difficile: "Site difficile à utiliser", suivi_commande: "Suivi de commande", autre: "Autre cause" };
+  var CRIT = { produit: "Conformité du produit", qualite: "Qualité", livraison: "Délai de livraison", emballage: "Emballage", vendeur: "Communication du vendeur", prix: "Rapport qualité-prix",
+    facilite: "Facilité de commande", confiance: "Confiance", suivi: "Suivi de commande" };
+  var SENT = { positif: ["Positif", "ok"], neutre: ["Neutre", "grey"], negatif: ["Négatif", "bad"], mixte: ["Mitigé", "warn"] };
+  var URG = { haute: ["Urgence haute", "bad"], moyenne: ["Urgence moyenne", "warn"], basse: ["Urgence basse", "ok"] };
+  var STAT = { a_traiter: ["À traiter", "warn"], en_cours: ["En cours", ""], traite: ["Traité", "grey"] };
+  var FLAG = { langage: "Langage injurieux possible", donnees_perso: "Contient un numéro, un e-mail ou un lien", sans_detail: "Note basse sans explication" };
+  var MOTIF = { injurieux: "Propos injurieux ou discriminatoires", donnees_perso: "Contient des données personnelles", hors_sujet: "Hors sujet (ne parle pas de la commande)",
+    faux: "Faux avis ou conflit d’intérêts", spam: "Spam ou publicité", sans_achat: "Sans rapport avec un achat réel", illegal: "Contenu illégal" };
+  var MOTIF_CLIENT = { injurieux: "contient des propos injurieux", donnees_perso: "contient des données personnelles (numéro, e-mail ou lien)", hors_sujet: "ne parle pas de ta commande",
+    faux: "ne semble pas correspondre à une expérience réelle", spam: "contient de la publicité", sans_achat: "n’est pas lié à un achat réel", illegal: "contient un contenu illégal" };
+  var ACTION = { masquer: "Masqué", reafficher: "Réaffiché", mettre_en_avant: "Mis en avant", retirer_avant: "Retiré de la mise en avant", garder: "Signalement clos",
+    a_traiter: "Remis à traiter", en_cours: "Passé en cours", traite: "Marqué traité" };
+
+  var all = [], view = [], shown = 30, current = null, reg = null, aiTimer = null;
+  function $(id) { return document.getElementById(id); }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function pill(txt, cls) { return el("span", "pill" + (cls ? " " + cls : ""), txt); }
+  function stars(n) { var r = Math.round(n); return "★★★★★".slice(0, r) + "☆☆☆☆☆".slice(0, 5 - r); }
+  function fmtN(x, d) { return x == null || isNaN(x) ? "—" : x.toLocaleString("fr-FR", { maximumFractionDigits: d == null ? 1 : d, minimumFractionDigits: d == null ? 1 : d }); }
+  function fmtDate(d, time) { return new Date(d).toLocaleString("fr-FR", time ? { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" } : { day: "numeric", month: "short", year: "numeric" }); }
+  function prv(a) { var p = a.avis_prive; return (Array.isArray(p) ? p[0] : p) || {}; }
+  function rules(a) { return prv(a).analyse_regles || {}; }
+  function shopName(a) { return a.cible === "yiriclick" ? "Yiriclick" : (a.boutiques ? a.boutiques.nom : "Boutique"); }
+  function show(id) { ["vLogin", "vDenied", "vSetup", "vList", "vDetail"].forEach(function (v) { $(v).hidden = v !== id; }); }
+  function copy(text, btn) {
+    var done = function () { var o = btn.textContent; btn.textContent = "Copié"; setTimeout(function () { btn.textContent = o; }, 1500); };
+    if (navigator.clipboard) navigator.clipboard.writeText(text).then(done, function () {}); else done();
+  }
+  function waLink(tel, text) { return "https://wa.me/" + String(tel || "").replace(/\D/g, "") + "?text=" + encodeURIComponent(text); }
+
+  /* ---------- start ---------- */
+  async function boot() {
+    var s = await sb.auth.getSession();
+    if (!s.data.session) { show("vLogin"); return; }
+    var adm = await sb.rpc("is_admin");
+    if (adm.error || adm.data !== true) { show("vDenied"); return; }
+    await load();
+    route();
+  }
+  async function load() {
+    $("loadErr").textContent = ""; $("updated").textContent = "Chargement…";
+    await sb.rpc("avis_ia_lire").then(function () {}, function () {});
+    var r = await Promise.all([
+      sb.from("avis").select("*, boutiques(nom,slug), avis_prive(*)").order("created_at", { ascending: false }).limit(5000),
+      sb.from("reglages_avis").select("*").eq("id", 1).maybeSingle()
+    ]);
+    if (r[0].error) {
+      if (/avis_prive|cible|relationship|does not exist/i.test(r[0].error.message || "")) { show("vSetup"); $("setupErr").textContent = r[0].error.message; return false; }
+      $("loadErr").textContent = "Impossible de charger les avis : " + r[0].error.message; all = [];
+    } else all = r[0].data || [];
+    reg = r[1].data || null;
+    $("updated").textContent = all.length + " avis au total · mis à jour le " + fmtDate(new Date(), true);
+    renderSettings();
+    return true;
+  }
+  function route() {
+    var id = new URLSearchParams(location.search).get("id");
+    if (id) openDetail(id, true); else { show("vList"); renderList(); }
+  }
+  window.addEventListener("popstate", route);
+
+  /* ---------- list view: summary ---------- */
+  function inPeriod(a) { var d = Number($("period").value); if (!d) return true; return new Date(a.created_at) >= new Date(Date.now() - d * 864e5); }
+  function prevPeriod(a) { var d = Number($("period").value); if (!d) return false; var t = new Date(a.created_at).getTime(), now = Date.now(); return t < now - d * 864e5 && t >= now - 2 * d * 864e5; }
+  function avg(list) { return list.length ? list.reduce(function (s, a) { return s + a.note; }, 0) / list.length : null; }
+  function causesOf(a) { var r = rules(a); return (r.causes && r.causes.length ? r.causes : prv(a).causes) || []; }
+  function renderSummary() {
+    var per = all.filter(inPeriod), shopsR = per.filter(function (a) { return a.cible === "boutique"; }), before = all.filter(prevPeriod).filter(function (a) { return a.cible === "boutique"; });
+    var open = all.filter(function (a) { return prv(a).statut !== "traite"; }), urgent = open.filter(function (a) { return prv(a).urgence === "haute"; });
+    var neg = shopsR.filter(function (a) { return a.note <= 2; }).length;
+    var nps = per.map(function (a) { return prv(a).recommande; }).filter(function (x) { return x != null; });
+    var npsScore = nps.length ? Math.round((nps.filter(function (x) { return x >= 9; }).length - nps.filter(function (x) { return x <= 6; }).length) / nps.length * 100) : null;
+    var ycR = per.filter(function (a) { return a.cible === "yiriclick"; });
+    var k = $("kpis"); k.textContent = "";
+    [["Note des boutiques", fmtN(avg(shopsR)), shopsR.length + " avis sur la période", false],
+     ["Note de Yiriclick", fmtN(avg(ycR)), ycR.length + " avis sur la période", false],
+     ["À traiter", String(open.length), "avis ouverts, toutes périodes", open.length > 0],
+     ["Urgents", String(urgent.length), "urgence haute non traitée", urgent.length > 0],
+     ["Avis négatifs", shopsR.length ? Math.round(neg / shopsR.length * 100) + " %" : "—", neg + " avis à 1 ou 2 étoiles", false],
+     ["Recommandation", npsScore == null ? "—" : (npsScore > 0 ? "+" : "") + npsScore, nps.length + (nps.length > 1 ? " réponses" : " réponse") + " (score de −100 à +100)", false]
+    ].forEach(function (x) { var d = el("div", "kpi" + (x[3] ? " alert" : "")); d.appendChild(el("span", null, x[0])); d.appendChild(el("b", null, x[1])); d.appendChild(el("small", null, x[2])); k.appendChild(d); });
+
+    /* causes */
+    var cc = {}; per.forEach(function (a) { if (a.note > 3) return; causesOf(a).forEach(function (c) { cc[c] = (cc[c] || 0) + 1; }); });
+    var ce = Object.keys(cc).sort(function (a, b) { return cc[b] - cc[a]; }), box = $("causes"); box.textContent = "";
+    if (!ce.length) box.appendChild(el("p", "notice", "Aucune insatisfaction sur la période."));
+    var mx = ce.length ? cc[ce[0]] : 1;
+    ce.slice(0, 8).forEach(function (c) { box.appendChild(barRow(CAUSE[c] || c, cc[c], cc[c] / mx, "warm", String(cc[c]))); });
+
+    /* criteria */
+    var cr = $("criteria"); cr.textContent = ""; var any = false;
+    Object.keys(CRIT).forEach(function (key) {
+      var v = per.map(function (a) { return a.criteres && a.criteres[key]; }).filter(function (x) { return x >= 1; });
+      if (!v.length) return; any = true; var m = v.reduce(function (s, x) { return s + x; }, 0) / v.length;
+      var row = barRow(CRIT[key], m, m / 5, "", fmtN(m)); row.classList.add(m < 3 ? "c-lo" : m < 4 ? "c-mid" : "c-hi"); row.title = v.length + " notes"; cr.appendChild(row);
+    });
+    if (!any) cr.appendChild(el("p", "notice", "Pas encore de notes par critère."));
+    cr.classList.add("crit");
+
+    /* trend: last 6 months, shop reviews */
+    var tr = $("trend"); tr.textContent = ""; var now = new Date(), lbl = [];
+    for (var i = 5; i >= 0; i--) {
+      var m0 = new Date(now.getFullYear(), now.getMonth() - i, 1), m1 = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
+      var lm = all.filter(function (a) { var d = new Date(a.created_at); return a.cible === "boutique" && d >= m0 && d < m1; }), am = avg(lm);
+      var col = el("div"); col.appendChild(el("b", null, am == null ? "—" : fmtN(am))); var bar = el("i"); bar.style.height = am == null ? "2px" : Math.round(am / 5 * 100) + "px"; col.appendChild(bar);
+      col.appendChild(el("span", null, m0.toLocaleDateString("fr-FR", { month: "short" }))); col.title = lm.length + " avis"; tr.appendChild(col);
+      lbl.push(m0.toLocaleDateString("fr-FR", { month: "long" }) + " " + (am == null ? "aucun avis" : fmtN(am)));
+    }
+    tr.setAttribute("aria-label", "Note moyenne par mois : " + lbl.join(", "));
+
+    /* shops */
+    var by = {}; shopsR.forEach(function (a) { var k2 = a.boutique_id; (by[k2] = by[k2] || { nom: shopName(a), slug: a.boutiques && a.boutiques.slug, l: [] }).l.push(a); });
+    var rows = Object.keys(by).map(function (k2) { var s = by[k2]; s.avg = avg(s.l); return s; }).sort(function (a, b) { return a.avg - b.avg; });
+    var tb = $("shops"); tb.textContent = "";
+    if (!rows.length) { var tr0 = el("tr"), td0 = el("td", "notice", "Aucun avis de boutique sur la période."); td0.colSpan = 6; tr0.appendChild(td0); tb.appendChild(tr0); }
+    rows.forEach(function (s) {
+      var c2 = {}; s.l.forEach(function (a) { if (a.note <= 3) causesOf(a).forEach(function (c) { c2[c] = (c2[c] || 0) + 1; }); });
+      var top = Object.keys(c2).sort(function (a, b) { return c2[b] - c2[a]; })[0];
+      var tr2 = el("tr"), a1 = el("a", null, s.nom); a1.href = "boutique.html?b=" + encodeURIComponent(s.slug || ""); a1.target = "_blank"; a1.rel = "noopener";
+      var td = el("td"); td.appendChild(a1); tr2.appendChild(td);
+      var negN = s.l.filter(function (a) { return a.note <= 2; }).length;
+      [String(s.l.length), fmtN(s.avg), negN + " (" + Math.round(negN / s.l.length * 100) + " %)", top ? (CAUSE[top] || top) + " (" + c2[top] + ")" : "—",
+       String(s.l.filter(function (a) { return prv(a).statut !== "traite"; }).length)].forEach(function (v, i) { tr2.appendChild(el("td", i === 3 ? null : "num", v)); });
+      tb.appendChild(tr2);
+    });
+
+    /* written report */
+    var rep = $("report"); rep.textContent = "";
+    var d = Number($("period").value), pname = d ? "Sur les " + d + " derniers jours" : "Depuis le début";
+    if (!per.length) { rep.textContent = pname + ", aucun avis n’a été reçu."; return; }
+    var parts = [pname + ", " + per.length + (per.length > 1 ? " avis reçus (" : " avis reçu (") + shopsR.length + " sur les boutiques, " + ycR.length + " sur Yiriclick)."];
+    if (shopsR.length) {
+      var a0 = avg(shopsR), b0 = avg(before);
+      parts.push("La note moyenne des boutiques est de " + fmtN(a0) + "/5" + (b0 != null ? (Math.abs(a0 - b0) < 0.05 ? ", stable par rapport à la période précédente." : (a0 > b0 ? ", en hausse de " : ", en baisse de ") + fmtN(Math.abs(a0 - b0)) + " point par rapport à la période précédente.") : "."));
+    }
+    if (ce.length) {
+      var c0 = ce[0], whoC = {}; per.forEach(function (a) { if (a.note <= 3 && causesOf(a).indexOf(c0) >= 0) { var n2 = shopName(a); whoC[n2] = (whoC[n2] || 0) + 1; } });
+      var w0 = Object.keys(whoC).sort(function (a, b) { return whoC[b] - whoC[a]; })[0];
+      parts.push("La première cause d’insatisfaction est « " + (CAUSE[c0] || c0).toLowerCase() + " » (" + cc[c0] + " avis)" + (w0 && whoC[w0] > 1 ? ", surtout chez " + w0 + " (" + whoC[w0] + ")." : "."));
+      if (ce[1]) parts.push("Ensuite : « " + (CAUSE[ce[1]] || ce[1]).toLowerCase() + " » (" + cc[ce[1]] + ").");
+    } else parts.push("Aucune cause d’insatisfaction n’a été relevée.");
+    var weak = []; Object.keys(CRIT).forEach(function (key) { var v = per.map(function (a) { return a.criteres && a.criteres[key]; }).filter(function (x) { return x >= 1; }); if (v.length >= 3) { var m = v.reduce(function (s, x) { return s + x; }, 0) / v.length; if (m < 3.5) weak.push(CRIT[key].toLowerCase() + " (" + fmtN(m) + ")"); } });
+    if (weak.length) parts.push("Critères à surveiller : " + weak.join(", ") + ".");
+    if (rows.length && rows[0].avg < 3 && rows[0].l.length >= 3) parts.push("Boutique à accompagner en priorité : " + rows[0].nom + " (" + fmtN(rows[0].avg) + "/5 sur " + rows[0].l.length + " avis).");
+    var calls = open.filter(function (a) { return prv(a).recontact; }).length;
+    parts.push(open.length ? open.length + (open.length > 1 ? " avis restent" : " avis reste") + " à traiter, dont " + urgent.length + " urgent" + (urgent.length > 1 ? "s" : "") + (calls ? " et " + calls + " client" + (calls > 1 ? "s" : "") + " qui demande" + (calls > 1 ? "nt" : "") + " à être rappelé" + (calls > 1 ? "s" : "") : "") + "." : "Tous les avis sont traités.");
+    var auto = per.filter(function (a) { var p = prv(a); return p.statut === "traite" && p.urgence === "basse" && p.sentiment === "positif"; }).length;
+    if (auto) parts.push(auto + (auto > 1 ? " avis positifs ont été classés" : " avis positif a été classé") + " automatiquement.");
+    rep.textContent = parts.join(" ");
+  }
+  function barRow(label, value, ratio, cls, txt) {
+    var r = el("div", "bar-row"); r.appendChild(el("span", null, label)); var tk = el("div", "bar-track"), f = el("div", "bar-fill" + (cls ? " " + cls : "")); f.style.width = Math.max(2, Math.round(ratio * 100)) + "%"; tk.appendChild(f); r.appendChild(tk); r.appendChild(el("b", null, txt)); return r;
+  }
+
+  /* ---------- list view: reviews ---------- */
+  var URANK = { haute: 0, moyenne: 1, basse: 2 };
+  function filtered() {
+    var q = $("q").value.trim().toLowerCase(), st = $("fStatut").value, ci = $("fCible").value, no = $("fNote").value, vi = $("fVis").value, tri = $("fTri").value;
+    var l = all.filter(function (a) {
+      var p = prv(a);
+      if (st === "ouvert" && p.statut === "traite") return false;
+      if (st && st !== "ouvert" && (p.statut || "a_traiter") !== st) return false;
+      if (ci && a.cible !== ci) return false;
+      if (no === "neg" && a.note > 2) return false; if (no === "mid" && a.note !== 3) return false; if (no === "pos" && a.note < 4) return false;
+      if (vi === "visible" && a.masque) return false; if (vi === "masque" && !a.masque) return false; if (vi === "avant" && !a.mis_en_avant) return false;
+      if (vi === "signale" && !a.signale) return false; if (vi === "drapeau" && !((p.drapeaux || []).length || (p.analyse_ia && p.analyse_ia.moderation && p.analyse_ia.moderation.a_verifier))) return false;
+      if (q) { var hay = [a.commentaire, a.nom, shopName(a), a.reponse, rules(a).resume].join(" ").toLowerCase(); if (hay.indexOf(q) < 0) return false; }
+      return true;
+    });
+    var d = function (a) { return new Date(a.created_at).getTime(); };
+    l.sort(function (a, b) {
+      if (tri === "recent") return d(b) - d(a);
+      if (tri === "worst") return a.note - b.note || d(b) - d(a);
+      if (tri === "best") return b.note - a.note || d(b) - d(a);
+      var ua = URANK[prv(a).urgence], ub = URANK[prv(b).urgence];
+      return (ua == null ? 3 : ua) - (ub == null ? 3 : ub) || a.note - b.note || d(b) - d(a);
+    });
+    return l;
+  }
+  function renderList() {
+    renderSummary();
+    view = filtered(); var box = $("list"); box.textContent = "";
+    $("count").textContent = view.length + " avis correspondent aux filtres.";
+    if (!view.length) box.appendChild(el("div", "empty", "Aucun avis avec ces filtres."));
+    view.slice(0, shown).forEach(function (a) {
+      var p = prv(a), r = rules(a), card = el("article", "rv u-" + (p.urgence || "basse"));
+      var main = el("div"); main.style.cssText = "display:flex;flex-direction:column;gap:6px;min-width:0";
+      var meta = el("div", "meta"); var s = el("span", "stars", stars(a.note)); s.setAttribute("aria-label", a.note + " sur 5"); meta.appendChild(s);
+      meta.appendChild(el("b", null, shopName(a))); meta.appendChild(el("span", null, a.nom + " · " + fmtDate(a.created_at))); main.appendChild(meta);
+      main.appendChild(el("p", null, r.resume || a.commentaire || "Pas de commentaire."));
+      var ch = el("div", "chips");
+      if (p.statut) ch.appendChild(pill(STAT[p.statut][0], STAT[p.statut][1]));
+      if (p.urgence && p.statut !== "traite") ch.appendChild(pill(URG[p.urgence][0], URG[p.urgence][1]));
+      if (p.cause_principale) ch.appendChild(pill(CAUSE[p.cause_principale] || p.cause_principale, "grey"));
+      if (p.recontact) ch.appendChild(pill("Veut être rappelé", "warn"));
+      if (a.masque) ch.appendChild(pill("Masqué", "bad")); if (a.mis_en_avant) ch.appendChild(pill("Mis en avant", "navy")); if (a.signale) ch.appendChild(pill("Signalé par le vendeur", "warn"));
+      if (p.ia_statut === "fait") ch.appendChild(pill("Analyse IA", "")); if ((p.drapeaux || []).length) ch.appendChild(pill("À vérifier", "bad"));
+      main.appendChild(ch); card.appendChild(main);
+      var go = el("a", "btn btn-navy btn-sm go", "Ouvrir l’analyse →"); go.href = "?id=" + a.id;
+      go.addEventListener("click", function (e) { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); history.pushState({}, "", "?id=" + a.id); openDetail(a.id); });
+      card.appendChild(go); box.appendChild(card);
+    });
+    $("more").hidden = view.length <= shown; $("more").textContent = "Voir " + Math.min(30, view.length - shown) + " avis de plus";
+  }
+  ["q", "fStatut", "fCible", "fNote", "fVis", "fTri"].forEach(function (id) { $(id).addEventListener(id === "q" ? "input" : "change", function () { shown = 30; renderList(); }); });
+  $("period").addEventListener("change", renderSummary);
+  $("more").addEventListener("click", function () { shown += 30; renderList(); });
+  $("refresh").addEventListener("click", async function () { await load(); renderList(); });
+
+  /* ---------- settings ---------- */
+  function renderSettings() {
+    $("sIaAuto").checked = !!(reg && reg.ia_auto); $("sAlert").checked = !reg || reg.alerte_email !== false; $("sModel").value = reg ? reg.modele : "claude-haiku-5-5";
+  }
+  $("sSave").addEventListener("click", async function () {
+    $("sOk").textContent = ""; $("sErr").textContent = "";
+    var r = await sb.from("reglages_avis").update({ ia_auto: $("sIaAuto").checked, alerte_email: $("sAlert").checked, modele: $("sModel").value.trim() || "claude-haiku-5-5" }).eq("id", 1).select().maybeSingle();
+    if (r.error) { $("sErr").textContent = r.error.message; return; }
+    reg = r.data; $("sOk").textContent = "Réglages enregistrés.";
+  });
+  $("bulkAi").addEventListener("click", async function () {
+    var b = $("bulkAi"), todo = all.filter(function (a) { var p = prv(a); return p.statut !== "traite" && p.ia_statut !== "fait" && p.ia_statut !== "en_cours"; }).slice(0, 25);
+    $("sOk").textContent = ""; $("sErr").textContent = "";
+    if (!todo.length) { $("sOk").textContent = "Tous les avis à traiter ont déjà une analyse IA."; return; }
+    b.disabled = true; var errs = 0;
+    for (var i = 0; i < todo.length; i++) { var r = await sb.rpc("avis_ia_lancer", { p_id: todo[i].id }); if (r.error || r.data === "cle_manquante") errs++; }
+    b.disabled = false;
+    if (errs === todo.length) $("sErr").textContent = "L’IA n’a pas pu être lancée. Vérifie la clé anthropic_api_key dans Supabase (étape 3 du guide).";
+    else $("sOk").textContent = (todo.length - errs) + " avis envoyés à l’IA. Les résultats arrivent dans une minute environ ; clique sur « Actualiser ».";
+  });
+
+  /* ---------- detail view ---------- */
+  $("back").addEventListener("click", function () { history.pushState({}, "", location.pathname); show("vList"); renderList(); window.scrollTo(0, 0); });
+  function step(dir) {
+    if (!current) return; var list = view.length ? view : all, i = list.findIndex(function (a) { return a.id === current.avis.id; });
+    var n = list[i + dir]; if (!n) return; history.pushState({}, "", "?id=" + n.id); openDetail(n.id);
+  }
+  $("prev").addEventListener("click", function () { step(-1); }); $("next").addEventListener("click", function () { step(1); });
+
+  async function openDetail(id, fromRoute) {
+    show("vDetail"); $("dErr").textContent = ""; if (!fromRoute) window.scrollTo(0, 0);
+    var r = await sb.rpc("avis_detail", { p_id: id });
+    if (r.error || !r.data) { $("dErr").textContent = r.error ? r.error.message : "Avis introuvable."; $("dTitle").textContent = "Avis introuvable"; return; }
+    current = r.data; current.prive = current.prive || {};
+    var list = view.length ? view : all, i = list.findIndex(function (a) { return a.id === id; });
+    $("pos").textContent = i >= 0 ? (i + 1) + " / " + list.length : ""; $("prev").disabled = i <= 0; $("next").disabled = i < 0 || i >= list.length - 1;
+    drawDetail();
+    if (current.prive.ia_statut === "en_cours") pollAi();
+  }
+  function drawDetail() {
+    var a = current.avis, p = current.prive, b = current.boutique || {}, c = current.commande || {}, R = p.analyse_regles || {};
+    var subj = a.cible === "yiriclick" ? "Yiriclick" : b.nom;
+    $("dTitle").textContent = "Avis de " + a.nom + " sur " + subj;
+    var ch = $("dChips"); ch.textContent = "";
+    var st = p.statut || "a_traiter"; ch.appendChild(pill(STAT[st][0], STAT[st][1]));
+    if (p.urgence) ch.appendChild(pill(URG[p.urgence][0], URG[p.urgence][1])); if (p.sentiment) ch.appendChild(pill(SENT[p.sentiment][0], SENT[p.sentiment][1]));
+    if (a.masque) ch.appendChild(pill("Masqué" + (p.masque_motif ? " : " + (MOTIF[p.masque_motif] || p.masque_motif).toLowerCase() : ""), "bad"));
+    if (a.mis_en_avant) ch.appendChild(pill("Mis en avant", "navy")); if (a.signale) ch.appendChild(pill("Signalé par le vendeur", "warn"));
+
+    /* the review */
+    var rv = $("dReview"); rv.textContent = "";
+    var top = el("div", "row"); var s = el("span", "stars", stars(a.note)); s.style.fontSize = "24px"; s.setAttribute("aria-label", a.note + " sur 5"); top.appendChild(s);
+    top.appendChild(el("b", null, a.note + "/5")); top.appendChild(el("span", "notice", fmtDate(a.created_at, true) + (a.langue ? " · langue : " + a.langue.toUpperCase() : ""))); rv.appendChild(top);
+    rv.appendChild(el("p", "quote" + (a.commentaire ? "" : " none"), a.commentaire || "Le client n’a pas écrit de commentaire."));
+    var keys = Object.keys(a.criteres || {});
+    if (keys.length) { var cr = el("div", "crit"); keys.forEach(function (k) { var v = a.criteres[k], row = barRow(CRIT[k] || k, v, v / 5, "", v + "/5"); row.classList.add(v <= 2 ? "c-lo" : v === 3 ? "c-mid" : "c-hi"); cr.appendChild(row); }); rv.appendChild(cr); }
+    var dl = el("dl");
+    function line(k, v) { dl.appendChild(el("dt", null, k)); var dd = el("dd"); if (v instanceof Node) dd.appendChild(v); else dd.textContent = v; dl.appendChild(dd); }
+    line("Causes cochées", (p.causes || []).length ? p.causes.map(function (x) { return CAUSE[x] || x; }).join(", ") : "Aucune");
+    line("Veut être rappelé", p.recontact ? "Oui" : "Non");
+    if (p.recommande != null) line("Recommande Yiriclick", p.recommande + "/10");
+    if (a.reponse) line(a.cible === "yiriclick" ? "Réponse publique" : "Réponse du vendeur", a.reponse);
+    if (current.autre) { var o = current.autre, lk = el("a", null, (o.cible === "yiriclick" ? "Avis sur Yiriclick" : "Avis sur la boutique") + " : " + o.note + "/5"); lk.href = "?id=" + o.id; lk.addEventListener("click", function (e) { e.preventDefault(); history.pushState({}, "", "?id=" + o.id); openDetail(o.id); }); line("Même commande", lk); }
+    rv.appendChild(dl);
+
+    /* the order */
+    var od = $("dOrder"); od.textContent = ""; var dl2 = el("dl");
+    function l2(k, v) { dl2.appendChild(el("dt", null, k)); var dd = el("dd"); if (v instanceof Node) dd.appendChild(v); else dd.textContent = v; dl2.appendChild(dd); }
+    l2("Numéro", c.numero || "—"); l2("Boutique", b.nom || "—");
+    l2("Articles", (c.articles || []).map(function (x) { return x.qty + " × " + x.nom; }).join(", ") || "—");
+    if (c.total != null) l2("Total", c.total + " " + (c.devise || ""));
+    l2("Commandée le", c.created_at ? fmtDate(c.created_at) : "—"); l2("Client", c.client_nom || a.nom);
+    if (c.client_tel) { var tw = el("span", "row"); tw.appendChild(el("span", null, c.client_tel)); var wb = el("a", "btn btn-ghost btn-sm", "WhatsApp"); wb.href = waLink(c.client_tel, ""); wb.target = "_blank"; wb.rel = "noopener"; tw.appendChild(wb); l2("Téléphone", tw); }
+    if (current.boutique_stats && a.cible === "boutique") { var bs = current.boutique_stats; l2("Note de la boutique", fmtN(Number(bs.moyenne)) + "/5 sur " + bs.n + " avis, dont " + bs.negatifs + " négatifs"); }
+    od.appendChild(dl2);
+
+    /* rule-based report */
+    var ru = $("dRules"); ru.textContent = "";
+    if (!R.resume) ru.appendChild(el("p", "notice", "Pas encore d’analyse. Clique sur « Refaire l’analyse »."));
+    else {
+      ru.appendChild(el("p", "summary", R.resume));
+      var dl3 = el("dl");
+      function l3(k, v) { dl3.appendChild(el("dt", null, k)); dl3.appendChild(el("dd", null, v)); }
+      l3("Cause principale", R.cause_principale ? CAUSE[R.cause_principale] || R.cause_principale : "Aucune (client satisfait)");
+      var oth = (R.causes || []).filter(function (x) { return x !== R.cause_principale; }); if (oth.length) l3("Autres causes", oth.map(function (x) { return CAUSE[x] || x; }).join(", "));
+      if ((R.causes_detectees || []).length) l3("Repéré dans le texte", R.causes_detectees.map(function (x) { return CAUSE[x] || x; }).join(", "));
+      l3("Responsable probable", R.responsabilite || "—");
+      if ((R.points_faibles || []).length) l3("Points faibles", R.points_faibles.join(", "));
+      if ((R.points_forts || []).length) l3("Points forts", R.points_forts.join(", "));
+      if ((R.drapeaux || []).length) l3("Modération", R.drapeaux.map(function (x) { return FLAG[x] || x; }).join(" · "));
+      ru.appendChild(dl3);
+      ru.appendChild(el("h3", null, "Actions recommandées")); ru.appendChild(actionsList(R.actions || [], "r"));
+      ru.appendChild(replyBox(R.reponse_proposee || "", c.client_tel, "r"));
+    }
+
+    /* AI report */
+    drawAi();
+
+    /* decisions */
+    var dc = $("dDecide"); dc.textContent = "";
+    dc.appendChild(el("h3", null, "Suivi"));
+    var seg = el("div", "seg"); seg.setAttribute("role", "group"); seg.setAttribute("aria-label", "Statut");
+    ["a_traiter", "en_cours", "traite"].forEach(function (k) { var bt = el("button", null, STAT[k][0]); bt.type = "button"; bt.setAttribute("aria-pressed", String(st === k)); bt.addEventListener("click", function () { act(k); }); seg.appendChild(bt); });
+    dc.appendChild(seg);
+    dc.appendChild(el("h3", null, "Visibilité publique"));
+    var rw = el("div", "row");
+    if (!a.masque) {
+      var fb = el("button", "btn btn-ghost", a.mis_en_avant ? "Retirer de la mise en avant" : "Mettre en avant"); fb.type = "button"; fb.addEventListener("click", function () { act(a.mis_en_avant ? "retirer_avant" : "mettre_en_avant"); }); rw.appendChild(fb);
+      var hb = el("button", "btn btn-bad", "Masquer…"); hb.type = "button"; rw.appendChild(hb);
+    } else { var ub = el("button", "btn btn-ghost", "Réafficher l’avis"); ub.type = "button"; ub.addEventListener("click", function () { act("reafficher"); }); rw.appendChild(ub); }
+    if (a.signale && !a.masque) { var kb = el("button", "btn btn-ghost", "Garder et clore le signalement"); kb.type = "button"; kb.addEventListener("click", function () { act("garder"); }); rw.appendChild(kb); }
+    dc.appendChild(rw);
+    if (!a.masque) {
+      var box = el("div", "hidebox"); box.hidden = true;
+      box.appendChild(el("p", "notice", "Un avis négatif mais honnête doit rester visible. Masque seulement pour un de ces motifs ; il sera enregistré dans le journal."));
+      var sel = el("select"); sel.id = "motif"; var lab = el("label", null, "Motif"); lab.htmlFor = "motif"; lab.style.fontWeight = "700";
+      var o0 = el("option", null, "Choisir un motif…"); o0.value = ""; sel.appendChild(o0);
+      Object.keys(MOTIF).forEach(function (k) { var o = el("option", null, MOTIF[k]); o.value = k; sel.appendChild(o); });
+      var sugg = (p.drapeaux || []).indexOf("donnees_perso") >= 0 ? "donnees_perso" : (p.drapeaux || []).indexOf("langage") >= 0 ? "injurieux" : ""; sel.value = sugg;
+      var cr2 = el("div", "row"), ok = el("button", "btn btn-bad", "Confirmer le masquage"), no = el("button", "btn btn-ghost", "Annuler"); ok.type = no.type = "button";
+      ok.addEventListener("click", function () { if (!sel.value) { $("dErr").textContent = "Choisis un motif."; sel.focus(); return; } act("masquer", sel.value); });
+      no.addEventListener("click", function () { box.hidden = true; hb.focus(); });
+      cr2.appendChild(ok); cr2.appendChild(no); box.appendChild(lab); box.appendChild(sel); box.appendChild(cr2); dc.appendChild(box);
+      hb.addEventListener("click", function () { box.hidden = false; sel.focus(); });
+    } else if (p.masque_motif && c.client_tel) {
+      var msg = "Bonjour " + (c.client_nom || a.nom).split(" ")[0] + ", ton avis sur " + subj + " a été masqué sur Yiriclick car il " + (MOTIF_CLIENT[p.masque_motif] || "ne respecte pas nos règles") + ". Si tu penses que c’est une erreur, réponds simplement à ce message. Merci de ta compréhension, l’équipe Yiriclick.";
+      dc.appendChild(el("p", "notice", "Préviens le client et donne-lui le motif, comme le demandent les règles européennes :"));
+      var inf = el("a", "btn btn-ghost", "Prévenir le client sur WhatsApp"); inf.href = waLink(c.client_tel, msg); inf.target = "_blank"; inf.rel = "noopener"; dc.appendChild(inf);
+    }
+    dc.appendChild(el("h3", null, "Note interne"));
+    var nt = el("div", "note"), ta = el("textarea"); ta.rows = 3; ta.maxLength = 2000; ta.id = "noteAdm"; ta.value = p.note_admin || ""; ta.placeholder = "Ex. : client rappelé le 27/10, échange accepté par le vendeur.";
+    var nl = el("label", "vh", "Note interne"); nl.htmlFor = "noteAdm"; nt.appendChild(nl); nt.appendChild(ta);
+    var ns = el("button", "btn btn-navy btn-sm", "Enregistrer la note"); ns.type = "button"; ns.style.marginTop = "8px";
+    ns.addEventListener("click", async function () { ns.disabled = true; var r = await sb.rpc("avis_note_admin", { p_id: a.id, p_note: ta.value }); ns.disabled = false; if (r.error) { $("dErr").textContent = r.error.message; return; } ns.textContent = "Note enregistrée"; setTimeout(function () { ns.textContent = "Enregistrer la note"; }, 1500); });
+    nt.appendChild(ns); dc.appendChild(nt);
+    if ((current.journal || []).length) {
+      dc.appendChild(el("h3", null, "Journal"));
+      var ul = el("ul", "journal"); current.journal.forEach(function (j) { ul.appendChild(el("li", null, fmtDate(j.at, true) + " · " + (ACTION[j.action] || j.action) + (j.motif ? " (" + (MOTIF[j.motif] || j.motif).toLowerCase() + ")" : ""))); });
+      dc.appendChild(ul);
+    }
+  }
+  function actionsList(list, key) {
+    var ul = el("ul", "acts");
+    list.forEach(function (t, i) { var li = el("li"), cb = el("input"); cb.type = "checkbox"; cb.id = "ac" + key + i; var lb = el("label", null, t); lb.htmlFor = cb.id; li.appendChild(cb); li.appendChild(lb); ul.appendChild(li); });
+    return ul;
+  }
+  function replyBox(text, tel, key) {
+    var w = el("div", "reply"); w.appendChild(el("h3", null, "Message proposé au client"));
+    var ta = el("textarea"); ta.rows = 4; ta.value = text; ta.id = "rep" + key; var lb = el("label", "vh", "Message proposé"); lb.htmlFor = ta.id; w.appendChild(lb); w.appendChild(ta);
+    var row = el("div", "row"), cp = el("button", "btn btn-ghost btn-sm", "Copier"); cp.type = "button"; cp.addEventListener("click", function () { copy(ta.value, cp); }); row.appendChild(cp);
+    if (tel) { var wa = el("a", "btn btn-orange btn-sm", "Envoyer sur WhatsApp"); wa.target = "_blank"; wa.rel = "noopener"; wa.href = waLink(tel, ta.value); ta.addEventListener("input", function () { wa.href = waLink(tel, ta.value); }); row.appendChild(wa); }
+    w.appendChild(row); return w;
+  }
+  function drawAi() {
+    var p = current.prive, box = $("dAi"), A = p.analyse_ia, run = $("aiRun"); box.textContent = "";
+    run.textContent = p.ia_statut === "fait" ? "Relancer l’IA" : "Analyser avec l’IA"; run.disabled = p.ia_statut === "en_cours";
+    if (p.ia_statut === "en_cours") { box.appendChild(el("p", "ai-state", "Analyse en cours… le résultat s’affiche ici tout seul (moins d’une minute en général).")); return; }
+    if (p.ia_statut === "erreur") box.appendChild(el("p", "err", p.ia_erreur || "L’analyse IA a échoué."));
+    if (!A) { if (p.ia_statut !== "erreur") box.appendChild(el("p", "ai-state", "Pas encore d’analyse IA pour cet avis. Elle complète l’analyse par règles : cause racine, nuances du texte, réponse rédigée.")); return; }
+    if (A.resume) box.appendChild(el("p", "summary", A.resume));
+    var dl = el("dl"); function l(k, v) { if (v == null || v === "" || (Array.isArray(v) && !v.length)) return; dl.appendChild(el("dt", null, k)); dl.appendChild(el("dd", null, Array.isArray(v) ? v.join(", ") : String(v))); }
+    l("Cause racine", A.cause_racine);
+    l("Cause principale", A.cause_principale ? CAUSE[A.cause_principale] || A.cause_principale : null);
+    l("Causes", (A.causes || []).map(function (x) { return CAUSE[x] || x; }));
+    l("Sentiment", A.sentiment && SENT[A.sentiment] ? SENT[A.sentiment][0] : A.sentiment);
+    l("Urgence", A.urgence && URG[A.urgence] ? URG[A.urgence][0] : A.urgence);
+    l("Responsable probable", A.responsabilite);
+    if (A.moderation) l("Modération", A.moderation.a_verifier ? "À vérifier : " + (A.moderation.raison || "") : "Rien à signaler");
+    if (typeof A.confiance === "number") l("Confiance de l’IA", Math.round(A.confiance * 100) + " %");
+    box.appendChild(dl);
+    if ((A.actions || []).length) { box.appendChild(el("h3", null, "Actions proposées par l’IA")); box.appendChild(actionsList(A.actions, "i")); }
+    if (A.reponse_proposee) box.appendChild(replyBox(A.reponse_proposee, current.commande && current.commande.client_tel, "i"));
+    box.appendChild(el("p", "notice", "Analysée le " + fmtDate(p.ia_at, true) + ". L’IA peut se tromper : relis avant d’agir."));
+  }
+  $("aiRun").addEventListener("click", async function () {
+    var b = $("aiRun"); b.disabled = true; $("dErr").textContent = "";
+    var r = await sb.rpc("avis_ia_lancer", { p_id: current.avis.id });
+    if (r.error) { b.disabled = false; $("dErr").textContent = r.error.message; return; }
+    await refreshDetail(); if (current.prive.ia_statut === "en_cours") pollAi();
+  });
+  $("reanalyse").addEventListener("click", async function () {
+    var b = $("reanalyse"); b.disabled = true; var r = await sb.rpc("avis_reanalyser", { p_id: current.avis.id }); b.disabled = false;
+    if (r.error) { $("dErr").textContent = r.error.message; return; } await refreshDetail();
+  });
+  function pollAi() {
+    clearTimeout(aiTimer); var tries = 0;
+    (function tick() {
+      aiTimer = setTimeout(async function () {
+        if (!current || $("vDetail").hidden) return;
+        await sb.rpc("avis_ia_lire"); await refreshDetail(true);
+        if (current.prive.ia_statut === "en_cours" && ++tries < 40) tick();
+      }, 4000);
+    })();
+  }
+  async function refreshDetail(quiet) {
+    var r = await sb.rpc("avis_detail", { p_id: current.avis.id }); if (r.error || !r.data) return;
+    current = r.data; current.prive = current.prive || {};
+    var i = all.findIndex(function (x) { return x.id === current.avis.id; });
+    if (i >= 0) { var keep = all[i]; Object.assign(keep, current.avis); keep.avis_prive = current.prive; }
+    if (quiet) drawAi(); else drawDetail();
+  }
+  async function act(action, motif) {
+    $("dErr").textContent = "";
+    var r = await sb.rpc("avis_moderer", { p_id: current.avis.id, p_action: action, p_motif: motif || null });
+    if (r.error) { $("dErr").textContent = r.error.message; return; }
+    await refreshDetail();
+  }
+
+  boot();
+})();
+</script>
+</body>
+</html>

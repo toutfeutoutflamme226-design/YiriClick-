@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Avis clients · Yiriclick</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800;900&display=swap">
+<link rel="stylesheet" href="assets/shop.css">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<meta name="theme-color" content="#10232A">
+<meta name="description" content="Avis vérifiés des clients de Yiriclick, la place de marché des petits vendeurs.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Yiriclick">
+<meta property="og:title" content="Avis clients · Yiriclick">
+<meta property="og:image" content="https://toutfeutoutflamme226-design.github.io/YiriClick-/assets/og.png">
+<style>
+/* Platform reviews: same header as the shops, one column of reviews */
+.av-head { padding-block: 28px 4px; }
+.av-head h1 { margin: 0; font-size: clamp(28px, 6vw, 40px); font-weight: 900; letter-spacing: -1px; line-height: 1.05; }
+.av-head p { margin: 8px 0 0; color: var(--soft); max-width: 62ch; }
+.av-body { padding-block: 16px 48px; max-width: 820px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./" aria-label="Yiriclick">
+      <svg width="28" height="28" viewBox="0 0 160 160" aria-hidden="true"><path d="M76 146 V92 L34 40" fill="none" stroke="#4FC7CF" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/><path d="M76 92 L124 34" fill="none" stroke="#FF7A2E" stroke-width="22" stroke-linecap="round"/><path d="M96 30 H128 V62" fill="none" stroke="#FF7A2E" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="word"><span class="a">yiri</span><span class="b">click</span></span>
+    </a>
+    <div class="prefs">
+      <a href="./"><span aria-hidden="true">← </span><span data-t="showcase">Vitrine</span></a>
+      <select id="prefLang" data-ta="lang"><option value="fr">FR</option><option value="en">EN</option><option value="es">ES</option></select>
+      <select id="prefCur" data-ta="cur"><option value="">—</option><option value="XOF">FCFA</option><option value="EUR">€</option><option value="USD">$</option></select>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap av-head">
+    <h1 data-t="avT">Avis clients sur Yiriclick</h1>
+    <p data-t="avP"></p>
+  </div>
+  <div class="wrap av-body">
+    <div id="list"><p data-t="loading">Chargement…</p></div>
+  </div>
+</main>
+
+<footer><div class="wrap"><span>© 2026 Yiriclick</span><a href="vendre.html" data-t="openShop">Ouvrir ma boutique sur Yiriclick</a></div></footer>
+
+<div class="modal" id="pmodal" hidden>
+  <div class="modal-bg"></div>
+  <div class="mbox" role="dialog" aria-modal="true"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="assets/phone.js"></script>
+<script src="assets/nav.js"></script>
+<script src="assets/shop.js"></script>
+<script>
+(function () {
+  var Y = window.YC, reviews = null;
+  Y.extend({
+    fr: { avT: "Avis clients sur Yiriclick", avP: "Ce que nos clients pensent de leur expérience sur Yiriclick : commander, suivre sa commande, faire confiance aux vendeurs. Les avis sur chaque vendeur se trouvent sur sa boutique.", avErr: "Les avis ne peuvent pas être chargés pour le moment." },
+    en: { avT: "Customer reviews of Yiriclick", avP: "What our customers think of their experience on Yiriclick: ordering, tracking their order, trusting the sellers. Reviews of each seller are on their shop page.", avErr: "Reviews cannot be loaded right now." },
+    es: { avT: "Opiniones de clientes sobre Yiriclick", avP: "Lo que piensan nuestros clientes de su experiencia en Yiriclick: pedir, seguir su pedido y confiar en los vendedores. Las opiniones sobre cada vendedor están en su tienda.", avErr: "No se pueden cargar las opiniones en este momento." }
+  });
+  function render() {
+    Y.labels(); document.title = Y.t("avT") + " · Yiriclick";
+    var box = document.getElementById("list");
+    if (reviews === null) return;
+    if (reviews === false) { box.textContent = ""; box.appendChild(Y.el("p", "rv-empty", Y.t("avErr"))); return; }
+    Y.reviewsUI(box, reviews, { cible: "yiriclick" });
+  }
+  async function start() {
+    Y.wirePrefs(render); render();
+    var r = await Y.sb.from("avis").select("note,commentaire,nom,created_at,reponse,criteres,mis_en_avant").eq("cible", "yiriclick").order("created_at", { ascending: false }).limit(500);
+    reviews = r.error ? false : (r.data || []);
+    render();
+  }
+  start();
+})();
+</script>
+</body>
+</html>
