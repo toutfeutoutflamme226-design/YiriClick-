@@ -255,6 +255,7 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="assets/pass.js"></script>
+<script src="assets/nav.js"></script>
 <script>
 (function () {
   var SUPABASE_URL = "https://vtiakxfnechkoomagddl.supabase.co";
@@ -398,7 +399,9 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
     produits: [["Date", function (r) { return fmtDate(r.created_at); }, "num"], ["Produit", function (r) { return r.nom; }], ["Boutique", function (r) { return r.boutique; }],
       ["Prix", function (r) { return money(r.prix, r.devise); }, "num"], ["Affiché par le vendeur", function (r) { return r.visible ? "Oui" : "Non"; }], ["Statut", null]]
   };
-  function setTab(t) {
+  var tabNav = false;
+  function setTab(t, fromNav) {
+    if (window.YNav) { if (!tabNav) { tabNav = true; YNav.page(t, function (n) { if (!ST[n]) return false; setTab(n, true); }); } else if (!fromNav && t !== tab) YNav.go(t); }
     tab = t; $("tabD").setAttribute("aria-selected", String(t === "dossiers")); $("tabE").setAttribute("aria-selected", String(t === "inscriptions")); $("tabP").setAttribute("aria-selected", String(t === "produits"));
     var f = $("fStatut"); f.textContent = ""; var o = el("option", null, "Tous les statuts"); o.value = ""; f.appendChild(o);
     ST[t].forEach(function (s) { var op = el("option", null, s[1]); op.value = s[0]; f.appendChild(op); });
@@ -440,7 +443,9 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
     pairs.forEach(function (p) { if (p[1] == null || p[1] === "") return; dl.appendChild(el("dt", null, p[0])); dl.appendChild(el("dd", null, String(p[1]))); });
     g.appendChild(dl); return g;
   }
-  async function openDetail(r) {
+  var rowsById = {};
+  async function openDetail(r, fromNav) {
+    rowsById[r.id] = r; if (!fromNav && window.YNav) YNav.opened("detail", r.id);
     current = { table: tab, row: r };
     var body = $("dBody"); body.textContent = "";
     $("dTitle").textContent = tab === "produits" ? r.nom : (r.boutique || r.nom);
@@ -491,7 +496,10 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
     $("dNote").value = r.note_admin || ""; $("dErr").textContent = ""; $("dOk").textContent = "";
     $("drawer").hidden = false; document.body.style.overflow = "hidden"; $("dStatut").focus();
   }
-  function closeDetail() { $("drawer").hidden = true; document.body.style.overflow = ""; current = null; }
+  function hideDetail() { $("drawer").hidden = true; document.body.style.overflow = ""; current = null; }
+  /* Back closes the detail panel, Forward opens it again; tabs too (assets/nav.js) */
+  function closeDetail() { if (!(window.YNav && YNav.close("detail"))) hideDetail(); }
+  if (window.YNav) YNav.layer("detail", { open: function (id) { if (!rowsById[id]) return false; openDetail(rowsById[id], true); }, close: hideDetail });
   $("drawer").addEventListener("click", function (e) { if (e.target.closest("[data-close]")) closeDetail(); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("drawer").hidden) closeDetail(); });
   $("dSave").addEventListener("click", async function () {

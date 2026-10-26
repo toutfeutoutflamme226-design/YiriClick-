@@ -576,6 +576,7 @@ h1 span { display: block; }
 </div>
 
 <script src="assets/phone.js"></script>
+<script src="assets/nav.js"></script>
 <script>
 (function () {
   var T = {
@@ -1113,7 +1114,7 @@ h1 span { display: block; }
 
   /* Everyone starts with the free trial (opened at once). The identity check (dossier) only comes
      when a seller moves to a paid plan, from the seller space: vendre.html?email=…#dossier-pro */
-  function openSignup(plan, dossier) {
+  function openSignup(plan, dossier, fromNav) {
     su.plan = PLAN_KEYS.indexOf(plan) >= 0 ? plan : "essai"; su.zone = state.zone; su.last = document.activeElement;
     if (!dossier && su.plan !== "essai" && KNOWN.account) dossier = true; // a seller already on Yiriclick goes straight to the application
     su.dossier = !!dossier; if (su.dossier && su.plan === "essai") su.plan = "basique";
@@ -1126,12 +1127,27 @@ h1 span { display: block; }
     anim(modal.querySelector(".modal-bg"), [{ opacity: 0 }, { opacity: 1 }], { duration: 250, easing: "ease-out" });
     anim(modal.querySelector(".sheet"), [{ opacity: 0, transform: "translateY(40px)" }, { opacity: 1, transform: "none" }], { duration: 380 });
     setTimeout(function () { if (su.plan === "essai") document.getElementById("suName").focus(); else focusFirst(); }, 60);
+    if (!fromNav && window.YNav) YNav.opened("signup", 0);
   }
-  function closeSignup() {
+  function hideSignup() {
     if (modal.hidden) return;
     modal.hidden = true; document.body.style.overflow = "";
     if (su.last && su.last.focus) su.last.focus();
   }
+  /* The form window and each step of the application are steps in the browser history (assets/nav.js):
+     Back returns to the previous step, then closes the window; nothing typed is lost. */
+  function closeSignup() { if (!(window.YNav && YNav.close("signup"))) hideSignup(); }
+  function gotoStep(n) { pstep = n; buildPro(true); modal.querySelector(".sheet").scrollTop = 0; focusFirst(); }
+  if (window.YNav) YNav.layer("signup", {
+    open: function (n) { if (n) return false; openSignup(su.plan, su.dossier, true); },
+    close: hideSignup,
+    update: function (n) {
+      if (!su.dossier || proForm.hidden || n === pstep) return;
+      if (n < pstep) { gotoStep(n); return; }
+      // Forward: only one step at a time, and only if this step is complete
+      if (n === pstep + 1 && validStep()) gotoStep(n); else setTimeout(function () { history.back(); }, 0);
+    }
+  });
   document.addEventListener("click", function (e) {
     var a = e.target.closest("[data-signup]");
     if (a) { e.preventDefault(); openSignup(a.getAttribute("data-signup")); return; }
@@ -1532,7 +1548,7 @@ h1 span { display: block; }
     var nav = el("div", "pnav");
     if (pstep > 0) {
       var back = el("button", "btn btn-line", k.back); back.type = "button";
-      back.addEventListener("click", function () { pstep--; buildPro(true); modal.querySelector(".sheet").scrollTop = 0; focusFirst(); });
+      back.addEventListener("click", function () { if (!(window.YNav && YNav.back("signup"))) gotoStep(pstep - 1); });
       nav.appendChild(back);
     }
     var next = el("button", "btn btn-orange", pstep < 3 ? k.next : k.submit); next.type = "submit"; nav.appendChild(next);
@@ -1578,7 +1594,7 @@ h1 span { display: block; }
     e.preventDefault();
     if (!validStep()) return;
     var k = K[state.lang];
-    if (pstep < 3) { pstep++; buildPro(true); modal.querySelector(".sheet").scrollTop = 0; focusFirst(); }
+    if (pstep < 3) { gotoStep(pstep + 1); if (window.YNav && YNav.isOpen("signup")) YNav.opened("signup", pstep, undefined, { push: true }); }
     else submitDossier(proForm.querySelector(".pnav .btn-orange"));
   });
 

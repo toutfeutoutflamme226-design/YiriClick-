@@ -24,7 +24,7 @@
       <span class="word"><span class="a">yiri</span><span class="b">click</span></span>
     </a>
     <div class="prefs">
-      <a href="./" data-t="showcase">Vitrine</a>
+      <a href="./" id="toVitrine"><span aria-hidden="true">← </span><span data-t="showcase">Vitrine</span></a>
       <select id="prefLang" data-ta="lang"><option value="fr">FR</option><option value="en">EN</option><option value="es">ES</option></select>
       <select id="prefCur" data-ta="cur"><option value="">—</option><option value="XOF">FCFA</option><option value="EUR">€</option><option value="USD">$</option></select>
     </div>
@@ -94,6 +94,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="assets/phone.js"></script>
+<script src="assets/nav.js"></script>
 <script src="assets/shop.js"></script>
 <script>
 (function () {
@@ -114,17 +115,16 @@
   function sec(k) { var s = shop && shop.sections; return !s || s[k] !== false; }
   function shopUrl() { return location.origin + location.pathname + "?b=" + encodeURIComponent(shop.slug); }
   function safeUrl(u) { return /^https:\/\/[^\s"<>]+$/i.test(String(u || "")) ? u : ""; }
-  /* Opening a product puts its own address in the browser, so copying the link shares that product */
-  function openP(pp) {
-    Y.openProduct(pp, shop);
-    try { history.replaceState(null, "", location.pathname + "?b=" + encodeURIComponent(shop.slug) + "&p=" + pp.id); } catch (e) {}
-    document.title = pp.nom + " · " + shop.nom;
-  }
-  document.addEventListener("click", function (e) {
-    if (e.target.closest && (e.target.closest(".mclose") || e.target.classList.contains("modal-bg"))) resetUrl();
+  /* Opening a product puts its own address in the browser, so copying the link shares that product.
+     Back closes it; Previous / Next go through the list it was opened from. */
+  function prodUrl(pp) { return location.pathname + "?b=" + encodeURIComponent(shop.slug) + "&p=" + pp.id; }
+  function openP(pp, list) { Y.openProduct(pp, shop, { url: prodUrl, list: (list || items).map(function (x) { return [x, shop]; }) }); }
+  Y.onProduct(function (pp) { if (shop) document.title = pp ? pp.nom + " · " + shop.nom : shop.nom + " · Yiriclick"; });
+  /* "← Vitrine": back to the showcase as it was left (search, scroll) when the visitor came from it */
+  $("toVitrine").addEventListener("click", function (e) {
+    var r = document.referrer; if (!r || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    try { var u = new URL(r); if (u.origin === location.origin && /\/(index\.html)?$/.test(u.pathname) && history.length > 1 && !location.hash) { e.preventDefault(); history.back(); } } catch (x) {}
   });
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape") resetUrl(); });
-  function resetUrl() { if (!shop) return; try { history.replaceState(null, "", location.pathname + "?b=" + encodeURIComponent(shop.slug)); } catch (e) {} document.title = shop.nom + " · Yiriclick"; }
   /* Description, canonical address and structured data (Store, products, rating) for search engines */
   function seo() {
     var base = location.origin + location.pathname, url = base + "?b=" + encodeURIComponent(shop.slug);
@@ -147,7 +147,8 @@
   function rail(id, secId, list, on) {
     var box = $(id); box.textContent = "";
     $(secId).hidden = !on || !list.length;
-    list.slice(0, 12).forEach(function (p) { box.appendChild(Y.card(p, shop, false, openP)); });
+    var shown = list.slice(0, 12);
+    shown.forEach(function (p) { box.appendChild(Y.card(p, shop, false, function () { openP(p, shown); })); });
   }
   function render() {
     Y.labels();
@@ -162,7 +163,7 @@
     var list = items.filter(function (p) { return (!c || p.categorie === c) && (!q || Y.norm(p.nom + " " + (p.description || "")).indexOf(q) >= 0); });
     var g = $("grid"); g.textContent = "";
     if (!list.length) g.appendChild(Y.el("div", "empty", items.length ? Y.t("noMatch") : Y.t("noProducts")));
-    else list.forEach(function (p) { g.appendChild(Y.card(p, shop, false, openP)); });
+    else list.forEach(function (p) { g.appendChild(Y.card(p, shop, false, function () { openP(p, list); })); });
     renderInfos(); renderReviews(); renderNav();
   }
   function renderInfos() {
@@ -251,7 +252,12 @@
     $("fCat").addEventListener("change", render);
     render();
     Y.track("vue_boutique", shop.id);
-    if (pid) { var hit = items.filter(function (x) { return x.id === pid; })[0]; if (hit) openP(hit); }
+    if (pid) {
+      var hit = items.filter(function (x) { return x.id === pid; })[0];
+      // the shop stays underneath the shared product, so Back shows the shop instead of leaving
+      try { history.replaceState(history.state, "", location.pathname + "?b=" + encodeURIComponent(shop.slug)); } catch (e) {}
+      if (hit) openP(hit);
+    }
   }
   function notFound() { $("loading").hidden = true; $("missing").hidden = false; Y.labels(); }
   start();

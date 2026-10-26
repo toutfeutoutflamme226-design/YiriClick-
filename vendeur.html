@@ -807,6 +807,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
 <script src="assets/qr.js"></script>
 <script src="assets/vendeur-i18n.js"></script>
 <script src="assets/phone.js"></script>
+<script src="assets/nav.js"></script>
 <script src="assets/import.js"></script>
 <script src="assets/pass.js"></script>
 <script>
@@ -957,8 +958,10 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
   /* ---------- navigation ---------- */
   var PANELS = { dash: "pDash", orders: "pOrders", shop: "pShop", prod: "pProd", share: "pShare" };
   function confirmLeave() { return window.confirm(L("Tu as des modifications non enregistrées dans « Ma boutique ». Les abandonner ?")); }
-  function tab(t, keepScroll) {
-    if (st.tab === "shop" && t !== "shop" && dirty) { if (!confirmLeave()) return; fillShop(); }
+  /* Tabs are steps in the browser history: Back returns to the previous tab (assets/nav.js) */
+  var navReady = false;
+  function tab(t, keepScroll, fromNav) {
+    if (st.tab === "shop" && t !== "shop" && dirty) { if (!confirmLeave()) return false; fillShop(); }
     st.tab = t;
     Object.keys(PANELS).forEach(function (k) { $(PANELS[k]).hidden = k !== t; });
     document.querySelectorAll(".side [data-tab]").forEach(function (b) { if (b.getAttribute("data-tab") === t) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
@@ -966,7 +969,9 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     if (t === "dash") renderDash();
     if (t === "orders") { renderOrders(); loadOrders(true); notifUI(); }
     if (!keepScroll) window.scrollTo(0, 0);
-    try { history.replaceState(null, "", "#" + t); } catch (e) {}
+    if (!window.YNav) { try { history.replaceState(null, "", "#" + t); } catch (e) {} }
+    else if (!navReady) { navReady = true; try { history.replaceState(history.state, "", "#" + t); } catch (e) {} YNav.page(t, function (n) { return PANELS[n] ? tab(n, false, true) : false; }); }
+    else if (!fromNav) YNav.go(t, "#" + t);
   }
   document.querySelectorAll(".side [data-tab]").forEach(function (b) { b.addEventListener("click", function () { tab(b.getAttribute("data-tab")); }); });
   document.addEventListener("click", function (e) { var g = e.target.closest("[data-goto]"); if (g) tab(g.getAttribute("data-goto")); });
@@ -1274,8 +1279,11 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     }
     ph.appendChild(el("div", "pv-foot"));
   }
-  $("openPrev").addEventListener("click", function () { $("pvWrap").classList.add("open"); document.body.style.overflow = "hidden"; $("closePrev").focus(); });
-  function closePrev() { $("pvWrap").classList.remove("open"); document.body.style.overflow = ""; }
+  function showPrev(fromNav) { $("pvWrap").classList.add("open"); document.body.style.overflow = "hidden"; $("closePrev").focus(); if (!fromNav && window.YNav) YNav.opened("preview"); }
+  $("openPrev").addEventListener("click", function () { showPrev(false); });
+  function hidePrev() { $("pvWrap").classList.remove("open"); document.body.style.overflow = ""; }
+  function closePrev() { if (!(window.YNav && YNav.close("preview"))) hidePrev(); }
+  if (window.YNav) YNav.layer("preview", { open: function () { showPrev(true); }, close: hidePrev });
   $("closePrev").addEventListener("click", closePrev);
   $("pvWrap").addEventListener("click", function (e) { if (e.target === $("pvWrap") && $("pvWrap").classList.contains("open")) closePrev(); });
 
@@ -1367,8 +1375,10 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
   $("pf").addEventListener("change", renderProducts);
   CATS.forEach(function (c) { var o = el("option", null, c[1]); o.value = c[0]; $("eCat").appendChild(o); });
 
-  function openEditor(p) {
-    var isNew = !p;
+  var edTouched = false;
+  function openEditor(p, fromNav) {
+    var isNew = !p; edTouched = false;
+    if (!fromNav && window.YNav) YNav.opened("editor", p ? p.id : "new");
     st.ed = { id: p ? p.id : uid(), isNew: isNew, photos: (p && p.photos ? p.photos.slice() : []).map(function (x) { return { path: x }; }), removed: [] };
     $("edTitle").textContent = isNew ? L("Nouveau produit") : L("Modifier le produit");
     $("eNom").value = p ? p.nom : ""; $("eDesc").value = p && p.description ? p.description : "";
@@ -1385,7 +1395,16 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     $("soldeHint").textContent = isPro() ? L("Pendant cette période, ce prix remplace le prix de vente et le prix normal s’affiche barré.") : L("Disponible avec les formules Pro et Entreprise.");
     $("editor").hidden = false; document.body.style.overflow = "hidden"; setTimeout(function () { $("eNom").focus(); }, 50);
   }
-  function closeEditor() { $("editor").hidden = true; document.body.style.overflow = ""; st.ed = null; }
+  function hideEditor() { if ($("editor").hidden) return; $("editor").hidden = true; document.body.style.overflow = ""; st.ed = null; }
+  /* closed on purpose (button, Escape, saved): no question asked */
+  function closeEditor() { edTouched = false; if (!(window.YNav && YNav.close("editor"))) hideEditor(); }
+  $("prodForm").addEventListener("input", function () { edTouched = true; });
+  $("prodForm").addEventListener("change", function () { edTouched = true; });
+  if (window.YNav) YNav.layer("editor", {
+    open: function (id) { var p = id === "new" ? null : st.products.filter(function (x) { return x.id === id; })[0]; if (id !== "new" && !p) return false; openEditor(p, true); },
+    // the browser's Back button with unsaved changes: ask first
+    close: function () { if (edTouched && !window.confirm(L("Abandonner les modifications de ce produit ?"))) return false; edTouched = false; hideEditor(); }
+  });
   $("editor").addEventListener("click", function (e) { if (e.target.closest("[data-close]")) closeEditor(); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") { if (!$("editor").hidden) closeEditor(); else if ($("pvWrap").classList.contains("open")) closePrev(); } });
   $("addProd").addEventListener("click", function () { openEditor(null); });

@@ -205,6 +205,16 @@ et une notification signalent aussi chaque nouvelle commande (vérification tout
 6. Mots de passe (`assets/pass.js`) : bouton pour afficher ou masquer, et vérification en direct que la confirmation est identique
    (création d'accès, nouveau mot de passe, administration).
 
+## Navigation précédent / suivant (`assets/nav.js`)
+
+- Les flèches ← → du navigateur (et les boutons latéraux de la souris, Alt + flèches, le glissement à deux doigts)
+  marchent à l'intérieur des pages : fiche produit, panier, menu, choix du pays (vitrine), fiche produit (boutique),
+  onglets et éditeur de produit (espace vendeur, avec confirmation si des changements ne sont pas enregistrés),
+  formulaire et étapes du dossier (`vendre.html`), onglets et détail (administration).
+- Fiche produit : bouton « ← Retour », produit précédent / suivant de la liste d'origine, flèches sur les photos ;
+  au clavier, Échap ferme et ← → font défiler les photos.
+- Boutique : lien « ← Vitrine » en haut, qui revient à la vitrine telle qu'on l'a laissée.
+
 ## Préparation Google et aperçus de liens
 
 - **Publication automatique** (`.github/workflows/publier.yml`) : à chaque modification et toutes les heures,

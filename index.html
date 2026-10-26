@@ -323,6 +323,7 @@ section.block { margin-top: 28px; }
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="assets/phone.js"></script>
+<script src="assets/nav.js"></script>
 <script src="assets/shop.js"></script>
 <script>
 (function () {
@@ -386,7 +387,10 @@ section.block { margin-top: 28px; }
   }
 
   /* ---------- URL state ---------- */
+  function urlKey() { var u = new URLSearchParams(location.search); u.delete("produit"); return u.toString(); }
+  var shownKey = null;
   function readUrl() {
+    shownKey = urlKey();
     var u = new URLSearchParams(location.search);
     st.q = u.get("q") || ""; st.cat = u.get("cat") || ""; st.fam = u.get("fam") || ""; st.promo = u.get("promo") === "1"; st.fav = u.get("fav") === "1"; st.pays = u.get("pays") || "";
     st.view = (st.q || st.cat || st.fam || st.promo || st.fav || u.get("all") === "1" || st.pays) ? "results" : "home";
@@ -397,6 +401,7 @@ section.block { margin-top: 28px; }
     if (st.view === "results" && !u.toString()) u.set("all", "1");
     var url = location.pathname + (u.toString() ? "?" + u.toString() : "");
     try { history[push ? "pushState" : "replaceState"](null, "", url); } catch (e) {}
+    shownKey = urlKey();
   }
   function go(opts) {
     st.q = opts.q || ""; st.cat = opts.cat || ""; st.fam = opts.fam || ""; st.promo = !!opts.promo; st.fav = !!opts.fav; st.pays = opts.pays || "";
@@ -404,7 +409,7 @@ section.block { margin-top: 28px; }
     st.view = opts.home ? "home" : "results";
     $("q").value = st.q; writeUrl(true); render(); window.scrollTo(0, 0);
   }
-  window.addEventListener("popstate", function () { readUrl(); $("q").value = st.q; render(); });
+  window.addEventListener("popstate", function () { if (urlKey() === shownKey) return; readUrl(); $("q").value = st.q; render(); });
   /* Links to this same page (banners, tiles, logo) switch view without reloading */
   document.addEventListener("click", function (e) {
     var a = e.target.closest && e.target.closest("a[href]");
@@ -414,7 +419,7 @@ section.block { margin-top: 28px; }
     if (u.origin !== location.origin || here(u.pathname) !== here(location.pathname) || (u.hash && !u.search)) return;
     e.preventDefault();
     try { history.pushState(null, "", location.pathname + u.search); } catch (x) {}
-    readUrl(); $("q").value = st.q; render(); window.scrollTo(0, 0);
+    window.scrollTo(0, 0); readUrl(); $("q").value = st.q; render(); window.scrollTo(0, 0);
   });
   function $(id) { return document.getElementById(id); }
 
@@ -455,7 +460,7 @@ section.block { margin-top: 28px; }
     var cats = Object.keys(Y.CATS.fr).filter(function (c) { return Y.norm(Y.cat(c)).indexOf(q) >= 0; }).slice(0, 3);
     function hd(txt) { var h = el("li", "hd", txt); h.setAttribute("role", "presentation"); sugg.appendChild(h); }
     function opt(txt, small, act) { var li = el("li", null, txt); li.id = "sg" + sItems.length; li.setAttribute("role", "option"); li.setAttribute("aria-selected", "false"); if (small) li.appendChild(el("small", null, small)); li.addEventListener("mousedown", function (e) { e.preventDefault(); closeSugg(); act(); }); sugg.appendChild(li); sItems.push({ li: li, act: act }); }
-    if (prods.length) { hd(t("prodS")); prods.forEach(function (p) { opt(p.nom, p.boutiques.nom, function () { Y.openProduct(p, p.boutiques, { showShop: true }); }); }); }
+    if (prods.length) { hd(t("prodS")); prods.forEach(function (p) { opt(p.nom, p.boutiques.nom, function () { show(p, prods); }); }); }
     if (shopL.length) { hd(t("shopS")); shopL.forEach(function (s) { opt(s.nom, [s.ville, s.pays].filter(Boolean).join(", "), function () { location.href = "boutique.html?b=" + encodeURIComponent(s.slug); }); }); }
     if (cats.length) { hd(t("catS")); cats.forEach(function (c) { opt(Y.cat(c), null, function () { go({ cat: c }); }); }); }
     if (!sItems.length) return closeSugg();
@@ -558,7 +563,7 @@ section.block { margin-top: 28px; }
     var h = el("h2"); h.innerHTML = '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M5 3L2 6M19 3l3 3"/></svg>'; h.appendChild(document.createTextNode(d.titre || t("dealDay"))); box.appendChild(h);
     box.appendChild(el("div", "clock-l", t("endsIn"))); var clock = el("div", "clock"); clock.setAttribute("role", "timer"); box.appendChild(clock);
     if (d.sous_titre) box.appendChild(el("p", null, d.sous_titre));
-    box.appendChild(Y.card(p, p.boutiques, true, function (pp, s) { Y.openProduct(pp, s, { showShop: true }); }));
+    box.appendChild(Y.card(p, p.boutiques, true, function () { show(p); }));
     sec.appendChild(box); sec.hidden = false;
     function tick() {
       var ms = new Date(d.fin) - new Date(); if (ms <= 0) { clearInterval(dealTimer); sec.hidden = true; return; }
@@ -567,7 +572,10 @@ section.block { margin-top: 28px; }
     }
     tick(); dealTimer = setInterval(tick, 1000);
   }
-  function cards(list, box) { list.forEach(function (p) { box.appendChild(Y.card(p, p.boutiques, true, function (pp, s) { Y.openProduct(pp, s, { showShop: true }); })); }); }
+  /* A product sheet gets its own address (…?produit=<id>) and knows its neighbours for Previous / Next */
+  function prodUrl(p) { var u = new URLSearchParams(location.search); u.set("produit", p.id); return location.pathname + "?" + u.toString(); }
+  function show(p, list) { Y.openProduct(p, p.boutiques, { showShop: true, url: prodUrl, list: list ? list.map(function (x) { return [x, x.boutiques]; }) : null }); }
+  function cards(list, box) { list.forEach(function (p) { box.appendChild(Y.card(p, p.boutiques, true, function () { show(p, list); })); }); }
   function namesOf(c) { return ["fr", "en", "es"].map(function (l) { return Y.norm(cname(c, l)); }); }
   function renderRails() {
     var promoL = items.filter(function (p) { return Y.discount(p); }).sort(function (a, b) { return Y.discount(b) - Y.discount(a); });
@@ -690,15 +698,18 @@ section.block { margin-top: 28px; }
 
   /* ---------- side menu ---------- */
   var sideLast = null;
-  function openSide() {
+  function openSide(e, fromNav) {
     sideLast = document.activeElement; var L = $("sideLinks"); L.textContent = "";
     [["homeLink", function () { go({ home: true }); }], ["favsLink", function () { go({ fav: true }); }], ["myOrders", function () { Y.openOrders(); }], ["deals", function () { go({ promo: true }); }], ["allProducts", function () { go({}); }], ["settings", openChooser]]
-      .forEach(function (x) { var b = el("button", null, t(x[0])); b.type = "button"; b.addEventListener("click", function () { closeSide(); x[1](); }); L.appendChild(b); });
+      .forEach(function (x) { var b = el("button", null, t(x[0])); b.type = "button"; b.addEventListener("click", function () { closeSide(x[1]); }); L.appendChild(b); });
     [["fSell3", "vendre.html"], ["fSell1", "vendre.html#tarifs"], ["fSell2", "vendeur.html"]].forEach(function (x) { var a = el("a", null, t(x[0])); a.href = x[1]; L.appendChild(a); });
-    famAccordion($("sideCats"), function (o) { closeSide(); go(o); });
+    famAccordion($("sideCats"), function (o) { closeSide(function () { go(o); }); });
     $("side").hidden = false; document.body.style.overflow = "hidden"; $("side").querySelector(".side-x").focus();
+    if (!fromNav && window.YNav) YNav.opened("menu");
   }
-  function closeSide() { $("side").hidden = true; document.body.style.overflow = ""; if (sideLast && sideLast.focus) sideLast.focus(); }
+  function hideSide() { if ($("side").hidden) return; $("side").hidden = true; document.body.style.overflow = ""; if (sideLast && sideLast.focus) sideLast.focus(); }
+  function closeSide(then) { if (!(window.YNav && YNav.close("menu", typeof then === "function" ? then : null))) { hideSide(); if (typeof then === "function") then(); } }
+  if (window.YNav) YNav.layer("menu", { open: function () { openSide(null, true); }, close: hideSide });
   $("menuBtn").addEventListener("click", openSide);
   $("side").addEventListener("click", function (e) { if (e.target.closest("[data-close-side]")) closeSide(); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("side").hidden) closeSide(); });
@@ -713,8 +724,10 @@ section.block { margin-top: 28px; }
     });
   }
   var pickCountry = country;
-  function openChooser() { pickCountry = country; renderChooser(); $("chooser").hidden = false; document.body.style.overflow = "hidden"; var c = $("clist").querySelector("input:checked") || $("clist").querySelector("input"); if (c) c.focus(); }
-  $("chGo").addEventListener("click", function () { country = pickCountry || "ZZ"; sv("yc-country", country); $("chooser").hidden = true; document.body.style.overflow = ""; loadNear().then(render); });
+  function openChooser(e, fromNav) { if (!fromNav && country && window.YNav) YNav.opened("chooser"); pickCountry = country; renderChooser(); $("chooser").hidden = false; document.body.style.overflow = "hidden"; var c = $("clist").querySelector("input:checked") || $("clist").querySelector("input"); if (c) c.focus(); }
+  $("chGo").addEventListener("click", function () { country = pickCountry || "ZZ"; sv("yc-country", country); if (!(window.YNav && YNav.close("chooser"))) hideChooser(); loadNear().then(render); });
+  function hideChooser() { $("chooser").hidden = true; document.body.style.overflow = ""; }
+  if (window.YNav) YNav.layer("chooser", { open: function () { openChooser(null, true); }, close: hideChooser });
   $("localeBtn").addEventListener("click", openChooser);
 
   /* ---------- add to home screen ---------- */
@@ -756,7 +769,11 @@ section.block { margin-top: 28px; }
     var pid = new URLSearchParams(location.search).get("produit");
     if (pid && /^[0-9a-f-]{36}$/.test(pid)) {
       var one = await Y.sb.from("produits").select(COLS).eq("id", pid).maybeSingle();
-      if (one.data) { var pp = Y.prep([one.data])[0]; Y.openProduct(pp, pp.boutiques, { showShop: true }); }
+      if (one.data) {
+        var pp = Y.prep([one.data])[0], base = new URLSearchParams(location.search); base.delete("produit");
+        try { history.replaceState(history.state, "", location.pathname + (base.toString() ? "?" + base : "")); } catch (e) {}
+        show(pp);
+      }
     }
   }
   start();
