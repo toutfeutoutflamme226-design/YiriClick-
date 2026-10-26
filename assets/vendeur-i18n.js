@@ -7,6 +7,14 @@ window.YCV = (function () {
   if (["fr", "en", "es"].indexOf(lang) < 0) lang = "fr";
   var LOC = { fr: "fr-FR", en: "en-GB", es: "es-ES" };
   var D = {
+    /* review requests (base v15) */
+    "Donnez votre avis en 1 minute : ": ["Share your review in 1 minute: ", "Deje su opinión en 1 minuto: "],
+    "Avis reçu : ": ["Review received: ", "Opinión recibida: "],
+    "Demander un avis au client (WhatsApp)": ["Ask the customer for a review (WhatsApp)", "Pedir una opinión al cliente (WhatsApp)"],
+    "Copier le lien d’avis": ["Copy the review link", "Copiar el enlace de opinión"],
+    "Demande d’avis envoyée le ": ["Review request sent on ", "Solicitud de opinión enviada el "],
+    ". Pas encore de réponse.": [". No answer yet.", ". Aún sin respuesta."],
+    "Le client n’a pas encore donné son avis. Envoie-lui le lien : les avis rassurent les futurs acheteurs.": ["The customer has not reviewed yet. Send them the link: reviews reassure future buyers.", "El cliente aún no ha opinado. Envíale el enlace: las opiniones dan confianza a los futuros compradores."],
     /* header, login, account */
     "Vendeur": ["Seller", "Vendedor"], "Déconnexion": ["Log out", "Cerrar sesión"], "Ma boutique": ["My shop", "Mi tienda"],
     "Espace vendeur": ["Seller space", "Espacio vendedor"], "Connecte-toi pour gérer ta boutique et tes produits.": ["Log in to manage your shop and products.", "Inicia sesión para gestionar tu tienda y tus productos."],

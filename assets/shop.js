@@ -729,7 +729,8 @@ window.YC = (function () {
     })(i);
     row.appendChild(g); return row;
   }
-  function reviewForm(sec, o) {
+  /* done: called after a successful review (noter.html); by default the cart's order list is updated */
+  function reviewForm(sec, o, done) {
     var f = el("form", "rev-form"); f.noValidate = true;
     var d = { note: 0, criteres: {}, causes: [], recontact: false, yc: { note: 0, criteres: {}, recommande: null } };
     f.appendChild(el("b", "rv-h", t("revTitle", { s: o.shop.nom })));
@@ -797,7 +798,9 @@ window.YC = (function () {
       if (r.error && (r.error.code === "PGRST202" || /laisser_avis_v2/.test(r.error.message || ""))) r = await sb.rpc("laisser_avis", { p_commande: o.id, p_note: d.note, p_commentaire: ta.value.trim() });
       go.disabled = false;
       if (r.error) { err.textContent = r.error.message || t("orderErr"); return; }
-      o.a_avis = true; ordersSave(); renderCart();
+      o.a_avis = true;
+      if (done) { done(); return; }
+      ordersSave(); renderCart();
     });
     sec.appendChild(f);
   }
@@ -1059,7 +1062,7 @@ window.YC = (function () {
   /* Pages can add their own texts: YC.extend({ fr: {...}, en: {...}, es: {...} }) */
   function extend(d) { Object.keys(d).forEach(function (L) { T[L] = T[L] || {}; Object.keys(d[L]).forEach(function (k) { T[L][k] = d[L][k]; }); }); }
 
-  return { extend: extend, track: track, hasVar: hasVar, prep: prep, cartAdd: function (p, shop, q, b, v) { cartAdd(p, shop, q || 1, b, v); }, openOrders: function () { openCart("orders"); }, sb: sb, t: t, cat: cat, el: el, pub: pub, money: money, card: card, openProduct: openProduct, closeProduct: closeProduct, reviewsUI: reviewsUI, onProduct: function (f) { productListeners.push(f); }, wirePrefs: wirePrefs, setPrefs: setPrefs, labels: labels, catOptions: catOptions, norm: norm, prefs: prefs,
+  return { extend: extend, track: track, hasVar: hasVar, prep: prep, cartAdd: function (p, shop, q, b, v) { cartAdd(p, shop, q || 1, b, v); }, openOrders: function () { openCart("orders"); }, sb: sb, t: t, cat: cat, el: el, pub: pub, money: money, card: card, openProduct: openProduct, closeProduct: closeProduct, reviewsUI: reviewsUI, reviewForm: function (box, o, done) { reviewForm(box, o, done || function () {}); }, onProduct: function (f) { productListeners.push(f); }, wirePrefs: wirePrefs, setPrefs: setPrefs, labels: labels, catOptions: catOptions, norm: norm, prefs: prefs,
     convert: convert, discount: discount, priceBlock: priceBlock, favButton: favButton, isFav: isFav, favs: function () { return favs.slice(); }, onFavs: function (f) { favListeners.push(f); },
     openCart: function () { openCart(); }, CATS: CATS, FAMILIES: FAMILIES, THEMES: THEMES, LOCALE: LOCALE, URL_SB: URL_SB, HEART: HEART, CART_SVG: CART_SVG };
 })();
