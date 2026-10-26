@@ -192,6 +192,19 @@ et une notification signalent aussi chaque nouvelle commande (vérification tout
 3. La vitrine, les boutiques et la démo des monnaies de `vendre.html` utilisent ces taux, avec leur date.
 4. Vérifier : `select * from public.taux;` · Voir les tâches : `select * from cron.job;`
 
+## Formulaires pré-remplis et mots de passe (base v13)
+
+1. Supabase › **SQL Editor** : colle `supabase/schema-v13.sql`, puis **Run**.
+2. Fonction `mon_profil()` : le vendeur connecté (adresse e-mail confirmée) récupère ses propres informations
+   (inscription, boutique, dernier dossier sans pièce d'identité, sans numéro de pièce ni IBAN).
+3. Utilisée pour pré-remplir la création de boutique (`vendeur.html`) et le dossier des formules payantes (`vendre.html`).
+   Le vendeur vérifie, corrige si besoin et continue. Ce qu'il tape n'est jamais remplacé.
+4. Sans ce script, le pré-remplissage utilise ce que le navigateur connaît déjà (inscription, boutique, dernière commande).
+   Ce navigateur ne garde que les coordonnées (`yc-profil`), effacées à la déconnexion.
+5. Un vendeur connecté qui choisit une formule payante dans les tarifs arrive directement sur son dossier, pas sur un nouvel essai.
+6. Mots de passe (`assets/pass.js`) : bouton pour afficher ou masquer, et vérification en direct que la confirmation est identique
+   (création d'accès, nouveau mot de passe, administration).
+
 ## Préparation Google et aperçus de liens
 
 - **Publication automatique** (`.github/workflows/publier.yml`) : à chaque modification et toutes les heures,

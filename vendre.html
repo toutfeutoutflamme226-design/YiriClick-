@@ -331,6 +331,8 @@ h1 span { display: block; }
 .x { width: 44px; height: 44px; flex: none; display: flex; align-items: center; justify-content: center; background: var(--tint); color: var(--navy); border: 0; cursor: pointer; }
 #suForm { display: flex; flex-direction: column; gap: 14px; }
 .su-sub { margin: 0; font-size: 15px; color: var(--ink-soft); }
+.pre-note { margin: 0; padding: 10px 12px; background: #E5F4EC; color: #1E7F4F; font-size: 14px; font-weight: 700; border-left: 4px solid #1E7F4F; }
+.field input.pre, .field select.pre, .field textarea.pre { background: #F2FAF6; border-color: #9CCFB4; }
 .sum { display: flex; flex-direction: column; gap: 2px; background: var(--tint); padding: 12px 14px; }
 .sum span { font-size: 12px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--teal-deep); }
 .sum b { font-size: 16px; }
@@ -548,6 +550,7 @@ h1 span { display: block; }
       <p class="su-sub" data-t="suSub"></p>
       <div class="sum" id="suSum"><span data-t="sumLabel">Ton choix</span><b id="suSumV"></b></div>
       <p class="su-sub" id="suTrialNote" hidden style="background:#E6F4F5;padding:10px 12px;color:#10232A"></p>
+      <p class="pre-note" id="suPreNote" hidden></p>
       <div class="two">
         <div class="field"><label for="suPlan" data-t="fPlan">Formule</label><select id="suPlan" name="formule"></select></div>
         <div class="field"><label for="suZone" data-t="fZone">Région de tarif</label><select id="suZone" name="zone"></select></div>
@@ -595,7 +598,7 @@ h1 span { display: block; }
       feats: [["Jusqu’à 15 produits, 4 photos chacun", "Boutique avec lien à partager", "Réception des commandes", "Bouton « Commander sur WhatsApp »"], ["Jusqu’à 100 produits, 4 photos chacun", "Boutique personnalisée", "Paiement en ligne (bientôt)", "Avis clients", "Présence sur la vitrine Yiriclick"], ["Tout le Basique", "Jusqu’à 500 produits, 6 photos chacun", "Espace administrateur : stock, finances, factures", "Statistiques de ventes"], ["Tout le Pro", "Produits illimités, 10 photos chacun", "Analyse du marché et des tendances", "Publicité et promotion gérées par Yiriclick", "Plusieurs comptes employés", "Support prioritaire"]],
       contact: "Contact : [ADRESSE E-MAIL]", legal: "Conditions · Confidentialité", langAria: "Changer de langue",
       suTitle: "Créer ma boutique", suSub: "Ton essai gratuit de 14 jours s’ouvre tout de suite : pas de carte bancaire, pas de pièce d’identité à ce stade.",
-      trialFirst: "Tu commences par 14 jours gratuits. Pour passer à la formule {p}, tu enverras ton dossier de vérification depuis ton espace vendeur, quand tu seras prêt.", okGo: "Créer mon mot de passe",
+      preNote: "✓ Nous avons rempli ce que nous savons déjà. Vérifie, corrige si besoin, puis continue.", trialFirst: "Tu commences par 14 jours gratuits. Pour passer à la formule {p}, tu enverras ton dossier de vérification depuis ton espace vendeur, quand tu seras prêt.", okGo: "Créer mon mot de passe",
       fName: "Ton nom complet", fShop: "Nom de ta boutique", fCountry: "Pays", fPhone: "Numéro WhatsApp", fEmail: "Adresse e-mail",
       fPlan: "Formule", fZone: "Région de tarif", fConsent: "J’accepte que Yiriclick me contacte au sujet de mon inscription.",
       fSubmit: "Envoyer mon inscription", fSending: "Envoi…", close: "Fermer", sumLabel: "Ton choix",
@@ -638,7 +641,7 @@ h1 span { display: block; }
       feats: [["Up to 15 products, 4 photos each", "Shop with a shareable link", "Order management", "“Order on WhatsApp” button"], ["Up to 100 products, 4 photos each", "Custom shop", "Online payment (coming soon)", "Customer reviews", "Listed on the Yiriclick showcase"], ["Everything in Basic", "Up to 500 products, 6 photos each", "Admin space: stock, finances, invoices", "Sales statistics"], ["Everything in Pro", "Unlimited products, 10 photos each", "Market and trend analysis", "Ads and promotion managed by Yiriclick", "Multiple staff accounts", "Priority support"]],
       contact: "Contact: [EMAIL ADDRESS]", legal: "Terms · Privacy", langAria: "Change language",
       suTitle: "Create my shop", suSub: "Your 14-day free trial opens right away: no credit card and no ID needed at this stage.",
-      trialFirst: "You start with 14 free days. To move to the {p} plan, you will send your verification file from your seller space, whenever you are ready.", okGo: "Create my password",
+      preNote: "✓ We filled in what we already know. Check it, fix it if needed, then continue.", trialFirst: "You start with 14 free days. To move to the {p} plan, you will send your verification file from your seller space, whenever you are ready.", okGo: "Create my password",
       fName: "Your full name", fShop: "Shop name", fCountry: "Country", fPhone: "WhatsApp number", fEmail: "Email address",
       fPlan: "Plan", fZone: "Pricing region", fConsent: "I agree that Yiriclick may contact me about my sign-up.",
       fSubmit: "Send my sign-up", fSending: "Sending…", close: "Close", sumLabel: "Your choice",
@@ -681,7 +684,7 @@ h1 span { display: block; }
       feats: [["Hasta 15 productos, 4 fotos cada uno", "Tienda con enlace para compartir", "Recepción de pedidos", "Botón «Pedir por WhatsApp»"], ["Hasta 100 productos, 4 fotos cada uno", "Tienda personalizada", "Pago en línea (muy pronto)", "Opiniones de clientes", "Presencia en el escaparate Yiriclick"], ["Todo lo del Básico", "Hasta 500 productos, 6 fotos cada uno", "Espacio de administración: stock, finanzas, facturas", "Estadísticas de ventas"], ["Todo lo del Pro", "Productos ilimitados, 10 fotos cada uno", "Análisis del mercado y tendencias", "Publicidad y promoción gestionadas por Yiriclick", "Varias cuentas de empleados", "Soporte prioritario"]],
       contact: "Contacto: [CORREO ELECTRÓNICO]", legal: "Condiciones · Privacidad", langAria: "Cambiar idioma",
       suTitle: "Crear mi tienda", suSub: "Tu prueba gratuita de 14 días se abre al momento: sin tarjeta bancaria ni documento de identidad por ahora.",
-      trialFirst: "Empiezas con 14 días gratis. Para pasar al plan {p}, enviarás tu expediente de verificación desde tu espacio de vendedor, cuando estés listo.", okGo: "Crear mi contraseña",
+      preNote: "✓ Hemos rellenado lo que ya sabemos. Revísalo, corrígelo si hace falta y continúa.", trialFirst: "Empiezas con 14 días gratis. Para pasar al plan {p}, enviarás tu expediente de verificación desde tu espacio de vendedor, cuando estés listo.", okGo: "Crear mi contraseña",
       fName: "Tu nombre completo", fShop: "Nombre de tu tienda", fCountry: "País", fPhone: "Número de WhatsApp", fEmail: "Correo electrónico",
       fPlan: "Plan", fZone: "Región de precios", fConsent: "Acepto que Yiriclick me contacte sobre mi inscripción.",
       fSubmit: "Enviar mi inscripción", fSending: "Enviando…", close: "Cerrar", sumLabel: "Tu elección",
@@ -1112,10 +1115,12 @@ h1 span { display: block; }
      when a seller moves to a paid plan, from the seller space: vendre.html?email=…#dossier-pro */
   function openSignup(plan, dossier) {
     su.plan = PLAN_KEYS.indexOf(plan) >= 0 ? plan : "essai"; su.zone = state.zone; su.last = document.activeElement;
+    if (!dossier && su.plan !== "essai" && KNOWN.account) dossier = true; // a seller already on Yiriclick goes straight to the application
     su.dossier = !!dossier; if (su.dossier && su.plan === "essai") su.plan = "basique";
+    applyKnown(false);
     track("formulaire", su.plan);
     suRefresh();
-    pstep = 0; done.hidden = true; showMode();
+    pstep = 0; done.hidden = true; showMode(); trialKnown();
     document.getElementById("suSend-err").textContent = "";
     modal.hidden = false; document.body.style.overflow = "hidden";
     anim(modal.querySelector(".modal-bg"), [{ opacity: 0 }, { opacity: 1 }], { duration: 250, easing: "ease-out" });
@@ -1187,7 +1192,9 @@ h1 span { display: block; }
       body: JSON.stringify(row)
     }).then(function (r) {
       if (!r.ok) throw new Error(r.status);
-      form.reset(); track("essai", su.plan); showDone(t.okTitle, t.okText);
+      rememberProfile({ nom: row.nom, boutique: row.boutique, pays: row.pays, whatsapp: row.whatsapp, email: row.email });
+      form.reset(); ["suName", "suShop", "suCountry", "suPhone", "suEmail"].forEach(function (id) { var x = document.getElementById(id); delete x.dataset.touched; x.classList.remove("pre"); });
+      track("essai", su.plan); showDone(t.okTitle, t.okText);
       var go = el("a", "btn btn-orange", t.okGo); go.href = "vendeur.html?inscrit=" + encodeURIComponent(row.email) + "#signup"; go.style.marginTop = "6px";
       var dn = document.getElementById("suDone"); var old = dn.querySelector(".ok-go"); if (old) old.remove(); go.classList.add("ok-go"); dn.insertBefore(go, dn.querySelector("button")); go.focus();
     }).catch(function () { sendErr.textContent = t.eSend; })
@@ -1196,6 +1203,74 @@ h1 span { display: block; }
 
   /* Seller file for paid plans: 4 steps aligned with marketplace trader-traceability rules */
   var pv = {}, pstep = 0, proForm = document.getElementById("proForm");
+
+  /* ---------- Details already known are filled in for the seller ----------
+     Sources, most reliable first: the seller's account when they are logged in (inscription, shop,
+     previous application; base v13), then this browser (earlier sign-up, seller space, last order).
+     The seller checks, corrects if needed, and continues. Anything typed by the seller is never replaced.
+     Only contact details are kept in the browser; identity details come from the account only. */
+  var KNOWN = { account: null }, pre = {}, touched = {};
+  function readLocal() {
+    var p = {}, b = {};
+    try { p = JSON.parse(localStorage.getItem("yc-profil") || "{}") || {}; } catch (e) {}
+    try { b = JSON.parse(localStorage.getItem("yc-buyer") || "{}") || {}; } catch (e) {}
+    return { nom: p.nom || b.cName || "", email: p.email || "", whatsapp: p.whatsapp || b.cPhone || "", pays: p.pays || "", boutique: p.boutique || "", ville: p.ville || "", adresse: p.adresse || "" };
+  }
+  function rememberProfile(o) {
+    try { var p = JSON.parse(localStorage.getItem("yc-profil") || "{}") || {}; if (o.email && p.email && p.email !== o.email) p = {};
+      Object.keys(o).forEach(function (x) { if (o[x]) p[x] = o[x]; }); localStorage.setItem("yc-profil", JSON.stringify(p)); } catch (e) {}
+  }
+  function knownVals() {
+    var loc = readLocal(), A = KNOWN.account || {}, i = A.inscription || {}, b = A.boutique || {}, d = A.dossier || {};
+    var name = d.nom || i.nom || loc.nom, phone = d.whatsapp || b.whatsapp || i.whatsapp || loc.whatsapp, country = d.pays || b.pays || i.pays || loc.pays;
+    return { name: name, email: A.email || urlEmail || loc.email, phone: phone, country: country, countryCode: d.pays_code || (country ? codeFor(country) : ""),
+      shopName: b.nom || d.boutique || i.boutique || loc.boutique, city: d.ville || b.ville || loc.ville, address: d.adresse || b.adresse || loc.adresse,
+      status: d.statut_juridique, legalName: d.nom_legal, category: d.categorie, products: d.produits, reg: d.immatriculation, tax: d.numero_fiscal,
+      repName: d.representant || name, dob: d.date_naissance, nationality: d.nationalite, nationalityCode: d.nationalite_code, idType: d.piece_type,
+      payout: d.versement, operator: d.operateur, mmNumber: d.numero_mobile || phone, holder: d.titulaire || name };
+  }
+  function applyKnown(late) {
+    var v = knownVals(), any = false;
+    Object.keys(v).forEach(function (key) {
+      if (v[key] == null || v[key] === "" || touched[key]) return;
+      if (pv[key] !== v[key]) { pv[key] = v[key]; any = true; }
+      if (!/Code$/.test(key)) pre[key] = true;
+    });
+    if (late && any && !modal.hidden && su.dossier && !proForm.hidden) buildPro(false);
+    if (late && !modal.hidden && !su.dossier) trialKnown();
+  }
+  function trialKnown() {
+    if (su.dossier) return;
+    var v = knownVals(), map = { suName: v.name, suShop: v.shopName, suCountry: v.country, suPhone: v.phone, suEmail: v.email }, n = 0;
+    Object.keys(map).forEach(function (id) {
+      var inp = document.getElementById(id); if (!inp || !map[id] || inp.dataset.touched) return;
+      if (!inp.value.trim() || inp.classList.contains("pre")) {
+        if (id === "suPhone" && window.YPhone) YPhone.set(inp, map[id]); else inp.value = map[id];
+        inp.classList.add("pre"); n++;
+      }
+    });
+    var note = document.getElementById("suPreNote");
+    note.hidden = !document.querySelector("#suForm .pre"); note.textContent = T[state.lang].preNote;
+  }
+  ["suName", "suShop", "suCountry", "suPhone", "suEmail"].forEach(function (id) {
+    var inp = document.getElementById(id);
+    inp.addEventListener("input", function () { inp.dataset.touched = "1"; inp.classList.remove("pre"); });
+  });
+  /* The seller's session from the seller space (same site), used only while it is still valid */
+  function sessionToken() {
+    try {
+      var ref = SUPABASE.url.split("//")[1].split(".")[0], s = JSON.parse(localStorage.getItem("sb-" + ref + "-auth-token") || "null");
+      if (s && s.access_token && s.expires_at && s.expires_at * 1000 > Date.now() + 60000) return s.access_token;
+    } catch (e) {}
+    return null;
+  }
+  (function loadAccount() {
+    var tok = SUPABASE.url && SUPABASE.anonKey ? sessionToken() : null; if (!tok) return;
+    fetch(sbBase() + "/rest/v1/rpc/mon_profil", { method: "POST", headers: { "apikey": SUPABASE.anonKey, "Authorization": "Bearer " + tok, "Content-Type": "application/json" }, body: "{}" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) { if (d && typeof d === "object") { KNOWN.account = d; applyKnown(true); } })
+      .catch(function () {});
+  })();
   var K = {
     fr: {
       steps: ["Compte", "Activité", "Identité", "Paiement"],
@@ -1287,9 +1362,11 @@ h1 span { display: block; }
     if (o.ph) inp.placeholder = o.ph;
     if (pv[key] != null) inp.value = pv[key];
     if (o.options && !o.placeholder && pv[key] == null) pv[key] = inp.value;
-    inp.addEventListener("input", function () { pv[key] = inp.value; setErr(fid(key), ""); });
+    if (pre[key] && pv[key] != null && pv[key] !== "" && inp.value === String(pv[key])) inp.classList.add("pre");
+    function mine() { touched[key] = 1; delete pre[key]; inp.classList.remove("pre"); }
+    inp.addEventListener("input", function () { mine(); pv[key] = inp.value; setErr(fid(key), ""); });
     inp.addEventListener("change", function () {
-      pv[key] = inp.value; setErr(fid(key), "");
+      mine(); pv[key] = inp.value; setErr(fid(key), "");
       if (o.rebuild) { buildPro(false); var n = document.getElementById(fid(key)); if (n) n.focus({ preventScroll: true }); }
     });
     f.appendChild(inp);
@@ -1446,6 +1523,7 @@ h1 span { display: block; }
     var body = el("div", "pbody"); proForm.appendChild(body);
     body.appendChild(el("h3", "pstep-h", k.titles[pstep]));
     STEPS[pstep](body, k, t);
+    if (body.querySelector(".pre")) { var pn = el("p", "pre-note", t.preNote); body.insertBefore(pn, body.children[1] || null); }
     var pph = document.getElementById(fid("phone"));
     if (pph && window.YPhone) YPhone.attach(pph, { label: CC_LABEL[state.lang], onChange: function (v) { pv.phone = v; } });
     var pmm = document.getElementById(fid("mmNumber"));
@@ -1608,7 +1686,8 @@ h1 span { display: block; }
       }).then(function (r) { if (!r.ok) throw new Error("dossier " + r.status); });
     }).then(function () {
       track("dossier", su.plan);
-      pv = {}; pstep = 0;
+      rememberProfile({ nom: pv.name, email: pv.email, whatsapp: pv.phone, pays: pv.country, boutique: pv.shopName, ville: pv.city, adresse: pv.address });
+      pv = {}; pstep = 0; pre = {}; touched = {};
       showDone(k.okTitle, k.okText);
     }).catch(function () {
       errEl.textContent = t.eSend; btn.disabled = false; btn.textContent = k.submit;

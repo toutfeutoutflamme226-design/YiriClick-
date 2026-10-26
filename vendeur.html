@@ -199,6 +199,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
 .pv-foot { height: 18px; }
 
 /* Products */
+.ok-note { margin: 0; padding: 10px 12px; background: var(--okbg); color: var(--ok); font-size: 14px; font-weight: 700; border-left: 4px solid var(--ok); }
 .pbtns { display: flex; flex-wrap: wrap; gap: 8px; }
 .imp-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
 .imp-head h2 { margin: 0; font-size: 21px; }
@@ -376,7 +377,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     <p>Utilise <b>la même adresse e-mail</b> que dans ton inscription Yiriclick.</p>
     <div class="field"><label for="sEmail">Adresse e-mail</label><input id="sEmail" type="email" autocomplete="username" inputmode="email"></div>
     <div class="field"><label for="sPass">Mot de passe</label><input id="sPass" type="password" autocomplete="new-password"><span class="hint">8 caractères minimum.</span></div>
-    <div class="field"><label for="sPass2">Confirme le mot de passe</label><input id="sPass2" type="password" autocomplete="new-password"></div>
+    <div class="field"><label for="sPass2">Confirme le mot de passe</label><input id="sPass2" type="password" autocomplete="new-password" data-match="sPass"></div>
     <p class="err" id="sErr"></p><p class="ok" id="sOk"></p>
     <button class="btn btn-orange" type="submit" id="sBtn">Créer mon accès</button>
     <button class="link" type="button" data-go="fLogin">J’ai déjà un mot de passe</button>
@@ -392,6 +393,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
   <form class="box" id="fNewPass" novalidate hidden>
     <h1>Nouveau mot de passe</h1>
     <div class="field"><label for="nPass">Nouveau mot de passe</label><input id="nPass" type="password" autocomplete="new-password"><span class="hint">8 caractères minimum.</span></div>
+    <div class="field"><label for="nPass2">Confirme le nouveau mot de passe</label><input id="nPass2" type="password" autocomplete="new-password" data-match="nPass"></div>
     <p class="err" id="nErr"></p>
     <button class="btn btn-orange" type="submit" id="nBtn">Enregistrer</button>
   </form>
@@ -526,6 +528,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
         <form class="bform" id="shopForm" novalidate>
           <div class="card" id="cId">
             <h2>Identité</h2>
+            <p class="ok-note" id="bPreNote" hidden>✓ Nous avons repris les informations de ton inscription. Vérifie-les, puis enregistre.</p>
             <div class="field"><label for="bNom">Nom de la boutique</label><input id="bNom" maxlength="80"></div>
             <div class="field"><label for="bSlug">Adresse de la boutique</label>
               <div class="urlrow"><span>…/boutique.html?b=</span><input id="bSlug" maxlength="40" autocapitalize="off" spellcheck="false"></div>
@@ -805,6 +808,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
 <script src="assets/vendeur-i18n.js"></script>
 <script src="assets/phone.js"></script>
 <script src="assets/import.js"></script>
+<script src="assets/pass.js"></script>
 <script>
   var L = YCV.L; YCV.tr(document.body); document.documentElement.lang = YCV.lang;
   if (window.YPhone) { YPhone.attach(document.getElementById("bWa"), { label: L("Indicatif du pays") }); document.getElementById("bWa").placeholder = "70 00 00 00"; }
@@ -904,6 +908,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
       view("vInactive"); return;
     }
     var ac = await sb.rpc("mon_compte"); st.account = ac.error ? null : ac.data;
+    var pr = await sb.rpc("mon_profil"); st.profil = pr.error ? null : pr.data; // base v13; without it, the browser's copy is used
     st.plan = PLANS[f.data] ? f.data : "essai"; view("vApp"); await loadAll();
   }
   sb.auth.onAuthStateChange(function (ev) { if (ev === "PASSWORD_RECOVERY") { view("vAuth"); form("fNewPass"); } });
@@ -937,12 +942,14 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
   $("fNewPass").addEventListener("submit", async function (e) {
     e.preventDefault(); $("nErr").textContent = "";
     var p = $("nPass").value; if (p.length < 8) { $("nErr").textContent = L("8 caractères minimum."); return; }
+    if (p !== $("nPass2").value) { $("nErr").textContent = L("Les deux mots de passe ne sont pas identiques."); $("nPass2").focus(); return; }
     $("nBtn").disabled = true; var r = await sb.auth.updateUser({ password: p }); $("nBtn").disabled = false;
     if (r.error) { $("nErr").textContent = niceErr(r.error); return; }
     boot();
   });
   $("logout").addEventListener("click", async function () {
     if (dirty && !confirmLeave()) return;
+    try { localStorage.removeItem("yc-profil"); } catch (e) {}
     await sb.auth.signOut(); st = { user: null, plan: null, shop: null, products: [], ed: null, stats: null, v5: true, v6: true, v7: true, tab: "dash", orders: [], ordersOk: true }; dirty = false; ordBadge(); view("vAuth"); form("fLogin");
   });
   $("recheck").addEventListener("click", boot);
@@ -978,6 +985,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
       st.v6 = !st.products.length || "variantes" in st.products[0];
       st.v7 = !st.products.length || "solde_prix" in st.products[0];
     } else st.products = [];
+    rememberProfile();
     await loadStats(); await loadOrders(true); await loadCodes(); await loadAvis();
     if (!st.products.length) st.v7 = st.codesOk;
     $("dbNotice").hidden = st.v5;
@@ -1150,12 +1158,36 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     if (/^(www\.)?(facebook|fb|instagram|tiktok|youtube)\.com\//i.test(v)) return "https://" + v;
     return NETS[net] + v.replace(/^@/, "");
   }
+  /* What Yiriclick already knows about the seller, so forms are filled in for them:
+     their account (inscription, shop) and a copy in this browser, used by the paid-plan form on vendre.html.
+     Only contact details are kept in the browser, and they are removed at log out. */
+  function known() {
+    var loc = {}; try { loc = JSON.parse(localStorage.getItem("yc-profil") || "{}") || {}; } catch (e) {}
+    var P = st.profil || {}, i = P.inscription || {}, d = P.dossier || {};
+    return { nom: d.nom || i.nom || loc.nom || "", boutique: i.boutique || d.boutique || loc.boutique || "", pays: d.pays || i.pays || loc.pays || "",
+      whatsapp: d.whatsapp || i.whatsapp || loc.whatsapp || "", ville: d.ville || loc.ville || "", adresse: d.adresse || loc.adresse || "" };
+  }
+  function rememberProfile() {
+    if (!st.user) return;
+    var k = known(), s = st.shop || {};
+    var o = { email: st.user.email, nom: k.nom, boutique: s.nom || k.boutique, pays: s.pays || k.pays, whatsapp: s.whatsapp || k.whatsapp, ville: s.ville || k.ville, adresse: s.adresse || k.adresse };
+    try { var cur = JSON.parse(localStorage.getItem("yc-profil") || "{}") || {}; if (cur.email && cur.email !== o.email) cur = {}; Object.keys(o).forEach(function (x) { if (o[x]) cur[x] = o[x]; }); localStorage.setItem("yc-profil", JSON.stringify(cur)); } catch (e) {}
+  }
   function fillShop() {
     var s = st.shop || {};
     $("bNom").value = s.nom || ""; $("bSlug").value = s.slug || ""; $("bDesc").value = s.description || ""; $("bSlogan").value = s.slogan || "";
     if (window.YPhone) YPhone.set($("bWa"), s.whatsapp || ""); else $("bWa").value = s.whatsapp || ""; $("bVille").value = s.ville || ""; $("bPays").value = s.pays || ""; $("bAdresse").value = s.adresse || "";
     $("bHoraires").value = s.horaires || ""; $("bLivraison").value = s.livraison || ""; $("bRetours").value = s.retours || "";
     $("bDevise").value = s.devise || "XOF"; $("bVisible").checked = s.visible !== false;
+    if (!st.shop) {
+      // new shop: start from the details given at sign-up
+      var k = known(), pre = false;
+      if (k.boutique) { $("bNom").value = k.boutique; $("bSlug").value = slugify(k.boutique); pre = true; }
+      if (k.whatsapp) { if (window.YPhone) YPhone.set($("bWa"), k.whatsapp); else $("bWa").value = k.whatsapp; pre = true; }
+      if (k.pays) { $("bPays").value = k.pays; pre = true; }
+      if (k.ville) $("bVille").value = k.ville;
+      $("bPreNote").hidden = !pre;
+    } else $("bPreNote").hidden = true;
     $("bNotif").checked = s.notif_email !== false; $("bNotifHint").textContent = L("À l’adresse ") + (st.user ? st.user.email : "") + L(". Garde aussi ton espace vendeur ouvert : une alerte sonne quand une commande arrive.");
     $("bNotif").closest("label").hidden = st.shop ? !("notif_email" in st.shop) : true;
     var th = document.querySelector('input[name=theme][value="' + (s.theme || "teal") + '"]'); if (th) th.checked = true;
