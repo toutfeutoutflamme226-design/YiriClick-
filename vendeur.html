@@ -199,6 +199,25 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
 .pv-foot { height: 18px; }
 
 /* Products */
+.pbtns { display: flex; flex-wrap: wrap; gap: 8px; }
+.imp-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.imp-head h2 { margin: 0; font-size: 21px; }
+.imp-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.imp-out { display: flex; flex-direction: column; gap: 12px; }
+.imp-out:empty { display: none; }
+.imp-list { display: flex; flex-direction: column; border-top: 1px solid var(--rule); }
+.imp-row { display: grid; grid-template-columns: 24px 64px minmax(0, 1fr); gap: 12px; align-items: start; padding: 12px 0; border-bottom: 1px solid var(--rule); }
+.imp-row.off { opacity: .6; }
+.imp-row input[type=checkbox] { width: 20px; height: 20px; margin-top: 4px; accent-color: var(--navy); }
+.imp-th { width: 64px; height: 80px; background: var(--tint, #EEF5F6); display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--soft); text-align: center; overflow: hidden; }
+.imp-th img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.imp-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.imp-info b { overflow-wrap: anywhere; }
+.imp-info select { align-self: flex-start; max-width: 100%; min-height: 38px; border: 2px solid var(--rule); background: var(--white); padding: 0 8px; margin-top: 4px; }
+.imp-warn { font-size: 13px; color: var(--warn); margin: 0; }
+.imp-vis { display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 14px; }
+.imp-vis input { width: 18px; height: 18px; accent-color: var(--navy); }
+.imp-res { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
 .ptools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
 .ptools input, .ptools select { min-height: 46px; border: 2px solid var(--rule); padding: 0 12px; background: var(--white); min-width: 0; }
 .ptools input { flex: 1 1 220px; }
@@ -595,8 +614,9 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
       <div style="display:flex;flex-direction:column;gap:16px">
         <div class="phead">
           <div><h1>Produits</h1><p id="prodHint"></p></div>
-          <button class="btn btn-orange" type="button" id="addProd">Ajouter un produit</button>
+          <div class="pbtns"><button class="btn btn-ghost" type="button" id="impProd">Importer</button><button class="btn btn-orange" type="button" id="addProd">Ajouter un produit</button></div>
         </div>
+        <div class="card imp" id="impBox" hidden></div>
         <div class="ptools">
           <label class="vh" for="pq">Rechercher un produit</label><input id="pq" type="search" placeholder="Rechercher un produit…">
           <label class="vh" for="pf">Filtrer</label>
@@ -784,6 +804,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
 <script src="assets/qr.js"></script>
 <script src="assets/vendeur-i18n.js"></script>
 <script src="assets/phone.js"></script>
+<script src="assets/import.js"></script>
 <script>
   var L = YCV.L; YCV.tr(document.body); document.documentElement.lang = YCV.lang;
   if (window.YPhone) { YPhone.attach(document.getElementById("bWa"), { label: L("Indicatif du pays") }); document.getElementById("bWa").placeholder = "70 00 00 00"; }
@@ -1275,6 +1296,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     var P = PLANS[st.plan];
     $("prodHint").textContent = st.shop ? st.products.length + (P[1] ? L(" sur ") + P[1] : "") + L(" produits · formule ") + P[0] + " · " + P[2] + L(" photos par produit") : L("Crée d’abord ta boutique dans « Boutique ».");
     $("addProd").disabled = !st.shop || (P[1] != null && st.products.length >= P[1]);
+    $("impProd").disabled = $("addProd").disabled;
     var q = $("pq").value.trim().toLowerCase(), f = $("pf").value;
     var list = st.products.filter(function (p) { return matchFilter(p, f) && (!q || (p.nom + " " + (p.description || "")).toLowerCase().indexOf(q) >= 0); });
     if (!list.length) { box.appendChild(el("div", "empty", !st.shop ? L("Ta boutique n’existe pas encore.") : st.products.length ? L("Aucun produit ne correspond.") : L("Aucun produit pour l’instant. Touche « Ajouter un produit » pour publier le premier."))); return; }
@@ -1335,6 +1357,12 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
   $("editor").addEventListener("click", function (e) { if (e.target.closest("[data-close]")) closeEditor(); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") { if (!$("editor").hidden) closeEditor(); else if ($("pvWrap").classList.contains("open")) closePrev(); } });
   $("addProd").addEventListener("click", function () { openEditor(null); });
+  /* Import from a spreadsheet, Shopify, WooCommerce or a ZIP with photos (assets/import.js) */
+  YImport.init({ box: $("impBox"), button: $("impProd"), sb: sb, CATS: CATS, uid: uid, upload: upload, compress: compress, removeFiles: removeFiles,
+    niceErr: niceErr, missingCol: missingCol, money: money, isPro: isPro, maxOpts: function () { return maxOpts(); },
+    plan: function () { return PLANS[st.plan]; }, products: function () { return st.products; }, shop: function () { return st.shop; },
+    shopDevise: function () { return (st.shop && st.shop.devise) || "XOF"; }, hasVariants: function () { return st.v6; },
+    added: function (p) { st.products.unshift(p); }, refresh: function () { renderHead(); renderProducts(); renderPreview(); } });
   $("eDesc").addEventListener("input", counts);
 
   /* Margin helper: the purchase cost stays in this browser only */

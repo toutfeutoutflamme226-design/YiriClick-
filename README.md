@@ -213,6 +213,20 @@ et une notification signalent aussi chaque nouvelle commande (vérification tout
 - Dans l’admin, chaque bannière ou tuile a une destination à choisir : tous les produits, petits prix,
   une catégorie, une boutique, un produit précis, la page vendeurs ou un autre lien.
 
+## Importer des produits (espace vendeur)
+
+Onglet **Produits > Importer** : le vendeur choisit un tableur (CSV ou Excel) avec ses photos,
+ou un dossier ZIP qui contient les deux. Le code est dans `assets/import.js`.
+
+- Formats lus : modèle Yiriclick (bouton « Télécharger le modèle »), export Shopify, export WooCommerce,
+  ou tout tableau avec au moins une colonne nom et une colonne prix (en français ou en anglais).
+- Colonnes du modèle : `nom; description; prix; prix_avant; devise; categorie; stock; option; valeurs; photos`.
+  Les photos sont des noms de fichiers joints ou des adresses web.
+- Aperçu avant import : chaque produit peut être décoché et sa catégorie corrigée.
+- Les règles de la formule s'appliquent (nombre de produits, de photos, d'options ; prix par variante en Pro).
+- Les photos venant d'un autre site peuvent être bloquées par celui-ci : le vendeur est prévenu et les ajoute à la main.
+- Les bibliothèques ZIP (JSZip) et Excel (SheetJS) ne sont chargées que si un tel fichier est choisi.
+
 ## À modifier avant le lancement
 
 - Remplacer `[ADRESSE E-MAIL]` (et ses traductions) par ton adresse de contact,
