@@ -288,6 +288,21 @@ Installation :
 Tester : passe une commande, mets-la en « livrée » dans l’espace vendeur, ouvre « Mes commandes » sur le site
 et laisse un avis avec 2 étoiles ; il apparaît en urgence dans `avis-admin.html`.
 
+## Demander un avis après la livraison (base v15)
+
+1. Dans Supabase, **SQL Editor › New query** : colle `supabase/schema-v15.sql`, puis **Run**.
+2. Envoie sur GitHub : `noter.html`, `vendeur.html`, `avis-admin.html` (à la racine), `assets/shop.js` et `assets/vendeur-i18n.js` (dans `assets`).
+
+Fonctionnement :
+- Chaque commande a son lien d’avis : `noter.html?c=<numéro interne>`. Le client l’ouvre sur n’importe quel téléphone,
+  sans compte : il voit sa commande et le formulaire d’avis. Seuls la boutique, le numéro et les articles sont affichés.
+- Espace vendeur, commande « Livrée » : bouton **Demander un avis au client (WhatsApp)** (message prêt dans la langue du client),
+  bouton **Copier le lien d’avis**, date de la demande, et « Avis reçu : x/5 » quand le client a répondu.
+  Le message WhatsApp habituel « commande livrée » contient aussi le lien.
+- Admin (`avis-admin.html`) : tableau **Commandes livrées sans avis** avec un bouton Demander / Relancer pour chacune.
+- Les clients n’ont pas d’adresse e-mail dans Yiriclick : la demande passe par WhatsApp. L’envoi automatique de WhatsApp
+  demanderait l’API WhatsApp Business (payante) ; ici, un clic ouvre le message prêt.
+
 ## À modifier avant le lancement
 
 - Remplacer `[ADRESSE E-MAIL]` (et ses traductions) par ton adresse de contact,

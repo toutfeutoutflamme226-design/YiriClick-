@@ -251,6 +251,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
 .fchips button { flex: none; min-height: 40px; padding: 0 14px; border: 2px solid var(--rule); background: var(--white); font-weight: 800; font-size: 14px; cursor: pointer; color: var(--ink); }
 .fchips button[aria-pressed="true"] { border-color: var(--navy); background: var(--navy); color: var(--white); }
 .ocard { background: var(--white); border: 1px solid var(--rule); border-left: 5px solid var(--rule); padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.orev { display: flex; flex-direction: column; gap: 6px; border-top: 1px dashed var(--rule); padding-top: 10px; }
 .ocard.s-nouvelle { border-left-color: var(--orange); } .ocard.s-confirmee { border-left-color: var(--teal-deep); } .ocard.s-expediee { border-left-color: #6A3FB5; } .ocard.s-livree { border-left-color: var(--ok); } .ocard.s-annulee { border-left-color: var(--bad); opacity: .85; }
 .otop { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
 .otop b { font-size: 17px; font-weight: 900; font-variant-numeric: tabular-nums; }
@@ -991,7 +992,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
       st.v7 = !st.products.length || "solde_prix" in st.products[0];
     } else st.products = [];
     rememberProfile();
-    await loadStats(); await loadOrders(true); await loadCodes(); await loadAvis();
+    await loadStats(); await loadOrders(true); await loadCodes(); await loadAvis(); if (seg === "ord") renderOrders();
     if (!st.products.length) st.v7 = st.codesOk;
     $("dbNotice").hidden = st.v5;
     fillShop(); renderHead(); renderProducts();
@@ -1613,10 +1614,38 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     switch (o.statut) {
       case "confirmee": return L("Bonjour ") + n + L(", votre commande ") + num + L(" chez ") + s + L(" est confirmée ✅\nTotal : ") + oTotal(o) + L("\nJe vous tiens au courant pour la livraison.");
       case "expediee": return L("Bonjour ") + n + L(", votre commande ") + num + L(" chez ") + s + L(" est en route 🚚");
-      case "livree": return L("Bonjour ") + n + L(", votre commande ") + num + L(" a été livrée. Merci pour votre confiance ! ") + s;
+      case "livree": return L("Bonjour ") + n + L(", votre commande ") + num + L(" a été livrée. Merci pour votre confiance ! ") + s + "\n" + L("Donnez votre avis en 1 minute : ") + reviewLink(o);
       case "annulee": return L("Bonjour ") + n + L(", votre commande ") + num + L(" chez ") + s + L(" a été annulée. N’hésitez pas à me contacter.");
       default: return L("Bonjour ") + n + L(", merci pour votre commande ") + num + L(" chez ") + s + L(". Je vous confirme rapidement la disponibilité et la livraison.");
     }
+  }
+  /* Review request (base v15): link to noter.html, message in the customer's language */
+  function reviewLink(o) { return SITE + "noter.html?c=" + o.id; }
+  function reviewMsg(o) {
+    var n = o.client_nom.split(" ")[0], s = st.shop.nom, num = o.numero, u = reviewLink(o), lg = (o.langue || "fr").slice(0, 2);
+    if (lg === "en") return "Hello " + n + ", thank you for your order " + num + " from " + s + "! Your opinion matters a lot: could you rate your order in 1 minute?\n" + u;
+    if (lg === "es") return "Hola " + n + ", ¡gracias por tu pedido " + num + " en " + s + "! Tu opinión es muy importante: ¿puedes valorar tu pedido en 1 minuto?\n" + u;
+    return "Bonjour " + n + ", merci pour votre commande " + num + " chez " + s + " ! Votre avis compte beaucoup : pouvez-vous noter votre commande en 1 minute ?\n" + u;
+  }
+  function reviewBlock(o, waNum) {
+    var box = el("div", "orev"), got = (st.avis || []).filter(function (a) { return a.commande_id === o.id; })[0];
+    if (got) { box.appendChild(el("span", "ostat s-livree", L("Avis reçu : ") + got.note + "/5 ★")); return box; }
+    var row = el("div", "oacts");
+    var ask = el("a", "btn btn-orange btn-sm", L("Demander un avis au client (WhatsApp)")); ask.target = "_blank"; ask.rel = "noopener";
+    ask.href = "https://wa.me/" + waNum() + "?text=" + encodeURIComponent(reviewMsg(o));
+    ask.addEventListener("click", function () {
+      ask.href = "https://wa.me/" + waNum() + "?text=" + encodeURIComponent(reviewMsg(o));
+      sb.rpc("avis_demande_envoyee", { p_commande: o.id }).then(function (r) { if (!r.error) { o.avis_demande_at = r.data; o.avis_demandes = (o.avis_demandes || 0) + 1; info(); } });
+    });
+    var cp = el("button", "btn btn-ghost btn-sm", L("Copier le lien d’avis")); cp.type = "button";
+    cp.addEventListener("click", function () { copy(reviewLink(o), cp, L("Copier le lien d’avis")); });
+    row.appendChild(ask); row.appendChild(cp); box.appendChild(row);
+    var p = el("p", "hint"); p.style.margin = "0"; box.appendChild(p);
+    function info() {
+      p.textContent = o.avis_demande_at ? L("Demande d’avis envoyée le ") + when(o.avis_demande_at) + (o.avis_demandes > 1 ? " (" + o.avis_demandes + "×)" : "") + L(". Pas encore de réponse.")
+        : L("Le client n’a pas encore donné son avis. Envoie-lui le lien : les avis rassurent les futurs acheteurs.");
+    }
+    info(); return box;
   }
   function orderCard(o) {
     var c = el("article", "ocard s-" + o.statut);
@@ -1631,7 +1660,8 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     var contact = el("div", "oacts"), d = digits(o.client_tel);
     var wa = el("a", "btn btn-ghost btn-sm", L("Écrire au client (WhatsApp)")); wa.target = "_blank"; wa.rel = "noopener"; contact.appendChild(wa);
     var call = el("a", "btn btn-ghost btn-sm", L("Appeler")); contact.appendChild(call);
-    function links(num) { wa.href = "https://wa.me/" + num + "?text=" + encodeURIComponent(clientMsg(o)); call.href = "tel:+" + num; }
+    var waNow = d;
+    function links(num) { waNow = num; wa.href = "https://wa.me/" + num + "?text=" + encodeURIComponent(clientMsg(o)); call.href = "tel:+" + num; }
     links(d);
     /* Older orders were recorded without the country code: let the seller pick the customer's country */
     if (window.YPhone && !YPhone.international(o.client_tel)) {
@@ -1655,6 +1685,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     if (o.statut === "expediee") { act(L("Marquer livrée"), "btn-navy", "livree"); act(L("Annuler"), "btn-danger", "annulee", L("Annuler la commande ") + o.numero + " ? Le stock sera remis."); }
     if (o.statut === "annulee") act(L("Rouvrir la commande"), "btn-ghost", "nouvelle");
     if (acts.children.length) c.appendChild(acts);
+    if (o.statut === "livree") c.appendChild(reviewBlock(o, function () { return waNow; }));
     var det = el("details"), sm = el("summary", null, o.note_vendeur ? L("Note interne : ") + o.note_vendeur.slice(0, 40) + (o.note_vendeur.length > 40 ? "…" : "") : L("Ajouter une note interne"));
     sm.style.cursor = "pointer"; sm.style.fontSize = "14px"; sm.style.fontWeight = "700"; sm.style.minHeight = "32px"; det.appendChild(sm);
     var f = el("div", "field"), ta = el("textarea"); ta.rows = 2; ta.maxLength = 1000; ta.value = o.note_vendeur || ""; ta.setAttribute("aria-label", L("Note interne, visible seulement par toi"));

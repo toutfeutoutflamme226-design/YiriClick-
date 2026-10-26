@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Donner mon avis · Yiriclick</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800;900&display=swap">
+<link rel="stylesheet" href="assets/shop.css">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<meta name="theme-color" content="#10232A">
+<meta name="robots" content="noindex">
+<meta name="description" content="Donne ton avis sur ta commande Yiriclick.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Yiriclick">
+<meta property="og:title" content="Donner mon avis · Yiriclick">
+<meta property="og:image" content="https://toutfeutoutflamme226-design.github.io/YiriClick-/assets/og.png">
+<style>
+/* Review request page: one narrow column, order summary on top, then the review form */
+.nt { max-width: 620px; margin: 0 auto; padding-block: 24px 48px; display: flex; flex-direction: column; gap: 16px; }
+.nt h1 { margin: 0; font-size: clamp(26px, 6vw, 34px); font-weight: 900; letter-spacing: -1px; line-height: 1.1; text-wrap: balance; }
+.nt-lead { margin: 0; color: var(--soft); }
+.nt-card { background: var(--white); border: 1px solid var(--rule); padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.nt-order { display: flex; gap: 12px; align-items: center; }
+.nt-logo { width: 52px; height: 52px; flex: none; background: var(--brand, #0E6E78) center / cover no-repeat; color: var(--brand-ink, #fff); display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 900; }
+.nt-order b { display: block; font-size: 17px; overflow-wrap: anywhere; }
+.nt-order span { font-size: 14px; color: var(--soft); }
+.nt-items { margin: 0; padding-left: 18px; font-size: 14px; color: var(--soft); }
+.nt-card .rev-form { border-top: 0; padding-top: 0; margin-top: 0; }
+.nt-done { text-align: center; align-items: center; padding: 28px 16px; }
+.nt-done .big { font-size: 44px; line-height: 1; color: #E0A526; }
+.nt-acts { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./" aria-label="Yiriclick">
+      <svg width="28" height="28" viewBox="0 0 160 160" aria-hidden="true"><path d="M76 146 V92 L34 40" fill="none" stroke="#4FC7CF" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/><path d="M76 92 L124 34" fill="none" stroke="#FF7A2E" stroke-width="22" stroke-linecap="round"/><path d="M96 30 H128 V62" fill="none" stroke="#FF7A2E" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="word"><span class="a">yiri</span><span class="b">click</span></span>
+    </a>
+    <div class="prefs">
+      <a href="./"><span aria-hidden="true">← </span><span data-t="showcase">Vitrine</span></a>
+      <select id="prefLang" data-ta="lang"><option value="fr">FR</option><option value="en">EN</option><option value="es">ES</option></select>
+      <select id="prefCur" data-ta="cur"><option value="">—</option><option value="XOF">FCFA</option><option value="EUR">€</option><option value="USD">$</option></select>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="nt" id="nt"><p data-t="loading">Chargement…</p></div>
+</main>
+
+<footer><div class="wrap"><span>© 2026 Yiriclick</span><a href="avis.html" data-t="fReviews">Avis clients</a></div></footer>
+
+<div class="modal" id="pmodal" hidden>
+  <div class="modal-bg"></div>
+  <div class="mbox" role="dialog" aria-modal="true"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="assets/phone.js"></script>
+<script src="assets/nav.js"></script>
+<script src="assets/shop.js"></script>
+<script>
+(function () {
+  var Y = window.YC, el = Y.el, id = (new URLSearchParams(location.search).get("c") || "").toLowerCase(), order = null, state = "loading";
+  Y.extend({
+    fr: { ntT: "Comment s’est passée ta commande ?", ntLead: "Ton avis aide les autres clients et permet au vendeur de s’améliorer. Cela prend moins d’une minute.",
+      ntOrder: "Commande {n}", ntNone: "Lien d’avis introuvable", ntNoneP: "Ce lien n’est pas valide. Vérifie que tu as copié le lien complet reçu sur WhatsApp.",
+      ntWait: "Ta commande n’est pas encore marquée comme livrée", ntWaitP: "Tu pourras donner ton avis dès que le vendeur l’aura marquée comme livrée. Garde ce lien.",
+      ntAlready: "Tu as déjà donné ton avis pour cette commande", ntThanks: "Merci {p} !", ntThanksP: "Ton avis est enregistré. Il aide toute la communauté Yiriclick.",
+      ntShop: "Revoir la boutique", ntHome: "Découvrir Yiriclick" },
+    en: { ntT: "How did your order go?", ntLead: "Your review helps other customers and helps the seller improve. It takes less than a minute.",
+      ntOrder: "Order {n}", ntNone: "Review link not found", ntNoneP: "This link is not valid. Check that you copied the full link you received on WhatsApp.",
+      ntWait: "Your order is not marked as delivered yet", ntWaitP: "You can leave your review as soon as the seller marks it as delivered. Keep this link.",
+      ntAlready: "You have already reviewed this order", ntThanks: "Thank you {p}!", ntThanksP: "Your review is saved. It helps the whole Yiriclick community.",
+      ntShop: "Back to the shop", ntHome: "Discover Yiriclick" },
+    es: { ntT: "¿Qué tal fue tu pedido?", ntLead: "Tu opinión ayuda a otros clientes y al vendedor a mejorar. Te llevará menos de un minuto.",
+      ntOrder: "Pedido {n}", ntNone: "Enlace de opinión no encontrado", ntNoneP: "Este enlace no es válido. Comprueba que copiaste el enlace completo recibido por WhatsApp.",
+      ntWait: "Tu pedido aún no está marcado como entregado", ntWaitP: "Podrás opinar en cuanto el vendedor lo marque como entregado. Guarda este enlace.",
+      ntAlready: "Ya has opinado sobre este pedido", ntThanks: "¡Gracias {p}!", ntThanksP: "Tu opinión se ha guardado. Ayuda a toda la comunidad Yiriclick.",
+      ntShop: "Volver a la tienda", ntHome: "Descubrir Yiriclick" }
+  });
+  var t = Y.t, box = document.getElementById("nt");
+  function msg(title, text, big) {
+    var c = el("div", "nt-card nt-done"); if (big) c.appendChild(el("div", "big", big)); c.appendChild(el("h1", null, title)); if (text) c.appendChild(el("p", "nt-lead", text));
+    var a = el("div", "nt-acts");
+    if (order) { var s = el("a", "btn btn-navy", t("ntShop")); s.href = "boutique.html?b=" + encodeURIComponent(order.boutique.slug); a.appendChild(s); }
+    var h = el("a", "btn btn-ghost", t("ntHome")); h.href = "./"; a.appendChild(h); c.appendChild(a); box.appendChild(c);
+  }
+  function orderCard() {
+    var c = el("div", "nt-card"), o = el("div", "nt-order"), lg = el("div", "nt-logo"), b = order.boutique;
+    var th = Y.THEMES[b.theme] || Y.THEMES.teal; document.body.style.setProperty("--brand", th[0]); document.body.style.setProperty("--brand-ink", th[1]);
+    if (b.logo) lg.style.backgroundImage = "url(\"" + Y.pub(b.logo) + "\")"; else lg.textContent = (b.nom || "?").charAt(0).toUpperCase();
+    lg.setAttribute("aria-hidden", "true"); o.appendChild(lg);
+    var w = el("div"); w.appendChild(el("b", null, b.nom)); w.appendChild(el("span", null, t("ntOrder", { n: order.numero }))); o.appendChild(w); c.appendChild(o);
+    var ul = el("ul", "nt-items"); (order.articles || []).slice(0, 6).forEach(function (x) { ul.appendChild(el("li", null, x.qty + " × " + x.nom)); }); c.appendChild(ul);
+    return c;
+  }
+  function render() {
+    Y.labels(); box.textContent = "";
+    if (state === "loading") { box.appendChild(el("p", null, t("loading"))); return; }
+    if (state === "none") { document.title = t("ntNone") + " · Yiriclick"; msg(t("ntNone"), t("ntNoneP")); return; }
+    document.title = t("ntT") + " · Yiriclick";
+    if (state === "done") { msg(t("ntThanks", { p: order.prenom || "" }).replace(/\s{2,}/g, " ").replace(/\s+!$/, (Y.prefs.lang === "fr" ? " !" : "!")), t("ntThanksP"), "★"); return; }
+    if (order.a_avis) { box.appendChild(orderCard()); msg(t("ntAlready"), t("ntThanksP"), "✓"); return; }
+    if (order.statut !== "livree") { box.appendChild(orderCard()); msg(t("ntWait"), t("ntWaitP")); return; }
+    box.appendChild(el("h1", null, t("ntT"))); box.appendChild(el("p", "nt-lead", t("ntLead")));
+    box.appendChild(orderCard());
+    var f = el("div", "nt-card"); box.appendChild(f);
+    Y.reviewForm(f, { id: order.id, shop: { nom: order.boutique.nom } }, function () { state = "done"; render(); window.scrollTo(0, 0); });
+  }
+  async function start() {
+    Y.wirePrefs(render); render();
+    if (!/^[0-9a-f-]{36}$/.test(id)) { state = "none"; render(); return; }
+    var r = await Y.sb.rpc("commande_pour_avis", { p_commande: id });
+    if (r.error || !r.data) { state = "none"; render(); return; }
+    order = r.data; state = "form";
+    var chosen = null; try { chosen = localStorage.getItem("yc-lang"); } catch (e) {}
+    if (!chosen && order.langue && ["fr", "en", "es"].indexOf(order.langue) >= 0 && order.langue !== Y.prefs.lang) { Y.setPrefs(order.langue, null); return; }
+    render();
+  }
+  start();
+})();
+</script>
+</body>
+</html>
