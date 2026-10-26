@@ -710,26 +710,155 @@ window.YC = (function () {
     });
     var bk = el("button", "cart-rm", t("cartTitle")); bk.type = "button"; bk.style.alignSelf = "center"; bk.addEventListener("click", function () { cartView = "list"; renderCart(); }); p.appendChild(bk);
   }
-  function reviewForm(sec, o) {
-    var f = el("form", "rev-form"); f.noValidate = true; var note = 0;
-    f.appendChild(el("b", null, t("revTitle", { s: o.shop.nom })));
-    var stars = el("div", "rev-stars"); stars.setAttribute("role", "radiogroup"); stars.setAttribute("aria-label", t("revNote"));
+  /* Review form (base v14): overall rating, ratings per criterion, causes when something went wrong,
+     call-back request, and a short optional part about Yiriclick itself. Falls back to the v7 form if the base is older. */
+  var REV_CRIT = ["produit", "qualite", "livraison", "emballage", "vendeur", "prix"], YC_CRIT = ["facilite", "confiance", "suivi"];
+  var REV_CAUSES = ["abime", "non_conforme", "qualite", "taille", "manquant", "retard", "vendeur_injoignable", "vendeur_impoli", "prix", "emballage", "paiement", "autre"];
+  function starRow(label, size, onPick) {
+    var row = el("div", "rv-row" + (size === "s" ? " rv-small" : "")), val = 0;
+    if (label) row.appendChild(el("span", "rv-lbl", label));
+    var g = el("div", "rev-stars"); g.setAttribute("role", "radiogroup"); g.setAttribute("aria-label", label || t("revNote"));
     for (var i = 1; i <= 5; i++) (function (n) {
       var b = el("button", null, "★"); b.type = "button"; b.setAttribute("role", "radio"); b.setAttribute("aria-checked", "false"); b.setAttribute("aria-label", n + " / 5");
-      b.addEventListener("click", function () { note = n; Array.prototype.forEach.call(stars.children, function (x, k) { x.classList.toggle("on", k < n); x.setAttribute("aria-checked", String(k === n - 1)); }); });
-      stars.appendChild(b);
+      b.addEventListener("click", function () {
+        val = val === n && size === "s" ? 0 : n;
+        Array.prototype.forEach.call(g.children, function (x, k) { x.classList.toggle("on", k < val); x.setAttribute("aria-checked", String(k === val - 1)); });
+        onPick(val);
+      });
+      g.appendChild(b);
     })(i);
-    f.appendChild(stars);
-    var ta = el("textarea"); ta.rows = 3; ta.maxLength = 1000; ta.placeholder = t("revPh"); ta.setAttribute("aria-label", t("revPh")); f.appendChild(ta);
+    row.appendChild(g); return row;
+  }
+  function reviewForm(sec, o) {
+    var f = el("form", "rev-form"); f.noValidate = true;
+    var d = { note: 0, criteres: {}, causes: [], recontact: false, yc: { note: 0, criteres: {}, recommande: null } };
+    f.appendChild(el("b", "rv-h", t("revTitle", { s: o.shop.nom })));
+    f.appendChild(starRow(null, "l", function (v) { d.note = v; update(); }));
+    var hint = el("p", "rv-hint", t("rvHint")); f.appendChild(hint);
+
+    var crit = el("div", "rv-crit"); crit.appendChild(el("span", "rv-sub", t("rvDetail")));
+    REV_CRIT.forEach(function (k) { crit.appendChild(starRow(t("rvc_" + k), "s", function (v) { if (v) d.criteres[k] = v; else delete d.criteres[k]; update(); })); });
+    f.appendChild(crit);
+
+    var cz = el("fieldset", "rv-causes"); cz.hidden = true;
+    cz.appendChild(el("legend", null, t("rvWhat")));
+    var chips = el("div", "rv-chips");
+    REV_CAUSES.forEach(function (k) {
+      var lb = el("label", "rv-chip"), cb = el("input"); cb.type = "checkbox"; cb.value = k;
+      cb.addEventListener("change", function () { var i = d.causes.indexOf(k); if (cb.checked && i < 0) d.causes.push(k); if (!cb.checked && i >= 0) d.causes.splice(i, 1); lb.classList.toggle("on", cb.checked); });
+      lb.appendChild(cb); lb.appendChild(el("span", null, t("rvk_" + k))); chips.appendChild(lb);
+    });
+    cz.appendChild(chips); f.appendChild(cz);
+
+    var tl = el("label", "rv-sub"); var ta = el("textarea"); ta.rows = 3; ta.maxLength = 1000; ta.id = "rvTxt" + o.id.slice(0, 8);
+    tl.htmlFor = ta.id; f.appendChild(tl); f.appendChild(ta);
+
+    var rc = el("label", "rv-check"); rc.hidden = true; var rcb = el("input"); rcb.type = "checkbox";
+    rcb.addEventListener("change", function () { d.recontact = rcb.checked; });
+    rc.appendChild(rcb); rc.appendChild(el("span", null, t("rvCall"))); f.appendChild(rc);
+
+    /* Yiriclick part: one tap for the recommendation, the rest folded */
+    var y = el("fieldset", "rv-yc"); y.appendChild(el("legend", null, t("rvReco")));
+    var nps = el("div", "rv-nps"); nps.setAttribute("role", "radiogroup"); nps.setAttribute("aria-label", t("rvReco"));
+    for (var i = 0; i <= 10; i++) (function (n) {
+      var b = el("button", null, String(n)); b.type = "button"; b.setAttribute("role", "radio"); b.setAttribute("aria-checked", "false");
+      b.addEventListener("click", function () {
+        d.yc.recommande = d.yc.recommande === n ? null : n;
+        Array.prototype.forEach.call(nps.children, function (x, k) { x.classList.toggle("on", k === d.yc.recommande); x.setAttribute("aria-checked", String(k === d.yc.recommande)); });
+      });
+      nps.appendChild(b);
+    })(i);
+    y.appendChild(nps);
+    var ends = el("div", "rv-ends"); ends.appendChild(el("span", null, t("rvNo"))); ends.appendChild(el("span", null, t("rvYes"))); y.appendChild(ends);
+    var more = el("details", "rv-more"); more.appendChild(el("summary", null, t("rvYcMore")));
+    more.appendChild(starRow(t("rvYcNote"), "s", function (v) { d.yc.note = v; }));
+    YC_CRIT.forEach(function (k) { more.appendChild(starRow(t("rvc_" + k), "s", function (v) { if (v) d.yc.criteres[k] = v; else delete d.yc.criteres[k]; })); });
+    var yl = el("label", "rv-sub", t("rvYcIdea")), yta = el("textarea"); yta.rows = 2; yta.maxLength = 1000; yta.id = "rvYc" + o.id.slice(0, 8); yl.htmlFor = yta.id;
+    more.appendChild(yl); more.appendChild(yta); y.appendChild(more); f.appendChild(y);
+
+    f.appendChild(el("p", "rv-legal", t("rvLegal")));
     var err = el("p", "wa-note"); err.setAttribute("role", "status"); f.appendChild(err);
     var go = el("button", "btn btn-navy", t("revSend")); go.type = "submit"; f.appendChild(go);
+
+    function bad() { if (d.note && d.note <= 3) return true; for (var k in d.criteres) if (d.criteres[k] <= 2) return true; return false; }
+    function update() {
+      var b = bad(); cz.hidden = !b; rc.hidden = !b;
+      tl.textContent = b ? t("rvTxtBad") : t("rvTxtGood"); ta.placeholder = b ? t("rvPhBad") : t("rvPhGood");
+      hint.hidden = !!d.note;
+    }
+    update();
     f.addEventListener("submit", async function (e) {
-      e.preventDefault(); if (!note) { err.textContent = t("revPick"); return; }
-      go.disabled = true; var r = await sb.rpc("laisser_avis", { p_commande: o.id, p_note: note, p_commentaire: ta.value.trim() }); go.disabled = false;
+      e.preventDefault(); if (!d.note) { err.textContent = t("revPick"); f.querySelector(".rev-stars button").focus(); return; }
+      if (bad() && !d.causes.length && ta.value.trim().length < 10) { err.textContent = t("rvNeedWhy"); cz.querySelector("input").focus(); return; }
+      var payload = { note: d.note, commentaire: ta.value.trim(), criteres: d.criteres, causes: bad() ? d.causes : [], recontact: bad() && d.recontact, langue: prefs.lang,
+        yc: { note: d.yc.note || null, commentaire: yta.value.trim(), criteres: d.yc.criteres, recommande: d.yc.recommande } };
+      go.disabled = true; err.textContent = "";
+      var r = await sb.rpc("laisser_avis_v2", { p_commande: o.id, p_data: payload });
+      if (r.error && (r.error.code === "PGRST202" || /laisser_avis_v2/.test(r.error.message || ""))) r = await sb.rpc("laisser_avis", { p_commande: o.id, p_note: d.note, p_commentaire: ta.value.trim() });
+      go.disabled = false;
       if (r.error) { err.textContent = r.error.message || t("orderErr"); return; }
       o.a_avis = true; ordersSave(); renderCart();
     });
     sec.appendChild(f);
+  }
+
+  /* Public list of reviews with summary, sorting and "show more". Used by boutique.html and avis.html. */
+  function reviewsUI(box, list, opts) {
+    opts = opts || {}; box.textContent = "";
+    var n = list.length; if (!n) { box.appendChild(el("p", "rv-empty", t("noReviews"))); return; }
+    var loc = LOCALE[prefs.lang], fmt = function (x) { return x.toLocaleString(loc, { maximumFractionDigits: 1, minimumFractionDigits: 1 }); };
+    function stars(v) { var r = Math.round(v); return "★★★★★".slice(0, r) + "☆☆☆☆☆".slice(0, 5 - r); }
+    var avg = list.reduce(function (s, r) { return s + r.note; }, 0) / n;
+    var top = el("div", "rv-top"), sum = el("div", "rev-sum");
+    sum.appendChild(el("span", "big", fmt(avg))); var w = el("div"); var s1 = el("div", "stars", stars(avg)); s1.setAttribute("aria-hidden", "true"); w.appendChild(s1); w.appendChild(el("div", "who", t("nReviews", { n: n }))); sum.appendChild(w);
+    top.appendChild(sum);
+    var dist = el("div", "rv-dist");
+    for (var k = 5; k >= 1; k--) {
+      var c = list.filter(function (r) { return r.note === k; }).length, row = el("div", "rv-drow");
+      row.appendChild(el("span", null, k + " ★")); var bar = el("span", "rv-bar"), fill = el("i"); fill.style.width = Math.round(c / n * 100) + "%"; bar.appendChild(fill); row.appendChild(bar);
+      row.appendChild(el("span", "rv-dn", String(c))); row.setAttribute("aria-label", t("rvDist", { k: k, c: c })); dist.appendChild(row);
+    }
+    top.appendChild(dist);
+    /* criteria averages, only those rated at least 3 times */
+    var keys = opts.cible === "yiriclick" ? YC_CRIT : REV_CRIT, cr = el("div", "rv-cavg");
+    keys.forEach(function (k) {
+      var v = list.map(function (r) { return r.criteres && r.criteres[k]; }).filter(function (x) { return x >= 1; });
+      if (v.length >= 3) { var a = v.reduce(function (s, x) { return s + x; }, 0) / v.length, it = el("span"); it.appendChild(el("b", null, fmt(a))); it.appendChild(document.createTextNode(" " + t("rvc_" + k))); cr.appendChild(it); }
+    });
+    if (cr.children.length) top.appendChild(cr);
+    box.appendChild(top);
+
+    var tools = el("div", "rv-tools"), lab = el("label", null, t("rvSort")), sel = el("select"); sel.id = "rvSort" + (opts.cible || "b"); lab.htmlFor = sel.id;
+    ["pert", "recent", "best", "worst"].forEach(function (v) { var op = el("option", null, t("rvs_" + v)); op.value = v; sel.appendChild(op); });
+    tools.appendChild(lab); tools.appendChild(sel); box.appendChild(tools);
+    var ul = el("div", "revs"), shown = 10, mb = el("button", "btn btn-ghost rv-moreb"); mb.type = "button";
+    box.appendChild(ul); box.appendChild(mb);
+    box.appendChild(el("p", "rv-legal", t("rvHow")));
+    function sorted() {
+      var a = list.slice(), v = sel.value, d = function (r) { return new Date(r.created_at).getTime(); };
+      if (v === "recent") a.sort(function (x, y) { return d(y) - d(x); });
+      else if (v === "best") a.sort(function (x, y) { return y.note - x.note || d(y) - d(x); });
+      else if (v === "worst") a.sort(function (x, y) { return x.note - y.note || d(y) - d(x); });
+      else a.sort(function (x, y) { return (y.mis_en_avant ? 1 : 0) - (x.mis_en_avant ? 1 : 0) || ((y.commentaire ? 1 : 0) - (x.commentaire ? 1 : 0)) || d(y) - d(x); });
+      return a;
+    }
+    function draw() {
+      ul.textContent = "";
+      sorted().slice(0, shown).forEach(function (r) {
+        var c = el("article", "rev" + (r.mis_en_avant && sel.value === "pert" ? " rev-star" : "")), hd = el("div", "rv-hd");
+        var s2 = el("span", "stars", stars(r.note)); s2.setAttribute("aria-label", r.note + " / 5"); hd.appendChild(s2);
+        if (r.mis_en_avant) hd.appendChild(el("span", "rv-badge", t("rvPicked")));
+        hd.appendChild(el("span", "rv-ok", "✓ " + t("rvVerified"))); c.appendChild(hd);
+        c.appendChild(el("span", "who", r.nom + " · " + new Date(r.created_at).toLocaleDateString(loc, { day: "numeric", month: "long", year: "numeric" })));
+        if (r.commentaire) c.appendChild(el("p", null, r.commentaire));
+        if (r.reponse) { var rp = el("div", "reply"); rp.appendChild(el("b", null, t(opts.cible === "yiriclick" ? "rvYcReply" : "sellerReply") + " : ")); rp.appendChild(document.createTextNode(r.reponse)); c.appendChild(rp); }
+        ul.appendChild(c);
+      });
+      mb.hidden = shown >= n; mb.textContent = t("rvMore", { n: Math.min(10, n - shown) });
+    }
+    sel.addEventListener("change", function () { shown = 10; draw(); });
+    mb.addEventListener("click", function () { shown += 10; draw(); });
+    draw();
   }
   window.addEventListener("storage", function (e) { if (e.key === "yc-sent") { try { sentLog = JSON.parse(e.newValue || "[]"); } catch (x) { sentLog = []; } } if (e.key === "yc-cart") { try { cart = JSON.parse(e.newValue || "[]"); } catch (x) { cart = []; } cart.forEach(function (i) { if (!i.key) i.key = i.id; }); cartBadge(); } if (e.key === "yc-orders") { myOrders = readJSON("yc-orders", []); } });
 
@@ -880,12 +1009,57 @@ window.YC = (function () {
     en: { goBack: "Back", prevP: "Previous product", nextP: "Next product", prevPh: "Previous photo", nextPh: "Next photo" },
     es: { goBack: "Volver", prevP: "Producto anterior", nextP: "Producto siguiente", prevPh: "Foto anterior", nextPh: "Foto siguiente" }
   });
+  /* Review form and review list (base v14) */
+  extend({
+    fr: { fReviews: "Avis clients", rvHint: "Touche une étoile pour noter.", rvDetail: "Détaille ta note (facultatif)", rvWhat: "Qu’est-ce qui n’a pas été ? Coche tout ce qui s’applique.",
+      rvc_produit: "Conforme à la description", rvc_qualite: "Qualité", rvc_livraison: "Délai de livraison", rvc_emballage: "Emballage", rvc_vendeur: "Réponses du vendeur", rvc_prix: "Rapport qualité-prix",
+      rvc_facilite: "Facilité de commande", rvc_confiance: "Confiance", rvc_suivi: "Suivi de commande",
+      rvk_abime: "Produit abîmé", rvk_non_conforme: "Différent de la photo ou de la description", rvk_qualite: "Qualité décevante", rvk_taille: "Mauvaise taille", rvk_manquant: "Article manquant",
+      rvk_retard: "Livraison en retard", rvk_vendeur_injoignable: "Vendeur difficile à joindre", rvk_vendeur_impoli: "Vendeur peu aimable", rvk_prix: "Trop cher", rvk_emballage: "Emballage insuffisant",
+      rvk_paiement: "Problème de paiement ou de remboursement", rvk_autre: "Autre",
+      rvTxtGood: "Ton commentaire (facultatif)", rvTxtBad: "Raconte ce qui s’est passé", rvPhGood: "Qu’as-tu aimé ? Le produit, la livraison, le vendeur…", rvPhBad: "Plus tu donnes de détails, plus nous pouvons agir vite.",
+      rvCall: "Je souhaite que Yiriclick me recontacte sur WhatsApp pour trouver une solution.", rvNeedWhy: "Coche au moins une cause ou décris le problème en quelques mots.",
+      rvReco: "Recommanderais-tu Yiriclick à un proche ? (facultatif)", rvNo: "Pas du tout", rvYes: "Certainement", rvYcMore: "Donner aussi mon avis sur Yiriclick (30 secondes)",
+      rvYcNote: "Ta note pour Yiriclick", rvYcIdea: "Une idée pour améliorer Yiriclick ?",
+      rvLegal: "Ton prénom et l’initiale de ton nom s’affichent avec ton avis. Ton téléphone n’est jamais publié.",
+      rvSort: "Trier", rvs_pert: "Les plus pertinents", rvs_recent: "Les plus récents", rvs_best: "Meilleures notes", rvs_worst: "Notes les plus basses",
+      rvPicked: "Mis en avant par Yiriclick", rvVerified: "Achat vérifié", rvMore: "Voir {n} avis de plus", rvDist: "{c} avis à {k} étoiles", rvYcReply: "Réponse de Yiriclick",
+      rvHow: "Comment fonctionnent les avis : seuls les clients dont la commande a été livrée peuvent donner leur avis, une fois par commande. Les avis ne sont ni achetés ni triés selon leur note. Yiriclick masque un avis seulement s’il est injurieux, faux, hors sujet ou s’il contient des données personnelles. « Mis en avant » signale un avis choisi par Yiriclick pour sa précision." },
+    en: { fReviews: "Customer reviews", rvHint: "Tap a star to rate.", rvDetail: "Rate the details (optional)", rvWhat: "What went wrong? Tick everything that applies.",
+      rvc_produit: "As described", rvc_qualite: "Quality", rvc_livraison: "Delivery time", rvc_emballage: "Packaging", rvc_vendeur: "Seller communication", rvc_prix: "Value for money",
+      rvc_facilite: "Ease of ordering", rvc_confiance: "Trust", rvc_suivi: "Order tracking",
+      rvk_abime: "Damaged item", rvk_non_conforme: "Not as pictured or described", rvk_qualite: "Disappointing quality", rvk_taille: "Wrong size", rvk_manquant: "Missing item",
+      rvk_retard: "Late delivery", rvk_vendeur_injoignable: "Seller hard to reach", rvk_vendeur_impoli: "Unfriendly seller", rvk_prix: "Too expensive", rvk_emballage: "Poor packaging",
+      rvk_paiement: "Payment or refund problem", rvk_autre: "Other",
+      rvTxtGood: "Your comment (optional)", rvTxtBad: "Tell us what happened", rvPhGood: "What did you like? The product, the delivery, the seller…", rvPhBad: "The more details you give, the faster we can act.",
+      rvCall: "I would like Yiriclick to contact me on WhatsApp to find a solution.", rvNeedWhy: "Tick at least one cause or describe the problem in a few words.",
+      rvReco: "Would you recommend Yiriclick to a friend? (optional)", rvNo: "Not at all", rvYes: "Definitely", rvYcMore: "Also review Yiriclick (30 seconds)",
+      rvYcNote: "Your rating for Yiriclick", rvYcIdea: "An idea to improve Yiriclick?",
+      rvLegal: "Your first name and the initial of your last name are shown with your review. Your phone number is never published.",
+      rvSort: "Sort", rvs_pert: "Most relevant", rvs_recent: "Most recent", rvs_best: "Highest rated", rvs_worst: "Lowest rated",
+      rvPicked: "Highlighted by Yiriclick", rvVerified: "Verified purchase", rvMore: "Show {n} more reviews", rvDist: "{c} reviews with {k} stars", rvYcReply: "Yiriclick’s reply",
+      rvHow: "How reviews work: only customers whose order was delivered can leave a review, once per order. Reviews are never bought or filtered by rating. Yiriclick hides a review only if it is abusive, fake, off-topic or contains personal data. “Highlighted” marks a review chosen by Yiriclick for its detail." },
+    es: { fReviews: "Opiniones de clientes", rvHint: "Toca una estrella para valorar.", rvDetail: "Detalla tu valoración (opcional)", rvWhat: "¿Qué salió mal? Marca todo lo que corresponda.",
+      rvc_produit: "Conforme a la descripción", rvc_qualite: "Calidad", rvc_livraison: "Plazo de entrega", rvc_emballage: "Embalaje", rvc_vendeur: "Comunicación del vendedor", rvc_prix: "Relación calidad-precio",
+      rvc_facilite: "Facilidad para pedir", rvc_confiance: "Confianza", rvc_suivi: "Seguimiento del pedido",
+      rvk_abime: "Producto dañado", rvk_non_conforme: "Diferente de la foto o la descripción", rvk_qualite: "Calidad decepcionante", rvk_taille: "Talla incorrecta", rvk_manquant: "Falta un artículo",
+      rvk_retard: "Entrega con retraso", rvk_vendeur_injoignable: "Vendedor difícil de contactar", rvk_vendeur_impoli: "Vendedor poco amable", rvk_prix: "Demasiado caro", rvk_emballage: "Embalaje insuficiente",
+      rvk_paiement: "Problema de pago o reembolso", rvk_autre: "Otro",
+      rvTxtGood: "Tu comentario (opcional)", rvTxtBad: "Cuéntanos qué pasó", rvPhGood: "¿Qué te gustó? El producto, la entrega, el vendedor…", rvPhBad: "Cuantos más detalles des, más rápido podremos actuar.",
+      rvCall: "Quiero que Yiriclick me contacte por WhatsApp para encontrar una solución.", rvNeedWhy: "Marca al menos una causa o describe el problema en pocas palabras.",
+      rvReco: "¿Recomendarías Yiriclick a un amigo? (opcional)", rvNo: "Para nada", rvYes: "Seguro que sí", rvYcMore: "Opinar también sobre Yiriclick (30 segundos)",
+      rvYcNote: "Tu nota para Yiriclick", rvYcIdea: "¿Una idea para mejorar Yiriclick?",
+      rvLegal: "Tu nombre y la inicial de tu apellido aparecen con tu opinión. Tu teléfono nunca se publica.",
+      rvSort: "Ordenar", rvs_pert: "Más relevantes", rvs_recent: "Más recientes", rvs_best: "Mejor valoradas", rvs_worst: "Peor valoradas",
+      rvPicked: "Destacada por Yiriclick", rvVerified: "Compra verificada", rvMore: "Ver {n} opiniones más", rvDist: "{c} opiniones de {k} estrellas", rvYcReply: "Respuesta de Yiriclick",
+      rvHow: "Cómo funcionan las opiniones: solo los clientes cuyo pedido fue entregado pueden opinar, una vez por pedido. Las opiniones no se compran ni se filtran según su nota. Yiriclick oculta una opinión solo si es ofensiva, falsa, ajena al tema o contiene datos personales. «Destacada» indica una opinión elegida por Yiriclick por su precisión." }
+  });
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", setupCart); else setupCart();
 
   /* Pages can add their own texts: YC.extend({ fr: {...}, en: {...}, es: {...} }) */
   function extend(d) { Object.keys(d).forEach(function (L) { T[L] = T[L] || {}; Object.keys(d[L]).forEach(function (k) { T[L][k] = d[L][k]; }); }); }
 
-  return { extend: extend, track: track, hasVar: hasVar, prep: prep, cartAdd: function (p, shop, q, b, v) { cartAdd(p, shop, q || 1, b, v); }, openOrders: function () { openCart("orders"); }, sb: sb, t: t, cat: cat, el: el, pub: pub, money: money, card: card, openProduct: openProduct, closeProduct: closeProduct, onProduct: function (f) { productListeners.push(f); }, wirePrefs: wirePrefs, setPrefs: setPrefs, labels: labels, catOptions: catOptions, norm: norm, prefs: prefs,
+  return { extend: extend, track: track, hasVar: hasVar, prep: prep, cartAdd: function (p, shop, q, b, v) { cartAdd(p, shop, q || 1, b, v); }, openOrders: function () { openCart("orders"); }, sb: sb, t: t, cat: cat, el: el, pub: pub, money: money, card: card, openProduct: openProduct, closeProduct: closeProduct, reviewsUI: reviewsUI, onProduct: function (f) { productListeners.push(f); }, wirePrefs: wirePrefs, setPrefs: setPrefs, labels: labels, catOptions: catOptions, norm: norm, prefs: prefs,
     convert: convert, discount: discount, priceBlock: priceBlock, favButton: favButton, isFav: isFav, favs: function () { return favs.slice(); }, onFavs: function (f) { favListeners.push(f); },
     openCart: function () { openCart(); }, CATS: CATS, FAMILIES: FAMILIES, THEMES: THEMES, LOCALE: LOCALE, URL_SB: URL_SB, HEART: HEART, CART_SVG: CART_SVG };
 })();
