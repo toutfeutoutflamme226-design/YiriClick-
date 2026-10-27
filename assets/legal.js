@@ -5,7 +5,7 @@ window.YLEGAL = {
   nomCommercial: "Yiriclick",      // trade name (handelsnaam)
   forme: "eenmanszaak",            // legal form
   adresse: "",                     // business address registered at the KvK (shown publicly, required by law)
-  kvk: "",                         // KvK number (8 digits)
+  kvk: "86470167",                       // KvK number (8 digits)
   btw: "NL004252296B80",                       // VAT number (btw-id), e.g. NL000000000B00
   email: "contact@yiriclick.com",
   site: "https://yiriclick.com/",
