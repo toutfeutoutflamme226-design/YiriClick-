@@ -6,9 +6,9 @@ window.YLEGAL = {
   forme: "eenmanszaak",            // legal form
   adresse: "",                     // business address registered at the KvK (shown publicly, required by law)
   kvk: "",                         // KvK number (8 digits)
-  btw: "",                         // VAT number (btw-id), e.g. NL000000000B00
+  btw: "NL004252296B80",                       // VAT number (btw-id), e.g. NL000000000B00
   email: "contact@yiriclick.com",
   site: "https://yiriclick.com/",
-  tribunal: "",                    // competent court, e.g. "Rechtbank Midden-Nederland"
+  tribunal: "Rechtbank Midden-Nederland",                  // competent court, e.g. "Rechtbank Midden-Nederland"
   majLe: "27 octobre 2026"         // date of the last update of the texts
 };
