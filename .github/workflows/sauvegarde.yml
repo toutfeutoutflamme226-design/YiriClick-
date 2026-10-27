@@ -42,6 +42,7 @@ jobs:
             if [ -z "$DB_PASSWORD" ]; then echo "::error::L'adresse contient [YOUR-PASSWORD] : ajoute le secret SUPABASE_DB_PASSWORD avec le mot de passe de la base."; exit 1; fi
             DB_URL="$(printf '%s' "$DB_URL" | sed 's/:\[\?YOUR-PASSWORD\]\?@/@/')"
             export PGPASSWORD="$DB_PASSWORD"
+            echo "::notice::Mot de passe de la base reçu : ${#DB_PASSWORD} caractères (le contenu reste secret)."
           fi
           export DB_URL
           mkdir -p out
