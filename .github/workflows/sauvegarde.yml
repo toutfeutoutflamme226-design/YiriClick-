@@ -45,6 +45,8 @@ jobs:
             echo "::notice::Mot de passe de la base reçu : ${#DB_PASSWORD} caractères (le contenu reste secret)."
           fi
           export DB_URL
+          # Who and where (no password in this line): helps to check the address taken from Supabase
+          echo "::notice::Connexion : utilisateur $(printf '%s' "$DB_URL" | sed -E 's#^[a-z]+://([^:@/]+).*#\1#') sur $(printf '%s' "$DB_URL" | sed -E 's#^.*@([^/?]+).*#\1#')"
           mkdir -p out
           F="out/yiriclick-$(date -u +%F).sql.gz.gpg"
           docker run --rm -e DB_URL -e PGPASSWORD postgres:17 sh -c 'pg_dump --no-owner --no-privileges --schema=public --schema=auth --schema=storage "$DB_URL"' \
