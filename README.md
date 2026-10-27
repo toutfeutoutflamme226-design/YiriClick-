@@ -317,6 +317,12 @@ Fonctionnement :
    adresse admin, derniers e-mails, boutiques et messages en attente.
 5. **Polices** : Archivo est servie par le site (`assets/fonts.css`, `assets/fonts/`), plus aucune requête vers Google.
 
+## Taux de change à 7 h, heure des Pays-Bas (base v17)
+
+Supabase › SQL Editor › New query : colle `supabase/schema-v17.sql`, puis **Run**.
+Chaque jour à 07:00 (Amsterdam, été comme hiver), la base récupère les derniers taux publiés par la BCE (la veille vers 16 h).
+Si `schema-v12.sql` est relancé un jour, relancer ensuite `schema-v17.sql`.
+
 ## À modifier avant le lancement
 
 - Remplacer `[ADRESSE E-MAIL]` (et ses traductions) par ton adresse de contact,
