@@ -312,7 +312,7 @@ Fonctionnement :
    Le vendeur voit « En cours de vérification » dans son tableau de bord. L'admin reçoit un e-mail si les e-mails (v9) sont réglés.
 3. **Contact** : page `contact.html` (formulaire, aucune adresse affichée). Les messages arrivent dans l'admin
    (carte « Messages de contact ») et par e-mail à l'admin. Anti-abus : 3 messages par heure et par contact.
-   Pour afficher aussi une adresse : `var CONTACT_EMAIL = "contact@yiriclick.com";` dans `contact.html`.
+   L’adresse contact@yiriclick.com (transférée par Cloudflare Email Routing) est affichée sous le formulaire (`CONTACT_EMAIL` dans `contact.html`).
 4. **État du site** (admin) : scripts installés (inscriptions à v16), taux du jour, tâches planifiées, clé Resend,
    adresse admin, derniers e-mails, boutiques et messages en attente.
 5. **Polices** : Archivo est servie par le site (`assets/fonts.css`, `assets/fonts/`), plus aucune requête vers Google.
