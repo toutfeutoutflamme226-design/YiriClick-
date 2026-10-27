@@ -34,6 +34,7 @@ jobs:
           # The address can be pasted exactly as Supabase shows it, with [YOUR-PASSWORD]: the password then comes
           # from the SUPABASE_DB_PASSWORD secret (given to pg_dump through PGPASSWORD, never written in the address).
           DB_URL="$(printf '%s' "$DB_URL" | tr -d '[:space:]')"
+          DB_PASSWORD="$(printf '%s' "$DB_PASSWORD" | tr -d '\r\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"   # a space or line break copied by mistake
           n=$(printf '%s' "$DB_URL" | grep -o 'postgres\(ql\)\?://' | wc -l)
           if [ "$n" -ne 1 ]; then echo "::error::SUPABASE_DB_URL doit contenir une seule adresse qui commence par postgresql:// (ici : $n). Recolle l'adresse copiée dans Supabase > Connect > Session pooler."; exit 1; fi
           case "$DB_URL" in *pooler.supabase.com*) ;; *) echo "::error::SUPABASE_DB_URL doit être l'adresse « Session pooler » (elle contient pooler.supabase.com)."; exit 1;; esac
