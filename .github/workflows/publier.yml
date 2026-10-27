@@ -1,7 +1,7 @@
 # Publishes the site on GitHub Pages: on every push, every hour (new shops and products get their
 # share pages and enter the sitemap), and by hand from the Actions tab.
 # Requires once: Settings > Pages > Build and deployment > Source = "GitHub Actions".
-# After buying the domain: Settings > Secrets and variables > Actions > Variables > SITE_URL = https://yiriclick.com/
+# Site address: https://yiriclick.com/ by default (the SITE_URL variable can override it).
 name: Publier le site
 
 on:

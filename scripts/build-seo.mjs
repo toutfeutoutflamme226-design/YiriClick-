@@ -10,7 +10,7 @@ import { join, dirname } from "node:path";
 const ROOT = process.cwd();
 const OUT = join(ROOT, "_site");
 const OLD_SITE = "https://toutfeutoutflamme226-design.github.io/YiriClick-/";
-const SITE = (process.env.SITE_URL || OLD_SITE).replace(/\/?$/, "/");
+const SITE = (process.env.SITE_URL || "https://yiriclick.com/").replace(/\/?$/, "/");
 const SB = (process.env.SUPABASE_URL || "https://vtiakxfnechkoomagddl.supabase.co").replace(/\/$/, "");
 const KEY = process.env.SUPABASE_KEY || "sb_publishable_415c2KQSDRx0SMofnkHKQA_PJ2IrzBA";
 const SKIP = new Set([".git", ".github", "_site", "node_modules", "scripts"]);
