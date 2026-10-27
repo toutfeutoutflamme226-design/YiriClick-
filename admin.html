@@ -338,7 +338,7 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
     if (!stt.error && stt.data) {
       if (!stt.data.admin) { show("vDenied"); return; }
       if (stt.data.code_active && !stt.data.session_confirmee) { mfaVerify(); return; }
-      if (!stt.data.code_active && !mfaLater) { mfaEnroll(); return; }
+      if (!stt.data.code_active && !mfaLater) { if (!(await mfaResume())) mfaEnroll(); return; }
     } else {
       var adm = await sb.rpc("is_admin");
       if (adm.error || adm.data !== true) { show("vDenied"); return; }
@@ -375,6 +375,19 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
     };
     setTimeout(function () { inp.focus(); }, 50);
   }
+  /* On iPhone, Safari often reloads the page after a switch to the authenticator app: keep the key being set up
+     (30 minutes, this browser only) so the same key is shown again instead of a new one. */
+  var PEND = "yc-mfa-pending";
+  function pendSave(d) { try { localStorage.setItem(PEND, JSON.stringify({ at: Date.now(), d: d })); } catch (e) {} }
+  function pendClear() { try { localStorage.removeItem(PEND); } catch (e) {} }
+  async function mfaResume() {
+    var p = null; try { p = JSON.parse(localStorage.getItem(PEND) || "null"); } catch (e) {}
+    if (!p || !p.d || Date.now() - p.at > 30 * 60 * 1000) { pendClear(); return false; }
+    var lf = await sb.auth.mfa.listFactors();
+    var still = lf.data && (lf.data.all || []).some(function (x) { return x.id === p.d.id && x.status !== "verified"; });
+    if (!still) { pendClear(); return false; }
+    mfaScan(p.d); return true;
+  }
   function mfaEnroll() {
     var f = mfaForm("Protège ton administration", "En plus du mot de passe, un code à 6 chiffres changera toutes les 30 secondes sur ton téléphone. Même si quelqu’un vole ton mot de passe, il ne pourra pas entrer.");
     f.appendChild(el("p", "notice", "Installe d’abord une application d’authentification : Google Authenticator, Microsoft Authenticator, ou l’app Mots de passe de l’iPhone."));
@@ -390,6 +403,7 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
       var r = await sb.auth.mfa.enroll({ factorType: "totp", friendlyName: "Yiriclick admin " + new Date().toISOString().slice(0, 10) });
       start.disabled = false;
       if (r.error || !r.data) { err.textContent = "Activation impossible : " + ((r.error && r.error.message) || "réessaie") + ". Vérifie dans Supabase › Authentication › Multi-Factor que TOTP est activé."; return; }
+      pendSave({ id: r.data.id, totp: { uri: r.data.totp.uri, qr_code: r.data.totp.qr_code, secret: r.data.totp.secret } });
       mfaScan(r.data);
     });
   }
@@ -404,12 +418,15 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
     var sec = el("p", "notice"); sec.appendChild(document.createTextNode("Ou saisis cette clé à la main : ")); var c = el("code", null, d.totp.secret); c.style.userSelect = "all"; sec.appendChild(c); f.appendChild(sec);
     var inp = codeField(f), err = el("p", "err"), go = el("button", "btn btn-orange", "Confirmer et activer"); go.type = "submit";
     f.appendChild(err); f.appendChild(go); outLink(f);
+    var fresh = el("button", "btn btn-ghost", "Recommencer avec une nouvelle clé"); fresh.type = "button";
+    fresh.addEventListener("click", function () { pendClear(); mfaEnroll(); }); f.appendChild(fresh);
     f.appendChild(el("p", "notice", "Garde ton téléphone en sécurité. Si tu le perds, il faudra désactiver le code depuis Supabase (voir README, base v18)."));
     f.onsubmit = async function (e) {
       e.preventDefault(); err.textContent = "";
       var code = inp.value.replace(/\D/g, ""); if (code.length !== 6) { err.textContent = "Entre les 6 chiffres du code."; return; }
       go.disabled = true; var r = await sb.auth.mfa.challengeAndVerify({ factorId: d.id, code: code }); go.disabled = false;
-      if (r.error) { err.textContent = "Code incorrect. Vérifie que l’heure de ton téléphone est automatique, puis réessaie."; inp.value = ""; inp.focus(); return; }
+      if (r.error) { err.textContent = "Code refusé (" + (r.error.message || "erreur") + "). Utilise le code du compte Yiriclick dans l’application, vérifie que l’heure du téléphone est automatique, puis réessaie."; inp.value = ""; inp.focus(); return; }
+      pendClear();
       var ok = mfaForm("Code à 6 chiffres activé ✓", "Désormais, l’administration te demandera ce code à chaque nouvelle connexion.");
       var b = el("button", "btn btn-orange", "Ouvrir l’administration"); b.type = "button"; b.addEventListener("click", boot); ok.appendChild(b);
     };
@@ -425,7 +442,7 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
     if (r.error) { err.textContent = "E-mail ou mot de passe incorrect."; return; }
     $("pass").value = ""; boot();
   });
-  async function logout() { await sb.auth.signOut(); show("vLogin"); }
+  async function logout() { pendClear(); await sb.auth.signOut(); show("vLogin"); }
   $("logout").addEventListener("click", logout);
   $("deniedOut").addEventListener("click", logout);
   $("refresh").addEventListener("click", load);
