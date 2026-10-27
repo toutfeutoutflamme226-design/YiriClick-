@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Informations légales · Yiriclick</title>
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="assets/shop.css">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<link rel="canonical" href="https://yiriclick.com/juridique.html">
+<meta name="theme-color" content="#10232A">
+<meta name="description" content="Mentions légales, conditions d’utilisation, conditions vendeurs et politique de confidentialité de Yiriclick.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Yiriclick">
+<meta property="og:title" content="Informations légales · Yiriclick">
+<meta property="og:url" content="https://yiriclick.com/juridique.html">
+<meta property="og:image" content="https://yiriclick.com/assets/og.png">
+<style>
+/* Legal page: four tabs (#mentions, #conditions, #vendeurs, #confidentialite), texts from assets/legal-texts.js, identity from assets/legal.js. */
+.lg { max-width: 760px; margin: 0 auto; padding-block: 24px 48px; display: flex; flex-direction: column; gap: 16px; }
+.lg h1 { margin: 0; font-size: clamp(26px, 6vw, 34px); font-weight: 900; letter-spacing: -1px; line-height: 1.1; }
+.lg-lead, .lg-meta { margin: 0; color: var(--soft); }
+.lg-meta { font-size: 13px; }
+.lg-tabs { display: flex; gap: 6px; flex-wrap: wrap; position: sticky; top: 0; background: var(--paper, #F6F3EE); padding-block: 8px; z-index: 2; }
+.lg-tabs a { padding: 10px 14px; min-height: 44px; box-sizing: border-box; display: inline-flex; align-items: center; border: 2px solid var(--rule); background: var(--white); color: var(--ink); font-weight: 800; font-size: 14px; text-decoration: none; }
+.lg-tabs a[aria-current="page"] { background: var(--ink); color: var(--white); border-color: var(--ink); }
+.lg-card { background: var(--white); border: 1px solid var(--rule); padding: 18px; }
+.lg-card h2 { font-size: 22px; margin: 0 0 6px; }
+.lg-card h3 { font-size: 16px; margin: 18px 0 6px; }
+.lg-card p { margin: 0 0 6px; line-height: 1.6; white-space: pre-line; overflow-wrap: anywhere; }
+.lg-card a { color: var(--teal-deep, #0E6E78); font-weight: 700; }
+.lg-pend { color: #8A5A00; font-style: italic; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./" aria-label="Yiriclick">
+      <svg width="28" height="28" viewBox="0 0 160 160" aria-hidden="true"><path d="M76 146 V92 L34 40" fill="none" stroke="#4FC7CF" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/><path d="M76 92 L124 34" fill="none" stroke="#FF7A2E" stroke-width="22" stroke-linecap="round"/><path d="M96 30 H128 V62" fill="none" stroke="#FF7A2E" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="word"><span class="a">yiri</span><span class="b">click</span></span>
+    </a>
+    <div class="prefs">
+      <a href="./"><span aria-hidden="true">← </span><span data-t="showcase">Vitrine</span></a>
+      <select id="prefLang" data-ta="lang"><option value="fr">FR</option><option value="en">EN</option><option value="es">ES</option></select>
+      <select id="prefCur" data-ta="cur"><option value="">—</option><option value="XOF">FCFA</option><option value="EUR">€</option><option value="USD">$</option></select>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="lg" id="lg"></div>
+</main>
+
+<footer><div class="wrap"><span>© 2026 Yiriclick</span><a href="contact.html" data-t="fContact">Contact</a><a href="avis.html" data-t="fReviews">Avis clients</a> <a href="juridique.html" data-t="fLegal">Informations légales</a></div></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="assets/phone.js"></script>
+<script src="assets/nav.js"></script>
+<script src="assets/shop.js"></script>
+<script src="assets/legal.js"></script>
+<script src="assets/legal-texts.js"></script>
+<script>
+(function () {
+  var Y = window.YC, el = Y.el, box = document.getElementById("lg"), L = window.YLEGAL || {}, TX = window.YLEGAL_TEXTS;
+  var TABS = ["mentions", "conditions", "vendeurs", "confidentialite"];
+  function cur() { var h = location.hash.slice(1); return TABS.indexOf(h) >= 0 ? h : "mentions"; }
+
+  /* Writes a text with {placeholders}: empty identity values become "being registered"; e-mail and site become links. */
+  function fill(p, text, D) {
+    text.split(/(\{\w+\})/).forEach(function (part) {
+      var m = /^\{(\w+)\}$/.exec(part);
+      if (!m) { if (part) p.appendChild(document.createTextNode(part)); return; }
+      var v = (L[m[1]] || "").trim();
+      if (!v) { p.appendChild(el("span", "lg-pend", "(" + D.pending + ")")); return; }
+      if (m[1] === "email") { var a = el("a", null, v); a.href = "mailto:" + v; p.appendChild(a); return; }
+      if (m[1] === "site") { var s = el("a", null, v.replace(/^https?:\/\//, "").replace(/\/$/, "")); s.href = v; p.appendChild(s); return; }
+      p.appendChild(document.createTextNode(v));
+    });
+  }
+  function render() {
+    Y.labels();
+    var D = TX[Y.prefs.lang] || TX.fr, tab = cur();
+    document.documentElement.lang = TX[Y.prefs.lang] ? Y.prefs.lang : "fr";
+    document.title = D.tabs[tab] + " · Yiriclick";
+    box.textContent = "";
+    box.appendChild(el("h1", null, D.title));
+    box.appendChild(el("p", "lg-lead", D.lead));
+    var nav = el("nav", "lg-tabs"); nav.setAttribute("aria-label", D.title);
+    TABS.forEach(function (k) { var a = el("a", null, D.tabs[k]); a.href = "#" + k; if (k === tab) a.setAttribute("aria-current", "page"); nav.appendChild(a); });
+    box.appendChild(nav);
+    var card = el("article", "lg-card");
+    card.appendChild(el("h2", null, D.tabs[tab]));
+    var meta = el("p", "lg-meta"); fill(meta, D.updated, D); card.appendChild(meta);
+    D[tab].forEach(function (s) { card.appendChild(el("h3", null, s[0])); var p = el("p"); fill(p, s[1], D); card.appendChild(p); });
+    box.appendChild(card);
+    box.appendChild(el("p", "lg-meta", D.prevails));
+    var c = el("a", "btn btn-navy", D.contactBtn); c.href = "contact.html"; c.style.alignSelf = "flex-start"; box.appendChild(c);
+  }
+  window.addEventListener("hashchange", function () { render(); window.scrollTo(0, 0); });
+  Y.wirePrefs(render); render();
+})();
+</script>
+</body>
+</html>

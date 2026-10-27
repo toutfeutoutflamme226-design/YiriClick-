@@ -357,3 +357,11 @@ Si `schema-v12.sql` est relancé un jour, relancer ensuite `schema-v17.sql`.
   Pour la plateforme finale, importer une base complète (par exemple GeoNames, gratuite) dans Supabase.
 - Textes juridiques (conditions générales, confidentialité, attestation, engagement) : version provisoire
   dans l'objet `DOCS` de `index.html`. Les faire valider par un juriste et compléter les éléments entre crochets.
+
+## Informations légales (juridique.html)
+
+- Les textes (mentions légales, conditions d’utilisation, conditions vendeurs, confidentialité) sont dans `assets/legal-texts.js`, en FR/EN/ES. Ils servent aussi dans le formulaire d’inscription vendeur (vendre.html).
+- L’identité de l’entreprise est dans `assets/legal.js` : nom, adresse, numéro KvK, numéro de TVA (btw-id), tribunal. Une valeur vide s’affiche « en cours d’enregistrement ».
+- **Ajouter le numéro KvK** : sur GitHub, ouvre `assets/legal.js`, clique sur le crayon, remplis `kvk: "12345678"` (et `nom`, `adresse`, `btw`, `tribunal`), puis « Commit changes ». Le site se met à jour en 1 à 2 minutes.
+- Chaque fiche produit a un lien « Signaler ce produit » qui ouvre le formulaire de contact pré-rempli (sujet : signalement).
+- À faire relire par un juriste (par exemple via le Juridisch Loket ou un avocat) avant de prendre des paiements en ligne.

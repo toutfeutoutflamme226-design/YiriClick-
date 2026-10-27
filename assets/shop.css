@@ -285,3 +285,7 @@ footer a { color: var(--teal); }
 .rev-star { border-color: var(--teal-deep); box-shadow: inset 4px 0 0 var(--teal-deep); }
 .rv-moreb { align-self: flex-start; margin-top: 10px; min-height: 44px; }
 .rv-empty { color: var(--soft); }
+
+/* "Report this product" link at the bottom of the product sheet (EU Digital Services Act: notice and action) */
+.report-link { display: inline-block; margin-top: 14px; font-size: 13px; color: var(--soft); text-decoration: underline; padding: 8px 0; }
+.report-link:hover { color: #B3261E; }

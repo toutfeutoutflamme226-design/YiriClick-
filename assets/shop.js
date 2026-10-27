@@ -968,6 +968,9 @@ window.YC = (function () {
     var wa = shop ? waLink(shop, p) : "";
     if (wa && p.stock !== 0) { var w = el("a", "direct", t("orderDirect")); w.href = wa; w.target = "_blank"; w.rel = "noopener"; w.addEventListener("click", function () { track("clic_whatsapp", shopIdOf(p, shop), p.id); }); bd.appendChild(w); }
     else if (!wa) bd.appendChild(el("p", "wa-note", t("noWa")));
+    var rp = el("a", "report-link", "⚑ " + t("report"));
+    rp.href = "contact.html?sujet=signalement&produit=" + encodeURIComponent(String(p.id || "")) + "&nom=" + encodeURIComponent(String(p.nom || "").slice(0, 80)) + (shop && shop.nom ? "&boutique=" + encodeURIComponent(String(shop.nom).slice(0, 80)) : "");
+    bd.appendChild(rp);
     box.appendChild(bd);
     box.setAttribute("aria-labelledby", "pmTitle");
     if (!wasOpen) lastFocus = document.activeElement;
@@ -1014,7 +1017,7 @@ window.YC = (function () {
   });
   /* Review form and review list (base v14) */
   extend({
-    fr: { fReviews: "Avis clients", rvHint: "Touche une étoile pour noter.", rvDetail: "Détaille ta note (facultatif)", rvWhat: "Qu’est-ce qui n’a pas été ? Coche tout ce qui s’applique.",
+    fr: { fReviews: "Avis clients", fLegal: "Informations légales", fContact: "Contact", report: "Signaler ce produit", rvHint: "Touche une étoile pour noter.", rvDetail: "Détaille ta note (facultatif)", rvWhat: "Qu’est-ce qui n’a pas été ? Coche tout ce qui s’applique.",
       rvc_produit: "Conforme à la description", rvc_qualite: "Qualité", rvc_livraison: "Délai de livraison", rvc_emballage: "Emballage", rvc_vendeur: "Réponses du vendeur", rvc_prix: "Rapport qualité-prix",
       rvc_facilite: "Facilité de commande", rvc_confiance: "Confiance", rvc_suivi: "Suivi de commande",
       rvk_abime: "Produit abîmé", rvk_non_conforme: "Différent de la photo ou de la description", rvk_qualite: "Qualité décevante", rvk_taille: "Mauvaise taille", rvk_manquant: "Article manquant",
@@ -1028,7 +1031,7 @@ window.YC = (function () {
       rvSort: "Trier", rvs_pert: "Les plus pertinents", rvs_recent: "Les plus récents", rvs_best: "Meilleures notes", rvs_worst: "Notes les plus basses",
       rvPicked: "Mis en avant par Yiriclick", rvVerified: "Achat vérifié", rvMore: "Voir {n} avis de plus", rvDist: "{c} avis à {k} étoiles", rvYcReply: "Réponse de Yiriclick",
       rvHow: "Comment fonctionnent les avis : seuls les clients dont la commande a été livrée peuvent donner leur avis, une fois par commande. Les avis ne sont ni achetés ni triés selon leur note. Yiriclick masque un avis seulement s’il est injurieux, faux, hors sujet ou s’il contient des données personnelles. « Mis en avant » signale un avis choisi par Yiriclick pour sa précision." },
-    en: { fReviews: "Customer reviews", rvHint: "Tap a star to rate.", rvDetail: "Rate the details (optional)", rvWhat: "What went wrong? Tick everything that applies.",
+    en: { fReviews: "Customer reviews", fLegal: "Legal information", fContact: "Contact", report: "Report this product", rvHint: "Tap a star to rate.", rvDetail: "Rate the details (optional)", rvWhat: "What went wrong? Tick everything that applies.",
       rvc_produit: "As described", rvc_qualite: "Quality", rvc_livraison: "Delivery time", rvc_emballage: "Packaging", rvc_vendeur: "Seller communication", rvc_prix: "Value for money",
       rvc_facilite: "Ease of ordering", rvc_confiance: "Trust", rvc_suivi: "Order tracking",
       rvk_abime: "Damaged item", rvk_non_conforme: "Not as pictured or described", rvk_qualite: "Disappointing quality", rvk_taille: "Wrong size", rvk_manquant: "Missing item",
@@ -1042,7 +1045,7 @@ window.YC = (function () {
       rvSort: "Sort", rvs_pert: "Most relevant", rvs_recent: "Most recent", rvs_best: "Highest rated", rvs_worst: "Lowest rated",
       rvPicked: "Highlighted by Yiriclick", rvVerified: "Verified purchase", rvMore: "Show {n} more reviews", rvDist: "{c} reviews with {k} stars", rvYcReply: "Yiriclick’s reply",
       rvHow: "How reviews work: only customers whose order was delivered can leave a review, once per order. Reviews are never bought or filtered by rating. Yiriclick hides a review only if it is abusive, fake, off-topic or contains personal data. “Highlighted” marks a review chosen by Yiriclick for its detail." },
-    es: { fReviews: "Opiniones de clientes", rvHint: "Toca una estrella para valorar.", rvDetail: "Detalla tu valoración (opcional)", rvWhat: "¿Qué salió mal? Marca todo lo que corresponda.",
+    es: { fReviews: "Opiniones de clientes", fLegal: "Información legal", fContact: "Contacto", report: "Denunciar este producto", rvHint: "Toca una estrella para valorar.", rvDetail: "Detalla tu valoración (opcional)", rvWhat: "¿Qué salió mal? Marca todo lo que corresponda.",
       rvc_produit: "Conforme a la descripción", rvc_qualite: "Calidad", rvc_livraison: "Plazo de entrega", rvc_emballage: "Embalaje", rvc_vendeur: "Comunicación del vendedor", rvc_prix: "Relación calidad-precio",
       rvc_facilite: "Facilidad para pedir", rvc_confiance: "Confianza", rvc_suivi: "Seguimiento del pedido",
       rvk_abime: "Producto dañado", rvk_non_conforme: "Diferente de la foto o la descripción", rvk_qualite: "Calidad decepcionante", rvk_taille: "Talla incorrecta", rvk_manquant: "Falta un artículo",

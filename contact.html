@@ -55,7 +55,7 @@
   <div class="ct" id="ct"></div>
 </main>
 
-<footer><div class="wrap"><span>© 2026 Yiriclick</span><a href="avis.html" data-t="fReviews">Avis clients</a></div></footer>
+<footer><div class="wrap"><span>© 2026 Yiriclick</span><a href="avis.html" data-t="fReviews">Avis clients</a> <a href="juridique.html" data-t="fLegal">Informations légales</a></div></footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="assets/phone.js"></script>
@@ -69,7 +69,7 @@
 
   var Y = window.YC, el = Y.el, opened = Date.now(), sent = false, draft = {};
   Y.extend({
-    fr: { ctT: "Nous contacter", ctLead: "Une question sur une commande, ta boutique ou un partenariat ? Écris-nous : l’équipe Yiriclick te répond par e-mail ou sur WhatsApp.",
+    fr: { ctT: "Nous contacter", ctRepIntro: "Je signale le produit", ctRepWhy: "Raison :", ctLead: "Une question sur une commande, ta boutique ou un partenariat ? Écris-nous : l’équipe Yiriclick te répond par e-mail ou sur WhatsApp.",
       ctName: "Ton nom", ctContact: "Ton e-mail ou ton numéro WhatsApp", ctContactHint: "Pour pouvoir te répondre. Il ne sera jamais affiché.",
       ctTopic: "Sujet", ctT1: "Je suis client (commande, livraison…)", ctT2: "Je suis vendeur (ma boutique, ma formule…)", ctT3: "Partenariat ou presse", ctT4: "Signaler un problème ou une arnaque", ctT5: "Autre",
       ctMsg: "Ton message", ctMsgHint: "Si c’est une commande, indique son numéro (par exemple YC-7F3A21).",
@@ -77,7 +77,7 @@
       ctErr: "Le message n’est pas parti. Vérifie ta connexion et réessaie.", ctTooMany: "Trop de messages envoyés. Réessaie dans une heure.",
       ctDone: "Message envoyé, merci !", ctDoneP: "L’équipe Yiriclick te répond dès que possible. Pour une commande, tu peux aussi écrire directement au vendeur depuis sa boutique.",
       ctAgain: "Envoyer un autre message", ctHome: "Retour à la vitrine", ctMail: "Tu peux aussi écrire à" },
-    en: { ctT: "Contact us", ctLead: "A question about an order, your shop or a partnership? Write to us: the Yiriclick team replies by email or on WhatsApp.",
+    en: { ctT: "Contact us", ctRepIntro: "I am reporting the product", ctRepWhy: "Reason:", ctLead: "A question about an order, your shop or a partnership? Write to us: the Yiriclick team replies by email or on WhatsApp.",
       ctName: "Your name", ctContact: "Your email or WhatsApp number", ctContactHint: "So we can reply. It is never shown.",
       ctTopic: "Topic", ctT1: "I am a customer (order, delivery…)", ctT2: "I am a seller (my shop, my plan…)", ctT3: "Partnership or press", ctT4: "Report a problem or a scam", ctT5: "Other",
       ctMsg: "Your message", ctMsgHint: "For an order, give its number (for example YC-7F3A21).",
@@ -85,7 +85,7 @@
       ctErr: "The message was not sent. Check your connection and try again.", ctTooMany: "Too many messages sent. Try again in an hour.",
       ctDone: "Message sent, thank you!", ctDoneP: "The Yiriclick team will reply as soon as possible. For an order, you can also write to the seller directly from their shop.",
       ctAgain: "Send another message", ctHome: "Back to the showcase", ctMail: "You can also write to" },
-    es: { ctT: "Contáctanos", ctLead: "¿Una pregunta sobre un pedido, tu tienda o una colaboración? Escríbenos: el equipo de Yiriclick te responde por correo o por WhatsApp.",
+    es: { ctT: "Contáctanos", ctRepIntro: "Denuncio el producto", ctRepWhy: "Motivo:", ctLead: "¿Una pregunta sobre un pedido, tu tienda o una colaboración? Escríbenos: el equipo de Yiriclick te responde por correo o por WhatsApp.",
       ctName: "Tu nombre", ctContact: "Tu correo o tu número de WhatsApp", ctContactHint: "Para poder responderte. Nunca se mostrará.",
       ctTopic: "Asunto", ctT1: "Soy cliente (pedido, entrega…)", ctT2: "Soy vendedor (mi tienda, mi plan…)", ctT3: "Colaboración o prensa", ctT4: "Informar de un problema o una estafa", ctT5: "Otro",
       ctMsg: "Tu mensaje", ctMsgHint: "Si es un pedido, indica su número (por ejemplo YC-7F3A21).",
@@ -98,6 +98,11 @@
   var TOPICS = [["acheteur", "ctT1"], ["vendeur", "ctT2"], ["partenariat", "ctT3"], ["signalement", "ctT4"], ["autre", "ctT5"]];
   var pre = new URLSearchParams(location.search).get("sujet");
   try { var b = JSON.parse(localStorage.getItem("yc-buyer") || "{}"); draft.nom = b.cName || ""; draft.contact = b.cPhone || ""; } catch (e) {}
+  /* Coming from "Report this product": the message starts with the product reference. */
+  var QS = new URLSearchParams(location.search), rProd = QS.get("produit");
+  if (pre === "signalement" && rProd) {
+    draft.message = t("ctRepIntro") + " « " + (QS.get("nom") || "").slice(0, 80) + " »" + (QS.get("boutique") ? " (" + QS.get("boutique").slice(0, 80) + ")" : "") + ", ref. " + rProd.slice(0, 60) + "\n" + t("ctRepWhy") + " ";
+  }
 
   function field(id, label, input, hint) {
     var f = el("div", "ct-f"), l = el("label", null, label); l.setAttribute("for", id); f.appendChild(l);
