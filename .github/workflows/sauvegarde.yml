@@ -20,6 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Sauvegarde chiffrée
+        shell: bash   # bash -eo pipefail: a failed pg_dump makes the run fail instead of saving an empty file
         env:
           DB_URL: ${{ secrets.SUPABASE_DB_URL }}
           PASS: ${{ secrets.BACKUP_PASSPHRASE }}
@@ -33,7 +34,7 @@ jobs:
           docker run --rm -e DB_URL postgres:17 sh -c 'pg_dump --no-owner --no-privileges --schema=public --schema=auth --schema=storage "$DB_URL"' \
             | gzip -9 \
             | gpg --batch --yes --symmetric --cipher-algo AES256 --passphrase "$PASS" -o "$F"
-          test -s "$F"
+          test "$(stat -c %s "$F")" -gt 2000   # an empty or broken dump is only a few bytes
           ls -lh out
       - name: Garder la sauvegarde 90 jours
         if: ${{ hashFiles('out/*') != '' }}
