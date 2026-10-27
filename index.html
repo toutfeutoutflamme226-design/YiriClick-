@@ -18,7 +18,7 @@
 <meta name="theme-color" content="#10232A">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800;900&display=swap">
+<link rel="stylesheet" href="assets/fonts.css">
 <link rel="stylesheet" href="assets/shop.css">
 <style>
 /* Layout: department-store showcase. Sticky navy header (menu, logo, account, favourites, cart) over a search band;
@@ -139,6 +139,7 @@ section.block { margin-top: 28px; }
 .svc b { display: block; font-size: 16px; margin-bottom: 4px; }
 .svc p { margin: 0; color: #C9D8DB; font-size: 15px; }
 .svc a { color: var(--teal); }
+.svc .svc-link { display: inline-block; margin-top: 8px; font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }
 .foot-acc { background: var(--white); }
 .foot-acc summary { font-size: 16px; }
 .foot-acc .links a { border: 0; padding: 0; min-height: 36px; text-decoration: underline; text-underline-offset: 3px; color: var(--ink); }
@@ -269,7 +270,7 @@ section.block { margin-top: 28px; }
   <div class="wrap">
     <h2 data-t="service">Service et contact</h2>
     <div class="svc"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h2l2 10h10l2-7H7"/><circle cx="10" cy="19" r="1.4"/><circle cx="17" cy="19" r="1.4"/></svg><div><b data-t="sv1T">Commander simplement</b><p data-t="sv1"></p></div></div>
-    <div class="svc"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.6 7.4L3 20l1.2-5A8.5 8.5 0 1 1 21 11.5z"/></svg><div><b data-t="sv2T">Besoin d’aide ?</b><p data-t="sv2"></p></div></div>
+    <div class="svc"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.6 7.4L3 20l1.2-5A8.5 8.5 0 1 1 21 11.5z"/></svg><div><b data-t="sv2T">Besoin d’aide ?</b><p data-t="sv2"></p><a class="svc-link" href="contact.html" data-t="svcBtn">Nous contacter</a></div></div>
   </div>
 </section>
 <footer class="foot-acc" style="color:var(--ink)">
@@ -277,7 +278,7 @@ section.block { margin-top: 28px; }
     <div class="acc">
       <details><summary data-t="fHelp">Aide</summary><div class="links"><a href="vendre.html#comment" data-t="fHelp1"></a><a href="vendre.html#comment" data-t="fHelp2"></a><a href="vendre.html" data-t="fHelp3"></a></div></details>
       <details><summary data-t="fSell">Vendre sur Yiriclick</summary><div class="links"><a href="vendre.html#tarifs" data-t="fSell1"></a><a href="vendeur.html" data-t="fSell2"></a><a href="vendre.html" data-t="fSell3"></a></div></details>
-      <details><summary data-t="fAbout">À propos</summary><div class="links"><a href="avis.html" data-t="fReviews">Avis clients</a><a href="vendre.html" data-t="fAbout1"></a><a href="vendre.html" data-t="fAbout2"></a><a href="vendre.html" data-t="fAbout3"></a></div></details>
+      <details><summary data-t="fAbout">À propos</summary><div class="links"><a href="avis.html" data-t="fReviews">Avis clients</a><a href="contact.html" data-t="svcBtn">Nous contacter</a><a href="vendre.html" data-t="fAbout1"></a><a href="vendre.html" data-t="fAbout2"></a><a href="vendre.html" data-t="fAbout3"></a></div></details>
     </div>
     <div class="install" id="install" hidden>
       <img src="assets/icons/icon-192.png" alt="" width="60" height="60">

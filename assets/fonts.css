@@ -1,0 +1,9 @@
+/* Archivo (SIL Open Font License, assets/fonts/OFL-Archivo.txt), served from this site:
+   no request to Google, so no visitor data leaves the site. Latin, French and Spanish characters, weights 400 to 900. */
+@font-face {
+  font-family: "Archivo";
+  src: url("fonts/archivo.woff") format("woff");
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}

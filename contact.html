@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nous contacter · Yiriclick</title>
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="assets/shop.css">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<meta name="theme-color" content="#10232A">
+<meta name="description" content="Une question sur une commande, ta boutique ou un partenariat ? Écris à l’équipe Yiriclick.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Yiriclick">
+<meta property="og:title" content="Nous contacter · Yiriclick">
+<meta property="og:image" content="https://toutfeutoutflamme226-design.github.io/YiriClick-/assets/og.png">
+<style>
+/* Contact page: one narrow column. Messages go to the admin (base v16); no address is shown until CONTACT_EMAIL is set. */
+.ct { max-width: 620px; margin: 0 auto; padding-block: 24px 48px; display: flex; flex-direction: column; gap: 16px; }
+.ct h1 { margin: 0; font-size: clamp(26px, 6vw, 34px); font-weight: 900; letter-spacing: -1px; line-height: 1.1; text-wrap: balance; }
+.ct-lead { margin: 0; color: var(--soft); }
+.ct-card { background: var(--white); border: 1px solid var(--rule); padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+.ct-f { display: flex; flex-direction: column; gap: 6px; }
+.ct-f label { font-weight: 800; font-size: 14px; }
+.ct-f input, .ct-f select, .ct-f textarea { font: inherit; font-size: 16px; padding: 12px; border: 2px solid var(--rule); background: var(--white); color: var(--ink); width: 100%; min-height: 48px; box-sizing: border-box; }
+.ct-f textarea { min-height: 140px; resize: vertical; }
+.ct-f input:focus, .ct-f select:focus, .ct-f textarea:focus { border-color: var(--teal-deep, #0E6E78); outline: none; }
+.ct-f [aria-invalid="true"] { border-color: #B3261E; }
+.ct-hint { font-size: 13px; color: var(--soft); }
+.ct-err { margin: 0; color: #B3261E; font-size: 14px; font-weight: 700; }
+.ct-err:empty { display: none; }
+.ct-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.ct-done { text-align: center; align-items: center; padding: 28px 16px; }
+.ct-done .big { font-size: 44px; line-height: 1; color: #1E7F4F; }
+.ct-other { font-size: 14px; color: var(--soft); margin: 0; }
+.ct-other a { color: var(--teal-deep, #0E6E78); font-weight: 700; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./" aria-label="Yiriclick">
+      <svg width="28" height="28" viewBox="0 0 160 160" aria-hidden="true"><path d="M76 146 V92 L34 40" fill="none" stroke="#4FC7CF" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/><path d="M76 92 L124 34" fill="none" stroke="#FF7A2E" stroke-width="22" stroke-linecap="round"/><path d="M96 30 H128 V62" fill="none" stroke="#FF7A2E" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="word"><span class="a">yiri</span><span class="b">click</span></span>
+    </a>
+    <div class="prefs">
+      <a href="./"><span aria-hidden="true">← </span><span data-t="showcase">Vitrine</span></a>
+      <select id="prefLang" data-ta="lang"><option value="fr">FR</option><option value="en">EN</option><option value="es">ES</option></select>
+      <select id="prefCur" data-ta="cur"><option value="">—</option><option value="XOF">FCFA</option><option value="EUR">€</option><option value="USD">$</option></select>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="ct" id="ct"></div>
+</main>
+
+<footer><div class="wrap"><span>© 2026 Yiriclick</span><a href="avis.html" data-t="fReviews">Avis clients</a></div></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="assets/phone.js"></script>
+<script src="assets/nav.js"></script>
+<script src="assets/shop.js"></script>
+<script>
+(function () {
+  /* The contact address shown on this page. Leave empty to show only the form.
+     Once the domain is bought: var CONTACT_EMAIL = "contact@yiriclick.com"; */
+  var CONTACT_EMAIL = "";
+
+  var Y = window.YC, el = Y.el, opened = Date.now(), sent = false, draft = {};
+  Y.extend({
+    fr: { ctT: "Nous contacter", ctLead: "Une question sur une commande, ta boutique ou un partenariat ? Écris-nous : l’équipe Yiriclick te répond par e-mail ou sur WhatsApp.",
+      ctName: "Ton nom", ctContact: "Ton e-mail ou ton numéro WhatsApp", ctContactHint: "Pour pouvoir te répondre. Il ne sera jamais affiché.",
+      ctTopic: "Sujet", ctT1: "Je suis client (commande, livraison…)", ctT2: "Je suis vendeur (ma boutique, ma formule…)", ctT3: "Partenariat ou presse", ctT4: "Signaler un problème ou une arnaque", ctT5: "Autre",
+      ctMsg: "Ton message", ctMsgHint: "Si c’est une commande, indique son numéro (par exemple YC-7F3A21).",
+      ctSend: "Envoyer le message", ctSending: "Envoi…", ctReq: "Ce champ est obligatoire.", ctBadContact: "Indique un e-mail ou un numéro valide.", ctShort: "Ton message est un peu court.",
+      ctErr: "Le message n’est pas parti. Vérifie ta connexion et réessaie.", ctTooMany: "Trop de messages envoyés. Réessaie dans une heure.",
+      ctDone: "Message envoyé, merci !", ctDoneP: "L’équipe Yiriclick te répond dès que possible. Pour une commande, tu peux aussi écrire directement au vendeur depuis sa boutique.",
+      ctAgain: "Envoyer un autre message", ctHome: "Retour à la vitrine", ctMail: "Tu peux aussi écrire à" },
+    en: { ctT: "Contact us", ctLead: "A question about an order, your shop or a partnership? Write to us: the Yiriclick team replies by email or on WhatsApp.",
+      ctName: "Your name", ctContact: "Your email or WhatsApp number", ctContactHint: "So we can reply. It is never shown.",
+      ctTopic: "Topic", ctT1: "I am a customer (order, delivery…)", ctT2: "I am a seller (my shop, my plan…)", ctT3: "Partnership or press", ctT4: "Report a problem or a scam", ctT5: "Other",
+      ctMsg: "Your message", ctMsgHint: "For an order, give its number (for example YC-7F3A21).",
+      ctSend: "Send the message", ctSending: "Sending…", ctReq: "This field is required.", ctBadContact: "Enter a valid email or number.", ctShort: "Your message is a bit short.",
+      ctErr: "The message was not sent. Check your connection and try again.", ctTooMany: "Too many messages sent. Try again in an hour.",
+      ctDone: "Message sent, thank you!", ctDoneP: "The Yiriclick team will reply as soon as possible. For an order, you can also write to the seller directly from their shop.",
+      ctAgain: "Send another message", ctHome: "Back to the showcase", ctMail: "You can also write to" },
+    es: { ctT: "Contáctanos", ctLead: "¿Una pregunta sobre un pedido, tu tienda o una colaboración? Escríbenos: el equipo de Yiriclick te responde por correo o por WhatsApp.",
+      ctName: "Tu nombre", ctContact: "Tu correo o tu número de WhatsApp", ctContactHint: "Para poder responderte. Nunca se mostrará.",
+      ctTopic: "Asunto", ctT1: "Soy cliente (pedido, entrega…)", ctT2: "Soy vendedor (mi tienda, mi plan…)", ctT3: "Colaboración o prensa", ctT4: "Informar de un problema o una estafa", ctT5: "Otro",
+      ctMsg: "Tu mensaje", ctMsgHint: "Si es un pedido, indica su número (por ejemplo YC-7F3A21).",
+      ctSend: "Enviar el mensaje", ctSending: "Enviando…", ctReq: "Este campo es obligatorio.", ctBadContact: "Indica un correo o un número válido.", ctShort: "Tu mensaje es un poco corto.",
+      ctErr: "El mensaje no se envió. Comprueba tu conexión e inténtalo de nuevo.", ctTooMany: "Demasiados mensajes enviados. Inténtalo dentro de una hora.",
+      ctDone: "¡Mensaje enviado, gracias!", ctDoneP: "El equipo de Yiriclick te responderá lo antes posible. Para un pedido, también puedes escribir al vendedor desde su tienda.",
+      ctAgain: "Enviar otro mensaje", ctHome: "Volver al escaparate", ctMail: "También puedes escribir a" }
+  });
+  var t = Y.t, box = document.getElementById("ct");
+  var TOPICS = [["acheteur", "ctT1"], ["vendeur", "ctT2"], ["partenariat", "ctT3"], ["signalement", "ctT4"], ["autre", "ctT5"]];
+  var pre = new URLSearchParams(location.search).get("sujet");
+  try { var b = JSON.parse(localStorage.getItem("yc-buyer") || "{}"); draft.nom = b.cName || ""; draft.contact = b.cPhone || ""; } catch (e) {}
+
+  function field(id, label, input, hint) {
+    var f = el("div", "ct-f"), l = el("label", null, label); l.setAttribute("for", id); f.appendChild(l);
+    input.id = id; f.appendChild(input); if (hint) f.appendChild(el("span", "ct-hint", hint));
+    var e = el("p", "ct-err"); e.id = id + "-err"; f.appendChild(e); return f;
+  }
+  function render() {
+    Y.labels(); document.title = t("ctT") + " · Yiriclick"; box.textContent = "";
+    if (sent) {
+      var d = el("div", "ct-card ct-done"); d.appendChild(el("div", "big", "✓")); d.appendChild(el("h1", null, t("ctDone"))); d.appendChild(el("p", "ct-lead", t("ctDoneP")));
+      var again = el("button", "btn btn-navy", t("ctAgain")); again.type = "button"; again.addEventListener("click", function () { sent = false; draft.message = ""; opened = Date.now(); render(); });
+      var home = el("a", "btn btn-ghost", t("ctHome")); home.href = "./";
+      var acts = el("div"); acts.style.cssText = "display:flex;gap:8px;flex-wrap:wrap;justify-content:center"; acts.appendChild(again); acts.appendChild(home); d.appendChild(acts);
+      box.appendChild(d); return;
+    }
+    box.appendChild(el("h1", null, t("ctT"))); box.appendChild(el("p", "ct-lead", t("ctLead")));
+    var form = el("form", "ct-card"); form.noValidate = true;
+    var nom = el("input"); nom.maxLength = 80; nom.autocomplete = "name"; nom.value = draft.nom || "";
+    var contact = el("input"); contact.maxLength = 120; contact.autocomplete = "email"; contact.value = draft.contact || "";
+    var sujet = el("select"); TOPICS.forEach(function (x) { var o = el("option", null, t(x[1])); o.value = x[0]; sujet.appendChild(o); });
+    sujet.value = draft.sujet || (TOPICS.some(function (x) { return x[0] === pre; }) ? pre : "acheteur");
+    var message = el("textarea"); message.maxLength = 3000; message.value = draft.message || "";
+    var hp = el("input"); hp.tabIndex = -1; hp.autocomplete = "off"; hp.setAttribute("aria-hidden", "true"); // left empty by people, filled by robots
+    var hpw = el("div", "ct-hp"); hpw.appendChild(hp);
+    [[nom, "nom"], [contact, "contact"], [sujet, "sujet"], [message, "message"]].forEach(function (x) { x[0].addEventListener("input", function () { draft[x[1]] = x[0].value; x[0].removeAttribute("aria-invalid"); var e = document.getElementById(x[0].id + "-err"); if (e) e.textContent = ""; }); });
+    form.appendChild(field("ctName", t("ctName"), nom));
+    form.appendChild(field("ctContact", t("ctContact"), contact, t("ctContactHint")));
+    form.appendChild(field("ctTopic", t("ctTopic"), sujet));
+    form.appendChild(field("ctMsg", t("ctMsg"), message, t("ctMsgHint")));
+    form.appendChild(hpw);
+    var err = el("p", "ct-err"); form.appendChild(err);
+    var go = el("button", "btn btn-wa", t("ctSend")); go.type = "submit"; form.appendChild(go);
+    if (CONTACT_EMAIL) { var o = el("p", "ct-other", t("ctMail") + " "); var a = el("a", null, CONTACT_EMAIL); a.href = "mailto:" + CONTACT_EMAIL; o.appendChild(a); form.appendChild(o); }
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault(); err.textContent = "";
+      function bad(inp, m) { inp.setAttribute("aria-invalid", "true"); document.getElementById(inp.id + "-err").textContent = m; return false; }
+      var ok = true, c = contact.value.trim();
+      if (!nom.value.trim()) ok = bad(nom, t("ctReq")) && ok;
+      if (!c) ok = bad(contact, t("ctReq")) && ok;
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(c) && c.replace(/\D/g, "").length < 8) ok = bad(contact, t("ctBadContact")) && ok;
+      if (message.value.trim().length < 5) ok = bad(message, message.value.trim() ? t("ctShort") : t("ctReq")) && ok;
+      if (!ok) { var first = form.querySelector('[aria-invalid="true"]'); if (first) first.focus(); return; }
+      if (hp.value || Date.now() - opened < 2500) { sent = true; render(); return; } // robots: pretend it worked
+      go.disabled = true; go.textContent = t("ctSending");
+      var r = await Y.sb.from("messages_contact").insert({ nom: nom.value.trim(), contact: c, sujet: sujet.value, message: message.value.trim(),
+        page: (document.referrer || "").slice(0, 300) || null, langue: Y.prefs.lang });
+      go.disabled = false; go.textContent = t("ctSend");
+      if (r.error) { err.textContent = /Trop de messages/i.test(r.error.message || "") ? t("ctTooMany") : t("ctErr"); return; }
+      sent = true; draft.message = ""; render(); window.scrollTo(0, 0);
+    });
+    box.appendChild(form);
+  }
+  Y.wirePrefs(render); render();
+})();
+</script>
+</body>
+</html>

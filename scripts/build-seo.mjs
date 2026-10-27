@@ -75,7 +75,9 @@ async function main() {
   const urls = [{ loc: SITE, lastmod: now, pr: "1.0" }, { loc: SITE + "vendre.html", lastmod: now, pr: "0.8" }];
   let shops = [], products = [], reviews = [];
   try {
-    shops = await rest("boutiques?select=id,slug,nom,description,slogan,ville,pays,logo,couverture,updated_at&visible=eq.true&masque_admin=eq.false&limit=5000");
+    const cols = "id,slug,nom,description,slogan,ville,pays,logo,couverture,updated_at", where = "&visible=eq.true&masque_admin=eq.false&limit=5000";
+    // base v16: shops not yet approved keep their share page but stay out of the sitemap
+    try { shops = await rest("boutiques?select=" + cols + ",approuvee" + where); } catch { shops = (await rest("boutiques?select=" + cols + where)).map((s) => ({ ...s, approuvee: true })); }
     products = await rest("produits?select=id,nom,description,prix,prix_avant,devise,stock,photos,updated_at,boutique_id&visible=eq.true&masque_admin=eq.false&order=updated_at.desc&limit=5000");
     try { reviews = await rest("avis?select=boutique_id,note&limit=20000"); } catch { reviews = []; }
   } catch (e) {
@@ -98,7 +100,7 @@ async function main() {
       aggregateRating: r ? { "@type": "AggregateRating", ratingValue: (r.sum / r.n).toFixed(1), reviewCount: r.n } : undefined };
     await mkdir(join(OUT, "b", s.slug), { recursive: true });
     await writeFile(join(OUT, "b", s.slug, "index.html"), sharePage({ title: s.nom + " · Yiriclick", desc, image: jsonld.image, url, target, jsonld }));
-    urls.push({ loc: target, lastmod: s.updated_at || now, pr: "0.9" });
+    if (s.approuvee !== false) urls.push({ loc: target, lastmod: s.updated_at || now, pr: "0.9" });
   }
   for (const p of products) {
     const s = shopById.get(p.boutique_id); if (!s || !/^[0-9a-f-]{36}$/.test(p.id)) continue;
@@ -113,7 +115,7 @@ async function main() {
         availability: p.stock === 0 ? "https://schema.org/OutOfStock" : "https://schema.org/InStock", seller: { "@type": "Organization", name: s.nom } } };
     await mkdir(join(OUT, "p", p.id), { recursive: true });
     await writeFile(join(OUT, "p", p.id, "index.html"), sharePage({ title, desc, image, url, target, jsonld }));
-    urls.push({ loc: target, lastmod: p.updated_at || now, pr: "0.7" });
+    if (s.approuvee !== false) urls.push({ loc: target, lastmod: p.updated_at || now, pr: "0.7" });
   }
   const xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
     urls.map((u) => `  <url><loc>${esc(u.loc)}</loc><lastmod>${String(u.lastmod).slice(0, 10)}</lastmod><priority>${u.pr}</priority></url>`).join("\n") + "\n</urlset>\n";

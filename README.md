@@ -303,6 +303,20 @@ Fonctionnement :
 - Les clients n’ont pas d’adresse e-mail dans Yiriclick : la demande passe par WhatsApp. L’envoi automatique de WhatsApp
   demanderait l’API WhatsApp Business (payante) ; ici, un clic ouvre le message prêt.
 
+## Boutiques validées, contact et état du site (base v16)
+
+1. Supabase › **SQL Editor** › New query : colle `supabase/schema-v16.sql`, puis **Run** (après v14 et v15).
+2. **Validation des boutiques** : une nouvelle boutique d'essai marche tout de suite par son lien, mais n'entre dans la vitrine
+   (recherche, rubriques, suggestions, plan du site) qu'après « Approuver » dans l'admin (carte « Boutiques à valider »).
+   Les boutiques déjà en ligne au premier passage du script restent visibles. Un dossier d'identité validé approuve la boutique.
+   Le vendeur voit « En cours de vérification » dans son tableau de bord. L'admin reçoit un e-mail si les e-mails (v9) sont réglés.
+3. **Contact** : page `contact.html` (formulaire, aucune adresse affichée). Les messages arrivent dans l'admin
+   (carte « Messages de contact ») et par e-mail à l'admin. Anti-abus : 3 messages par heure et par contact.
+   Pour afficher aussi une adresse : `var CONTACT_EMAIL = "contact@yiriclick.com";` dans `contact.html`.
+4. **État du site** (admin) : scripts installés (inscriptions à v16), taux du jour, tâches planifiées, clé Resend,
+   adresse admin, derniers e-mails, boutiques et messages en attente.
+5. **Polices** : Archivo est servie par le site (`assets/fonts.css`, `assets/fonts/`), plus aucune requête vers Google.
+
 ## À modifier avant le lancement
 
 - Remplacer `[ADRESSE E-MAIL]` (et ses traductions) par ton adresse de contact,

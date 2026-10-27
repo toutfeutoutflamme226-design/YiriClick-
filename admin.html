@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <title>Yiriclick Admin</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800;900&display=swap">
+<link rel="stylesheet" href="assets/fonts.css">
 <style>
 /* Layout: navy top bar, then a single admin column; tables scroll inside their own box on phones */
 :root {
@@ -88,6 +88,27 @@ td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
 .p-contacte, .p-verifie { background: var(--tint); color: var(--teal-deep); }
 .p-actif, .p-visible { background: #E3F4EA; color: var(--ok); }
 .p-refuse, .p-masque { background: #FCE8E6; color: var(--bad); }
+.mlist { display: flex; flex-direction: column; gap: 10px; }
+.mitem { border: 1px solid var(--rule); padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.mitem.done { opacity: .65; }
+.mitem .mt { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: baseline; }
+.mitem .mt b { font-size: 16px; }
+.mitem .ms { font-size: 13px; color: var(--soft); }
+.mitem p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.mitem .acts { display: flex; flex-wrap: wrap; gap: 8px; }
+.badge-n { display: inline-block; min-width: 24px; padding: 2px 8px; background: var(--orange, #FF7A2E); color: #10232A; font-size: 14px; text-align: center; }
+.badge-n:empty { display: none; }
+.seg { display: flex; border: 2px solid var(--rule); }
+.seg button { border: 0; background: var(--white); padding: 8px 12px; font: inherit; font-weight: 700; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--navy, #10232A); color: #fff; }
+#etatDet summary { cursor: pointer; font-weight: 700; color: var(--teal-deep, #0E6E78); }
+.etat { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 12px; }
+.etat h3 { margin: 0 0 6px; font-size: 14px; text-transform: uppercase; letter-spacing: .5px; color: var(--soft); }
+.etat ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+.etat li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 6px; align-items: start; }
+.etat li::before { content: ""; width: 10px; height: 10px; border-radius: 50%; margin-top: 5px; background: var(--ok); }
+.etat li.no::before { background: var(--bad); }
+.etat li.no { color: var(--bad); font-weight: 700; }
 .empty { padding: 28px 12px; text-align: center; color: var(--soft); }
 
 /* Detail drawer */
@@ -165,6 +186,23 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
     <button class="btn btn-ghost" type="button" id="refresh">Actualiser</button>
   </div>
   <p class="err" id="loadErr"></p>
+
+  <div class="card" id="shopsCard" hidden>
+    <h2>Boutiques à valider <span class="badge-n" id="cShops"></span></h2>
+    <p class="notice">Ces boutiques d’essai fonctionnent déjà par leur lien, mais n’apparaissent pas dans la vitrine. Ouvre-les, vérifie que les produits sont réels et cohérents, puis approuve. En cas de doute, contacte le vendeur sur WhatsApp avant d’approuver.</p>
+    <div class="mlist" id="shopsBox"></div>
+  </div>
+
+  <div class="card" id="msgCard" hidden>
+    <div class="head" style="align-items:center"><h2>Messages de contact <span class="badge-n" id="cMsg"></span></h2>
+      <div class="seg" role="group" aria-label="Filtrer les messages"><button type="button" id="msgOpen" aria-pressed="true">À traiter</button><button type="button" id="msgAll" aria-pressed="false">Tous</button></div></div>
+    <div class="mlist" id="msgBox"></div>
+  </div>
+
+  <div class="card" id="etatCard">
+    <div class="head" style="align-items:center"><h2>État du site</h2><span class="pill" id="etatSum">Vérification…</span></div>
+    <details id="etatDet"><summary>Voir le détail</summary><div class="etat" id="etatBox"></div></details>
+  </div>
 
   <div class="kpis" id="kpis"></div>
 
@@ -327,6 +365,103 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
     data.produits = (r[3].data || []).map(function (p) { p.statut = p.masque_admin ? "masque" : "visible"; p.boutique = p.boutiques ? p.boutiques.nom : ""; return p; });
     $("updated").textContent = "Mis à jour le " + fmtDate(new Date(), true);
     renderKpis(); renderChart(); renderBreakdowns(); renderTable(); loadPromos(); loadAvisAdm();
+    loadShops(); loadMessages(); loadEtat();
+  }
+
+  /* ---------- Shops waiting for approval (base v16) ---------- */
+  async function loadShops() {
+    var r = await sb.from("boutiques").select("id,nom,slug,ville,pays,whatsapp,created_at").eq("approuvee", false).eq("masque_admin", false).order("created_at", { ascending: true }).limit(100);
+    var card = $("shopsCard"), box = $("shopsBox");
+    if (r.error || !r.data || !r.data.length) { card.hidden = true; return; }
+    var ids = r.data.map(function (b) { return b.id; }), counts = {};
+    var pr = await sb.from("produits").select("boutique_id").in("boutique_id", ids);
+    (pr.data || []).forEach(function (p) { counts[p.boutique_id] = (counts[p.boutique_id] || 0) + 1; });
+    card.hidden = false; box.textContent = ""; $("cShops").textContent = r.data.length;
+    r.data.forEach(function (b) {
+      var d = el("div", "mitem"), t = el("div", "mt");
+      t.appendChild(el("b", null, b.nom));
+      t.appendChild(el("span", "ms", [b.ville, b.pays].filter(Boolean).join(", ") + " · inscrite le " + fmtDate(b.created_at, true) + " · " + (counts[b.id] || 0) + " produit" + ((counts[b.id] || 0) > 1 ? "s" : "")));
+      d.appendChild(t);
+      var acts = el("div", "acts");
+      var see = el("a", "btn btn-ghost", "Voir la boutique"); see.href = "boutique.html?b=" + encodeURIComponent(b.slug); see.target = "_blank"; see.rel = "noopener"; acts.appendChild(see);
+      var wa = String(b.whatsapp || "").replace(/\D/g, "");
+      if (wa.length >= 8) { var w = el("a", "btn btn-ghost", "WhatsApp"); w.href = "https://wa.me/" + wa; w.target = "_blank"; w.rel = "noopener"; acts.appendChild(w); }
+      var ok = el("button", "btn btn-orange", "Approuver"); ok.type = "button";
+      ok.addEventListener("click", async function () { ok.disabled = true; var x = await sb.from("boutiques").update({ approuvee: true }).eq("id", b.id); if (x.error) { ok.disabled = false; d.appendChild(el("p", "err", x.error.message)); return; } loadShops(); loadEtat(); });
+      acts.appendChild(ok);
+      var hide = el("button", "btn btn-ghost", "Masquer (refuser)"); hide.type = "button"; hide.style.color = "var(--bad)";
+      hide.addEventListener("click", async function () { if (!window.confirm("Masquer « " + b.nom + " » ? Elle ne sera plus visible du tout, même par son lien.")) return; hide.disabled = true; var x = await sb.from("boutiques").update({ masque_admin: true }).eq("id", b.id); if (x.error) { hide.disabled = false; d.appendChild(el("p", "err", x.error.message)); return; } loadShops(); loadEtat(); });
+      acts.appendChild(hide);
+      d.appendChild(acts); box.appendChild(d);
+    });
+  }
+
+  /* ---------- Contact messages (base v16) ---------- */
+  var msgFilter = "open", TOPIC = { acheteur: "Client", vendeur: "Vendeur", partenariat: "Partenariat", signalement: "Signalement", autre: "Autre" };
+  $("msgOpen").addEventListener("click", function () { msgFilter = "open"; this.setAttribute("aria-pressed", "true"); $("msgAll").setAttribute("aria-pressed", "false"); loadMessages(); });
+  $("msgAll").addEventListener("click", function () { msgFilter = "all"; this.setAttribute("aria-pressed", "true"); $("msgOpen").setAttribute("aria-pressed", "false"); loadMessages(); });
+  async function loadMessages() {
+    var q = sb.from("messages_contact").select("*").order("created_at", { ascending: false }).limit(100);
+    if (msgFilter === "open") q = q.eq("traite", false);
+    var r = await q, card = $("msgCard"), box = $("msgBox");
+    if (r.error) { card.hidden = true; return; }
+    card.hidden = false; box.textContent = "";
+    var open = await sb.from("messages_contact").select("id", { count: "exact", head: true }).eq("traite", false);
+    $("cMsg").textContent = open.count ? open.count : "";
+    if (!r.data.length) { box.appendChild(el("p", "notice", msgFilter === "open" ? "Aucun message à traiter." : "Aucun message pour l’instant.")); return; }
+    r.data.forEach(function (m) {
+      var d = el("div", "mitem" + (m.traite ? " done" : "")), t = el("div", "mt");
+      t.appendChild(el("b", null, m.nom)); t.appendChild(el("span", "ms", (TOPIC[m.sujet] || "Autre") + " · " + fmtDate(m.created_at, true) + (m.langue ? " · " + m.langue.toUpperCase() : "")));
+      d.appendChild(t); d.appendChild(el("span", "ms", m.contact)); d.appendChild(el("p", null, m.message));
+      var acts = el("div", "acts"), c = String(m.contact || "").trim();
+      if (/@/.test(c)) { var a = el("a", "btn btn-navy", "Répondre par e-mail"); a.href = "mailto:" + encodeURIComponent(c) + "?subject=" + encodeURIComponent("Re : votre message à Yiriclick"); acts.appendChild(a); }
+      else if (c.replace(/\D/g, "").length >= 8) { var w = el("a", "btn btn-navy", "Répondre sur WhatsApp"); w.href = "https://wa.me/" + c.replace(/\D/g, ""); w.target = "_blank"; w.rel = "noopener"; acts.appendChild(w); }
+      var tr = el("button", "btn btn-ghost", m.traite ? "Remettre à traiter" : "Marquer comme traité"); tr.type = "button";
+      tr.addEventListener("click", async function () { tr.disabled = true; await sb.from("messages_contact").update({ traite: !m.traite }).eq("id", m.id); loadMessages(); loadEtat(); });
+      acts.appendChild(tr);
+      var del = el("button", "btn btn-ghost", "Supprimer"); del.type = "button"; del.style.color = "var(--bad)";
+      del.addEventListener("click", async function () { if (!window.confirm("Supprimer ce message ?")) return; del.disabled = true; await sb.from("messages_contact").delete().eq("id", m.id); loadMessages(); loadEtat(); });
+      acts.appendChild(del);
+      d.appendChild(acts); box.appendChild(d);
+    });
+  }
+
+  /* ---------- Site health (base v16): which scripts are installed, and whether services run ---------- */
+  var SCRIPTS = { inscriptions: "Inscriptions (inscriptions.sql)", v2: "v2 · dossiers vendeurs, admin", v3: "v3 · boutiques et produits", v4: "v4 · promotions de la vitrine",
+    v5: "v5 · boutiques personnalisables, statistiques", v6: "v6 · commandes et variantes", v7: "v7 · soldes, codes promo, avis", v8: "v8 · tailles pour toutes les formules",
+    v9: "v9 · e-mails automatiques", v10: "v10 · essai gratuit immédiat", v11: "v11 · vitrine rapide", v12: "v12 · taux de change du jour",
+    v13: "v13 · formulaires pré-remplis", v14: "v14 · avis clients complets", v15: "v15 · demande d’avis après livraison", v16: "v16 · validation des boutiques, contact, état du site" };
+  async function loadEtat() {
+    var sum = $("etatSum"), box = $("etatBox"), det = $("etatDet");
+    var r = await sb.rpc("etat_site");
+    box.textContent = "";
+    if (r.error || !r.data) {
+      sum.className = "pill p-refuse"; sum.textContent = "Script v16 à installer"; det.open = true;
+      box.appendChild(el("p", "notice", "Pour voir l’état du site, colle supabase/schema-v16.sql dans Supabase › SQL Editor › New query, puis Run."));
+      return;
+    }
+    var bad = 0;
+    function group(title, items) {
+      var g = el("div"); g.appendChild(el("h3", null, title)); var ul = el("ul");
+      items.forEach(function (x) { var li = el("li", x[0] ? "" : "no", x[1]); if (!x[0]) bad++; ul.appendChild(li); });
+      g.appendChild(ul); box.appendChild(g);
+    }
+    group("Scripts de la base", (r.data.scripts || []).map(function (x) { return [x.ok, (SCRIPTS[x.v] || x.v) + (x.ok ? "" : " : à exécuter")]; }));
+    var S = {}; (r.data.services || []).forEach(function (x) { S[x.k] = x; });
+    var sv = [];
+    if (S.taux) sv.push([S.taux.ok, S.taux.detail ? "Taux de change mis à jour le " + fmtDate(S.taux.detail, true) + (S.taux.ok ? "" : " : trop ancien") : "Taux de change jamais mis à jour"]);
+    if (S.cron) sv.push([S.cron.ok, S.cron.ok ? "Tâches planifiées actives (" + S.cron.detail + ")" : "Tâches planifiées absentes : exécute v12"]);
+    if (S.resend) sv.push([S.resend.ok, S.resend.ok ? "Clé d’envoi d’e-mails (Resend) enregistrée" : "Clé Resend absente : aucun e-mail ne part"]);
+    if (S.admin_email) sv.push([S.admin_email.ok, S.admin_email.ok ? "Alertes envoyées à " + S.admin_email.detail : "Aucune adresse admin : tu ne reçois pas les alertes"]);
+    if (S.emails) sv.push([S.emails.ok, S.emails.detail && S.emails.detail.dernier ? "Dernier e-mail le " + fmtDate(S.emails.detail.dernier, true) + (S.emails.ok ? "" : " · " + S.emails.detail.refus + " refusé(s) par Resend") : "Aucun e-mail envoyé pour l’instant"]);
+    if (S.site_url) sv.push([true, "Adresse du site dans les e-mails : " + S.site_url.detail]);
+    group("Services", sv);
+    var todo = [];
+    if (S.a_valider) todo.push([S.a_valider.ok, S.a_valider.detail ? S.a_valider.detail + " boutique(s) à valider" : "Aucune boutique en attente"]);
+    if (S.messages) todo.push([S.messages.ok, S.messages.detail ? S.messages.detail + " message(s) à traiter" : "Aucun message en attente"]);
+    group("À faire", todo);
+    sum.className = "pill " + (bad ? "p-en_attente" : "p-actif"); sum.textContent = bad ? bad + " point" + (bad > 1 ? "s" : "") + " à regarder" : "Tout est en ordre";
+    det.open = bad > 0;
   }
 
   /* ---------- KPIs ---------- */
