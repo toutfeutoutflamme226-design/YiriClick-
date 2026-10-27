@@ -323,6 +323,27 @@ Supabase › SQL Editor › New query : colle `supabase/schema-v17.sql`, puis **
 Chaque jour à 07:00 (Amsterdam, été comme hiver), la base récupère les derniers taux publiés par la BCE (la veille vers 16 h).
 Si `schema-v12.sql` est relancé un jour, relancer ensuite `schema-v17.sql`.
 
+## Sécurité et données personnelles (base v18)
+
+1. Supabase › SQL Editor › New query : colle `supabase/schema-v18.sql`, puis **Run**.
+2. **Code à 6 chiffres pour l'administration** : à la prochaine connexion, `admin.html` propose de l'activer
+   (Google Authenticator, Microsoft Authenticator ou l'app Mots de passe de l'iPhone). Une fois activé, les droits
+   d'admin exigent le code à chaque nouvelle connexion. Téléphone perdu : dans Supabase › SQL Editor,
+   `delete from auth.mfa_factors where user_id = (select id from auth.users where email = 'ton e-mail');`
+3. **Suppression de compte** : espace vendeur › Ma boutique › Supprimer mon compte (photos, boutique, produits,
+   commandes, avis et accès). Le dossier d'identité est gardé 6 mois (DSA) puis effacé par le ménage mensuel ;
+   ses fichiers se suppriment à la main dans Supabase › Storage (Supabase interdit de les effacer en SQL).
+4. **Ménage mensuel** (le 1er à 03:00 UTC) : commandes de plus de 2 ans anonymisées, messages de contact de plus d'un an,
+   visites de plus de 13 mois et journal des e-mails de plus d'un an supprimés.
+5. **Mots de passe** : 10 caractères minimum. Dans Supabase › Authentication › Policies (ou Providers › Email),
+   mettre aussi « Minimum password length » à 10.
+6. **Sauvegarde chiffrée chaque dimanche** (`.github/workflows/sauvegarde.yml`) : ajouter une fois dans GitHub ›
+   Settings › Secrets and variables › Actions les secrets `SUPABASE_DB_URL` (Supabase › Connect › Session pooler,
+   avec le mot de passe de la base) et `BACKUP_PASSPHRASE` (une longue phrase gardée dans un gestionnaire de mots de passe).
+   Les sauvegardes sont gardées 90 jours dans l'onglet Actions. Ouvrir : `gpg --decrypt fichier.sql.gz.gpg | gunzip > base.sql`.
+7. **Anti-usurpation des e-mails** : dans Cloudflare › DNS, enregistrement TXT `_dmarc` =
+   `v=DMARC1; p=none; rua=mailto:admin@yiriclick.com` (passer à `p=quarantine` quand Resend est en place).
+
 ## À modifier avant le lancement
 
 - Remplacer `[ADRESSE E-MAIL]` (et ses traductions) par ton adresse de contact,

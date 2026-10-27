@@ -285,7 +285,12 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
     var s = await sb.auth.getSession();
     if (!s.data.session) { show("vLogin"); return; }
     var adm = await sb.rpc("is_admin");
-    if (adm.error || adm.data !== true) { show("vDenied"); return; }
+    if (adm.error || adm.data !== true) {
+      // base v18: an admin with a 6-digit code confirms it on admin.html first
+      var st = await sb.rpc("admin_statut");
+      if (!st.error && st.data && st.data.admin) { location.replace("admin.html?retour=avis-admin.html"); return; }
+      show("vDenied"); return;
+    }
     await load();
     route();
   }

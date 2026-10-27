@@ -199,6 +199,8 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
 .pv-foot { height: 18px; }
 
 /* Products */
+.card.danger { border-color: var(--badbg); margin-top: 18px; }
+.card.danger h2 { color: var(--bad); }
 .ok-note { margin: 0; padding: 10px 12px; background: var(--okbg); color: var(--ok); font-size: 14px; font-weight: 700; border-left: 4px solid var(--ok); }
 .pbtns { display: flex; flex-wrap: wrap; gap: 8px; }
 .imp-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
@@ -377,7 +379,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     <p class="ok" id="signupLead" hidden>Ton essai gratuit est ouvert. Choisis ton mot de passe : tu recevras ensuite un e-mail pour confirmer ton adresse.</p>
     <p>Utilise <b>la même adresse e-mail</b> que dans ton inscription Yiriclick.</p>
     <div class="field"><label for="sEmail">Adresse e-mail</label><input id="sEmail" type="email" autocomplete="username" inputmode="email"></div>
-    <div class="field"><label for="sPass">Mot de passe</label><input id="sPass" type="password" autocomplete="new-password"><span class="hint">8 caractères minimum.</span></div>
+    <div class="field"><label for="sPass">Mot de passe</label><input id="sPass" type="password" autocomplete="new-password"><span class="hint">10 caractères minimum.</span></div>
     <div class="field"><label for="sPass2">Confirme le mot de passe</label><input id="sPass2" type="password" autocomplete="new-password" data-match="sPass"></div>
     <p class="err" id="sErr"></p><p class="ok" id="sOk"></p>
     <button class="btn btn-orange" type="submit" id="sBtn">Créer mon accès</button>
@@ -393,7 +395,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
   </form>
   <form class="box" id="fNewPass" novalidate hidden>
     <h1>Nouveau mot de passe</h1>
-    <div class="field"><label for="nPass">Nouveau mot de passe</label><input id="nPass" type="password" autocomplete="new-password"><span class="hint">8 caractères minimum.</span></div>
+    <div class="field"><label for="nPass">Nouveau mot de passe</label><input id="nPass" type="password" autocomplete="new-password"><span class="hint">10 caractères minimum.</span></div>
     <div class="field"><label for="nPass2">Confirme le nouveau mot de passe</label><input id="nPass2" type="password" autocomplete="new-password" data-match="nPass"></div>
     <p class="err" id="nErr"></p>
     <button class="btn btn-orange" type="submit" id="nBtn">Enregistrer</button>
@@ -609,6 +611,16 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
           <button class="pv-close" type="button" id="closePrev" aria-label="Fermer l’aperçu">×</button>
           <div class="pv-label">Aperçu sur téléphone</div>
           <div class="phone" id="phone" aria-label="Aperçu de la boutique" role="img"></div>
+        </div>
+      </div>
+      <div class="card danger" id="delCard">
+        <h2>Supprimer mon compte</h2>
+        <p class="hint" style="margin:0">Ta boutique, tes produits, tes commandes, tes avis et ton accès seront effacés définitivement. Pour une simple pause, décoche plutôt « Boutique visible par les clients ». Ton dossier d’identité, s’il existe, est gardé 6 mois comme l’exige la loi européenne, puis effacé.</p>
+        <button class="btn btn-ghost" type="button" id="delStart" style="align-self:flex-start;color:var(--bad)">Supprimer mon compte…</button>
+        <div id="delConfirmBox" hidden style="display:flex;flex-direction:column;gap:10px">
+          <div class="field"><label for="delWord">Pour confirmer, écris SUPPRIMER</label><input id="delWord" autocomplete="off" autocapitalize="characters"></div>
+          <p class="err" id="delErr"></p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-orange" type="button" id="delGo" style="background:var(--bad);color:#fff">Supprimer définitivement</button><button class="btn btn-ghost" type="button" id="delCancel">Annuler</button></div>
         </div>
       </div>
     </section>
@@ -927,7 +939,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     e.preventDefault(); var b = $("sBtn"); $("sErr").textContent = ""; $("sOk").textContent = "";
     var em = $("sEmail").value.trim(), p1 = $("sPass").value, p2 = $("sPass2").value;
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)) { $("sErr").textContent = L("Entre une adresse e-mail valide."); return; }
-    if (p1.length < 8) { $("sErr").textContent = L("Le mot de passe doit faire au moins 8 caractères."); return; }
+    if (p1.length < 10) { $("sErr").textContent = L("Le mot de passe doit faire au moins 10 caractères."); return; }
     if (p1 !== p2) { $("sErr").textContent = L("Les deux mots de passe ne sont pas identiques."); return; }
     b.disabled = true; var r = await sb.auth.signUp({ email: em, password: p1, options: { emailRedirectTo: HERE } }); b.disabled = false;
     if (r.error) { $("sErr").textContent = /already/i.test(r.error.message) ? L("Un accès existe déjà avec cet e-mail. Connecte-toi ou utilise « Mot de passe oublié ».") : niceErr(r.error); return; }
@@ -943,12 +955,39 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
   });
   $("fNewPass").addEventListener("submit", async function (e) {
     e.preventDefault(); $("nErr").textContent = "";
-    var p = $("nPass").value; if (p.length < 8) { $("nErr").textContent = L("8 caractères minimum."); return; }
+    var p = $("nPass").value; if (p.length < 10) { $("nErr").textContent = L("10 caractères minimum."); return; }
     if (p !== $("nPass2").value) { $("nErr").textContent = L("Les deux mots de passe ne sont pas identiques."); $("nPass2").focus(); return; }
     $("nBtn").disabled = true; var r = await sb.auth.updateUser({ password: p }); $("nBtn").disabled = false;
     if (r.error) { $("nErr").textContent = niceErr(r.error); return; }
     boot();
   });
+  /* ---------- account deletion (base v18) ---------- */
+  $("delStart").addEventListener("click", function () { $("delConfirmBox").hidden = false; $("delStart").hidden = true; $("delWord").focus(); });
+  $("delCancel").addEventListener("click", function () { $("delConfirmBox").hidden = true; $("delStart").hidden = false; $("delWord").value = ""; $("delErr").textContent = ""; });
+  async function listAll(prefix, out, depth) {
+    // photos and logos live under <user id>/… in the public bucket; folders come back without an id
+    var r = await sb.storage.from("boutiques").list(prefix, { limit: 1000 });
+    if (r.error || !r.data) return;
+    for (var i = 0; i < r.data.length; i++) {
+      var it = r.data[i], path = prefix + "/" + it.name;
+      if (it.id) out.push(path); else if (depth < 4) await listAll(path, out, depth + 1);
+    }
+  }
+  $("delGo").addEventListener("click", async function () {
+    var b = $("delGo"); $("delErr").textContent = "";
+    if ($("delWord").value.trim().toUpperCase() !== L("SUPPRIMER")) { $("delErr").textContent = L("Écris exactement SUPPRIMER pour confirmer."); return; }
+    b.disabled = true; b.textContent = L("Suppression…");
+    try { var files = []; await listAll(st.user.id, files, 0); for (var i = 0; i < files.length; i += 100) await sb.storage.from("boutiques").remove(files.slice(i, i + 100)); } catch (e) {}
+    var r = await sb.rpc("supprimer_mon_compte");
+    if (r.error) { b.disabled = false; b.textContent = L("Supprimer définitivement"); $("delErr").textContent = /function|schema cache/i.test(r.error.message || "") ? L("La suppression n’est pas encore disponible : écris-nous depuis la page Contact.") : niceErr(r.error); return; }
+    try { ["yc-profil", "yc-own-shop", "yc-couts"].forEach(function (k) { localStorage.removeItem(k); }); } catch (e) {}
+    await sb.auth.signOut();
+    document.body.textContent = "";
+    var m = el("main", "wrap"); m.style.cssText = "padding:60px 16px;text-align:center;display:flex;flex-direction:column;gap:14px;align-items:center";
+    m.appendChild(el("h1", null, L("Ton compte a été supprimé"))); m.appendChild(el("p", null, L("Merci d’avoir vendu sur Yiriclick. Tu peux revenir quand tu veux.")));
+    var a = el("a", "btn btn-orange", L("Retour à la vitrine")); a.href = "./"; m.appendChild(a); document.body.appendChild(m);
+  });
+
   $("logout").addEventListener("click", async function () {
     if (dirty && !confirmLeave()) return;
     try { localStorage.removeItem("yc-profil"); } catch (e) {}

@@ -169,6 +169,10 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
   </form>
 </section>
 
+<section id="vMfa" class="wrap" hidden>
+  <form class="login" id="mfaBox" novalidate></form>
+</section>
+
 <section id="vDenied" class="wrap" hidden>
   <div class="login">
     <h1>Accès refusé</h1>
@@ -317,7 +321,7 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
 
   function $(id) { return document.getElementById(id); }
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
-  function show(view) { ["vLogin", "vDenied", "vApp"].forEach(function (v) { $(v).hidden = v !== view; }); $("logout").hidden = view !== "vApp"; }
+  function show(view) { ["vLogin", "vMfa", "vDenied", "vApp"].forEach(function (v) { $(v).hidden = v !== view; }); $("logout").hidden = view !== "vApp"; }
   function fmtDate(d, withTime) {
     var x = new Date(d); if (isNaN(x)) return "";
     return x.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" }) + (withTime ? " " + x.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) : "");
@@ -329,9 +333,86 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
   async function boot() {
     var res = await sb.auth.getSession();
     if (!res.data.session) { show("vLogin"); return; }
-    var adm = await sb.rpc("is_admin");
-    if (adm.error || adm.data !== true) { show("vDenied"); return; }
+    /* base v18: 6-digit code (authenticator app) on top of the password */
+    var stt = await sb.rpc("admin_statut");
+    if (!stt.error && stt.data) {
+      if (!stt.data.admin) { show("vDenied"); return; }
+      if (stt.data.code_active && !stt.data.session_confirmee) { mfaVerify(); return; }
+      if (!stt.data.code_active && !mfaLater) { mfaEnroll(); return; }
+    } else {
+      var adm = await sb.rpc("is_admin");
+      if (adm.error || adm.data !== true) { show("vDenied"); return; }
+    }
+    var back = new URLSearchParams(location.search).get("retour");
+    if (back && /^[a-z-]+\.html$/.test(back)) { location.replace(back); return; }
     show("vApp"); load();
+  }
+
+  /* ---------- 6-digit code (two-step login) ---------- */
+  var mfaLater = false;
+  function mfaForm(title, lead) {
+    var f = $("mfaBox"); f.textContent = "";
+    f.appendChild(el("h1", null, title)); if (lead) f.appendChild(el("p", null, lead));
+    show("vMfa"); return f;
+  }
+  function codeField(f) {
+    var w = el("div", "field"), l = el("label", null, "Code à 6 chiffres"), i = el("input");
+    l.setAttribute("for", "mfaCode"); i.id = "mfaCode"; i.inputMode = "numeric"; i.autocomplete = "one-time-code"; i.maxLength = 7; i.pattern = "[0-9]*";
+    w.appendChild(l); w.appendChild(i); f.appendChild(w); return i;
+  }
+  function outLink(f) { var o = el("button", "btn btn-ghost", "Se déconnecter"); o.type = "button"; o.addEventListener("click", logout); f.appendChild(o); }
+  async function mfaVerify() {
+    var lf = await sb.auth.mfa.listFactors(), fac = lf.data && (lf.data.totp || []).filter(function (x) { return x.status === "verified"; })[0];
+    var f = mfaForm("Code de sécurité", "Ouvre ton application d’authentification et entre le code à 6 chiffres affiché pour Yiriclick.");
+    var inp = codeField(f), err = el("p", "err"), go = el("button", "btn btn-orange", "Valider"); go.type = "submit";
+    f.appendChild(err); f.appendChild(go); outLink(f);
+    f.onsubmit = async function (e) {
+      e.preventDefault(); err.textContent = "";
+      var code = inp.value.replace(/\D/g, ""); if (code.length !== 6 || !fac) { err.textContent = "Entre les 6 chiffres du code."; return; }
+      go.disabled = true; var r = await sb.auth.mfa.challengeAndVerify({ factorId: fac.id, code: code }); go.disabled = false;
+      if (r.error) { err.textContent = "Code incorrect ou expiré. Réessaie avec le code affiché maintenant."; inp.value = ""; inp.focus(); return; }
+      boot();
+    };
+    setTimeout(function () { inp.focus(); }, 50);
+  }
+  function mfaEnroll() {
+    var f = mfaForm("Protège ton administration", "En plus du mot de passe, un code à 6 chiffres changera toutes les 30 secondes sur ton téléphone. Même si quelqu’un vole ton mot de passe, il ne pourra pas entrer.");
+    f.appendChild(el("p", "notice", "Installe d’abord une application d’authentification : Google Authenticator, Microsoft Authenticator, ou l’app Mots de passe de l’iPhone."));
+    var start = el("button", "btn btn-orange", "Activer le code à 6 chiffres"); start.type = "button"; f.appendChild(start);
+    var later = el("button", "btn btn-ghost", "Plus tard (déconseillé)"); later.type = "button"; f.appendChild(later);
+    var err = el("p", "err"); f.appendChild(err);
+    later.addEventListener("click", function () { mfaLater = true; boot(); });
+    start.addEventListener("click", async function () {
+      start.disabled = true; err.textContent = "";
+      var lf = await sb.auth.mfa.listFactors();
+      var old = lf.data && (lf.data.all || []).filter(function (x) { return x.status !== "verified"; }) || [];
+      for (var i = 0; i < old.length; i++) await sb.auth.mfa.unenroll({ factorId: old[i].id });
+      var r = await sb.auth.mfa.enroll({ factorType: "totp", friendlyName: "Yiriclick admin " + new Date().toISOString().slice(0, 10) });
+      start.disabled = false;
+      if (r.error || !r.data) { err.textContent = "Activation impossible : " + ((r.error && r.error.message) || "réessaie") + ". Vérifie dans Supabase › Authentication › Multi-Factor que TOTP est activé."; return; }
+      mfaScan(r.data);
+    });
+  }
+  function mfaScan(d) {
+    var f = mfaForm("Ajoute Yiriclick à ton application", null);
+    var steps = el("ol"); steps.style.cssText = "margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px";
+    steps.appendChild(el("li", null, "Sur ce téléphone : touche le bouton ci-dessous. Sur un ordinateur : scanne le QR code avec ton téléphone."));
+    steps.appendChild(el("li", null, "Entre ensuite le code à 6 chiffres que l’application affiche pour Yiriclick."));
+    f.appendChild(steps);
+    var add = el("a", "btn btn-navy", "Ajouter dans mon application"); add.href = d.totp.uri; f.appendChild(add);
+    var qr = el("img"); qr.src = d.totp.qr_code; qr.alt = "QR code à scanner avec l’application d’authentification"; qr.style.cssText = "width:200px;height:200px;align-self:center;background:#fff;padding:8px"; f.appendChild(qr);
+    var sec = el("p", "notice"); sec.appendChild(document.createTextNode("Ou saisis cette clé à la main : ")); var c = el("code", null, d.totp.secret); c.style.userSelect = "all"; sec.appendChild(c); f.appendChild(sec);
+    var inp = codeField(f), err = el("p", "err"), go = el("button", "btn btn-orange", "Confirmer et activer"); go.type = "submit";
+    f.appendChild(err); f.appendChild(go); outLink(f);
+    f.appendChild(el("p", "notice", "Garde ton téléphone en sécurité. Si tu le perds, il faudra désactiver le code depuis Supabase (voir README, base v18)."));
+    f.onsubmit = async function (e) {
+      e.preventDefault(); err.textContent = "";
+      var code = inp.value.replace(/\D/g, ""); if (code.length !== 6) { err.textContent = "Entre les 6 chiffres du code."; return; }
+      go.disabled = true; var r = await sb.auth.mfa.challengeAndVerify({ factorId: d.id, code: code }); go.disabled = false;
+      if (r.error) { err.textContent = "Code incorrect. Vérifie que l’heure de ton téléphone est automatique, puis réessaie."; inp.value = ""; inp.focus(); return; }
+      var ok = mfaForm("Code à 6 chiffres activé ✓", "Désormais, l’administration te demandera ce code à chaque nouvelle connexion.");
+      var b = el("button", "btn btn-orange", "Ouvrir l’administration"); b.type = "button"; b.addEventListener("click", boot); ok.appendChild(b);
+    };
   }
   $("loginForm").addEventListener("submit", async function (e) {
     e.preventDefault();
@@ -430,7 +511,7 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
   var SCRIPTS = { inscriptions: "Inscriptions (inscriptions.sql)", v2: "v2 · dossiers vendeurs, admin", v3: "v3 · boutiques et produits", v4: "v4 · promotions de la vitrine",
     v5: "v5 · boutiques personnalisables, statistiques", v6: "v6 · commandes et variantes", v7: "v7 · soldes, codes promo, avis", v8: "v8 · tailles pour toutes les formules",
     v9: "v9 · e-mails automatiques", v10: "v10 · essai gratuit immédiat", v11: "v11 · vitrine rapide", v12: "v12 · taux de change du jour",
-    v13: "v13 · formulaires pré-remplis", v14: "v14 · avis clients complets", v15: "v15 · demande d’avis après livraison", v16: "v16 · validation des boutiques, contact, état du site", v17: "v17 · taux de change à 7 h (Pays-Bas)" };
+    v13: "v13 · formulaires pré-remplis", v14: "v14 · avis clients complets", v15: "v15 · demande d’avis après livraison", v16: "v16 · validation des boutiques, contact, état du site", v17: "v17 · taux de change à 7 h (Pays-Bas)", v18: "v18 · code admin, suppression de compte, ménage des données" };
   async function loadEtat() {
     var sum = $("etatSum"), box = $("etatBox"), det = $("etatDet");
     var r = await sb.rpc("etat_site");
@@ -455,6 +536,8 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
     if (S.admin_email) sv.push([S.admin_email.ok, S.admin_email.ok ? "Alertes envoyées à " + S.admin_email.detail : "Aucune adresse admin : tu ne reçois pas les alertes"]);
     if (S.emails) sv.push([S.emails.ok, S.emails.detail && S.emails.detail.dernier ? "Dernier e-mail le " + fmtDate(S.emails.detail.dernier, true) + (S.emails.ok ? "" : " · " + S.emails.detail.refus + " refusé(s) par Resend") : "Aucun e-mail envoyé pour l’instant"]);
     if (S.site_url) sv.push([true, "Adresse du site dans les e-mails : " + S.site_url.detail]);
+    if (S.mfa) sv.push([S.mfa.ok, S.mfa.ok ? "Code à 6 chiffres actif pour ton compte admin" : "Code à 6 chiffres pas encore activé : déconnecte-toi puis reconnecte-toi pour l’activer"]);
+    if (S.menage) sv.push([S.menage.ok, S.menage.ok ? "Ménage mensuel des données personnelles actif" : "Ménage mensuel absent : exécute v18"]);
     group("Services", sv);
     var todo = [];
     if (S.a_valider) todo.push([S.a_valider.ok, S.a_valider.detail ? S.a_valider.detail + " boutique(s) à valider" : "Aucune boutique en attente"]);

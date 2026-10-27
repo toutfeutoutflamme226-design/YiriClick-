@@ -1,0 +1,45 @@
+# Weekly encrypted backup of the Supabase database (structure + data), kept 90 days as a workflow artifact.
+# The file is encrypted (AES-256) before it leaves the runner: without the passphrase it cannot be read,
+# even though artifacts of a public repository can be downloaded by others.
+# Requires once (Settings > Secrets and variables > Actions > New repository secret):
+#   SUPABASE_DB_URL     Supabase > Connect > "Session pooler" connection string, with the database password in it
+#   BACKUP_PASSPHRASE   a long passphrase kept in your password manager (needed to open a backup)
+# Restore: gpg --decrypt yiriclick-AAAA-MM-JJ.sql.gz.gpg | gunzip > backup.sql   (then psql into a new project)
+name: Sauvegarde de la base
+
+on:
+  schedule:
+    - cron: "23 2 * * 0"   # every Sunday, 02:23 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sauvegarde chiffrée
+        env:
+          DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          PASS: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          if [ -z "$DB_URL" ] || [ -z "$PASS" ]; then
+            echo "::notice::Sauvegarde non configurée : ajoute les secrets SUPABASE_DB_URL et BACKUP_PASSPHRASE (voir README, base v18)."
+            exit 0
+          fi
+          mkdir -p out
+          F="out/yiriclick-$(date -u +%F).sql.gz.gpg"
+          docker run --rm -e DB_URL postgres:17 sh -c 'pg_dump --no-owner --no-privileges --schema=public --schema=auth --schema=storage "$DB_URL"' \
+            | gzip -9 \
+            | gpg --batch --yes --symmetric --cipher-algo AES256 --passphrase "$PASS" -o "$F"
+          test -s "$F"
+          ls -lh out
+      - name: Garder la sauvegarde 90 jours
+        if: ${{ hashFiles('out/*') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: sauvegarde-base
+          path: out/
+          retention-days: 90
+          if-no-files-found: ignore
