@@ -40,6 +40,13 @@ jobs:
           PASS: ${{ secrets.BACKUP_PASSPHRASE }}
         run: |
           if [ -z "$PASS" ]; then echo "::error::Ajoute aussi le secret BACKUP_PASSPHRASE (la phrase qui chiffre la sauvegarde)."; exit 1; fi
+          # A space, a line break or quotes copied by mistake around the key: removed here
+          SUPABASE_ACCESS_TOKEN="$(printf '%s' "$SUPABASE_ACCESS_TOKEN" | tr -d '[:space:]"'"'"'')"
+          export SUPABASE_ACCESS_TOKEN
+          case "$SUPABASE_ACCESS_TOKEN" in
+            sbp_*) echo "::notice::Clé d'accès reçue : commence bien par sbp_, ${#SUPABASE_ACCESS_TOKEN} caractères." ;;
+            *) echo "::error::La clé enregistrée dans SUPABASE_ACCESS_TOKEN ne commence pas par sbp_ (${#SUPABASE_ACCESS_TOKEN} caractères, début : ${SUPABASE_ACCESS_TOKEN:0:3}…). Recopie la clé affichée par Supabase juste après « Create token »."; exit 1 ;;
+          esac
           mkdir -p work out
           supabase link --project-ref "$PROJECT_REF" < /dev/null
           supabase db dump --linked --role-only -f work/1-roles.sql < /dev/null
