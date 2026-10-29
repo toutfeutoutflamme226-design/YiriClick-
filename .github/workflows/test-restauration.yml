@@ -35,23 +35,21 @@ jobs:
         env:
           PASS: ${{ secrets.BACKUP_PASSPHRASE }}
         run: |
-          F=$(ls backup/*.gpg | head -n 1)
+          fail() { echo "::error::Étape « $1 » : $(tail -n 5 "$2" 2>/dev/null | tr '\n' ' ' | cut -c1-500)"; exit 1; }
+          F=$(ls backup/*.gpg 2>/dev/null | head -n 1)
+          [ -n "$F" ] || { echo "::error::Aucun fichier de sauvegarde téléchargé."; exit 1; }
           mkdir -p work
-          case "$F" in
-            *.tar.gz.gpg) gpg --batch --quiet --decrypt --passphrase "$PASS" "$F" | tar -xzf - -C work ;;
-            *) echo "::error::Format de sauvegarde inattendu : $F"; exit 1 ;;
-          esac
+          gpg --batch --quiet --decrypt --passphrase "$PASS" "$F" > work/all.tar.gz 2> gpg.log || fail "ouverture avec BACKUP_PASSPHRASE" gpg.log
+          tar -xzf work/all.tar.gz -C work > tar.log 2>&1 || fail "décompression" tar.log
           ls -l work
-          supabase init --force > /dev/null 2>&1 || supabase init > /dev/null
-          supabase db start
+          supabase init < /dev/null > init.log 2>&1 || fail "préparation de la base temporaire" init.log
+          supabase db start < /dev/null > start.log 2>&1 || fail "démarrage de la base temporaire" start.log
           DB="postgresql://postgres:postgres@127.0.0.1:54322/postgres"
           psql "$DB" -q -v ON_ERROR_STOP=0 -f work/1-roles.sql > roles.log 2>&1 || true
-          if ! psql "$DB" -q --single-transaction -v ON_ERROR_STOP=1 -f work/2-structure.sql -c 'SET session_replication_role = replica' -f work/3-donnees.sql > restore.log 2>&1; then
-            echo "::error::La restauration a échoué : $(grep -m1 -i error restore.log | cut -c1-400)"; exit 1
-          fi
+          psql "$DB" -q --single-transaction -v ON_ERROR_STOP=1 -f work/2-structure.sql -c 'SET session_replication_role = replica' -f work/3-donnees.sql > restore.log 2>&1 || { echo "::error::Restauration refusée : $(grep -m2 -i error restore.log | tr '\n' ' ' | cut -c1-500)"; exit 1; }
           for t in boutiques produits commandes avis dossiers; do
             n=$(psql "$DB" -tAc "select count(*) from public.$t" 2>/dev/null || echo "?")
-            echo "$t: $n"; echo "::notice::Restauration réussie, table $t : $n ligne(s)"
+            echo "::notice::Restauration réussie, table $t : $n ligne(s)"
           done
           u=$(psql "$DB" -tAc "select count(*) from auth.users" 2>/dev/null || echo "?")
           echo "::notice::Comptes utilisateurs retrouvés : $u"
