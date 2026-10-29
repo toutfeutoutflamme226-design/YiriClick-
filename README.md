@@ -365,3 +365,10 @@ Si `schema-v12.sql` est relancé un jour, relancer ensuite `schema-v17.sql`.
 - **Ajouter le numéro KvK** : sur GitHub, ouvre `assets/legal.js`, clique sur le crayon, remplis `kvk: "12345678"` (et `nom`, `adresse`, `btw`, `tribunal`), puis « Commit changes ». Le site se met à jour en 1 à 2 minutes.
 - Chaque fiche produit a un lien « Signaler ce produit » qui ouvre le formulaire de contact pré-rempli (sujet : signalement).
 - À faire relire par un juriste (par exemple via le Juridisch Loket ou un avocat) avant de prendre des paiements en ligne.
+
+## Base v19 : protections anti-abus et surveillance
+
+- Colle `supabase/schema-v19.sql` dans Supabase › SQL Editor › New query, puis Run.
+- Pièces d'identité : nom de fichier imposé, 40 dépôts par heure, 3 000 fichiers maximum. Dossiers : 20 par heure. Visites : 3 000 par heure.
+- État du site : alerte si une tâche automatique n'a pas tourné depuis 26 h (et barre rouge en haut de l'admin). Remède habituel : Supabase › Project Settings › General › Restart project.
+- Boutique pas encore approuvée : un bandeau prévient les visiteurs sur sa page.

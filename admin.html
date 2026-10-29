@@ -528,7 +528,7 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
   var SCRIPTS = { inscriptions: "Inscriptions (inscriptions.sql)", v2: "v2 · dossiers vendeurs, admin", v3: "v3 · boutiques et produits", v4: "v4 · promotions de la vitrine",
     v5: "v5 · boutiques personnalisables, statistiques", v6: "v6 · commandes et variantes", v7: "v7 · soldes, codes promo, avis", v8: "v8 · tailles pour toutes les formules",
     v9: "v9 · e-mails automatiques", v10: "v10 · essai gratuit immédiat", v11: "v11 · vitrine rapide", v12: "v12 · taux de change du jour",
-    v13: "v13 · formulaires pré-remplis", v14: "v14 · avis clients complets", v15: "v15 · demande d’avis après livraison", v16: "v16 · validation des boutiques, contact, état du site", v17: "v17 · taux de change à 7 h (Pays-Bas)", v18: "v18 · code admin, suppression de compte, ménage des données" };
+    v13: "v13 · formulaires pré-remplis", v14: "v14 · avis clients complets", v15: "v15 · demande d’avis après livraison", v16: "v16 · validation des boutiques, contact, état du site", v17: "v17 · taux de change à 7 h (Pays-Bas)", v18: "v18 · code admin, suppression de compte, ménage des données", v19: "v19 · protections anti-abus, surveillance des tâches" };
   async function loadEtat() {
     var sum = $("etatSum"), box = $("etatBox"), det = $("etatDet");
     var r = await sb.rpc("etat_site");
@@ -549,6 +549,11 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
     var sv = [];
     if (S.taux) sv.push([S.taux.ok, S.taux.detail ? "Taux de change mis à jour le " + fmtDate(S.taux.detail, true) + (S.taux.ok ? "" : " : trop ancien") : "Taux de change jamais mis à jour"]);
     if (S.cron) sv.push([S.cron.ok, S.cron.ok ? "Tâches planifiées actives (" + S.cron.detail + ")" : "Tâches planifiées absentes : exécute v12"]);
+    if (S.taches) {
+      var late = (S.taches.detail || []).filter(function (x) { return !x.ok; });
+      sv.push([S.taches.ok, S.taches.ok ? "Tâches automatiques exécutées ces dernières 24 h" : "Tâche(s) arrêtée(s) : " + late.map(function (x) { return x.nom.replace("yiriclick-", "") + (x.dernier ? " (dernière fois le " + fmtDate(x.dernier, true) + ")" : " (jamais)"); }).join(", ") + ". Redémarre le projet : Supabase › Project Settings › General › Restart project"]);
+    }
+    if (S.pieces) sv.push([S.pieces.ok, S.pieces.ok ? "Espace des pièces d’identité : " + S.pieces.detail + " fichier(s)" : "Espace des pièces d’identité presque plein (" + S.pieces.detail + " fichiers) : vérifie qu’il ne s’agit pas d’abus"]);
     if (S.resend) sv.push([S.resend.ok, S.resend.ok ? "Clé d’envoi d’e-mails (Resend) enregistrée" : "Clé Resend absente : aucun e-mail ne part"]);
     if (S.admin_email) sv.push([S.admin_email.ok, S.admin_email.ok ? "Alertes envoyées à " + S.admin_email.detail : "Aucune adresse admin : tu ne reçois pas les alertes"]);
     if (S.emails) sv.push([S.emails.ok, S.emails.detail && S.emails.detail.dernier ? "Dernier e-mail le " + fmtDate(S.emails.detail.dernier, true) + (S.emails.ok ? "" : " · " + S.emails.detail.refus + " refusé(s) par Resend") : "Aucun e-mail envoyé pour l’instant"]);
@@ -562,6 +567,10 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
     group("À faire", todo);
     sum.className = "pill " + (bad ? "p-en_attente" : "p-actif"); sum.textContent = bad ? bad + " point" + (bad > 1 ? "s" : "") + " à regarder" : "Tout est en ordre";
     det.open = bad > 0;
+    /* Red bar at the top of the administration as long as something needs attention */
+    var bar = $("etatBar");
+    if (!bar) { bar = el("a", null); bar.id = "etatBar"; bar.href = "#etatDet"; bar.style.cssText = "display:block;background:#B3261E;color:#fff;font-weight:800;padding:12px 16px;text-decoration:none;margin-bottom:12px"; var app = $("vApp"); app.insertBefore(bar, app.firstChild); }
+    bar.hidden = !bad; bar.textContent = "⚠ État du site : " + bad + " point" + (bad > 1 ? "s" : "") + " à regarder. Touche ici pour voir.";
   }
 
   /* ---------- KPIs ---------- */
