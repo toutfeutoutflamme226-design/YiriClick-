@@ -94,6 +94,9 @@ begin
   v := v || jsonb_build_object('v', 'v17', 'ok', exists (select 1 from pg_proc where proname = 'taux_demander_matin'));
   v := v || jsonb_build_object('v', 'v18', 'ok', exists (select 1 from pg_proc where proname = 'supprimer_mon_compte'));
   v := v || jsonb_build_object('v', 'v19', 'ok', exists (select 1 from pg_proc where proname = 'taches_etat'));
+  -- versions suivantes : chaque script s'inscrit lui-même dans versions_base
+  v := v || coalesce((select jsonb_agg(jsonb_build_object('v', version, 'ok', true) order by substring(version from 2)::int)
+                      from public.versions_base where version ~ '^v[0-9]+$' and substring(version from 2)::int > 19), '[]'::jsonb);
 
   -- services
   if to_regclass('public.taux') is not null then

@@ -223,6 +223,12 @@
     $("sPlace").textContent = [shop.ville, shop.pays].filter(Boolean).join(", ");
     $("sDesc").textContent = shop.description || "";
     if (shop.verifie === false) document.querySelector(".verified").hidden = true;
+    /* base v20: Club of 50 founding sellers */
+    if (shop.fondateur) {
+      var fb = document.createElement("span"); fb.setAttribute("data-t", "founderB"); fb.textContent = Y.t("founderB");
+      fb.style.cssText = "display:inline-block;margin-top:6px;font-size:12px;font-weight:900;letter-spacing:.6px;background:#FF7A2E;color:#10232A;padding:5px 10px;border-radius:999px";
+      $("sName").insertAdjacentElement("afterend", fb);
+    }
     /* base v16: a shop not yet approved works through its link, but visitors are warned */
     if (shop.approuvee === false) {
       document.querySelector(".verified").hidden = true;

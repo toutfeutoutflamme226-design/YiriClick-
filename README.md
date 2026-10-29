@@ -372,3 +372,10 @@ Si `schema-v12.sql` est relancé un jour, relancer ensuite `schema-v17.sql`.
 - Pièces d'identité : nom de fichier imposé, 40 dépôts par heure, 3 000 fichiers maximum. Dossiers : 20 par heure. Visites : 3 000 par heure.
 - État du site : alerte si une tâche automatique n'a pas tourné depuis 26 h (et barre rouge en haut de l'admin). Remède habituel : Supabase › Project Settings › General › Restart project.
 - Boutique pas encore approuvée : un bandeau prévient les visiteurs sur sa page.
+
+## Base v20 : partenaires et Club des 50 vendeurs fondateurs
+
+- Colle `supabase/schema-v20.sql` dans Supabase › SQL Editor › New query, puis Run (après v19).
+- Admin › **Vendeurs fondateurs** : cherche une boutique et ajoute-la au Club. Badge « Vendeur fondateur » sur sa boutique, compteur de places sur l'accueil (50 maximum, refusé au-delà).
+- Admin › **Partenaires** : logo, affiche, lien, dates, emplacement (grande affiche ou bande de logos). Compteur d'affichages et de clics sur 30 jours, bouton « Copier le rapport » à envoyer au partenaire.
+- Rien ne s'affiche sur l'accueil tant que v20 n'est pas installée ou qu'aucun partenaire n'est ajouté.

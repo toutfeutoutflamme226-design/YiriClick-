@@ -212,6 +212,33 @@ section.block { margin-top: 28px; }
   #chooser > .bar { position: static; width: 100%; max-width: 620px; box-sizing: border-box; border: 0; background: #F4F1EC; border-radius: 0 0 22px 22px; padding: 4px 40px 32px; }
   #chooser .ch-btns { flex-direction: row-reverse; max-width: none; }
 }
+/* Club des 50 fondateurs (base v20) */
+.fond { background: var(--navy, #10232A); color: #fff; border-radius: 22px; padding: 24px 20px; display: flex; flex-direction: column; gap: 18px; }
+.fond-main { display: flex; flex-direction: column; gap: 14px; }
+.fond-tag { align-self: flex-start; font-size: 12px; font-weight: 900; letter-spacing: 1.2px; background: #FF7A2E; color: #10232A; padding: 6px 10px; border-radius: 999px; }
+.fond h2 { margin: 0; font-size: clamp(24px, 4vw, 40px); font-weight: 900; letter-spacing: -0.8px; line-height: 1.1; }
+.fond ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px 24px; color: #E3EEF0; font-size: 15px; }
+.fond li::before { content: "✓ "; color: #FF9C5E; font-weight: 900; }
+.fond-box { background: #1A3540; border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+.fond-n { font-size: 44px; font-weight: 900; color: #FF9C5E; line-height: 1; }
+.fond-bar { height: 10px; background: #2A4650; border-radius: 999px; overflow: hidden; }
+.fond-bar i { display: block; height: 10px; background: #FF7A2E; }
+.fond-go { display: flex; align-items: center; justify-content: center; min-height: 52px; border-radius: 14px; background: #FF7A2E; color: #10232A; font-weight: 900; font-size: 16px; text-decoration: none; }
+.fond small { color: #9FB4B8; font-size: 12px; }
+@media (min-width: 900px) { .fond { flex-direction: row; align-items: center; gap: 48px; padding: 44px 52px; } .fond-main { flex: 3; } .fond-box { flex: 2; } .fond ul { grid-template-columns: 1fr 1fr; } }
+/* Partenaires (base v20) */
+.pmain { display: flex; flex-direction: column; border-radius: 22px; overflow: hidden; background: #E6F4F5; text-decoration: none; color: var(--ink); }
+.pmain img { width: 100%; aspect-ratio: 2 / 1; object-fit: cover; display: block; }
+.pmain div { padding: 22px; display: flex; flex-direction: column; gap: 8px; }
+.pmain small { align-self: flex-start; font-size: 11px; font-weight: 800; letter-spacing: 1.2px; background: #fff; padding: 5px 9px; border-radius: 999px; }
+.pmain b { font-size: 24px; font-weight: 900; }
+.pmain p { margin: 0; color: #36494F; }
+@media (min-width: 900px) { .pmain { flex-direction: row-reverse; } .pmain img { width: 50%; aspect-ratio: auto; min-height: 300px; } .pmain div { flex: 1; padding: 44px; justify-content: center; } .pmain b { font-size: 34px; } }
+.plogos-t { text-align: center; font-size: 12px; font-weight: 800; letter-spacing: 1.2px; color: var(--soft); margin: 22px 0 12px; text-transform: uppercase; }
+.plogos { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+.plogos a { height: 80px; border: 1px solid var(--rule); border-radius: 14px; background: var(--white); display: flex; align-items: center; justify-content: center; padding: 10px; box-sizing: border-box; text-decoration: none; color: var(--ink); font-weight: 800; }
+.plogos img { max-width: 100%; max-height: 56px; object-fit: contain; }
+.plogos a.pjoin { border: 2px dashed var(--rule); color: var(--teal-deep, #0E6E78); text-align: center; font-size: 14px; }
 .clist { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 4px 12px; }
 .clist label { display: flex; align-items: center; gap: 12px; min-height: 48px; cursor: pointer; font-size: 16px; }
 .clist input { width: 24px; height: 24px; accent-color: var(--navy); flex: none; }
@@ -262,11 +289,13 @@ section.block { margin-top: 28px; }
       <div class="hero-car" id="hero"></div>
       <section class="block"><div class="chips" id="chips"></div></section>
       <section class="block"><div class="tiles" id="tiles"></div></section>
+      <section class="block" id="fondSec" hidden></section>
       <section class="block" id="dealSec" hidden></section>
       <section class="block" id="dealsRow" hidden><div class="sec-head"><h2 data-t="deals">Petits prix</h2><button type="button" data-go="promo" data-t="seeAll">Tout voir</button></div><div class="rail" id="dealsRail"></div></section>
       <section class="block" id="trendSec"><div class="sec-head"><h2 data-t="trends">Tendances du moment</h2><button type="button" data-go="all" data-t="seeAll">Tout voir</button></div><div class="grid2" id="trendGrid"><div class="empty-box" data-t="loading">Chargement…</div></div></section>
       <section class="block" id="nearSec" hidden><div class="sec-head"><h2 data-t="near">Près de chez toi</h2></div><div class="rail" id="nearRail"></div></section>
       <section class="block" id="shopsSec" hidden><div class="sec-head"><h2 data-t="shops">Boutiques à découvrir</h2></div><div class="rail" id="shopsRail"></div></section>
+      <section class="block" id="partSec" hidden></section>
       <section class="block"><div class="sec-head"><h2 data-t="discover">Découvrez tout Yiriclick</h2></div><div class="acc" id="discover"></div></section>
     </div>
   </div>
@@ -819,10 +848,56 @@ section.block { margin-top: 28px; }
   }
 
   /* ---------- render ---------- */
+  /* ---------- Club des 50 fondateurs and partners (base v20) ---------- */
+  var fond = null, parts = null;
+  function loadV20() {
+    Y.sb.rpc("fondateurs_places").then(function (r) { fond = r.error ? null : r.data; if (st.view === "home") renderFond(); });
+    Y.sb.from("partenaires").select("id,nom,texte,lien,logo,affiche,emplacement,ordre").order("ordre").then(function (r) { parts = r.error ? [] : (r.data || []); if (st.view === "home") renderParts(); });
+  }
+  function partImg(p) { return p ? Y.sb.storage.from("partenaires").getPublicUrl(p).data.publicUrl : ""; }
+  function renderFond() {
+    var sec = $("fondSec"); sec.textContent = "";
+    if (!fond || fond.prises >= fond.total) { sec.hidden = true; return; }
+    sec.hidden = false;
+    var b = el("div", "fond"), m = el("div", "fond-main");
+    m.appendChild(el("span", "fond-tag", t("fdTag"))); m.appendChild(el("h2", null, t("fdTitle")));
+    var ul = el("ul"); ["fd1", "fd2", "fd3", "fd4"].forEach(function (k) { ul.appendChild(el("li", null, t(k))); }); m.appendChild(ul);
+    var bx = el("div", "fond-box"), left = fond.total - fond.prises;
+    bx.appendChild(el("span", "fond-n", String(left))); bx.appendChild(el("span", null, t("fdLeft", { n: fond.total })));
+    var bar = el("div", "fond-bar"), fill = el("i"); fill.style.width = Math.round(fond.prises / fond.total * 100) + "%"; bar.appendChild(fill); bx.appendChild(bar);
+    var go = el("a", "fond-go", t("fdGo")); go.href = "contact.html?sujet=fondateur"; bx.appendChild(go);
+    bx.appendChild(el("small", null, t("fdNote")));
+    b.appendChild(m); b.appendChild(bx); sec.appendChild(b);
+  }
+  function renderParts() {
+    var sec = $("partSec"); sec.textContent = "";
+    if (!parts || !parts.length) { sec.hidden = true; return; }
+    sec.hidden = false;
+    function link(a, p) { if (p.lien) { a.href = p.lien; a.target = "_blank"; a.rel = "noopener sponsored"; a.addEventListener("click", function () { Y.sb.rpc("partenaire_compter", { p_id: p.id, p_type: "clic" }); }); } }
+    var main = parts.filter(function (p) { return p.emplacement === "principal"; })[0];
+    if (main) {
+      var a = el("a", "pmain"); link(a, main);
+      if (main.affiche) { var im = el("img"); im.src = partImg(main.affiche); im.alt = main.nom; im.loading = "lazy"; a.appendChild(im); }
+      var d = el("div"); d.appendChild(el("small", null, t("ptMain"))); d.appendChild(el("b", null, main.nom)); if (main.texte) d.appendChild(el("p", null, main.texte)); a.appendChild(d);
+      sec.appendChild(a);
+    }
+    var band = parts.filter(function (p) { return p.emplacement !== "principal"; });
+    sec.appendChild(el("p", "plogos-t", t("ptBand")));
+    var g = el("div", "plogos");
+    band.forEach(function (p) { var a = el("a"); link(a, p); if (p.logo) { var im = el("img"); im.src = partImg(p.logo); im.alt = p.nom; im.loading = "lazy"; a.appendChild(im); } else a.textContent = p.nom; a.title = p.nom; g.appendChild(a); });
+    var j = el("a", "pjoin", t("fPartners")); j.href = "contact.html?sujet=partenariat"; g.appendChild(j);
+    sec.appendChild(g);
+    /* one view per partner and per visit */
+    var seen = {}; try { seen = JSON.parse(sessionStorage.getItem("yc-pv") || "{}"); } catch (e) {}
+    parts.forEach(function (p) { if (!seen[p.id]) { seen[p.id] = 1; Y.sb.rpc("partenaire_compter", { p_id: p.id, p_type: "vue" }); } });
+    try { sessionStorage.setItem("yc-pv", JSON.stringify(seen)); } catch (e) {}
+  }
+  loadV20();
+
   function render() {
     Y.labels(); paintHeader();
     $("vHome").hidden = st.view !== "home"; $("vResults").hidden = st.view !== "results";
-    if (st.view === "home") { renderHero(); renderChips(); renderTiles(); renderDeal(); renderRails(); famAccordion($("discover"), go); }
+    if (st.view === "home") { renderHero(); renderChips(); renderTiles(); renderFond(); renderParts(); renderDeal(); renderRails(); famAccordion($("discover"), go); }
     else renderResults();
     renderInstall(); renderSocial();
   }

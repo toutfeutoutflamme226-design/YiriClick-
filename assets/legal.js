@@ -10,5 +10,5 @@ window.YLEGAL = {
   email: "contact@yiriclick.com",
   site: "https://yiriclick.com/",
   tribunal: "Rechtbank Midden-Nederland",                  // competent court, e.g. "Rechtbank Midden-Nederland"
-  majLe: "27 octobre 2026"         // date of the last update of the texts
+  majLe: "29 octobre 2026"         // date of the last update of the texts
 };

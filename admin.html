@@ -197,6 +197,20 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
     <div class="mlist" id="shopsBox"></div>
   </div>
 
+  <div class="card" id="fondCard" hidden>
+    <h2>Vendeurs fondateurs <span class="badge-n" id="cFond"></span></h2>
+    <p class="notice">Club des 50 : coche ici les boutiques qui rejoignent le programme. Elles reçoivent le badge « Vendeur fondateur » et le compteur de places de l’accueil se met à jour tout seul.</p>
+    <div class="field"><label for="fondQ">Ajouter une boutique (tape son nom)</label><input id="fondQ" type="search" autocomplete="off"></div>
+    <div class="mlist" id="fondFind"></div>
+    <div class="mlist" id="fondBox"></div>
+  </div>
+
+  <div class="card" id="partCard" hidden>
+    <div class="head" style="align-items:center"><h2>Partenaires</h2><button class="btn btn-orange" type="button" id="partNew">+ Ajouter un partenaire</button></div>
+    <form id="partForm" hidden style="display:flex;flex-direction:column;gap:12px;border:1px solid var(--rule);padding:14px"></form>
+    <div class="mlist" id="partBox"></div>
+  </div>
+
   <div class="card" id="msgCard" hidden>
     <div class="head" style="align-items:center"><h2>Messages de contact <span class="badge-n" id="cMsg"></span></h2>
       <div class="seg" role="group" aria-label="Filtrer les messages"><button type="button" id="msgOpen" aria-pressed="true">À traiter</button><button type="button" id="msgAll" aria-pressed="false">Tous</button></div></div>
@@ -463,7 +477,7 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
     data.produits = (r[3].data || []).map(function (p) { p.statut = p.masque_admin ? "masque" : "visible"; p.boutique = p.boutiques ? p.boutiques.nom : ""; return p; });
     $("updated").textContent = "Mis à jour le " + fmtDate(new Date(), true);
     renderKpis(); renderChart(); renderBreakdowns(); renderTable(); loadPromos(); loadAvisAdm();
-    loadShops(); loadMessages(); loadEtat();
+    loadShops(); loadMessages(); loadEtat(); loadFond(); loadParts();
   }
 
   /* ---------- Shops waiting for approval (base v16) ---------- */
@@ -493,6 +507,95 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
       d.appendChild(acts); box.appendChild(d);
     });
   }
+
+  /* ---------- Founding sellers (base v20) ---------- */
+  async function setFond(id, on) { var x = await sb.from("boutiques").update({ fondateur: on }).eq("id", id); if (x.error) window.alert(x.error.message); $("fondQ").value = ""; $("fondFind").textContent = ""; loadFond(); }
+  async function loadFond() {
+    var r = await sb.from("boutiques").select("id,nom,slug,ville,pays").eq("fondateur", true).order("nom");
+    var card = $("fondCard"); if (r.error) { card.hidden = true; return; }
+    var list = Array.isArray(r.data) ? r.data : [];
+    card.hidden = false; var box = $("fondBox"); box.textContent = ""; $("cFond").textContent = list.length + " / 50";
+    list.forEach(function (b) {
+      var d = el("div", "mitem"), tt = el("div", "mt"); tt.appendChild(el("b", null, b.nom)); tt.appendChild(el("span", "ms", [b.ville, b.pays].filter(Boolean).join(", "))); d.appendChild(tt);
+      var acts = el("div", "acts"), x = el("button", "btn btn-ghost", "Retirer"); x.type = "button";
+      x.addEventListener("click", function () { if (window.confirm("Retirer « " + b.nom + " » du Club des fondateurs ?")) setFond(b.id, false); });
+      acts.appendChild(x); d.appendChild(acts); box.appendChild(d);
+    });
+  }
+  var fondT = null;
+  $("fondQ").addEventListener("input", function () {
+    clearTimeout(fondT); var q = this.value.trim();
+    fondT = setTimeout(async function () {
+      var box = $("fondFind"); box.textContent = ""; if (q.length < 2) return;
+      var r = await sb.from("boutiques").select("id,nom,ville,pays,fondateur").ilike("nom", "%" + q.replace(/[%_,()]/g, "") + "%").eq("fondateur", false).limit(8);
+      (r.data || []).forEach(function (b) {
+        var d = el("div", "mitem"), tt = el("div", "mt"); tt.appendChild(el("b", null, b.nom)); tt.appendChild(el("span", "ms", [b.ville, b.pays].filter(Boolean).join(", "))); d.appendChild(tt);
+        var acts = el("div", "acts"), ok = el("button", "btn btn-orange", "Ajouter au Club"); ok.type = "button"; ok.addEventListener("click", function () { setFond(b.id, true); });
+        acts.appendChild(ok); d.appendChild(acts); box.appendChild(d);
+      });
+      if (r.data && !r.data.length) box.appendChild(el("p", "notice", "Aucune boutique trouvée."));
+    }, 300);
+  });
+
+  /* ---------- Partners (base v20) ---------- */
+  function partUrl(p) { return p ? sb.storage.from("partenaires").getPublicUrl(p).data.publicUrl : ""; }
+  async function loadParts() {
+    var r = await sb.from("partenaires").select("*").order("ordre").order("created_at");
+    var card = $("partCard"); if (r.error) { card.hidden = true; return; }
+    card.hidden = false;
+    var since = new Date(); since.setDate(since.getDate() - 29);
+    var st = await sb.from("partenaires_stats").select("partenaire,vues,clics,jour").gte("jour", since.toISOString().slice(0, 10));
+    var tot = {}; (st.data || []).forEach(function (x) { var o = tot[x.partenaire] = tot[x.partenaire] || { v: 0, c: 0 }; o.v += x.vues; o.c += x.clics; });
+    var box = $("partBox"); box.textContent = "";
+    if (!r.data.length) box.appendChild(el("p", "notice", "Aucun partenaire pour l’instant. Ils apparaîtront sur l’accueil dès que tu en ajoutes un."));
+    var today = new Date().toISOString().slice(0, 10);
+    r.data.forEach(function (p) {
+      var d = el("div", "mitem"), tt = el("div", "mt"), o = tot[p.id] || { v: 0, c: 0 };
+      var live = p.actif && (!p.debut || p.debut <= today) && (!p.fin || p.fin >= today);
+      tt.appendChild(el("b", null, p.nom + (live ? "" : p.actif ? " · programmé ou terminé" : " · en pause")));
+      tt.appendChild(el("span", "ms", (p.emplacement === "principal" ? "Grande affiche" : "Bande de logos") + " · " + (p.debut ? "du " + p.debut : "dès maintenant") + (p.fin ? " au " + p.fin : ", sans fin") + " · 30 jours : " + o.v + " affichages, " + o.c + " clics"));
+      d.appendChild(tt);
+      var acts = el("div", "acts");
+      var rep = el("button", "btn btn-ghost", "Copier le rapport"); rep.type = "button";
+      rep.addEventListener("click", function () { var txt = "Bonjour, voici les résultats de votre présence sur Yiriclick ces 30 derniers jours : " + o.v + " affichages et " + o.c + " clics vers votre site. Merci pour votre soutien aux petits vendeurs ! L’équipe Yiriclick"; try { navigator.clipboard.writeText(txt); rep.textContent = "Copié ✓"; } catch (e) { window.prompt("Copie ce texte :", txt); } });
+      var ed = el("button", "btn btn-ghost", "Modifier"); ed.type = "button"; ed.addEventListener("click", function () { partForm(p); });
+      var del = el("button", "btn btn-ghost", "Supprimer"); del.type = "button"; del.style.color = "var(--bad)";
+      del.addEventListener("click", async function () { if (!window.confirm("Supprimer « " + p.nom + " » et ses statistiques ?")) return; await sb.from("partenaires").delete().eq("id", p.id); loadParts(); });
+      acts.appendChild(rep); acts.appendChild(ed); acts.appendChild(del); d.appendChild(acts); box.appendChild(d);
+    });
+  }
+  function partForm(p) {
+    p = p || { nom: "", texte: "", lien: "", emplacement: "bande", debut: "", fin: "", actif: true, ordre: 0 };
+    var f = $("partForm"); f.textContent = ""; f.hidden = false;
+    function fld(label, inp) { var w = el("div", "field"), l = el("label", null, label); w.appendChild(l); w.appendChild(inp); f.appendChild(w); return inp; }
+    function inp(type, v, max) { var i = el("input"); i.type = type; i.value = v || ""; if (max) i.maxLength = max; return i; }
+    var nom = fld("Nom du partenaire", inp("text", p.nom, 80)), texte = fld("Phrase courte (facultatif)", inp("text", p.texte, 200)), lien = fld("Lien de son site (commence par https://)", inp("url", p.lien, 300));
+    var emp = el("select"); [["bande", "Bande de logos"], ["principal", "Grande affiche (partenaire principal)"]].forEach(function (o) { var x = el("option", null, o[1]); x.value = o[0]; emp.appendChild(x); }); emp.value = p.emplacement; fld("Emplacement", emp);
+    var deb = fld("Début (facultatif)", inp("date", p.debut)), fin = fld("Fin (facultatif)", inp("date", p.fin)), ord = fld("Ordre d’affichage (0 = en premier)", inp("number", String(p.ordre || 0)));
+    var logo = fld("Logo (JPG, PNG ou WebP, 3 Mo max)" + (p.logo ? " : un logo est déjà enregistré" : ""), inp("file")); logo.accept = "image/jpeg,image/png,image/webp";
+    var aff = fld("Grande affiche, format 2:1, ex. 1200 × 600 (pour le partenaire principal)" + (p.affiche ? " : déjà enregistrée" : ""), inp("file")); aff.accept = "image/jpeg,image/png,image/webp";
+    var actW = el("label", "check"), act = el("input"); act.type = "checkbox"; act.checked = p.actif !== false; actW.appendChild(act); actW.appendChild(el("span", null, "Visible sur le site")); f.appendChild(actW);
+    var err = el("p", "err"); f.appendChild(err);
+    var row = el("div", "acts"), save = el("button", "btn btn-orange", "Enregistrer"), cancel = el("button", "btn btn-ghost", "Annuler"); save.type = "submit"; cancel.type = "button";
+    cancel.addEventListener("click", function () { f.hidden = true; }); row.appendChild(save); row.appendChild(cancel); f.appendChild(row);
+    f.onsubmit = async function (e) {
+      e.preventDefault(); err.textContent = "";
+      if (!nom.value.trim()) { err.textContent = "Indique le nom du partenaire."; return; }
+      if (lien.value.trim() && !/^https:\/\//.test(lien.value.trim())) { err.textContent = "Le lien doit commencer par https://"; return; }
+      save.disabled = true;
+      async function up(file) { if (!file) return null; var ext = file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : "jpg"; var path = Date.now().toString(36) + Math.random().toString(36).slice(2, 8) + "." + ext; var u = await sb.storage.from("partenaires").upload(path, file, { contentType: file.type }); if (u.error) throw u.error; return path; }
+      try {
+        var row = { nom: nom.value.trim(), texte: texte.value.trim() || null, lien: lien.value.trim() || null, emplacement: emp.value, debut: deb.value || null, fin: fin.value || null, actif: act.checked, ordre: parseInt(ord.value, 10) || 0 };
+        var lp = await up(logo.files[0]), ap = await up(aff.files[0]); if (lp) row.logo = lp; if (ap) row.affiche = ap;
+        var x = p.id ? await sb.from("partenaires").update(row).eq("id", p.id) : await sb.from("partenaires").insert(row);
+        if (x.error) throw x.error;
+        f.hidden = true; loadParts();
+      } catch (ex) { err.textContent = "Enregistrement impossible : " + (ex.message || ex); }
+      save.disabled = false;
+    };
+    f.scrollIntoView({ block: "start" }); nom.focus();
+  }
+  $("partNew").addEventListener("click", function () { partForm(null); });
 
   /* ---------- Contact messages (base v16) ---------- */
   var msgFilter = "open", TOPIC = { acheteur: "Client", vendeur: "Vendeur", partenariat: "Partenariat", signalement: "Signalement", autre: "Autre" };
@@ -528,7 +631,7 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
   var SCRIPTS = { inscriptions: "Inscriptions (inscriptions.sql)", v2: "v2 · dossiers vendeurs, admin", v3: "v3 · boutiques et produits", v4: "v4 · promotions de la vitrine",
     v5: "v5 · boutiques personnalisables, statistiques", v6: "v6 · commandes et variantes", v7: "v7 · soldes, codes promo, avis", v8: "v8 · tailles pour toutes les formules",
     v9: "v9 · e-mails automatiques", v10: "v10 · essai gratuit immédiat", v11: "v11 · vitrine rapide", v12: "v12 · taux de change du jour",
-    v13: "v13 · formulaires pré-remplis", v14: "v14 · avis clients complets", v15: "v15 · demande d’avis après livraison", v16: "v16 · validation des boutiques, contact, état du site", v17: "v17 · taux de change à 7 h (Pays-Bas)", v18: "v18 · code admin, suppression de compte, ménage des données", v19: "v19 · protections anti-abus, surveillance des tâches" };
+    v13: "v13 · formulaires pré-remplis", v14: "v14 · avis clients complets", v15: "v15 · demande d’avis après livraison", v16: "v16 · validation des boutiques, contact, état du site", v17: "v17 · taux de change à 7 h (Pays-Bas)", v18: "v18 · code admin, suppression de compte, ménage des données", v19: "v19 · protections anti-abus, surveillance des tâches", v20: "v20 · partenaires et vendeurs fondateurs" };
   async function loadEtat() {
     var sum = $("etatSum"), box = $("etatBox"), det = $("etatDet");
     var r = await sb.rpc("etat_site");
