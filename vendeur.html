@@ -857,6 +857,11 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     if (/duplicate key.*slug/i.test(m)) return L("Cette adresse de boutique est déjà prise. Choisis-en une autre.");
     if (/row-level security|permission denied/i.test(m)) return L("Action refusée : ton compte vendeur n’est peut-être pas actif.");
     if (/Failed to fetch|NetworkError/i.test(m)) return L("Connexion impossible. Vérifie ton réseau et réessaie.");
+    var w = /after (\d+) seconds?/i.exec(m);
+    if (w) return L("Par sécurité, attends encore {n} secondes avant de redemander un lien. Le premier e-mail est peut-être déjà arrivé : regarde aussi dans les spams.").replace("{n}", w[1]);
+    if (/rate limit|too many/i.test(m)) return L("Trop de demandes en peu de temps. Réessaie dans quelques minutes.");
+    if (/password should be at least|password.*characters/i.test(m)) return L("Le mot de passe doit contenir au moins 10 caractères.");
+    if (/invalid.*email|email.*invalid/i.test(m)) return L("Cette adresse e-mail n’est pas valide.");
     return m || L("Une erreur est survenue. Réessaie.");
   }
   function missingCol(e) { return /column|schema cache|does not exist/i.test((e && e.message) || ""); }
