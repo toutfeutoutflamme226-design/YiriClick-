@@ -48,10 +48,14 @@ jobs:
             *) echo "::error::La clé enregistrée dans SUPABASE_ACCESS_TOKEN ne commence pas par sbp_ (${#SUPABASE_ACCESS_TOKEN} caractères, début : ${SUPABASE_ACCESS_TOKEN:0:3}…). Recopie la clé affichée par Supabase juste après « Create token »."; exit 1 ;;
           esac
           mkdir -p work out
-          supabase link --project-ref "$PROJECT_REF" < /dev/null
-          supabase db dump --linked --role-only -f work/1-roles.sql < /dev/null
-          supabase db dump --linked -f work/2-structure.sql < /dev/null
-          supabase db dump --linked --data-only --use-copy -f work/3-donnees.sql < /dev/null
+          # Each step: on failure, its last message is shown in the run summary (Annotations)
+          step() { local name="$1"; shift; if ! "$@" < /dev/null > work/log.txt 2>&1; then
+              echo "::error::Étape « $name » refusée : $(tail -n 4 work/log.txt | tr '\n' ' ' | cut -c1-600)"; exit 1; fi; }
+          step "connexion au projet" supabase link --project-ref "$PROJECT_REF"
+          step "copie des rôles" supabase db dump --linked --role-only -f work/1-roles.sql
+          step "copie de la structure" supabase db dump --linked -f work/2-structure.sql
+          step "copie des données" supabase db dump --linked --data-only --use-copy -f work/3-donnees.sql
+          rm -f work/log.txt
           ls -l work
           test "$(stat -c %s work/2-structure.sql)" -gt 2000
           F="out/yiriclick-$(date -u +%F).tar.gz.gpg"
