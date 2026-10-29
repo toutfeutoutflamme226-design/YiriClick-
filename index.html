@@ -184,6 +184,34 @@ section.block { margin-top: 28px; }
 .chooser h1 { margin: 0; font-size: 28px; font-weight: 900; }
 .chooser h2 { margin: 6px 0 0; font-size: 20px; font-weight: 800; }
 .chooser p { margin: 0; color: var(--soft); }
+.chooser { background: #F4F1EC; }
+.ch-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.ch-langs { display: flex; background: var(--white); border: 1px solid var(--rule); border-radius: 999px; padding: 3px; }
+.ch-langs button { border: 0; background: transparent; color: var(--ink); font: inherit; font-weight: 700; font-size: 14px; border-radius: 999px; min-width: 44px; min-height: 40px; cursor: pointer; }
+.ch-langs button[aria-pressed="true"] { background: var(--navy, #10232A); color: #fff; font-weight: 900; }
+.ch-card { background: var(--white); border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 8px 24px rgba(16,35,42,.08); }
+.ch-c1 { display: flex; align-items: center; gap: 14px; }
+.ch-c1 > span:last-child { display: flex; flex-direction: column; }
+.ch-c1 small { color: var(--soft); font-size: 13px; }
+.ch-c1 strong { font-size: 21px; font-weight: 900; }
+.ch-flag { width: 52px; height: 52px; border-radius: 50%; background: #E6F4F5; display: flex; align-items: center; justify-content: center; font-size: 28px; flex: none; }
+.ch-row { display: flex; justify-content: space-between; gap: 12px; border-top: 1px solid #EEF1F2; padding-top: 12px; font-size: 15px; }
+.ch-row span { color: var(--soft); }
+.ch-search input { width: 100%; box-sizing: border-box; min-height: 50px; border: 2px solid var(--rule); border-radius: 12px; padding: 0 14px; font: inherit; font-size: 16px; background: var(--white); }
+#clist { display: flex; flex-direction: column; background: var(--white); border-radius: 14px; padding: 4px 16px; margin-top: 12px; }
+#clist h3 { margin: 14px 0 4px; font-size: 12px; font-weight: 800; letter-spacing: 1px; color: var(--soft); text-transform: uppercase; }
+#clist label { display: flex; align-items: center; gap: 12px; min-height: 48px; border-bottom: 1px solid #F0F2F3; cursor: pointer; font-size: 16px; }
+#clist label .cur { margin-left: auto; color: var(--soft); font-size: 13px; }
+#clist input { width: 22px; height: 22px; accent-color: var(--navy, #10232A); flex: none; }
+#chList .ch-prefs { margin-top: 16px; }
+.ch-btns { max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
+.ch-btns .btn { width: 100%; justify-content: center; min-height: 50px; border-radius: 14px; }
+@media (min-width: 900px) {
+  #chooser:not([hidden]) { background: rgba(16,35,42,.55); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; }
+  #chooser > .wrap { background: #F4F1EC; border-radius: 22px 22px 0 0; max-width: 620px; width: 100%; padding: 36px 40px 20px; max-height: calc(100vh - 160px); overflow-y: auto; box-sizing: border-box; margin: 0; }
+  #chooser > .bar { position: static; width: 100%; max-width: 620px; box-sizing: border-box; border: 0; background: #F4F1EC; border-radius: 0 0 22px 22px; padding: 4px 40px 32px; }
+  #chooser .ch-btns { flex-direction: row-reverse; max-width: none; }
+}
 .clist { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 4px 12px; }
 .clist label { display: flex; align-items: center; gap: 12px; min-height: 48px; cursor: pointer; font-size: 16px; }
 .clist input { width: 24px; height: 24px; accent-color: var(--navy); flex: none; }
@@ -302,19 +330,31 @@ section.block { margin-top: 28px; }
 
 <div class="chooser" id="chooser" hidden role="dialog" aria-modal="true" aria-labelledby="chT">
   <div class="wrap">
-    <span class="word" style="font-size:40px"><span class="a">yiri</span><span class="b">click</span></span>
-    <h1 id="chT" data-t="welcome">Bienvenue sur Yiriclick</h1>
-    <p data-t="welcomeP"></p>
-    <div class="ch-prefs">
-      <div class="ch-f"><label for="prefLang" data-t="language">Langue</label>
-        <select id="prefLang"><option value="fr">Français</option><option value="en">English</option><option value="es">Español</option></select></div>
-      <div class="ch-f"><label for="prefCur" data-t="currency">Monnaie</label>
-        <select id="prefCur"><option value="">—</option><option value="XOF">FCFA</option><option value="EUR">Euro (€)</option><option value="USD">Dollar ($)</option></select></div>
+    <div class="ch-top">
+      <span class="word" style="font-size:30px"><span class="a">yiri</span><span class="b">click</span></span>
+      <div class="ch-langs" role="group" aria-label="Langue">
+        <button type="button" data-l="fr">FR</button><button type="button" data-l="en">EN</button><button type="button" data-l="es">ES</button>
+      </div>
     </div>
-    <h2 data-t="country">Pays</h2>
-    <div class="clist" id="clist" role="radiogroup"></div>
+    <h1 id="chT" data-t="welcome">Bienvenue sur Yiriclick</h1>
+    <p id="chLead" data-t="chGuess"></p>
+    <div class="ch-card" id="chCard">
+      <div class="ch-c1"><span class="ch-flag" id="chFlag"></span><span><small data-t="chYouAre">Ton pays</small><strong id="chName"></strong></span></div>
+      <div class="ch-row"><span data-t="chPrices">Prix affichés en</span><strong id="chCurName"></strong></div>
+      <div class="ch-row"><span data-t="language">Langue</span><strong id="chLangName"></strong></div>
+    </div>
+    <div id="chList" hidden>
+      <label class="ch-search"><span class="vh" data-t="chSearch">Rechercher un pays</span><input id="chQ" type="search" autocomplete="off" data-tp="chSearch"></label>
+      <div id="clist" role="radiogroup" aria-labelledby="chT"></div>
+      <div class="ch-prefs">
+        <div class="ch-f"><label for="prefLang" data-t="language">Langue</label>
+          <select id="prefLang"><option value="fr">Français</option><option value="en">English</option><option value="es">Español</option></select></div>
+        <div class="ch-f"><label for="prefCur" data-t="currency">Monnaie</label>
+          <select id="prefCur"><option value="">—</option><option value="XOF">FCFA</option><option value="EUR">Euro (€)</option><option value="USD">Dollar ($)</option></select></div>
+      </div>
+    </div>
   </div>
-  <div class="bar"><button class="btn btn-navy" type="button" id="chGo" data-t="go">Continuer</button></div>
+  <div class="bar"><div class="ch-btns"><button class="btn btn-navy" type="button" id="chGo" data-t="chOk">Continuer</button><button class="btn btn-ghost" type="button" id="chOther" data-t="chOther">Choisir un autre pays</button></div></div>
 </div>
 
 <div class="modal" id="pmodal" hidden>
@@ -716,16 +756,50 @@ section.block { margin-top: 28px; }
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("side").hidden) closeSide(); });
 
   /* ---------- country / language chooser ---------- */
+  /* First visit: the country is guessed from the device (time zone, then browser language); one tap confirms it */
+  var REG = { af: ["BF", "CI", "SN", "ML", "TG", "BJ", "NE", "GN", "CM", "GA"], eu: ["FR", "BE", "NL", "DE", "ES", "IT", "CH", "GB"], am: ["US", "CA", "ZZ"] };
+  var TZ = { Ouagadougou: "BF", Abidjan: "CI", Dakar: "SN", Bamako: "ML", Lome: "TG", "Porto-Novo": "BJ", Niamey: "NE", Conakry: "GN", Douala: "CM", Libreville: "GA",
+    Paris: "FR", Brussels: "BE", Amsterdam: "NL", Berlin: "DE", Madrid: "ES", Rome: "IT", Zurich: "CH", London: "GB", Toronto: "CA", Montreal: "CA", Vancouver: "CA" };
+  function guessCountry() {
+    var known = COUNTRIES.map(function (c) { return c[0]; });
+    try { var z = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; var k = TZ[z.split("/").pop()]; if (k) return k; if (/^America\//.test(z)) return "US"; } catch (e) {}
+    var langs = navigator.languages || [navigator.language || ""];
+    for (var i = 0; i < langs.length; i++) { var m = /-([A-Z]{2})$/i.exec(langs[i] || ""); if (m && known.indexOf(m[1].toUpperCase()) >= 0) return m[1].toUpperCase(); }
+    return "ZZ";
+  }
+  function curOf(c) { var f = COUNTRIES.filter(function (x) { return x[0] === c; })[0]; return f ? f[1] : "USD"; }
+  var CURN = { XOF: "FCFA", EUR: "Euro (€)", USD: "Dollar ($)" }, LANGN = { fr: "Français", en: "English", es: "Español" };
+  function paintCard() {
+    var c = pickCountry || "ZZ";
+    $("chFlag").textContent = flag(c); $("chName").textContent = cname(c);
+    $("chCurName").textContent = CURN[Y.prefs.cur] || CURN[curOf(c)]; $("chLangName").textContent = LANGN[Y.prefs.lang] || "";
+    document.querySelectorAll(".ch-langs button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-l") === Y.prefs.lang)); });
+  }
   function renderChooser() {
-    var box = $("clist"); box.textContent = "";
-    COUNTRIES.forEach(function (c) {
-      var l = el("label"), r = el("input"); r.type = "radio"; r.name = "country"; r.value = c[0]; r.checked = c[0] === (pickCountry || country);
-      r.addEventListener("change", function () { pickCountry = c[0]; Y.setPrefs(null, c[1]); });
-      l.appendChild(r); l.appendChild(el("span", null, cname(c[0]))); l.appendChild(el("span", "flag", flag(c[0]))); box.appendChild(l);
+    paintCard();
+    var box = $("clist"), q = Y.norm ? Y.norm($("chQ").value || "") : ($("chQ").value || "").toLowerCase(); box.textContent = "";
+    [["af", t("regAf")], ["eu", t("regEu")], ["am", t("regAm")]].forEach(function (g) {
+      var list = REG[g[0]].filter(function (c) { var n = cname(c); return !q || (Y.norm ? Y.norm(n) : n.toLowerCase()).indexOf(q) >= 0; });
+      if (!list.length) return;
+      box.appendChild(el("h3", null, g[1]));
+      list.forEach(function (c) {
+        var l = el("label"), r = el("input"); r.type = "radio"; r.name = "country"; r.value = c; r.checked = c === pickCountry;
+        r.addEventListener("change", function () { pickCountry = c; Y.setPrefs(null, curOf(c)); paintCard(); });
+        l.appendChild(r); l.appendChild(el("span", null, cname(c))); l.appendChild(el("span", "cur", CURN[curOf(c)])); box.appendChild(l);
+      });
     });
   }
   var pickCountry = country;
-  function openChooser(e, fromNav) { if (!fromNav && country && window.YNav) YNav.opened("chooser"); pickCountry = country; renderChooser(); $("chooser").hidden = false; document.body.style.overflow = "hidden"; var c = $("clist").querySelector("input:checked") || $("clist").querySelector("input"); if (c) c.focus(); }
+  function openChooser(e, fromNav) {
+    if (!fromNav && country && window.YNav) YNav.opened("chooser");
+    pickCountry = country || guessCountry();
+    if (!country) Y.setPrefs(null, curOf(pickCountry));
+    $("chList").hidden = true; $("chOther").hidden = false; $("chQ").value = "";
+    renderChooser(); $("chooser").hidden = false; document.body.style.overflow = "hidden"; $("chGo").focus();
+  }
+  $("chOther").addEventListener("click", function () { $("chList").hidden = false; $("chOther").hidden = true; renderChooser(); $("chQ").focus(); });
+  $("chQ").addEventListener("input", renderChooser);
+  document.querySelectorAll(".ch-langs button").forEach(function (b) { b.addEventListener("click", function () { Y.setPrefs(b.getAttribute("data-l"), null); }); });
   $("chGo").addEventListener("click", function () { country = pickCountry || "ZZ"; sv("yc-country", country); if (!(window.YNav && YNav.close("chooser"))) hideChooser(); loadNear().then(render); });
   function hideChooser() { $("chooser").hidden = true; document.body.style.overflow = ""; }
   if (window.YNav) YNav.layer("chooser", { open: function () { openChooser(null, true); }, close: hideChooser });
