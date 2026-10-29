@@ -3,13 +3,13 @@
    To be reviewed by a lawyer before the public launch. */
 window.YLEGAL_TEXTS = {
   fr: {
-    title: "Informations légales", lead: "Mentions légales, conditions d’utilisation, conditions pour les vendeurs et politique de confidentialité de Yiriclick.",
+    title: "Informations légales", idName: "Nom", idForm: "Forme", idVat: "TVA", idAddr: "Adresse", lead: "Mentions légales, conditions d’utilisation, conditions pour les vendeurs et politique de confidentialité de Yiriclick.",
     updated: "Dernière mise à jour : {majLe}", pending: "en cours d’enregistrement", prevails: "La version française fait foi en cas de différence entre les langues.",
     tabs: { mentions: "Mentions légales", conditions: "Conditions d’utilisation", vendeurs: "Conditions vendeurs", confidentialite: "Confidentialité" },
     contactBtn: "Nous contacter",
     mentions: [
       ["Éditeur du site", "Le site {site} est édité par {nomCommercial}, entreprise individuelle ({forme}) de {nom}.\nAdresse : {adresse}\nNuméro KvK (Chambre de commerce des Pays-Bas) : {kvk}\nNuméro de TVA : {btw}\nContact : {email} ou le formulaire de contact."],
-      ["Responsable de la publication", "{nom}."],
+      ["Responsable de la publication", "{nomCommercial}, joignable à {email}."],
       ["Prestataires techniques", "Le site, la base de données et les e-mails sont hébergés par des prestataires professionnels reconnus, liés à Yiriclick par contrat et soumis au RGPD. Leur liste est communiquée sur simple demande à {email}."],
       ["Rôle de Yiriclick", "Yiriclick est une place de marché en ligne : elle met en relation des vendeurs indépendants et des acheteurs. Les produits sont vendus par les vendeurs, pas par Yiriclick. Le nom et les coordonnées de chaque vendeur figurent sur sa boutique."],
       ["Propriété intellectuelle", "Le nom Yiriclick, son logo, les textes et le design du site appartiennent à {nomCommercial}. Les photos et descriptions des produits appartiennent à leurs vendeurs. Toute reproduction sans autorisation est interdite."]
@@ -55,13 +55,13 @@ window.YLEGAL_TEXTS = {
     ]
   },
   en: {
-    title: "Legal information", lead: "Legal notice, terms of use, seller terms and privacy policy of Yiriclick.",
+    title: "Legal information", idName: "Name", idForm: "Legal form", idVat: "VAT", idAddr: "Address", lead: "Legal notice, terms of use, seller terms and privacy policy of Yiriclick.",
     updated: "Last updated: {majLe}", pending: "being registered", prevails: "The French version prevails in case of difference between languages.",
     tabs: { mentions: "Legal notice", conditions: "Terms of use", vendeurs: "Seller terms", confidentialite: "Privacy" },
     contactBtn: "Contact us",
     mentions: [
       ["Publisher", "The website {site} is published by {nomCommercial}, sole proprietorship ({forme}) of {nom}.\nAddress: {adresse}\nKvK number (Netherlands Chamber of Commerce): {kvk}\nVAT number: {btw}\nContact: {email} or the contact form."],
-      ["Responsible for the content", "{nom}."],
+      ["Responsible for the content", "{nomCommercial}, reachable at {email}."],
       ["Technical providers", "The website, database and emails are hosted by recognised professional providers, bound to Yiriclick by contract and subject to the GDPR. Their list is provided on request at {email}."],
       ["Role of Yiriclick", "Yiriclick is an online marketplace: it connects independent sellers with buyers. Products are sold by the sellers, not by Yiriclick. Each seller’s name and contact details appear on their shop."],
       ["Intellectual property", "The Yiriclick name, logo, texts and design of the website belong to {nomCommercial}. Product photos and descriptions belong to their sellers. Any reproduction without permission is prohibited."]
@@ -107,13 +107,13 @@ window.YLEGAL_TEXTS = {
     ]
   },
   es: {
-    title: "Información legal", lead: "Aviso legal, condiciones de uso, condiciones para vendedores y política de privacidad de Yiriclick.",
+    title: "Información legal", idName: "Nombre", idForm: "Forma", idVat: "IVA", idAddr: "Dirección", lead: "Aviso legal, condiciones de uso, condiciones para vendedores y política de privacidad de Yiriclick.",
     updated: "Última actualización: {majLe}", pending: "en proceso de registro", prevails: "En caso de diferencia entre idiomas, prevalece la versión francesa.",
     tabs: { mentions: "Aviso legal", conditions: "Condiciones de uso", vendeurs: "Condiciones vendedores", confidentialite: "Privacidad" },
     contactBtn: "Contáctanos",
     mentions: [
       ["Editor del sitio", "El sitio {site} es editado por {nomCommercial}, empresa individual ({forme}) de {nom}.\nDirección: {adresse}\nNúmero KvK (Cámara de Comercio de los Países Bajos): {kvk}\nNúmero de IVA: {btw}\nContacto: {email} o el formulario de contacto."],
-      ["Responsable de la publicación", "{nom}."],
+      ["Responsable de la publicación", "{nomCommercial}, contactable en {email}."],
       ["Proveedores técnicos", "El sitio, la base de datos y los correos están alojados por proveedores profesionales reconocidos, vinculados a Yiriclick por contrato y sujetos al RGPD. Su lista se facilita a petición en {email}."],
       ["Papel de Yiriclick", "Yiriclick es un mercado en línea: pone en contacto a vendedores independientes con compradores. Los productos los venden los vendedores, no Yiriclick. El nombre y los datos de cada vendedor figuran en su tienda."],
       ["Propiedad intelectual", "El nombre Yiriclick, su logotipo, los textos y el diseño del sitio pertenecen a {nomCommercial}. Las fotos y descripciones de los productos pertenecen a sus vendedores. Se prohíbe cualquier reproducción sin autorización."]

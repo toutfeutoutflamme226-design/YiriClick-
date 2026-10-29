@@ -17,7 +17,7 @@ img { max-width: 100%; }
 .brand { display: flex; align-items: center; gap: 8px; text-decoration: none; color: inherit; }
 .word { font-size: 22px; font-weight: 900; letter-spacing: -1px; } .word .a { color: var(--orange); } .word .b { color: var(--teal); }
 .prefs { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-.prefs select { background: var(--navy-2); color: var(--white); border: 1px solid var(--line); min-height: 40px; padding: 0 10px; font-weight: 700; font-size: 14px; }
+.prefs select { background: var(--navy-2); color: var(--white); border: 1px solid var(--line); border-radius: 999px; min-height: 40px; padding: 0 12px; font-weight: 700; font-size: 14px; }
 .prefs a { color: var(--white); font-weight: 700; font-size: 14px; text-decoration: none; padding: 8px 4px; }
 .prefs a:hover { color: var(--teal); }
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 18px; border: 2px solid transparent; font-weight: 800; cursor: pointer; text-decoration: none; }
