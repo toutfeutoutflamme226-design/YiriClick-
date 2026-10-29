@@ -1,0 +1,57 @@
+# Checks that the latest weekly backup can really be restored.
+# Takes the latest backup, opens it with BACKUP_PASSPHRASE, restores it into a temporary empty database
+# on GitHub's machine (deleted at the end), and counts the shops, products and orders found.
+# Nothing touches the real database. Runs on the 1st of each month, or by hand (Run workflow).
+name: Test de restauration de la sauvegarde
+
+on:
+  schedule:
+    - cron: "41 4 1 * *"   # 1st of each month, 04:41 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dernière sauvegarde
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          id=$(gh run list -R "$GITHUB_REPOSITORY" -w sauvegarde.yml --status success -L 1 --json databaseId -q '.[0].databaseId')
+          if [ -z "$id" ]; then echo "::error::Aucune sauvegarde réussie trouvée."; exit 1; fi
+          gh run download "$id" -R "$GITHUB_REPOSITORY" -n sauvegarde-base -D backup
+          ls -l backup
+          echo "::notice::Sauvegarde testée : essai n° $id du $(gh run view "$id" -R "$GITHUB_REPOSITORY" --json createdAt -q .createdAt | cut -c1-10)"
+      - name: Outil officiel Supabase
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Ouvrir et restaurer dans une base temporaire
+        shell: bash
+        env:
+          PASS: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          F=$(ls backup/*.gpg | head -n 1)
+          mkdir -p work
+          case "$F" in
+            *.tar.gz.gpg) gpg --batch --quiet --decrypt --passphrase "$PASS" "$F" | tar -xzf - -C work ;;
+            *) echo "::error::Format de sauvegarde inattendu : $F"; exit 1 ;;
+          esac
+          ls -l work
+          supabase init --force > /dev/null 2>&1 || supabase init > /dev/null
+          supabase db start
+          DB="postgresql://postgres:postgres@127.0.0.1:54322/postgres"
+          psql "$DB" -q -v ON_ERROR_STOP=0 -f work/1-roles.sql > roles.log 2>&1 || true
+          if ! psql "$DB" -q --single-transaction -v ON_ERROR_STOP=1 -f work/2-structure.sql -c 'SET session_replication_role = replica' -f work/3-donnees.sql > restore.log 2>&1; then
+            echo "::error::La restauration a échoué : $(grep -m1 -i error restore.log | cut -c1-400)"; exit 1
+          fi
+          for t in boutiques produits commandes avis dossiers; do
+            n=$(psql "$DB" -tAc "select count(*) from public.$t" 2>/dev/null || echo "?")
+            echo "$t: $n"; echo "::notice::Restauration réussie, table $t : $n ligne(s)"
+          done
+          u=$(psql "$DB" -tAc "select count(*) from auth.users" 2>/dev/null || echo "?")
+          echo "::notice::Comptes utilisateurs retrouvés : $u"
