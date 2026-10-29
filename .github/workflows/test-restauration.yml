@@ -27,7 +27,7 @@ jobs:
           ls -l backup
           echo "::notice::Sauvegarde testée : essai n° $id du $(gh run view "$id" -R "$GITHUB_REPOSITORY" --json createdAt -q .createdAt | cut -c1-10)"
       - name: Outil officiel Supabase
-        uses: supabase/setup-cli@v1
+        uses: supabase/setup-cli@v2
         with:
           version: 2.120.0
       - name: Ouvrir et restaurer dans une base temporaire

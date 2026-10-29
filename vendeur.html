@@ -770,7 +770,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
       <div class="field"><label for="ePrix">Prix de vente</label><input id="ePrix" type="number" inputmode="decimal" min="0" step="any"></div>
       <div class="field"><label for="eDevise">Monnaie</label><select id="eDevise"><option value="XOF">FCFA</option><option value="EUR">Euro (€)</option><option value="USD">Dollar ($)</option></select></div>
     </div>
-    <div class="field"><label for="ePrixAvant">Prix avant réduction (facultatif)</label><input id="ePrixAvant" type="number" inputmode="decimal" min="0" step="any"><span class="hint">Pour une promotion : l’ancien prix apparaît barré avec le pourcentage. Laisse vide sinon.</span></div>
+    <div class="field"><label for="ePrixAvant">Prix avant réduction (facultatif)</label><input id="ePrixAvant" type="number" inputmode="decimal" min="0" step="any"><span class="hint">Pour une promotion : l’ancien prix apparaît barré avec le pourcentage. Règle européenne : il doit s’agir du prix le plus bas pratiqué ces 30 derniers jours, sinon il est corrigé automatiquement. Laisse vide sinon.</span></div>
     <div class="field"><label for="eCout">Ton coût d’achat (privé, facultatif)</label><input id="eCout" type="number" inputmode="decimal" min="0" step="any"><span class="hint">Jamais enregistré ni montré aux clients : sert seulement à calculer ta marge ci-dessous.</span></div>
     <div class="calc" id="calc" hidden></div>
     <div class="field" id="soldeZone">

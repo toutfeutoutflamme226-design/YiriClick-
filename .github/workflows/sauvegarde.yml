@@ -29,7 +29,7 @@ jobs:
     steps:
       - name: Outil officiel Supabase
         if: env.HAS_TOKEN == 'true'
-        uses: supabase/setup-cli@v1
+        uses: supabase/setup-cli@v2
         with:
           version: 2.120.0
       - name: Sauvegarde chiffrée (clé d'accès Supabase)
@@ -98,7 +98,7 @@ jobs:
           ls -lh out
       - name: Garder la sauvegarde 90 jours
         if: ${{ hashFiles('out/*') != '' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: sauvegarde-base
           path: out/

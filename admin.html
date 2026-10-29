@@ -200,6 +200,8 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
   <div class="card" id="fondCard" hidden>
     <h2>Vendeurs fondateurs <span class="badge-n" id="cFond"></span></h2>
     <p class="notice">Club des 50 : coche ici les boutiques qui rejoignent le programme. Elles reçoivent le badge « Vendeur fondateur » et le compteur de places de l’accueil se met à jour tout seul.</p>
+    <div class="field"><label for="fondLanc">Date du lancement officiel (début des 4 mois offerts)</label><input id="fondLanc" type="date"></div>
+    <p class="notice" id="fondLancTxt"></p>
     <div class="field"><label for="fondQ">Ajouter une boutique (tape son nom)</label><input id="fondQ" type="search" autocomplete="off"></div>
     <div class="mlist" id="fondFind"></div>
     <div class="mlist" id="fondBox"></div>
@@ -512,17 +514,24 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
   /* ---------- Founding sellers (base v20) ---------- */
   async function setFond(id, on) { var x = await sb.from("boutiques").update({ fondateur: on }).eq("id", id); if (x.error) window.alert(x.error.message); $("fondQ").value = ""; $("fondFind").textContent = ""; loadFond(); }
   async function loadFond() {
-    var r = await sb.from("boutiques").select("id,nom,slug,ville,pays").eq("fondateur", true).order("nom");
+    var r = await sb.from("boutiques").select("id,nom,slug,ville,pays,fondateur_le").eq("fondateur", true).order("nom");
+    if (r.error) r = await sb.from("boutiques").select("id,nom,slug,ville,pays").eq("fondateur", true).order("nom");
+    var rs = await sb.from("reglages_site").select("lancement").eq("id", 1).maybeSingle();
+    var lanc = rs.data && rs.data.lancement ? rs.data.lancement : null, fin = null;
+    $("fondLanc").value = lanc || "";
+    if (lanc) { var d = new Date(lanc + "T12:00:00Z"); d.setUTCMonth(d.getUTCMonth() + 4); fin = d.toISOString().slice(0, 10); }
+    $("fondLancTxt").textContent = rs.error ? "Installe supabase/schema-v22.sql pour régler la date de lancement." : lanc ? "4 mois offerts du " + fmtDate(lanc) + " au " + fmtDate(fin) + " pour chaque fondateur." : "Date de lancement pas encore fixée : les 4 mois offerts commenceront à cette date.";
     var card = $("fondCard"); if (r.error) { card.hidden = true; return; }
     var list = Array.isArray(r.data) ? r.data : [];
     card.hidden = false; var box = $("fondBox"); box.textContent = ""; $("cFond").textContent = list.length + " / 50";
     list.forEach(function (b) {
-      var d = el("div", "mitem"), tt = el("div", "mt"); tt.appendChild(el("b", null, b.nom)); tt.appendChild(el("span", "ms", [b.ville, b.pays].filter(Boolean).join(", "))); d.appendChild(tt);
+      var d = el("div", "mitem"), tt = el("div", "mt"); tt.appendChild(el("b", null, b.nom)); tt.appendChild(el("span", "ms", [b.ville, b.pays].filter(Boolean).join(", ") + (b.fondateur_le ? " · fondateur depuis le " + fmtDate(b.fondateur_le) : "") + (fin ? " · offert jusqu’au " + fmtDate(fin) : ""))); d.appendChild(tt);
       var acts = el("div", "acts"), x = el("button", "btn btn-ghost", "Retirer"); x.type = "button";
       x.addEventListener("click", function () { if (window.confirm("Retirer « " + b.nom + " » du Club des fondateurs ?")) setFond(b.id, false); });
       acts.appendChild(x); d.appendChild(acts); box.appendChild(d);
     });
   }
+  $("fondLanc").addEventListener("change", async function () { var x = await sb.from("reglages_site").update({ lancement: this.value || null }).eq("id", 1); if (x.error) window.alert(x.error.message); loadFond(); });
   var fondT = null;
   $("fondQ").addEventListener("input", function () {
     clearTimeout(fondT); var q = this.value.trim();
@@ -632,7 +641,7 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
   var SCRIPTS = { inscriptions: "Inscriptions (inscriptions.sql)", v2: "v2 · dossiers vendeurs, admin", v3: "v3 · boutiques et produits", v4: "v4 · promotions de la vitrine",
     v5: "v5 · boutiques personnalisables, statistiques", v6: "v6 · commandes et variantes", v7: "v7 · soldes, codes promo, avis", v8: "v8 · tailles pour toutes les formules",
     v9: "v9 · e-mails automatiques", v10: "v10 · essai gratuit immédiat", v11: "v11 · vitrine rapide", v12: "v12 · taux de change du jour",
-    v13: "v13 · formulaires pré-remplis", v14: "v14 · avis clients complets", v15: "v15 · demande d’avis après livraison", v16: "v16 · validation des boutiques, contact, état du site", v17: "v17 · taux de change à 7 h (Pays-Bas)", v18: "v18 · code admin, suppression de compte, ménage des données", v19: "v19 · protections anti-abus, surveillance des tâches", v20: "v20 · partenaires et vendeurs fondateurs", v21: "v21 · limites anti-spam (commandes, inscriptions)" };
+    v13: "v13 · formulaires pré-remplis", v14: "v14 · avis clients complets", v15: "v15 · demande d’avis après livraison", v16: "v16 · validation des boutiques, contact, état du site", v17: "v17 · taux de change à 7 h (Pays-Bas)", v18: "v18 · code admin, suppression de compte, ménage des données", v19: "v19 · protections anti-abus, surveillance des tâches", v20: "v20 · partenaires et vendeurs fondateurs", v21: "v21 · limites anti-spam (commandes, inscriptions)", v22: "v22 · promotions honnêtes, suivi des fondateurs" };
   async function loadEtat() {
     var sum = $("etatSum"), box = $("etatBox"), det = $("etatDet");
     var r = await sb.rpc("etat_site");
