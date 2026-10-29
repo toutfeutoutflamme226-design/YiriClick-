@@ -52,6 +52,7 @@ window.YCV = (function () {
     "Le mot de passe doit faire au moins 8 caractères.": ["The password must be at least 8 characters.", "La contraseña debe tener al menos 8 caracteres."],
     "Les deux mots de passe ne sont pas identiques.": ["The two passwords do not match.", "Las dos contraseñas no coinciden."],
     "Par sécurité, attends encore {n} secondes avant de redemander un lien. Le premier e-mail est peut-être déjà arrivé : regarde aussi dans les spams.": ["For security, wait {n} more seconds before asking for a new link. The first email may already have arrived: check your spam folder too.", "Por seguridad, espera {n} segundos más antes de pedir otro enlace. Puede que el primer correo ya haya llegado: revisa también el spam."],
+    "La vérification anti-robot a échoué. Recharge la page et réessaie.": ["The anti-robot check failed. Reload the page and try again.", "La verificación anti-robot falló. Recarga la página e inténtalo de nuevo."],
     "Trop de demandes en peu de temps. Réessaie dans quelques minutes.": ["Too many requests in a short time. Try again in a few minutes.", "Demasiadas solicitudes en poco tiempo. Inténtalo de nuevo en unos minutos."],
     "Le mot de passe doit contenir au moins 10 caractères.": ["The password must be at least 10 characters long.", "La contraseña debe tener al menos 10 caracteres."],
     "Cette adresse e-mail n’est pas valide.": ["This email address is not valid.", "Esta dirección de correo no es válida."],

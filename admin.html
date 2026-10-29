@@ -312,6 +312,7 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="assets/pass.js"></script>
+<script src="assets/captcha.js"></script>
 <script src="assets/nav.js"></script>
 <script>
 (function () {
@@ -451,9 +452,9 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
     var email = $("email").value.trim(), pass = $("pass").value;
     if (!email || !pass) { err.textContent = "Entre ton e-mail et ton mot de passe."; return; }
     btn.disabled = true; btn.textContent = "Connexion…";
-    var r = await sb.auth.signInWithPassword({ email: email, password: pass });
+    var ct = window.YCaptcha ? await YCaptcha.get() : null; var r = await sb.auth.signInWithPassword({ email: email, password: pass, options: ct ? { captchaToken: ct } : {} });
     btn.disabled = false; btn.textContent = "Se connecter";
-    if (r.error) { err.textContent = "E-mail ou mot de passe incorrect."; return; }
+    if (r.error) { err.textContent = /captcha/i.test(r.error.message || "") ? "La vérification anti-robot a échoué. Recharge la page et réessaie." : "E-mail ou mot de passe incorrect."; return; }
     $("pass").value = ""; boot();
   });
   async function logout() { pendClear(); await sb.auth.signOut(); show("vLogin"); }

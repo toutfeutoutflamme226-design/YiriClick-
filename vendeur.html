@@ -823,6 +823,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
 <script src="assets/nav.js"></script>
 <script src="assets/import.js"></script>
 <script src="assets/pass.js"></script>
+<script src="assets/captcha.js"></script>
 <script>
   var L = YCV.L; YCV.tr(document.body); document.documentElement.lang = YCV.lang;
   if (window.YPhone) { YPhone.attach(document.getElementById("bWa"), { label: L("Indicatif du pays") }); document.getElementById("bWa").placeholder = "70 00 00 00"; }
@@ -859,6 +860,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     if (/Failed to fetch|NetworkError/i.test(m)) return L("Connexion impossible. Vérifie ton réseau et réessaie.");
     var w = /after (\d+) seconds?/i.exec(m);
     if (w) return L("Par sécurité, attends encore {n} secondes avant de redemander un lien. Le premier e-mail est peut-être déjà arrivé : regarde aussi dans les spams.").replace("{n}", w[1]);
+    if (/captcha/i.test(m)) return L("La vérification anti-robot a échoué. Recharge la page et réessaie.");
     if (/rate limit|too many/i.test(m)) return L("Trop de demandes en peu de temps. Réessaie dans quelques minutes.");
     if (/password should be at least|password.*characters/i.test(m)) return L("Le mot de passe doit contenir au moins 10 caractères.");
     if (/invalid.*email|email.*invalid/i.test(m)) return L("Cette adresse e-mail n’est pas valide.");
@@ -936,7 +938,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     e.preventDefault(); var b = $("lBtn"); $("lErr").textContent = "";
     var em = $("lEmail").value.trim(), pw = $("lPass").value;
     if (!em || !pw) { $("lErr").textContent = L("Entre ton e-mail et ton mot de passe."); return; }
-    b.disabled = true; var r = await sb.auth.signInWithPassword({ email: em, password: pw }); b.disabled = false;
+    b.disabled = true; var ct = window.YCaptcha ? await YCaptcha.get() : null; var r = await sb.auth.signInWithPassword({ email: em, password: pw, options: ct ? { captchaToken: ct } : {} }); b.disabled = false;
     if (r.error) { $("lErr").textContent = /confirm/i.test(r.error.message) ? L("Confirme d’abord ton adresse e-mail grâce au lien reçu par e-mail.") : L("E-mail ou mot de passe incorrect."); return; }
     $("lPass").value = ""; boot();
   });
@@ -946,7 +948,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)) { $("sErr").textContent = L("Entre une adresse e-mail valide."); return; }
     if (p1.length < 10) { $("sErr").textContent = L("Le mot de passe doit faire au moins 10 caractères."); return; }
     if (p1 !== p2) { $("sErr").textContent = L("Les deux mots de passe ne sont pas identiques."); return; }
-    b.disabled = true; var r = await sb.auth.signUp({ email: em, password: p1, options: { emailRedirectTo: HERE } }); b.disabled = false;
+    b.disabled = true; var ct = window.YCaptcha ? await YCaptcha.get() : null; var r = await sb.auth.signUp({ email: em, password: p1, options: ct ? { emailRedirectTo: HERE, captchaToken: ct } : { emailRedirectTo: HERE } }); b.disabled = false;
     if (r.error) { $("sErr").textContent = /already/i.test(r.error.message) ? L("Un accès existe déjà avec cet e-mail. Connecte-toi ou utilise « Mot de passe oublié ».") : niceErr(r.error); return; }
     if (r.data.session) { boot(); return; }
     $("sOk").textContent = L("Accès créé ! Ouvre l’e-mail que tu viens de recevoir et touche le lien de confirmation, puis connecte-toi.");
@@ -954,7 +956,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
   $("fForgot").addEventListener("submit", async function (e) {
     e.preventDefault(); $("fErr").textContent = ""; $("fOk").textContent = "";
     var em = $("fEmail").value.trim(); if (!em) { $("fErr").textContent = L("Entre ton adresse e-mail."); return; }
-    $("fBtn").disabled = true; var r = await sb.auth.resetPasswordForEmail(em, { redirectTo: HERE }); $("fBtn").disabled = false;
+    $("fBtn").disabled = true; var ct = window.YCaptcha ? await YCaptcha.get() : null; var r = await sb.auth.resetPasswordForEmail(em, ct ? { redirectTo: HERE, captchaToken: ct } : { redirectTo: HERE }); $("fBtn").disabled = false;
     if (r.error) { $("fErr").textContent = niceErr(r.error); return; }
     $("fOk").textContent = L("Si un accès existe pour cette adresse, un e-mail vient d’être envoyé.");
   });
