@@ -1017,7 +1017,7 @@ window.YC = (function () {
   });
   /* Review form and review list (base v14) */
   extend({
-    fr: { fReviews: "Avis clients", fLegal: "Informations légales", chGuess: "On a choisi pour toi, d’après ton appareil. Tu peux changer quand tu veux.", chYouAre: "Ton pays", chPrices: "Prix affichés en", chOk: "C’est bon, continuer", chOther: "Choisir un autre pays", chSearch: "Rechercher un pays", regAf: "Afrique", regEu: "Europe", regAm: "Amérique et autres", pendingShop: "Boutique en cours de vérification par Yiriclick. En attendant, ne paie qu’après avoir confirmé la commande avec le vendeur.", fContact: "Contact", report: "Signaler ce produit", rvHint: "Touche une étoile pour noter.", rvDetail: "Détaille ta note (facultatif)", rvWhat: "Qu’est-ce qui n’a pas été ? Coche tout ce qui s’applique.",
+    fr: { fReviews: "Avis clients", fLegal: "Informations légales", fBuy: "Acheter", fSellH: "Vendre", fOrders: "Mes commandes", fReport: "Signaler un problème", fFounders: "Vendeurs fondateurs", fPartners: "Devenir partenaire", fYiri: "Yiriclick", fTerms: "Conditions", fPrivacy: "Confidentialité", fOpen: "Ouvrir ma boutique", chGuess: "On a choisi pour toi, d’après ton appareil. Tu peux changer quand tu veux.", chYouAre: "Ton pays", chPrices: "Prix affichés en", chOk: "C’est bon, continuer", chOther: "Choisir un autre pays", chSearch: "Rechercher un pays", regAf: "Afrique", regEu: "Europe", regAm: "Amérique et autres", pendingShop: "Boutique en cours de vérification par Yiriclick. En attendant, ne paie qu’après avoir confirmé la commande avec le vendeur.", fContact: "Contact", report: "Signaler ce produit", rvHint: "Touche une étoile pour noter.", rvDetail: "Détaille ta note (facultatif)", rvWhat: "Qu’est-ce qui n’a pas été ? Coche tout ce qui s’applique.",
       rvc_produit: "Conforme à la description", rvc_qualite: "Qualité", rvc_livraison: "Délai de livraison", rvc_emballage: "Emballage", rvc_vendeur: "Réponses du vendeur", rvc_prix: "Rapport qualité-prix",
       rvc_facilite: "Facilité de commande", rvc_confiance: "Confiance", rvc_suivi: "Suivi de commande",
       rvk_abime: "Produit abîmé", rvk_non_conforme: "Différent de la photo ou de la description", rvk_qualite: "Qualité décevante", rvk_taille: "Mauvaise taille", rvk_manquant: "Article manquant",
@@ -1031,7 +1031,7 @@ window.YC = (function () {
       rvSort: "Trier", rvs_pert: "Les plus pertinents", rvs_recent: "Les plus récents", rvs_best: "Meilleures notes", rvs_worst: "Notes les plus basses",
       rvPicked: "Mis en avant par Yiriclick", rvVerified: "Achat vérifié", rvMore: "Voir {n} avis de plus", rvDist: "{c} avis à {k} étoiles", rvYcReply: "Réponse de Yiriclick",
       rvHow: "Comment fonctionnent les avis : seuls les clients dont la commande a été livrée peuvent donner leur avis, une fois par commande. Les avis ne sont ni achetés ni triés selon leur note. Yiriclick masque un avis seulement s’il est injurieux, faux, hors sujet ou s’il contient des données personnelles. « Mis en avant » signale un avis choisi par Yiriclick pour sa précision." },
-    en: { fReviews: "Customer reviews", fLegal: "Legal information", chGuess: "We picked these for you, based on your device. You can change them any time.", chYouAre: "Your country", chPrices: "Prices shown in", chOk: "Looks good, continue", chOther: "Choose another country", chSearch: "Search for a country", regAf: "Africa", regEu: "Europe", regAm: "Americas and other", pendingShop: "This shop is being checked by Yiriclick. Until then, only pay after confirming the order with the seller.", fContact: "Contact", report: "Report this product", rvHint: "Tap a star to rate.", rvDetail: "Rate the details (optional)", rvWhat: "What went wrong? Tick everything that applies.",
+    en: { fReviews: "Customer reviews", fLegal: "Legal information", fBuy: "Buy", fSellH: "Sell", fOrders: "My orders", fReport: "Report a problem", fFounders: "Founding sellers", fPartners: "Become a partner", fYiri: "Yiriclick", fTerms: "Terms", fPrivacy: "Privacy", fOpen: "Open my shop", chGuess: "We picked these for you, based on your device. You can change them any time.", chYouAre: "Your country", chPrices: "Prices shown in", chOk: "Looks good, continue", chOther: "Choose another country", chSearch: "Search for a country", regAf: "Africa", regEu: "Europe", regAm: "Americas and other", pendingShop: "This shop is being checked by Yiriclick. Until then, only pay after confirming the order with the seller.", fContact: "Contact", report: "Report this product", rvHint: "Tap a star to rate.", rvDetail: "Rate the details (optional)", rvWhat: "What went wrong? Tick everything that applies.",
       rvc_produit: "As described", rvc_qualite: "Quality", rvc_livraison: "Delivery time", rvc_emballage: "Packaging", rvc_vendeur: "Seller communication", rvc_prix: "Value for money",
       rvc_facilite: "Ease of ordering", rvc_confiance: "Trust", rvc_suivi: "Order tracking",
       rvk_abime: "Damaged item", rvk_non_conforme: "Not as pictured or described", rvk_qualite: "Disappointing quality", rvk_taille: "Wrong size", rvk_manquant: "Missing item",
@@ -1045,7 +1045,7 @@ window.YC = (function () {
       rvSort: "Sort", rvs_pert: "Most relevant", rvs_recent: "Most recent", rvs_best: "Highest rated", rvs_worst: "Lowest rated",
       rvPicked: "Highlighted by Yiriclick", rvVerified: "Verified purchase", rvMore: "Show {n} more reviews", rvDist: "{c} reviews with {k} stars", rvYcReply: "Yiriclick’s reply",
       rvHow: "How reviews work: only customers whose order was delivered can leave a review, once per order. Reviews are never bought or filtered by rating. Yiriclick hides a review only if it is abusive, fake, off-topic or contains personal data. “Highlighted” marks a review chosen by Yiriclick for its detail." },
-    es: { fReviews: "Opiniones de clientes", fLegal: "Información legal", chGuess: "Lo elegimos por ti, según tu dispositivo. Puedes cambiarlo cuando quieras.", chYouAre: "Tu país", chPrices: "Precios en", chOk: "Perfecto, continuar", chOther: "Elegir otro país", chSearch: "Buscar un país", regAf: "África", regEu: "Europa", regAm: "América y otros", pendingShop: "Tienda en proceso de verificación por Yiriclick. Mientras tanto, paga solo después de confirmar el pedido con el vendedor.", fContact: "Contacto", report: "Denunciar este producto", rvHint: "Toca una estrella para valorar.", rvDetail: "Detalla tu valoración (opcional)", rvWhat: "¿Qué salió mal? Marca todo lo que corresponda.",
+    es: { fReviews: "Opiniones de clientes", fLegal: "Información legal", fBuy: "Comprar", fSellH: "Vender", fOrders: "Mis pedidos", fReport: "Informar de un problema", fFounders: "Vendedores fundadores", fPartners: "Hazte socio", fYiri: "Yiriclick", fTerms: "Condiciones", fPrivacy: "Privacidad", fOpen: "Abrir mi tienda", chGuess: "Lo elegimos por ti, según tu dispositivo. Puedes cambiarlo cuando quieras.", chYouAre: "Tu país", chPrices: "Precios en", chOk: "Perfecto, continuar", chOther: "Elegir otro país", chSearch: "Buscar un país", regAf: "África", regEu: "Europa", regAm: "América y otros", pendingShop: "Tienda en proceso de verificación por Yiriclick. Mientras tanto, paga solo después de confirmar el pedido con el vendedor.", fContact: "Contacto", report: "Denunciar este producto", rvHint: "Toca una estrella para valorar.", rvDetail: "Detalla tu valoración (opcional)", rvWhat: "¿Qué salió mal? Marca todo lo que corresponda.",
       rvc_produit: "Conforme a la descripción", rvc_qualite: "Calidad", rvc_livraison: "Plazo de entrega", rvc_emballage: "Embalaje", rvc_vendeur: "Comunicación del vendedor", rvc_prix: "Relación calidad-precio",
       rvc_facilite: "Facilidad para pedir", rvc_confiance: "Confianza", rvc_suivi: "Seguimiento del pedido",
       rvk_abime: "Producto dañado", rvk_non_conforme: "Diferente de la foto o la descripción", rvk_qualite: "Calidad decepcionante", rvk_taille: "Talla incorrecta", rvk_manquant: "Falta un artículo",
@@ -1061,6 +1061,39 @@ window.YC = (function () {
       rvHow: "Cómo funcionan las opiniones: solo los clientes cuyo pedido fue entregado pueden opinar, una vez por pedido. Las opiniones no se compran ni se filtran según su nota. Yiriclick oculta una opinión solo si es ofensiva, falsa, ajena al tema o contiene datos personales. «Destacada» indica una opinión elegida por Yiriclick por su precisión." }
   });
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", setupCart); else setupCart();
+
+  /* Shared site footer: any <footer class="site-foot"> is filled the same way on every page (phone: 2 columns, computer: 4) */
+  function footer() {
+    document.querySelectorAll("footer.site-foot").forEach(function (f) {
+      if (f.getAttribute("data-built")) return; f.setAttribute("data-built", "1");
+      var w = el("div", "wrap sf"), top = el("div", "sf-top"), brand = el("div", "sf-brand");
+      brand.innerHTML = '<span class="word"><span class="a">yiri</span><span class="b">click</span></span>';
+      var tg = el("p", null, t("tagline")); tg.setAttribute("data-t", "tagline"); brand.appendChild(tg);
+      var op = el("a", "sf-cta", t("fOpen")); op.href = "vendre.html"; op.setAttribute("data-t", "fOpen"); brand.appendChild(op);
+      top.appendChild(brand);
+      var cols = el("div", "sf-cols");
+      [["fBuy", [["fHelp1", "vendre.html#comment"], ["fOrders", "#orders"], ["fReviews", "avis.html"]]],
+       ["fSellH", [["fSell1", "vendre.html#tarifs"], ["fSell2", "vendeur.html"], ["fFounders", "vendre.html#fondateurs"]]],
+       ["fHelp", [["svcBtn", "contact.html"], ["fReport", "contact.html?sujet=signalement"]]],
+       ["fYiri", [["fAbout1", "vendre.html"], ["fPartners", "contact.html?sujet=partenariat"]]]].forEach(function (c) {
+        var col = el("div", "sf-col"), h = el("h2", null, t(c[0])); h.setAttribute("data-t", c[0]); col.appendChild(h);
+        c[1].forEach(function (l) {
+          var a = el("a", null, t(l[0])); a.href = l[1]; a.setAttribute("data-t", l[0]);
+          if (l[1] === "#orders") a.addEventListener("click", function (e) { e.preventDefault(); openCart("orders"); });
+          col.appendChild(a);
+        });
+        cols.appendChild(col);
+      });
+      top.appendChild(cols); w.appendChild(top);
+      var extra = f.querySelector("[data-foot-extra]"); if (extra) w.appendChild(extra);
+      var bot = el("div", "sf-bot"), legal = el("div", "sf-legal");
+      [["fLegal", "juridique.html#mentions"], ["fTerms", "juridique.html#conditions"], ["fPrivacy", "juridique.html#confidentialite"]].forEach(function (l) { var a = el("a", null, t(l[0])); a.href = l[1]; a.setAttribute("data-t", l[0]); legal.appendChild(a); });
+      var kvk = (window.YLEGAL && window.YLEGAL.kvk) ? " · KvK " + window.YLEGAL.kvk : "";
+      bot.appendChild(el("span", null, "© 2026 Yiriclick" + kvk)); bot.appendChild(legal); w.appendChild(bot);
+      f.textContent = ""; f.appendChild(w);
+    });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", footer); else footer();
 
   /* Pages can add their own texts: YC.extend({ fr: {...}, en: {...}, es: {...} }) */
   function extend(d) { Object.keys(d).forEach(function (L) { T[L] = T[L] || {}; Object.keys(d[L]).forEach(function (k) { T[L][k] = d[L][k]; }); }); }

@@ -289,3 +289,30 @@ footer a { color: var(--teal); }
 /* "Report this product" link at the bottom of the product sheet (EU Digital Services Act: notice and action) */
 .report-link { display: inline-block; margin-top: 14px; font-size: 13px; color: var(--soft); text-decoration: underline; padding: 8px 0; }
 .report-link:hover { color: #B3261E; }
+
+/* Shared footer (assets/shop.js footer()) */
+footer.site-foot { background: var(--navy); color: #C9D8DB; font-size: 15px; }
+footer.site-foot .sf { padding-block: 40px 24px; display: flex; flex-direction: column; gap: 28px; }
+.sf-top { display: flex; flex-direction: column; gap: 28px; }
+.sf-brand { display: flex; flex-direction: column; gap: 12px; max-width: 340px; }
+.sf-brand .word { font-size: 30px; }
+.sf-brand p { margin: 0; color: #B9C9CC; line-height: 1.5; }
+.sf-cta { display: inline-flex; align-items: center; justify-content: center; min-height: 50px; padding: 0 22px; border-radius: 14px; background: var(--orange, #FF7A2E); color: var(--navy) !important; font-weight: 900; text-decoration: none; }
+.sf-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px 16px; }
+.sf-col { display: flex; flex-direction: column; gap: 4px; }
+.sf-col h2 { margin: 0 0 6px; font-size: 12px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; color: var(--teal, #4FC7CF); }
+.sf-col a { color: #E3EEF0; text-decoration: none; min-height: 36px; display: flex; align-items: center; }
+.sf-col a:hover, .sf-legal a:hover { color: #fff; text-decoration: underline; }
+.sf-bot { border-top: 1px solid #2A4650; padding-top: 18px; display: flex; flex-direction: column; gap: 10px; font-size: 13px; color: #8FA6AB; }
+.sf-legal { display: flex; flex-wrap: wrap; gap: 4px 18px; }
+.sf-legal a { color: #B9C9CC; text-decoration: none; min-height: 32px; display: inline-flex; align-items: center; }
+footer.site-foot .install { background: #1A3540; border-radius: 14px; color: #fff; }
+@media (min-width: 900px) {
+  .sf-top { flex-direction: row; gap: 64px; }
+  .sf-brand { flex: 0 0 320px; }
+  .sf-cols { flex: 1; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+  .sf-bot { flex-direction: row; justify-content: space-between; align-items: center; }
+}
+footer.site-foot .install { padding: 12px 14px; border: 0; }
+footer.site-foot .install p { color: #B9C9CC; }
+footer.site-foot .install .x { color: #fff; }

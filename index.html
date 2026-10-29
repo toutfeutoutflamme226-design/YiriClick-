@@ -301,21 +301,14 @@ section.block { margin-top: 28px; }
     <div class="svc"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.6 7.4L3 20l1.2-5A8.5 8.5 0 1 1 21 11.5z"/></svg><div><b data-t="sv2T">Besoin d’aide ?</b><p data-t="sv2"></p><a class="svc-link" href="contact.html" data-t="svcBtn">Nous contacter</a></div></div>
   </div>
 </section>
-<footer class="foot-acc" style="color:var(--ink)">
-  <div class="wrap">
-    <div class="acc">
-      <details><summary data-t="fHelp">Aide</summary><div class="links"><a href="vendre.html#comment" data-t="fHelp1"></a><a href="vendre.html#comment" data-t="fHelp2"></a><a href="vendre.html" data-t="fHelp3"></a></div></details>
-      <details><summary data-t="fSell">Vendre sur Yiriclick</summary><div class="links"><a href="vendre.html#tarifs" data-t="fSell1"></a><a href="vendeur.html" data-t="fSell2"></a><a href="vendre.html" data-t="fSell3"></a></div></details>
-      <details><summary data-t="fAbout">À propos</summary><div class="links"><a href="avis.html" data-t="fReviews">Avis clients</a><a href="contact.html" data-t="svcBtn">Nous contacter</a><a href="juridique.html" data-t="fLegal">Informations légales</a><a href="vendre.html" data-t="fAbout1"></a><a href="vendre.html" data-t="fAbout2"></a><a href="vendre.html" data-t="fAbout3"></a></div></details>
-    </div>
+<footer class="site-foot">
+  <div data-foot-extra style="display:flex;flex-direction:column;gap:16px">
     <div class="install" id="install" hidden>
       <img src="assets/icons/icon-192.png" alt="" width="60" height="60">
       <div><b data-t="install">Ajoute Yiriclick à ton écran d’accueil</b><p id="installP"></p></div>
       <div style="display:flex;gap:4px;align-items:center"><button class="btn btn-wa" type="button" id="installBtn" data-t="installBtn" hidden>Ajouter</button><button class="x" type="button" id="installX" data-ta="close">×</button></div>
     </div>
     <div class="social" id="social" hidden></div>
-    <div class="brandfoot"><span class="word"><span class="a">yiri</span><span class="b">click</span></span><p data-t="tagline"></p></div>
-    <p class="legal">© 2026 Yiriclick</p>
   </div>
 </footer>
 
@@ -365,6 +358,7 @@ section.block { margin-top: 28px; }
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="assets/phone.js"></script>
 <script src="assets/nav.js"></script>
+<script src="assets/legal.js"></script>
 <script src="assets/shop.js"></script>
 <script>
 (function () {
