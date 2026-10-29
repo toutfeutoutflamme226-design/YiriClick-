@@ -2,10 +2,14 @@
 # The file is encrypted (AES-256) before it leaves the runner: without the passphrase it cannot be read,
 # even though artifacts of a public repository can be downloaded by others.
 # Requires once (Settings > Secrets and variables > Actions > New repository secret):
+#   SUPABASE_ACCESS_TOKEN  (simplest) a Supabase personal access token, supabase.com/dashboard/account/tokens:
+#                          the official Supabase tool then connects without the database password
+#   or, without it:
 #   SUPABASE_DB_URL       Supabase > Connect > "Session pooler" connection string, pasted as shown (with [YOUR-PASSWORD])
 #   SUPABASE_DB_PASSWORD  the database password (Project Settings > Database); not needed if it is already in the address
 #   BACKUP_PASSPHRASE     a long passphrase kept in your password manager (needed to open a backup)
-# Restore: gpg --decrypt yiriclick-AAAA-MM-JJ.sql.gz.gpg | gunzip > backup.sql   (then psql into a new project)
+# Restore: gpg --decrypt yiriclick-AAAA-MM-JJ.tar.gz.gpg | tar -xzf -   (then psql the 3 files in order into a new project)
+#     or, older format: gpg --decrypt yiriclick-AAAA-MM-JJ.sql.gz.gpg | gunzip > backup.sql
 name: Sauvegarde de la base
 
 on:
@@ -19,8 +23,35 @@ permissions:
 jobs:
   backup:
     runs-on: ubuntu-latest
+    env:
+      HAS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN != '' }}
+      PROJECT_REF: vtiakxfnechkoomagddl
     steps:
+      - name: Outil officiel Supabase
+        if: env.HAS_TOKEN == 'true'
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Sauvegarde chiffrée (clé d'accès Supabase)
+        if: env.HAS_TOKEN == 'true'
+        shell: bash
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          PASS: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          if [ -z "$PASS" ]; then echo "::error::Ajoute aussi le secret BACKUP_PASSPHRASE (la phrase qui chiffre la sauvegarde)."; exit 1; fi
+          mkdir -p work out
+          supabase link --project-ref "$PROJECT_REF" < /dev/null
+          supabase db dump --linked --role-only -f work/1-roles.sql < /dev/null
+          supabase db dump --linked -f work/2-structure.sql < /dev/null
+          supabase db dump --linked --data-only --use-copy -f work/3-donnees.sql < /dev/null
+          ls -l work
+          test "$(stat -c %s work/2-structure.sql)" -gt 2000
+          F="out/yiriclick-$(date -u +%F).tar.gz.gpg"
+          tar -C work -czf - . | gpg --batch --yes --symmetric --cipher-algo AES256 --passphrase "$PASS" -o "$F"
+          ls -lh out
       - name: Sauvegarde chiffrée
+        if: env.HAS_TOKEN != 'true'
         shell: bash   # bash -eo pipefail: a failed pg_dump makes the run fail instead of saving an empty file
         env:
           DB_URL: ${{ secrets.SUPABASE_DB_URL }}
