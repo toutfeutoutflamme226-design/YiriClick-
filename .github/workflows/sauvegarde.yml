@@ -31,7 +31,7 @@ jobs:
         if: env.HAS_TOKEN == 'true'
         uses: supabase/setup-cli@v1
         with:
-          version: latest
+          version: 2.120.0
       - name: Sauvegarde chiffrée (clé d'accès Supabase)
         if: env.HAS_TOKEN == 'true'
         shell: bash

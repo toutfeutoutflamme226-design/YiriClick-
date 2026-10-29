@@ -29,7 +29,7 @@ jobs:
       - name: Outil officiel Supabase
         uses: supabase/setup-cli@v1
         with:
-          version: latest
+          version: 2.120.0
       - name: Ouvrir et restaurer dans une base temporaire
         shell: bash
         env:
