@@ -1087,7 +1087,7 @@ window.YC = (function () {
       top.appendChild(cols); w.appendChild(top);
       var extra = f.querySelector("[data-foot-extra]"); if (extra) w.appendChild(extra);
       var bot = el("div", "sf-bot"), legal = el("div", "sf-legal");
-      [["fLegal", "juridique.html#mentions"], ["fTerms", "juridique.html#conditions"], ["fPrivacy", "juridique.html#confidentialite"]].forEach(function (l) { var a = el("a", null, t(l[0])); a.href = l[1]; a.setAttribute("data-t", l[0]); legal.appendChild(a); });
+      [["fLegal", "juridique#mentions"], ["fTerms", "juridique#conditions"], ["fPrivacy", "juridique#confidentialite"]].forEach(function (l) { var a = el("a", null, t(l[0])); a.href = l[1]; a.setAttribute("data-t", l[0]); legal.appendChild(a); });
       var kvk = (window.YLEGAL && window.YLEGAL.kvk) ? " · KvK " + window.YLEGAL.kvk : "";
       bot.appendChild(el("span", null, "© 2026 Yiriclick" + kvk)); bot.appendChild(legal); w.appendChild(bot);
       f.textContent = ""; f.appendChild(w);
