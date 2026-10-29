@@ -379,3 +379,8 @@ Si `schema-v12.sql` est relancé un jour, relancer ensuite `schema-v17.sql`.
 - Admin › **Vendeurs fondateurs** : cherche une boutique et ajoute-la au Club. Badge « Vendeur fondateur » sur sa boutique, compteur de places sur l'accueil (50 maximum, refusé au-delà).
 - Admin › **Partenaires** : logo, affiche, lien, dates, emplacement (grande affiche ou bande de logos). Compteur d'affichages et de clics sur 30 jours, bouton « Copier le rapport » à envoyer au partenaire.
 - Rien ne s'affiche sur l'accueil tant que v20 n'est pas installée ou qu'aucun partenaire n'est ajouté.
+
+## Base v21 et publication renforcée
+
+- `supabase/schema-v21.sql` : 30 commandes par heure et par boutique (300 au total), 30 inscriptions par heure, statistiques limitées.
+- À chaque publication, la bibliothèque Supabase est copiée sur yiriclick.com (plus de dépendance au CDN extérieur) et chaque page refuse d'être affichée dans le cadre d'un autre site.

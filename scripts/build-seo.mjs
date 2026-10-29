@@ -27,11 +27,36 @@ async function copyTree(src, dst) {
     if (SKIP.has(e.name)) continue;
     const s = join(src, e.name), d = join(dst, e.name);
     if (e.isDirectory()) await copyTree(s, d);
-    else if (/\.(html|webmanifest|txt|xml|js|css)$/.test(e.name) && SITE !== OLD_SITE) {
+    else if (/\.(html|webmanifest|txt|xml|js|css)$/.test(e.name)) {
       // after a domain change, absolute links in the pages follow SITE_URL
-      await writeFile(d, (await readFile(s, "utf8")).split(OLD_SITE).join(SITE));
+      let txt = (await readFile(s, "utf8")).split(OLD_SITE).join(SITE);
+      if (e.name.endsWith(".html")) txt = hardenHtml(txt);
+      await writeFile(d, txt);
     } else await copyFile(s, d);
   }
+}
+
+/* Security at publication:
+   - the Supabase library is served from yiriclick.com itself (downloaded once per build, checked against its
+     published integrity hash), so an attack on the outside CDN cannot reach the site;
+   - every page refuses to be shown inside another site's frame (protection against "clickjacking"). */
+const SB_CDN = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js";
+let SB_LOCAL = false;
+async function vendorSupabase() {
+  try {
+    const r = await fetch(SB_CDN); if (!r.ok) throw new Error("HTTP " + r.status);
+    const buf = Buffer.from(await r.arrayBuffer());
+    if (buf.length < 20000 || !buf.toString("utf8", 0, 4000).includes("supabase")) throw new Error("contenu inattendu");
+    await mkdir(join(OUT, "assets", "vendor"), { recursive: true });
+    await writeFile(join(OUT, "assets", "vendor", "supabase.min.js"), buf);
+    SB_LOCAL = true; console.log("Bibliothèque Supabase servie par le site (" + buf.length + " octets)");
+  } catch (e) { console.warn("Bibliothèque Supabase gardée sur le CDN : " + e.message); }
+}
+const FRAME_GUARD = '<script>if(window.top!==window.self){try{window.top.location=window.self.location}catch(e){document.documentElement.style.display="none"}}</script>';
+function hardenHtml(html) {
+  if (SB_LOCAL) html = html.split(SB_CDN).join("assets/vendor/supabase.min.js");
+  if (!html.includes("window.top!==window.self")) html = html.replace(/<head>/i, "<head>\n" + FRAME_GUARD);
+  return html;
 }
 
 async function rest(path) {
@@ -70,6 +95,7 @@ function sharePage({ title, desc, image, url, target, jsonld }) {
 }
 
 async function main() {
+  await vendorSupabase();
   await copyTree(ROOT, OUT);
   const now = new Date().toISOString();
   const urls = [{ loc: SITE, lastmod: now, pr: "1.0" }, { loc: SITE + "vendre.html", lastmod: now, pr: "0.8" }];
