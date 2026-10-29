@@ -41,9 +41,12 @@ jobs:
           mkdir -p work
           gpg --batch --quiet --decrypt --passphrase "$PASS" "$F" > work/all.tar.gz 2> gpg.log || fail "ouverture avec BACKUP_PASSPHRASE" gpg.log
           tar -xzf work/all.tar.gz -C work > tar.log 2>&1 || fail "décompression" tar.log
+          echo "::notice::Sauvegarde ouverte avec la phrase secrète : $(ls work | grep -c sql) fichiers SQL, $(du -sh work | cut -f1)"
           ls -l work
           supabase init < /dev/null > init.log 2>&1 || fail "préparation de la base temporaire" init.log
-          supabase db start < /dev/null > start.log 2>&1 || fail "démarrage de la base temporaire" start.log
+          # Only the database: the other Supabase services (auth server, storage, studio…) are not needed to check the data
+          supabase start -x gotrue,realtime,storage-api,imgproxy,kong,mailpit,postgrest,postgres-meta,studio,edge-runtime,logflare,vector,supavisor < /dev/null > start.log 2>&1 \
+            || supabase db start < /dev/null >> start.log 2>&1 || { grep -i -m3 "error\|fatal" start.log | sed 's/^/::error::/' ; fail "démarrage de la base temporaire" start.log; }
           DB="postgresql://postgres:postgres@127.0.0.1:54322/postgres"
           psql "$DB" -q -v ON_ERROR_STOP=0 -f work/1-roles.sql > roles.log 2>&1 || true
           psql "$DB" -q --single-transaction -v ON_ERROR_STOP=1 -f work/2-structure.sql -c 'SET session_replication_role = replica' -f work/3-donnees.sql > restore.log 2>&1 || { echo "::error::Restauration refusée : $(grep -m2 -i error restore.log | tr '\n' ' ' | cut -c1-500)"; exit 1; }
