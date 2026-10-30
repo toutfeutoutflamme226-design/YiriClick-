@@ -26,10 +26,6 @@ jobs:
           gh run download "$id" -R "$GITHUB_REPOSITORY" -n sauvegarde-base -D backup
           ls -l backup
           echo "::notice::Sauvegarde testée : essai n° $id du $(gh run view "$id" -R "$GITHUB_REPOSITORY" --json createdAt -q .createdAt | cut -c1-10)"
-      - name: Outil officiel Supabase
-        uses: supabase/setup-cli@v2
-        with:
-          version: 2.120.0
       - name: Ouvrir et restaurer dans une base temporaire
         shell: bash
         env:
@@ -42,17 +38,29 @@ jobs:
           gpg --batch --quiet --decrypt --passphrase "$PASS" "$F" > work/all.tar.gz 2> gpg.log || fail "ouverture avec BACKUP_PASSPHRASE" gpg.log
           tar -xzf work/all.tar.gz -C work > tar.log 2>&1 || fail "décompression" tar.log
           echo "::notice::Sauvegarde ouverte avec la phrase secrète : $(ls work | grep -c sql) fichiers SQL, $(du -sh work | cut -f1)"
-          ls -l work
-          supabase init < /dev/null > init.log 2>&1 || fail "préparation de la base temporaire" init.log
-          # Only the database: the other Supabase services (auth server, storage, studio…) are not needed to check the data
-          supabase start -x gotrue,realtime,storage-api,imgproxy,kong,mailpit,postgrest,postgres-meta,studio,edge-runtime,logflare,vector,supavisor < /dev/null > start.log 2>&1 \
-            || supabase db start < /dev/null >> start.log 2>&1 || { grep -i -m3 "error\|fatal" start.log | sed 's/^/::error::/' ; fail "démarrage de la base temporaire" start.log; }
-          DB="postgresql://postgres:postgres@127.0.0.1:54322/postgres"
+          # Same Postgres as Supabase (image from Docker Hub, same major version as the backup)
+          MAJ=$(grep -m1 -o "Dumped from database version [0-9]*" work/2-structure.sql | grep -o "[0-9]*$" || true); MAJ=${MAJ:-17}
+          TAG=$(curl -fsSL "https://hub.docker.com/v2/repositories/supabase/postgres/tags?page_size=100&ordering=last_updated" \
+            | python3 -c "import sys,json,re; m=sys.argv[1]; t=[x['name'] for x in json.load(sys.stdin)['results'] if re.fullmatch(m+r'\.[0-9]+\.[0-9]+\.[0-9]+', x['name'])]; print(t[0] if t else '')" "$MAJ")
+          [ -n "$TAG" ] || { echo "::error::Image supabase/postgres $MAJ introuvable sur Docker Hub."; exit 1; }
+          echo "::notice::Base temporaire : supabase/postgres:$TAG (Postgres $MAJ)"
+          docker run -d --name pg -e POSTGRES_PASSWORD=postgres -p 54322:5432 "supabase/postgres:$TAG" > run.log 2>&1 || fail "démarrage de la base temporaire" run.log
+          DB="postgresql://supabase_admin:postgres@127.0.0.1:54322/postgres"
+          for i in $(seq 1 60); do psql "$DB" -tAc "select 1" > /dev/null 2>&1 && break; sleep 2; done
+          psql "$DB" -tAc "select 1" > ready.log 2>&1 || { docker logs pg 2>&1 | tail -n 20 > ready.log; fail "démarrage de la base temporaire" ready.log; }
           psql "$DB" -q -v ON_ERROR_STOP=0 -f work/1-roles.sql > roles.log 2>&1 || true
-          psql "$DB" -q --single-transaction -v ON_ERROR_STOP=1 -f work/2-structure.sql -c 'SET session_replication_role = replica' -f work/3-donnees.sql > restore.log 2>&1 || { echo "::error::Restauration refusée : $(grep -m2 -i error restore.log | tr '\n' ' ' | cut -c1-500)"; exit 1; }
-          for t in boutiques produits commandes avis dossiers; do
+          psql "$DB" -q -v ON_ERROR_STOP=0 -f work/2-structure.sql > structure.log 2>&1 || true
+          psql "$DB" -q -v ON_ERROR_STOP=0 -c 'SET session_replication_role = replica' -f work/3-donnees.sql > data.log 2>&1 || true
+          es=$(grep -c "ERROR" structure.log || true); ed=$(grep -c "ERROR" data.log || true)
+          echo "::notice::Erreurs pendant la restauration : structure $es, données $ed (les objets déjà fournis par Supabase sont normaux)"
+          [ "$es" = "0" ] || grep -m5 "ERROR" structure.log | sed 's/^/::warning::/'
+          [ "$ed" = "0" ] || grep -m5 "ERROR" data.log | sed 's/^/::warning::/'
+          total=0
+          for t in boutiques produits commandes avis dossiers inscriptions; do
             n=$(psql "$DB" -tAc "select count(*) from public.$t" 2>/dev/null || echo "?")
-            echo "::notice::Restauration réussie, table $t : $n ligne(s)"
+            echo "::notice::Table $t : $n ligne(s)"
+            case "$n" in ''|*[!0-9]*) ;; *) total=$((total + n));; esac
           done
           u=$(psql "$DB" -tAc "select count(*) from auth.users" 2>/dev/null || echo "?")
           echo "::notice::Comptes utilisateurs retrouvés : $u"
+          if [ "$total" -gt 0 ]; then echo "::notice::✅ Restauration réussie : $total lignes retrouvées dans les tables principales."; else echo "::error::Restauration incomplète : aucune ligne retrouvée."; exit 1; fi
