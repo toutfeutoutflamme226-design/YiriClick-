@@ -73,7 +73,7 @@ window.YCV = (function () {
     ") pour enregistrer l’apparence, les infos pratiques, la FAQ, les produits à la une et les statistiques.": [") to save the look, practical info, FAQ, featured products and statistics.", ") para guardar la apariencia, la información práctica, las preguntas frecuentes, los productos destacados y las estadísticas.", ") om de vormgeving, praktische info, veelgestelde vragen, uitgelichte producten en statistieken op te slaan."],
 
     /* dashboard */
-    "Bonjour": ["Hello", "Hola", "Goedendag"], "Bonsoir": ["Good evening", "Buenas tardes", "Goedenavond"], "Mon espace": ["My space", "Mi espacio", "Mijn ruimte"],
+    "Bonjour": ["Hello", "Hola", "Hallo"], "Bonsoir": ["Good evening", "Buenas tardes", "Goedenavond"], "Mon espace": ["My space", "Mi espacio", "Mijn ruimte"],
     "Crée ta boutique": ["Create your shop", "Crea tu tienda", "Maak je winkel"], "Choisis un nom, une adresse et une couleur : ta boutique est en ligne en quelques minutes.": ["Choose a name, an address and a colour: your shop is online in a few minutes.", "Elige un nombre, una dirección y un color: tu tienda estará en línea en pocos minutos.", "Kies een naam, een adres en een kleur: je winkel staat binnen een paar minuten online."],
     "Créer ma boutique": ["Create my shop", "Crear mi tienda", "Mijn winkel maken"], "Commandes ": ["Orders ", "Pedidos ", "Bestellingen "], "30 derniers jours": ["Last 30 days", "Últimos 30 días", "Laatste 30 dagen"],
     "Voir les commandes": ["See orders", "Ver pedidos", "Bekijk de bestellingen"], "Boutique complète à": ["Shop completion:", "Tienda completa al", "Winkel compleet voor"],
