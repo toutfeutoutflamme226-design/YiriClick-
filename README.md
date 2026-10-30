@@ -384,3 +384,8 @@ Si `schema-v12.sql` est relancé un jour, relancer ensuite `schema-v17.sql`.
 
 - `supabase/schema-v21.sql` : 30 commandes par heure et par boutique (300 au total), 30 inscriptions par heure, statistiques limitées.
 - À chaque publication, la bibliothèque Supabase est copiée sur yiriclick.com (plus de dépendance au CDN extérieur) et chaque page refuse d'être affichée dans le cadre d'un autre site.
+
+## Base v23 : horaires des tâches planifiées
+
+- `supabase/schema-v23.sql` : chaque tâche est surveillée selon son rythme (26 h quotidienne, 8 jours hebdomadaire, 32 jours mensuelle). Une tâche qui n'a encore jamais tourné est « en attente », plus « arrêtée ».
+- L'admin (État du site) affiche une rubrique **Tâches planifiées** : prochain passage avec compte à rebours (heure des Pays-Bas) et dernier passage.
