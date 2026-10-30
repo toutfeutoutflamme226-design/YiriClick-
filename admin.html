@@ -226,6 +226,13 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
     <details id="etatDet"><summary>Voir le détail</summary><div class="etat" id="etatBox"></div></details>
   </div>
 
+  <div class="card" id="parcCard" hidden>
+    <div class="head" style="align-items:center"><h2>Nouveaux vendeurs en essai <span class="badge-n" id="cParc"></span></h2></div>
+    <p class="notice">Où en est chaque vendeur pendant ses 14 jours d’essai, et les e-mails de relance envoyés (base v24). Les plus récents en haut.</p>
+    <div class="bars" id="parcFunnel" style="margin:12px 0"></div>
+    <div class="mlist" id="parcBox"></div>
+  </div>
+
   <div class="kpis" id="kpis"></div>
 
   <div class="card">
@@ -482,7 +489,35 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
     data.produits = (r[3].data || []).map(function (p) { p.statut = p.masque_admin ? "masque" : "visible"; p.boutique = p.boutiques ? p.boutiques.nom : ""; return p; });
     $("updated").textContent = "Mis à jour le " + fmtDate(new Date(), true);
     renderKpis(); renderChart(); renderBreakdowns(); renderTable(); loadPromos(); loadAvisAdm();
-    loadShops(); loadMessages(); loadEtat(); loadFond(); loadParts();
+    loadShops(); loadMessages(); loadEtat(); loadFond(); loadParts(); loadParcours();
+  }
+
+  /* ---------- Trial sellers: where each one stands, and the reminder e-mails sent (base v24) ---------- */
+  var RELANCES = { acces_48h: "accès pas créé (48 h)", produit_48h: "aucun produit (48 h)", jour7: "mi-parcours (jour 7)", jour12: "fin d’essai (jour 12)" };
+  async function loadParcours() {
+    var card = $("parcCard"), r = await sb.rpc("vendeurs_parcours");
+    if (r.error || !r.data) { card.hidden = true; return; }
+    card.hidden = false; $("cParc").textContent = r.data.length || "";
+    var n = r.data.length, acc = 0, shop = 0, prod = 0, full = 0;
+    r.data.forEach(function (v) { var e = v.etat || {}; if (e.acces) acc++; if (e.boutique) shop++; if (e.produits > 0) prod++; if (e.etapes >= 11) full++; });
+    bars("parcFunnel", [["Inscrits en essai", n], ["Accès créé", acc], ["Boutique créée", shop], ["Au moins 1 produit", prod], ["Boutique complète", full]]);
+    var box = $("parcBox"); box.textContent = "";
+    if (!n) { box.appendChild(el("p", "notice", "Aucun vendeur en essai pour le moment.")); return; }
+    r.data.forEach(function (v) {
+      var e = v.etat || {}, d = el("div", "mitem"), t = el("div", "mt");
+      var jour = Math.min(14, Math.max(1, Math.ceil((Date.now() - new Date(v.inscrit_le)) / 864e5)));
+      var fini = new Date(v.essai_fin) <= new Date();
+      t.appendChild(el("b", null, e.boutique_nom || v.boutique_inscrite || v.nom));
+      var stage = !e.acces ? ["Accès pas créé", "p-refuse"] : !e.boutique ? ["Boutique pas créée", "p-en_attente"] : !e.produits ? ["Aucun produit", "p-en_attente"] : e.etapes >= 11 ? ["Boutique complète", "p-actif"] : [e.produits + " produit" + (e.produits > 1 ? "s" : "") + " · " + e.etapes + "/11 étapes", "p-nouveau"];
+      t.appendChild(el("span", "pill " + stage[1], stage[0]));
+      if (e.fondateur) t.appendChild(el("span", "pill p-actif", "Fondateur"));
+      t.appendChild(el("span", "ms", v.nom + " · " + v.email + " · " + (fini ? "essai terminé" : "jour " + jour + "/14") + " · " + String(v.langue || "fr").toUpperCase()));
+      d.appendChild(t);
+      var sent = (v.relances || []).filter(function (x) { return x.envoye; });
+      d.appendChild(el("span", "ms", sent.length ? "E-mails : " + sent.map(function (x) { return RELANCES[x.etape] + " le " + fmtDate(x.le); }).join(" · ") : "Aucun e-mail de relance envoyé"));
+      if (e.slug) { var a = el("a", null, "Voir la boutique"); a.href = "boutique?b=" + encodeURIComponent(e.slug); a.target = "_blank"; a.rel = "noopener"; a.style.fontWeight = "700"; d.appendChild(a); }
+      box.appendChild(d);
+    });
   }
 
   /* ---------- Shops waiting for approval (base v16) ---------- */
@@ -643,7 +678,7 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
   var SCRIPTS = { inscriptions: "Inscriptions (inscriptions.sql)", v2: "v2 · dossiers vendeurs, admin", v3: "v3 · boutiques et produits", v4: "v4 · promotions de la vitrine",
     v5: "v5 · boutiques personnalisables, statistiques", v6: "v6 · commandes et variantes", v7: "v7 · soldes, codes promo, avis", v8: "v8 · tailles pour toutes les formules",
     v9: "v9 · e-mails automatiques", v10: "v10 · essai gratuit immédiat", v11: "v11 · vitrine rapide", v12: "v12 · taux de change du jour",
-    v13: "v13 · formulaires pré-remplis", v14: "v14 · avis clients complets", v15: "v15 · demande d’avis après livraison", v16: "v16 · validation des boutiques, contact, état du site", v17: "v17 · taux de change à 7 h (Pays-Bas)", v18: "v18 · code admin, suppression de compte, ménage des données", v19: "v19 · protections anti-abus, surveillance des tâches", v20: "v20 · partenaires et vendeurs fondateurs", v21: "v21 · limites anti-spam (commandes, inscriptions)", v22: "v22 · promotions honnêtes, suivi des fondateurs", v23: "v23 · horaires des tâches planifiées" };
+    v13: "v13 · formulaires pré-remplis", v14: "v14 · avis clients complets", v15: "v15 · demande d’avis après livraison", v16: "v16 · validation des boutiques, contact, état du site", v17: "v17 · taux de change à 7 h (Pays-Bas)", v18: "v18 · code admin, suppression de compte, ménage des données", v19: "v19 · protections anti-abus, surveillance des tâches", v20: "v20 · partenaires et vendeurs fondateurs", v21: "v21 · limites anti-spam (commandes, inscriptions)", v22: "v22 · promotions honnêtes, suivi des fondateurs", v23: "v23 · horaires des tâches planifiées", v24: "v24 · relances des nouveaux vendeurs" };
   async function loadEtat() {
     var sum = $("etatSum"), box = $("etatBox"), det = $("etatDet");
     var r = await sb.rpc("etat_site");
@@ -724,7 +759,7 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
     return (j ? j + " j " : "") + (j || h ? h + " h " : "") + String(m).padStart(2, "0") + " min " + String(s % 60).padStart(2, "0") + " s";
   }
   function fmtNext(d) { return d.toLocaleString("fr-FR", { timeZone: "Europe/Amsterdam", weekday: "short", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }); }
-  var TACHES = { "yiriclick-taux-demande": "Demande des taux de change", "yiriclick-taux-lecture": "Lecture des taux de change", "yiriclick-menage": "Ménage mensuel des données", "yiriclick-prix-menage": "Ménage de l’historique des prix" };
+  var TACHES = { "yiriclick-taux-demande": "Demande des taux de change", "yiriclick-taux-lecture": "Lecture des taux de change", "yiriclick-menage": "Ménage mensuel des données", "yiriclick-prix-menage": "Ménage de l’historique des prix", "yiriclick-relances": "Relances e-mail des nouveaux vendeurs" };
   var tachesTimer = null;
   function renderTaches(list, box) {
     var g = el("div"); g.appendChild(el("h3", null, "Tâches planifiées")); var ul = el("ul"); g.appendChild(ul);

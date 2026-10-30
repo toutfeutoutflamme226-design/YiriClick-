@@ -401,3 +401,9 @@ Si `schema-v12.sql` est relancé un jour, relancer ensuite `schema-v17.sql`.
 - Bienvenue et félicitations (message spécial pour les fondateurs), 3 questions, visite des 5 onglets, puis une carte « Yiri » qui guide la liste « lancer ma boutique » étape par étape. Quand la boutique est complète : fête, message de partage prêt à copier et conseil marketing du jour. Français, anglais, espagnol.
 - **En test** : ouvre `yiriclick.com/vendeur?guide=1` (relance le guide depuis le début sur ce téléphone). `vendeur?guide=0` arrête le test.
 - **Pour l'activer pour tous les vendeurs** : dans `vendeur.html`, passe `var GUIDE_ON = false` à `true`.
+
+## Base v24 : relances des nouveaux vendeurs
+
+- `supabase/schema-v24.sql` (après v23) : chaque jour à 11 h 17, un e-mail part aux vendeurs en essai qui en ont besoin : accès pas créé ou aucun produit 48 h après l'inscription, point au 7e jour, fin d'essai au 12e jour (pas aux fondateurs). Un seul e-mail par étape, en français, anglais ou espagnol. À l'installation, les étapes déjà dépassées ne sont pas rattrapées.
+- Admin : carte « Nouveaux vendeurs en essai » (entonnoir accès › boutique › produits › boutique complète, et e-mails envoyés à chacun).
+- Pour couper les relances : Table Editor › reglages_email › relances_vendeurs = false.
