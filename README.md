@@ -395,3 +395,9 @@ Si `schema-v12.sql` est relancé un jour, relancer ensuite `schema-v17.sql`.
 - Le site s'ouvre partout sans « .html » : `yiriclick.com/vendre`, `/contact`, `/juridique`, `/boutique?b=…`. Les anciens liens en .html marchent toujours ; la barre d'adresse est nettoyée automatiquement.
 - Adresse courte pour les vidéos, flyers et publications : **yiriclick.com/rejoindre** (ouvre l'inscription vendeur).
 - Les e-mails de connexion reviennent toujours sur `vendeur.html` : c'est l'adresse enregistrée dans Supabase › Authentication › URL Configuration, rien à changer.
+
+## Yiri, l'assistante des nouveaux vendeurs (assets/guide.js)
+
+- Bienvenue et félicitations (message spécial pour les fondateurs), 3 questions, visite des 5 onglets, puis une carte « Yiri » qui guide la liste « lancer ma boutique » étape par étape. Quand la boutique est complète : fête, message de partage prêt à copier et conseil marketing du jour. Français, anglais, espagnol.
+- **En test** : ouvre `yiriclick.com/vendeur?guide=1` (relance le guide depuis le début sur ce téléphone). `vendeur?guide=0` arrête le test.
+- **Pour l'activer pour tous les vendeurs** : dans `vendeur.html`, passe `var GUIDE_ON = false` à `true`.

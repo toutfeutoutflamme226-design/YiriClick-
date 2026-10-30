@@ -826,6 +826,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
 <script src="assets/import.js"></script>
 <script src="assets/pass.js"></script>
 <script src="assets/captcha.js"></script>
+<script src="assets/guide.js"></script>
 <script>
   var L = YCV.L; YCV.tr(document.body); document.documentElement.lang = YCV.lang;
   if (window.YPhone) { YPhone.attach(document.getElementById("bWa"), { label: L("Indicatif du pays") }); document.getElementById("bWa").placeholder = "70 00 00 00"; }
@@ -840,6 +841,10 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
      the address registered in Supabase (Authentication > URL Configuration > Redirect URLs). */
   var SITE = location.origin + location.pathname.replace(/vendeur(\.html)?$/, "");
   var HERE = SITE + "vendeur.html";
+  /* Yiri, the onboarding assistant (assets/guide.js). Off for everyone until GUIDE_ON is true;
+     to test it: open vendeur?guide=1 (starts the guide again), vendeur?guide=0 turns the test off. */
+  var GUIDE_ON = false, GUIDE_Q = new URLSearchParams(location.search).get("guide");
+  try { if (GUIDE_Q === "1") localStorage.setItem("yc-guide-test", "1"); if (GUIDE_Q === "0") localStorage.removeItem("yc-guide-test"); } catch (e) {}
   /* [name, product limit, photos per product, detailed tools (stats, QR)] */
   var PLANS = { essai: [L("Essai"), 15, 4, false], basique: [L("Basique"), 100, 4, false], pro: [L("Pro"), 500, 6, true], entreprise: [L("Entreprise"), null, 10, true] };
   var CATS = [["mode", L("Mode et vêtements")], ["chaussures", L("Chaussures et maroquinerie")], ["bijoux", L("Bijoux et accessoires")], ["textile", L("Tissus et pagnes")], ["beaute", L("Beauté et cosmétiques")], ["sante", L("Santé et bien-être")], ["alim", L("Alimentation et épicerie")], ["boissons", L("Boissons")], ["agri", L("Produits agricoles et élevage")], ["artisanat", L("Artisanat et art")], ["deco", L("Décoration et maison")], ["meubles", L("Meubles")], ["electromenager", L("Électroménager")], ["tech", L("Téléphones et électronique")], ["info", L("Informatique")], ["auto", L("Auto et moto")], ["btp", L("Bâtiment et matériaux")], ["bebe", L("Bébé et enfants")], ["jouets", L("Jouets et jeux")], ["sport", L("Sport et loisirs")], ["livres", L("Livres et fournitures scolaires")], ["musique", L("Musique et instruments")], ["animaux", L("Animaux")], ["numerique", L("Produits numériques")], ["services", L("Services")], ["autre", L("Autre")]];
@@ -1048,6 +1053,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     fillShop(); renderHead(); renderProducts();
     var want = (location.hash || "").slice(1);
     tab(PANELS[want] ? want : (st.shop ? "dash" : "shop"));
+    guideInit();
   }
   async function loadStats() {
     st.stats = null;
@@ -1102,6 +1108,18 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
       go.textContent = L("Passer à une formule"); go.href = url;
     }
   }
+  function doStep(x) { tab(x[2]); if (x[3]) setTimeout(function () { var f = $(x[3]); if (f) { f.scrollIntoView({ block: "center" }); f.focus(); } }, 60); else if (x[2] === "prod" && !st.products.length && st.shop) openEditor(null); }
+  function guideInit() {
+    if (!window.YGuide || !st.user) return;
+    var test = false; try { test = localStorage.getItem("yc-guide-test") === "1"; } catch (e) {}
+    try {
+      YGuide.init({ enabled: GUIDE_ON || test, restart: GUIDE_Q === "1" && !guideInit.done, lang: YCV.lang, userId: st.user.id,
+        firstName: (known().nom || "").trim().split(/\s+/)[0], founder: !!(st.shop && st.shop.fondateur), shopName: st.shop ? st.shop.nom : "",
+        checklist: checklist, products: function () { return st.products.length; }, go: function (i) { var x = checklist()[i]; if (x) doStep(x); },
+        tab: function (t) { tab(t); }, shareUrl: function () { return st.shop ? shareUrl() : null; } });
+    } catch (e) {}
+    guideInit.done = true;
+  }
   function renderDash() {
     renderPlanBar();
     $("dName").textContent = st.shop ? st.shop.nom : L("Mon espace");
@@ -1114,7 +1132,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     list.forEach(function (x) {
       var li = el("li", x[1] ? "done" : ""), b = el("button"); b.type = "button";
       b.appendChild(el("span", "dot", x[1] ? "✓" : "")); b.appendChild(el("span", null, x[0]));
-      b.addEventListener("click", function () { tab(x[2]); if (x[3]) setTimeout(function () { var f = $(x[3]); if (f) { f.scrollIntoView({ block: "center" }); f.focus(); } }, 60); else if (x[2] === "prod" && !st.products.length && st.shop) openEditor(null); });
+      b.addEventListener("click", function () { doStep(x); });
       li.appendChild(b); ul.appendChild(li);
     });
     $("setup").hidden = !st.shop;
