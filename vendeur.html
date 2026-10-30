@@ -843,7 +843,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
   var HERE = SITE + "vendeur.html";
   /* Yiri, the onboarding assistant (assets/guide.js). Off for everyone until GUIDE_ON is true;
      to test it: open vendeur?guide=1 (starts the guide again), vendeur?guide=0 turns the test off. */
-  var GUIDE_ON = false, GUIDE_Q = new URLSearchParams(location.search).get("guide");
+  var GUIDE_ON = true, GUIDE_Q = new URLSearchParams(location.search).get("guide");
   try { if (GUIDE_Q === "1") localStorage.setItem("yc-guide-test", "1"); if (GUIDE_Q === "0") localStorage.removeItem("yc-guide-test"); } catch (e) {}
   /* [name, product limit, photos per product, detailed tools (stats, QR)] */
   var PLANS = { essai: [L("Essai"), 15, 4, false], basique: [L("Basique"), 100, 4, false], pro: [L("Pro"), 500, 6, true], entreprise: [L("Entreprise"), null, 10, true] };
@@ -1114,7 +1114,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     var test = false; try { test = localStorage.getItem("yc-guide-test") === "1"; } catch (e) {}
     try {
       YGuide.init({ enabled: GUIDE_ON || test, restart: GUIDE_Q === "1" && !guideInit.done, lang: YCV.lang, userId: st.user.id,
-        firstName: (known().nom || "").trim().split(/\s+/)[0], founder: !!(st.shop && st.shop.fondateur), shopName: st.shop ? st.shop.nom : "",
+        firstName: (known().nom || "").trim().split(/\s+/)[0], existing: !!(st.shop && st.products.length), founder: !!(st.shop && st.shop.fondateur), shopName: st.shop ? st.shop.nom : "",
         checklist: checklist, products: function () { return st.products.length; }, go: function (i) { var x = checklist()[i]; if (x) doStep(x); },
         tab: function (t) { tab(t); }, shareUrl: function () { return st.shop ? shareUrl() : null; } });
     } catch (e) {}

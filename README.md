@@ -399,8 +399,8 @@ Si `schema-v12.sql` est relancé un jour, relancer ensuite `schema-v17.sql`.
 ## Yiri, l'assistante des nouveaux vendeurs (assets/guide.js)
 
 - Bienvenue et félicitations (message spécial pour les fondateurs), 3 questions, visite des 5 onglets, puis une carte « Yiri » qui guide la liste « lancer ma boutique » étape par étape. Quand la boutique est complète : fête, message de partage prêt à copier et conseil marketing du jour. Français, anglais, espagnol.
-- **En test** : ouvre `yiriclick.com/vendeur?guide=1` (relance le guide depuis le début sur ce téléphone). `vendeur?guide=0` arrête le test.
-- **Pour l'activer pour tous les vendeurs** : dans `vendeur.html`, passe `var GUIDE_ON = false` à `true`.
+- **Activée pour tous les vendeurs** (30 octobre 2026). Les nouveaux vendeurs sont accueillis ; ceux qui vendent déjà voient seulement la petite bulle Yiri. `yiriclick.com/vendeur?guide=1` relance le guide depuis le début sur ce téléphone.
+- Pour la couper : dans `vendeur.html`, passe `var GUIDE_ON = true` à `false`.
 
 ## Base v24 : relances des nouveaux vendeurs
 

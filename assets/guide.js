@@ -421,7 +421,9 @@ window.YGuide = (function () {
     ctx = c; tx = T[c.lang] || T.fr; style();
     S = c.restart ? null : load();
     var L = list(), allDone = L.length && L.every(function (x) { return x[1]; });
-    if (!S) S = { stage: allDone && !c.restart ? "coach" : "welcome", answers: {}, min: false, seen: { ready: allDone && !c.restart, prods: (c.products && c.products()) || 0 } };
+    /* sellers who already sell (shop + products) are not welcomed again: Yiri waits as a small bubble */
+    var known = !c.restart && (allDone || c.existing);
+    if (!S) S = { stage: known ? "coach" : "welcome", answers: {}, min: !!(known && !allDone), seen: { ready: allDone && !c.restart, prods: (c.products && c.products()) || 0 } };
     save();
     if (poll) clearInterval(poll); poll = setInterval(watch, 1500);
     if (S.stage === "welcome") welcome();
