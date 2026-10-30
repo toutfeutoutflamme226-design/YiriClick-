@@ -116,7 +116,7 @@
     secs.forEach(function (s) { card.appendChild(el("h3", null, s[0])); var p = el("p"); fill(p, s[1], D); card.appendChild(p); });
     box.appendChild(card);
     box.appendChild(el("p", "lg-meta", D.prevails));
-    var c = el("a", "btn btn-navy", D.contactBtn); c.href = "contact.html"; c.style.alignSelf = "flex-start"; box.appendChild(c);
+    var c = el("a", "btn btn-navy", D.contactBtn); c.href = "contact"; c.style.alignSelf = "flex-start"; box.appendChild(c);
   }
   window.addEventListener("hashchange", function () { render(); window.scrollTo(0, 0); });
   Y.wirePrefs(render); render();

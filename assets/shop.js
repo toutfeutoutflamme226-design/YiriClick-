@@ -1,4 +1,4 @@
-/* Shared logic for the showcase (index.html), boutique.html and catalogue.html: Supabase client, languages, currencies, product cards and product detail */
+/* Shared logic for the showcase (index), boutique and catalogue: Supabase client, languages, currencies, product cards and product detail */
 window.YC = (function () {
   var URL_SB = "https://vtiakxfnechkoomagddl.supabase.co";
   var KEY_SB = "sb_publishable_415c2KQSDRx0SMofnkHKQA_PJ2IrzBA";
@@ -172,8 +172,8 @@ window.YC = (function () {
     return exact ? "= " + v : t("approx", { v: v, d: RATES_DATE.toLocaleDateString(LOCALE[prefs.lang], { day: "2-digit", month: "2-digit", year: "numeric" }) });
   }
   /* Anonymous statistics for sellers (no personal data). Views are counted once per browser session,
-     and a seller's own visits are skipped (vendeur.html remembers which shop is theirs). */
-  var SRC = /(\/|index\.html|vitrine\.html)$/.test(location.pathname) ? "vitrine" : "boutique";
+     and a seller's own visits are skipped (vendeur remembers which shop is theirs). */
+  var SRC = /(\/|index\.html|vitrine(\.html)?)$/.test(location.pathname) ? "vitrine" : "boutique";
   function track(type, boutiqueId, produitId) {
     try {
       if (!boutiqueId) return;
@@ -186,7 +186,7 @@ window.YC = (function () {
   function shopIdOf(p, shop) { return (p && p.boutique_id) || (shop && shop.id) || null; }
   function waLink(shop, p) {
     var d = String(shop.whatsapp || "").replace(/\D/g, ""); if (d.length < 8) return "";
-    var u = location.origin + location.pathname.replace(/[^/]*$/, "") + "boutique.html?b=" + encodeURIComponent(shop.slug) + "&p=" + p.id;
+    var u = location.origin + location.pathname.replace(/[^/]*$/, "") + "boutique?b=" + encodeURIComponent(shop.slug) + "&p=" + p.id;
     return "https://wa.me/" + d + "?text=" + encodeURIComponent(t("waMsg", { p: p.nom, x: money(p.prix, p.devise), u: u }));
   }
 
@@ -503,7 +503,7 @@ window.YC = (function () {
     }
     groups().forEach(function (g) {
       var sec = el("section", "cart-group");
-      var sh = el("a", "cart-shop", g.shop.nom); sh.href = "boutique.html?b=" + encodeURIComponent(g.shop.slug); sec.appendChild(sh);
+      var sh = el("a", "cart-shop", g.shop.nom); sh.href = "boutique?b=" + encodeURIComponent(g.shop.slug); sec.appendChild(sh);
       g.items.forEach(function (i) {
         var row = el("div", "cart-row");
         if (i.photo) { var im = el("img"); im.src = pub(i.photo); im.alt = ""; row.appendChild(im); } else row.appendChild(el("div", "cart-noim"));
@@ -729,7 +729,7 @@ window.YC = (function () {
     })(i);
     row.appendChild(g); return row;
   }
-  /* done: called after a successful review (noter.html); by default the cart's order list is updated */
+  /* done: called after a successful review (noter); by default the cart's order list is updated */
   function reviewForm(sec, o, done) {
     var f = el("form", "rev-form"); f.noValidate = true;
     var d = { note: 0, criteres: {}, causes: [], recontact: false, yc: { note: 0, criteres: {}, recommande: null } };
@@ -805,7 +805,7 @@ window.YC = (function () {
     sec.appendChild(f);
   }
 
-  /* Public list of reviews with summary, sorting and "show more". Used by boutique.html and avis.html. */
+  /* Public list of reviews with summary, sorting and "show more". Used by boutique and avis. */
   function reviewsUI(box, list, opts) {
     opts = opts || {}; box.textContent = "";
     var n = list.length; if (!n) { box.appendChild(el("p", "rv-empty", t("noReviews"))); return; }
@@ -902,7 +902,7 @@ window.YC = (function () {
     }
     box.appendChild(gal);
     var bd = el("div", "mbody");
-    if (opts.showShop && shop) { var sa = el("a", null, t("by", { s: shop.nom })); sa.href = "boutique.html?b=" + encodeURIComponent(shop.slug); sa.style.color = "var(--teal-deep)"; sa.style.fontWeight = "700"; bd.appendChild(sa); }
+    if (opts.showShop && shop) { var sa = el("a", null, t("by", { s: shop.nom })); sa.href = "boutique?b=" + encodeURIComponent(shop.slug); sa.style.color = "var(--teal-deep)"; sa.style.fontWeight = "700"; bd.appendChild(sa); }
     var h = el("h2", null, p.nom); h.id = "pmTitle"; bd.appendChild(h);
     track("vue_produit", shopIdOf(p, shop), p.id);
     var vr = hasVar(p), sel = vr ? p.variantes.options.map(function () { return null; }) : null;
@@ -969,7 +969,7 @@ window.YC = (function () {
     if (wa && p.stock !== 0) { var w = el("a", "direct", t("orderDirect")); w.href = wa; w.target = "_blank"; w.rel = "noopener"; w.addEventListener("click", function () { track("clic_whatsapp", shopIdOf(p, shop), p.id); }); bd.appendChild(w); }
     else if (!wa) bd.appendChild(el("p", "wa-note", t("noWa")));
     var rp = el("a", "report-link", "⚑ " + t("report"));
-    rp.href = "contact.html?sujet=signalement&produit=" + encodeURIComponent(String(p.id || "")) + "&nom=" + encodeURIComponent(String(p.nom || "").slice(0, 80)) + (shop && shop.nom ? "&boutique=" + encodeURIComponent(String(shop.nom).slice(0, 80)) : "");
+    rp.href = "contact?sujet=signalement&produit=" + encodeURIComponent(String(p.id || "")) + "&nom=" + encodeURIComponent(String(p.nom || "").slice(0, 80)) + (shop && shop.nom ? "&boutique=" + encodeURIComponent(String(shop.nom).slice(0, 80)) : "");
     bd.appendChild(rp);
     box.appendChild(bd);
     box.setAttribute("aria-labelledby", "pmTitle");
@@ -1069,13 +1069,13 @@ window.YC = (function () {
       var w = el("div", "wrap sf"), top = el("div", "sf-top"), brand = el("div", "sf-brand");
       brand.innerHTML = '<span class="word"><span class="a">yiri</span><span class="b">click</span></span>';
       var tg = el("p", null, t("tagline")); tg.setAttribute("data-t", "tagline"); brand.appendChild(tg);
-      var op = el("a", "sf-cta", t("fOpen")); op.href = "vendre.html"; op.setAttribute("data-t", "fOpen"); brand.appendChild(op);
+      var op = el("a", "sf-cta", t("fOpen")); op.href = "vendre"; op.setAttribute("data-t", "fOpen"); brand.appendChild(op);
       top.appendChild(brand);
       var cols = el("div", "sf-cols");
-      [["fBuy", [["fHelp1", "vendre.html#comment"], ["fOrders", "#orders"], ["fReviews", "avis.html"]]],
-       ["fSellH", [["fSell1", "vendre.html#tarifs"], ["fSell2", "vendeur.html"], ["fFounders", "vendre.html#fondateurs"]]],
-       ["fHelp", [["svcBtn", "contact.html"], ["fReport", "contact.html?sujet=signalement"]]],
-       ["fYiri", [["fAbout1", "vendre.html"], ["fPartners", "contact.html?sujet=partenariat"]]]].forEach(function (c) {
+      [["fBuy", [["fHelp1", "vendre#comment"], ["fOrders", "#orders"], ["fReviews", "avis"]]],
+       ["fSellH", [["fSell1", "vendre#tarifs"], ["fSell2", "vendeur"], ["fFounders", "vendre#fondateurs"]]],
+       ["fHelp", [["svcBtn", "contact"], ["fReport", "contact?sujet=signalement"]]],
+       ["fYiri", [["fAbout1", "vendre"], ["fPartners", "contact?sujet=partenariat"]]]].forEach(function (c) {
         var col = el("div", "sf-col"), h = el("h2", null, t(c[0])); h.setAttribute("data-t", c[0]); col.appendChild(h);
         c[1].forEach(function (l) {
           var a = el("a", null, t(l[0])); a.href = l[1]; a.setAttribute("data-t", l[0]);

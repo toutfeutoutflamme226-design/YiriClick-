@@ -94,7 +94,7 @@ h2::before { content: ""; width: 5px; height: 18px; background: var(--brand); }
     if (s.slogan) { $("slogan").textContent = s.slogan; $("slogan").hidden = false; }
     $("info").textContent = [[s.ville, s.pays].filter(Boolean).join(", "), s.whatsapp ? "WhatsApp " + s.whatsapp : ""].filter(Boolean).join(" · ");
     if (s.logo) $("logo").style.backgroundImage = 'url("' + Y.pub(s.logo) + '")'; else $("logo").textContent = s.nom.charAt(0).toUpperCase();
-    var url = location.origin + location.pathname.replace(/catalogue\.html$/, "") + "boutique.html?b=" + s.slug;
+    var url = location.origin + location.pathname.replace(/catalogue(\.html)?$/, "") + "boutique?b=" + s.slug;
     $("qr").innerHTML = YQR.svg(url, "#10232A"); $("qr").setAttribute("aria-label", t("cScan")); $("qrTxt").textContent = t("cScan");
     $("url").textContent = url.replace(/^https?:\/\//, "");
     $("date").textContent = t("cDate", { d: new Date().toLocaleDateString(Y.LOCALE[Y.prefs.lang], { day: "numeric", month: "long", year: "numeric" }) });

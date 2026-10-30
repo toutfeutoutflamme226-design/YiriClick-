@@ -52,10 +52,14 @@ async function vendorSupabase() {
     SB_LOCAL = true; console.log("Bibliothèque Supabase servie par le site (" + buf.length + " octets)");
   } catch (e) { console.warn("Bibliothèque Supabase gardée sur le CDN : " + e.message); }
 }
+/* Clean addresses: yiriclick.com/vendre rather than /vendre.html (GitHub Pages serves both).
+   An old .html link still works; the address bar is tidied without reloading the page. */
+const CLEAN_URL = '<script>(function(){var p=location.pathname;if(/\\.html$/.test(p)&&!/\\/404\\.html$/.test(p)){try{history.replaceState(history.state,"",p.replace(/(^|\\/)index\\.html$/,"$1").replace(/\\.html$/,"")+location.search+location.hash)}catch(e){}}})();</script>';
 const FRAME_GUARD = '<script>if(window.top!==window.self){try{window.top.location=window.self.location}catch(e){document.documentElement.style.display="none"}}</script>';
 function hardenHtml(html) {
   if (SB_LOCAL) html = html.split(SB_CDN).join("assets/vendor/supabase.min.js");
   if (!html.includes("window.top!==window.self")) html = html.replace(/<head>/i, "<head>\n" + FRAME_GUARD);
+  if (!html.includes("history.replaceState(history.state,\"\",p.replace")) html = html.replace(/<head>/i, "<head>\n" + CLEAN_URL);
   return html;
 }
 
@@ -100,7 +104,7 @@ async function main() {
   await vendorSupabase();
   await copyTree(ROOT, OUT);
   const now = new Date().toISOString();
-  const urls = [{ loc: SITE, lastmod: now, pr: "1.0" }, { loc: SITE + "vendre.html", lastmod: now, pr: "0.8" }];
+  const urls = [{ loc: SITE, lastmod: now, pr: "1.0" }, { loc: SITE + "vendre", lastmod: now, pr: "0.8" }];
   let shops = [], products = [], reviews = [];
   try {
     const cols = "id,slug,nom,description,slogan,ville,pays,logo,couverture,updated_at", where = "&visible=eq.true&masque_admin=eq.false&limit=5000";
@@ -117,7 +121,7 @@ async function main() {
 
   for (const s of shops) {
     if (!/^[a-z0-9-]{3,40}$/.test(s.slug)) continue;
-    const target = SITE + "boutique.html?b=" + s.slug, url = SITE + "b/" + s.slug + "/";
+    const target = SITE + "boutique?b=" + s.slug, url = SITE + "b/" + s.slug + "/";
     const n = products.filter((p) => p.boutique_id === s.id).length;
     const place = [s.ville, s.pays].filter(Boolean).join(", ");
     const desc = clip([s.slogan, s.description, place && "Boutique à " + place, n ? n + " produits à commander sur WhatsApp" : ""].filter(Boolean).join(" · "), 200);
@@ -132,7 +136,7 @@ async function main() {
   }
   for (const p of products) {
     const s = shopById.get(p.boutique_id); if (!s || !/^[0-9a-f-]{36}$/.test(p.id)) continue;
-    const target = SITE + "boutique.html?b=" + s.slug + "&p=" + p.id, url = SITE + "p/" + p.id + "/";
+    const target = SITE + "boutique?b=" + s.slug + "&p=" + p.id, url = SITE + "p/" + p.id + "/";
     const old = p.prix_avant && Number(p.prix_avant) > Number(p.prix) ? " (au lieu de " + price(p.prix_avant, p.devise) + ")" : "";
     const title = p.nom + " · " + price(p.prix, p.devise);
     const desc = clip(price(p.prix, p.devise) + old + " chez " + s.nom + ". " + (p.description || "") , 200);
@@ -148,7 +152,7 @@ async function main() {
   const xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
     urls.map((u) => `  <url><loc>${esc(u.loc)}</loc><lastmod>${String(u.lastmod).slice(0, 10)}</lastmod><priority>${u.pr}</priority></url>`).join("\n") + "\n</urlset>\n";
   await writeFile(join(OUT, "sitemap.xml"), xml);
-  await writeFile(join(OUT, "robots.txt"), "User-agent: *\nAllow: /\nDisallow: /admin.html\nDisallow: /vendeur.html\nSitemap: " + SITE + "sitemap.xml\n");
+  await writeFile(join(OUT, "robots.txt"), "User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /avis-admin\nDisallow: /vendeur\nSitemap: " + SITE + "sitemap.xml\n");
   console.log(`Site : ${SITE} · ${shops.length} boutiques · ${products.length} produits · ${urls.length} adresses dans le plan du site`);
 }
 

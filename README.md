@@ -389,3 +389,9 @@ Si `schema-v12.sql` est relancé un jour, relancer ensuite `schema-v17.sql`.
 
 - `supabase/schema-v23.sql` : chaque tâche est surveillée selon son rythme (26 h quotidienne, 8 jours hebdomadaire, 32 jours mensuelle). Une tâche qui n'a encore jamais tourné est « en attente », plus « arrêtée ».
 - L'admin (État du site) affiche une rubrique **Tâches planifiées** : prochain passage avec compte à rebours (heure des Pays-Bas) et dernier passage.
+
+## Adresses sans « .html »
+
+- Le site s'ouvre partout sans « .html » : `yiriclick.com/vendre`, `/contact`, `/juridique`, `/boutique?b=…`. Les anciens liens en .html marchent toujours ; la barre d'adresse est nettoyée automatiquement.
+- Adresse courte pour les vidéos, flyers et publications : **yiriclick.com/rejoindre** (ouvre l'inscription vendeur).
+- Les e-mails de connexion reviennent toujours sur `vendeur.html` : c'est l'adresse enregistrée dans Supabase › Authentication › URL Configuration, rien à changer.

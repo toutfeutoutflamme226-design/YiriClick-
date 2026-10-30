@@ -136,7 +136,7 @@
     meta('meta[name="description"]', "content", desc || shop.nom + " sur Yiriclick");
     meta('meta[property="og:title"]', "content", shop.nom + " · Yiriclick");
     var cn = document.querySelector('link[rel="canonical"]'); if (!cn) { cn = document.createElement("link"); cn.rel = "canonical"; document.head.appendChild(cn); } cn.href = url;
-    var img = shop.couverture ? Y.pub(shop.couverture) : shop.logo ? Y.pub(shop.logo) : base.replace(/boutique\.html$/, "") + "assets/og.png";
+    var img = shop.couverture ? Y.pub(shop.couverture) : shop.logo ? Y.pub(shop.logo) : base.replace(/boutique(\.html)?$/, "") + "assets/og.png";
     var data = { "@context": "https://schema.org", "@type": "Store", name: shop.nom, url: url, description: desc || undefined, image: img,
       address: shop.ville || shop.pays ? { "@type": "PostalAddress", addressLocality: shop.ville || undefined, addressCountry: shop.pays || undefined } : undefined,
       makesOffer: items.slice(0, 50).map(function (p) { return { "@type": "Offer", price: Number(p.prix).toFixed(p.devise === "XOF" ? 0 : 2), priceCurrency: p.devise,
@@ -212,7 +212,7 @@
     if (p.error) p = await Y.sb.from("produits").select("prix_avant," + cols).eq("boutique_id", shop.id).order("created_at", { ascending: false });
     if (p.error) p = await Y.sb.from("produits").select(cols).eq("boutique_id", shop.id).order("created_at", { ascending: false });
     items = Y.prep(p.data || []);
-    /* base v14: reviews about the shop only (the Yiriclick ones live on avis.html), with criteria and highlights */
+    /* base v14: reviews about the shop only (the Yiriclick ones live on avis), with criteria and highlights */
     var av = await Y.sb.from("avis").select("note,commentaire,nom,created_at,reponse,cible,criteres,mis_en_avant").eq("boutique_id", shop.id).eq("cible", "boutique").order("created_at", { ascending: false }).limit(300);
     if (av.error) av = await Y.sb.from("avis").select("note,commentaire,nom,created_at,reponse").eq("boutique_id", shop.id).order("created_at", { ascending: false }).limit(60);
     reviews = av.error ? [] : (av.data || []);

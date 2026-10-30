@@ -1,4 +1,4 @@
-/* Legal identity of Yiriclick, shown on juridique.html (legal notice, terms, privacy) and in the seller forms.
+/* Legal identity of Yiriclick, shown on juridique (legal notice, terms, privacy) and in the seller forms.
    Fill or change a value here and every legal page follows. An empty value is shown as "being registered". */
 window.YLEGAL = {
   nom: "",                         // legal name of the owner of the eenmanszaak, as registered at the KvK

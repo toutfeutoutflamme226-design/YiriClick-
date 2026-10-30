@@ -89,7 +89,7 @@
   function msg(title, text, big) {
     var c = el("div", "nt-card nt-done"); if (big) c.appendChild(el("div", "big", big)); c.appendChild(el("h1", null, title)); if (text) c.appendChild(el("p", "nt-lead", text));
     var a = el("div", "nt-acts");
-    if (order) { var s = el("a", "btn btn-navy", t("ntShop")); s.href = "boutique.html?b=" + encodeURIComponent(order.boutique.slug); a.appendChild(s); }
+    if (order) { var s = el("a", "btn btn-navy", t("ntShop")); s.href = "boutique?b=" + encodeURIComponent(order.boutique.slug); a.appendChild(s); }
     var h = el("a", "btn btn-ghost", t("ntHome")); h.href = "./"; a.appendChild(h); c.appendChild(a); box.appendChild(c);
   }
   function orderCard() {

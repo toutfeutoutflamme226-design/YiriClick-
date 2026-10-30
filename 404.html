@@ -14,7 +14,7 @@
   var m = /^(.*?\/)(b|p)\/([^\/?#]+)\/?$/.exec(location.pathname);
   if (!m) return;
   var base = m[1], kind = m[2], id = decodeURIComponent(m[3]);
-  if (kind === "b" && /^[a-z0-9-]{3,40}$/.test(id)) location.replace(base + "boutique.html?b=" + id);
+  if (kind === "b" && /^[a-z0-9-]{3,40}$/.test(id)) location.replace(base + "boutique?b=" + id);
   else if (kind === "p" && /^[0-9a-f-]{36}$/.test(id)) location.replace(base + "?produit=" + id);
 })();
 </script>

@@ -267,9 +267,9 @@ section.block { margin-top: 28px; }
       <span class="word"><span class="a">yiri</span><span class="b">click</span></span>
     </a>
     <div class="prefs acts">
-      <a class="sell-link" href="vendre.html" data-t="fSell">Vendre sur Yiriclick</a>
+      <a class="sell-link" href="vendre" data-t="fSell">Vendre sur Yiriclick</a>
       <button class="icon-btn" type="button" id="localeBtn" data-ta="settings"><span class="flag" id="localeFlag" aria-hidden="true">🌍</span></button>
-      <a class="icon-btn" href="vendeur.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span class="lbl" data-t="login">Se connecter</span><span class="vh" data-t="login"></span></a>
+      <a class="icon-btn" href="vendeur"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span class="lbl" data-t="login">Se connecter</span><span class="vh" data-t="login"></span></a>
       <button class="icon-btn" type="button" id="favBtn" data-ta="favs"><span id="favIco"></span><span class="count" id="favN" hidden>0</span></button>
     </div>
   </div>
@@ -330,7 +330,7 @@ section.block { margin-top: 28px; }
   <div class="wrap">
     <h2 data-t="service">Service et contact</h2>
     <div class="svc"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h2l2 10h10l2-7H7"/><circle cx="10" cy="19" r="1.4"/><circle cx="17" cy="19" r="1.4"/></svg><div><b data-t="sv1T">Commander simplement</b><p data-t="sv1"></p></div></div>
-    <div class="svc"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.6 7.4L3 20l1.2-5A8.5 8.5 0 1 1 21 11.5z"/></svg><div><b data-t="sv2T">Besoin d’aide ?</b><p data-t="sv2"></p><a class="svc-link" href="contact.html" data-t="svcBtn">Nous contacter</a></div></div>
+    <div class="svc"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.6 7.4L3 20l1.2-5A8.5 8.5 0 1 1 21 11.5z"/></svg><div><b data-t="sv2T">Besoin d’aide ?</b><p data-t="sv2"></p><a class="svc-link" href="contact" data-t="svcBtn">Nous contacter</a></div></div>
   </div>
 </section>
 <footer class="site-foot">
@@ -482,7 +482,7 @@ section.block { margin-top: 28px; }
     var a = e.target.closest && e.target.closest("a[href]");
     if (!a || a.target === "_blank" || e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     var u; try { u = new URL(a.getAttribute("href"), location.href); } catch (x) { return; }
-    var here = function (p) { return p.replace(/(index|vitrine)\.html$/, ""); };
+    var here = function (p) { return p.replace(/(index|vitrine)(\.html)?$/, ""); };
     if (u.origin !== location.origin || here(u.pathname) !== here(location.pathname) || (u.hash && !u.search)) return;
     e.preventDefault();
     try { history.pushState(null, "", location.pathname + u.search); } catch (x) {}
@@ -528,7 +528,7 @@ section.block { margin-top: 28px; }
     function hd(txt) { var h = el("li", "hd", txt); h.setAttribute("role", "presentation"); sugg.appendChild(h); }
     function opt(txt, small, act) { var li = el("li", null, txt); li.id = "sg" + sItems.length; li.setAttribute("role", "option"); li.setAttribute("aria-selected", "false"); if (small) li.appendChild(el("small", null, small)); li.addEventListener("mousedown", function (e) { e.preventDefault(); closeSugg(); act(); }); sugg.appendChild(li); sItems.push({ li: li, act: act }); }
     if (prods.length) { hd(t("prodS")); prods.forEach(function (p) { opt(p.nom, p.boutiques.nom, function () { show(p, prods); }); }); }
-    if (shopL.length) { hd(t("shopS")); shopL.forEach(function (s) { opt(s.nom, [s.ville, s.pays].filter(Boolean).join(", "), function () { location.href = "boutique.html?b=" + encodeURIComponent(s.slug); }); }); }
+    if (shopL.length) { hd(t("shopS")); shopL.forEach(function (s) { opt(s.nom, [s.ville, s.pays].filter(Boolean).join(", "), function () { location.href = "boutique?b=" + encodeURIComponent(s.slug); }); }); }
     if (cats.length) { hd(t("catS")); cats.forEach(function (c) { opt(Y.cat(c), null, function () { go({ cat: c }); }); }); }
     if (!sItems.length) return closeSugg();
     sugg.hidden = false; $("q").setAttribute("aria-expanded", "true");
@@ -566,7 +566,7 @@ section.block { margin-top: 28px; }
     var bans = promos.filter(function (p) { return p.type === "banniere"; });
     if (!bans.length) bans = [
       { titre: t("hero1T"), sous_titre: t("hero1P"), lien: "?all=1", couleur: "navy", cta: t("hero1C") },
-      { titre: t("hero2T"), sous_titre: t("hero2P"), lien: "vendre.html", couleur: "sand", cta: t("hero2C") }];
+      { titre: t("hero2T"), sous_titre: t("hero2P"), lien: "vendre", couleur: "sand", cta: t("hero2C") }];
     var track = el("div", "slides-h"); track.setAttribute("aria-roledescription", "carousel");
     bans.forEach(function (b, i) {
       var a = el("a", "slide c-" + (b.couleur || "teal") + (b.image ? " has-img" : "")); a.href = b.lien || "#trendSec";
@@ -659,7 +659,7 @@ section.block { margin-top: 28px; }
     else items.forEach(function (p) { var b = p.boutiques; if (!shops[b.slug]) { shops[b.slug] = { b: b, n: 0 }; order.push(b.slug); } shops[b.slug].n++; });
     var sr = $("shopsRail"); sr.textContent = "";
     order.slice(0, 16).forEach(function (k) {
-      var s = shops[k], a = el("a", "shop-card"); a.href = "boutique.html?b=" + encodeURIComponent(k);
+      var s = shops[k], a = el("a", "shop-card"); a.href = "boutique?b=" + encodeURIComponent(k);
       var lg = el("span", "lg"); if (s.b.logo) lg.style.backgroundImage = "url(\"" + Y.pub(s.b.logo) + "\")"; else lg.textContent = s.b.nom.charAt(0).toUpperCase();
       a.appendChild(lg); a.appendChild(el("b", null, s.b.nom)); a.appendChild(el("small", null, [s.b.ville, s.b.pays].filter(Boolean).join(", ") || t("nProd", { n: s.n })));
       sr.appendChild(a);
@@ -769,7 +769,7 @@ section.block { margin-top: 28px; }
     sideLast = document.activeElement; var L = $("sideLinks"); L.textContent = "";
     [["homeLink", function () { go({ home: true }); }], ["favsLink", function () { go({ fav: true }); }], ["myOrders", function () { Y.openOrders(); }], ["deals", function () { go({ promo: true }); }], ["allProducts", function () { go({}); }], ["settings", openChooser]]
       .forEach(function (x) { var b = el("button", null, t(x[0])); b.type = "button"; b.addEventListener("click", function () { closeSide(x[1]); }); L.appendChild(b); });
-    [["fSell3", "vendre.html"], ["fSell1", "vendre.html#tarifs"], ["fSell2", "vendeur.html"]].forEach(function (x) { var a = el("a", null, t(x[0])); a.href = x[1]; L.appendChild(a); });
+    [["fSell3", "vendre"], ["fSell1", "vendre#tarifs"], ["fSell2", "vendeur"]].forEach(function (x) { var a = el("a", null, t(x[0])); a.href = x[1]; L.appendChild(a); });
     famAccordion($("sideCats"), function (o) { closeSide(function () { go(o); }); });
     $("side").hidden = false; document.body.style.overflow = "hidden"; $("side").querySelector(".side-x").focus();
     if (!fromNav && window.YNav) YNav.opened("menu");
@@ -868,7 +868,7 @@ section.block { margin-top: 28px; }
     var bx = el("div", "fond-box"), left = fond.total - fond.prises;
     bx.appendChild(el("span", "fond-n", String(left))); bx.appendChild(el("span", null, t("fdLeft", { n: fond.total })));
     var bar = el("div", "fond-bar"), fill = el("i"); fill.style.width = Math.round(fond.prises / fond.total * 100) + "%"; bar.appendChild(fill); bx.appendChild(bar);
-    var go = el("a", "fond-go", t("fdGo")); go.href = "contact.html?sujet=fondateur"; bx.appendChild(go);
+    var go = el("a", "fond-go", t("fdGo")); go.href = "contact?sujet=fondateur"; bx.appendChild(go);
     bx.appendChild(el("small", null, t("fdNote")));
     b.appendChild(m); b.appendChild(bx); sec.appendChild(b);
   }
@@ -888,7 +888,7 @@ section.block { margin-top: 28px; }
     sec.appendChild(el("p", "plogos-t", t("ptBand")));
     var g = el("div", "plogos");
     band.forEach(function (p) { var a = el("a"); link(a, p); if (p.logo) { var im = el("img"); im.src = partImg(p.logo); im.alt = p.nom; im.loading = "lazy"; a.appendChild(im); } else a.textContent = p.nom; a.title = p.nom; g.appendChild(a); });
-    var j = el("a", "pjoin", t("fPartners")); j.href = "contact.html?sujet=partenariat"; g.appendChild(j);
+    var j = el("a", "pjoin", t("fPartners")); j.href = "contact?sujet=partenariat"; g.appendChild(j);
     sec.appendChild(g);
     /* one view per partner and per visit */
     var seen = {}; try { seen = JSON.parse(sessionStorage.getItem("yc-pv") || "{}"); } catch (e) {}

@@ -153,7 +153,7 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
       <span class="tag">Admin</span>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <a class="btn btn-line" href="avis-admin.html">Avis clients</a>
+      <a class="btn btn-line" href="avis-admin">Avis clients</a>
       <a class="btn btn-line" href="./">Voir le site</a>
       <button class="btn btn-line" id="logout" type="button" hidden>Se déconnecter</button>
     </div>
@@ -257,7 +257,7 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
 
   <div class="card" id="avisCard" hidden>
     <h2>Avis signalés par les vendeurs</h2>
-    <p class="notice">Masque un avis seulement s’il est injurieux, faux ou hors sujet. Un avis négatif mais honnête doit rester visible. Tous les avis, leur analyse et le tableau de bord : <a href="avis-admin.html">page Avis clients</a>.</p>
+    <p class="notice">Masque un avis seulement s’il est injurieux, faux ou hors sujet. Un avis négatif mais honnête doit rester visible. Tous les avis, leur analyse et le tableau de bord : <a href="avis-admin">page Avis clients</a>.</p>
     <div id="avisAdm" style="display:flex;flex-direction:column;gap:10px"></div>
   </div>
 
@@ -363,7 +363,7 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
       if (adm.error || adm.data !== true) { show("vDenied"); return; }
     }
     var back = new URLSearchParams(location.search).get("retour");
-    if (back && /^[a-z-]+\.html$/.test(back)) { location.replace(back); return; }
+    if (back && /^[a-z-]+(\.html)?$/.test(back)) { location.replace(back); return; }
     show("vApp"); load();
   }
 
@@ -500,7 +500,7 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
       t.appendChild(el("span", "ms", [b.ville, b.pays].filter(Boolean).join(", ") + " · inscrite le " + fmtDate(b.created_at, true) + " · " + (counts[b.id] || 0) + " produit" + ((counts[b.id] || 0) > 1 ? "s" : "")));
       d.appendChild(t);
       var acts = el("div", "acts");
-      var see = el("a", "btn btn-ghost", "Voir la boutique"); see.href = "boutique.html?b=" + encodeURIComponent(b.slug); see.target = "_blank"; see.rel = "noopener"; acts.appendChild(see);
+      var see = el("a", "btn btn-ghost", "Voir la boutique"); see.href = "boutique?b=" + encodeURIComponent(b.slug); see.target = "_blank"; see.rel = "noopener"; acts.appendChild(see);
       var wa = String(b.whatsapp || "").replace(/\D/g, "");
       if (wa.length >= 8) { var w = el("a", "btn btn-ghost", "WhatsApp"); w.href = "https://wa.me/" + wa; w.target = "_blank"; w.rel = "noopener"; acts.appendChild(w); }
       var ok = el("button", "btn btn-orange", "Approuver"); ok.type = "button";
@@ -878,7 +878,7 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
       if (!(r.photos || []).length) pw.appendChild(el("span", "notice", "Aucune photo."));
       pics.appendChild(pw); body.appendChild(pics);
       body.appendChild(group("Produit", [["Prix", money(r.prix, r.devise)], ["Catégorie", r.categorie], ["Stock", r.stock], ["Affiché par le vendeur", r.visible ? "Oui" : "Non"], ["Description", r.description]]));
-      if (r.boutiques && r.boutiques.slug) { var lk = el("a", null, "Ouvrir la boutique"); lk.href = "boutique.html?b=" + encodeURIComponent(r.boutiques.slug); lk.target = "_blank"; lk.rel = "noopener"; lk.style.color = "var(--teal-deep)"; lk.style.fontWeight = "700"; body.appendChild(lk); }
+      if (r.boutiques && r.boutiques.slug) { var lk = el("a", null, "Ouvrir la boutique"); lk.href = "boutique?b=" + encodeURIComponent(r.boutiques.slug); lk.target = "_blank"; lk.rel = "noopener"; lk.style.color = "var(--teal-deep)"; lk.style.fontWeight = "700"; body.appendChild(lk); }
       body.appendChild(el("p", "notice", "« Masqué par Yiriclick » retire le produit de la boutique et de la vitrine, même si le vendeur l’affiche."));
     } else if (tab === "dossiers") {
       body.appendChild(group("Compte", [["Nom", r.nom], ["E-mail", r.email], ["WhatsApp", r.whatsapp], ["Pays", r.pays], ["Formule", PLAN[r.formule]], ["Région de tarif", ZONE[r.zone]], ["Langue", r.langue]]));
@@ -954,7 +954,7 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
       if (a.commentaire) d.appendChild(el("p", null, a.commentaire));
       var row = el("div"); row.style.cssText = "display:flex;gap:8px;flex-wrap:wrap";
       /* base v14: hiding needs a reason, so it happens on the review's analysis page */
-      var op = el("a", "btn btn-navy", "Ouvrir l’analyse"); op.href = "avis-admin.html?id=" + a.id; row.appendChild(op);
+      var op = el("a", "btn btn-navy", "Ouvrir l’analyse"); op.href = "avis-admin?id=" + a.id; row.appendChild(op);
       [["Garder et clore", { signale: false }]].forEach(function (x) {
         var b = el("button", "btn btn-ghost", x[0]); b.type = "button";
         b.addEventListener("click", async function () { b.disabled = true; await sb.from("avis").update(x[1]).eq("id", a.id); loadAvisAdm(); });
@@ -1002,14 +1002,14 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
     var live = data.produits.filter(function (p) { return p.visible && !p.masque_admin && p.boutiques && p.boutiques.slug; });
     if (d === "cat" && !$("pmDestCat").options.length) ADM_CATS.forEach(function (c) { var o = el("option", null, c[1]); o.value = c[0]; $("pmDestCat").appendChild(o); });
     if (d === "shop") { var s = $("pmDestShop"), seen = {}; s.textContent = ""; live.forEach(function (p) { if (seen[p.boutiques.slug]) return; seen[p.boutiques.slug] = 1; var o = el("option", null, p.boutiques.nom); o.value = p.boutiques.slug; s.appendChild(o); }); if (!s.options.length) { var o0 = el("option", null, "Aucune boutique avec des produits en ligne"); o0.value = ""; s.appendChild(o0); } }
-    if (d === "prod") { var s2 = $("pmDestProd"); s2.textContent = ""; live.forEach(function (p) { var o = el("option", null, p.nom + " · " + p.boutiques.nom); o.value = "boutique.html?b=" + encodeURIComponent(p.boutiques.slug) + "&p=" + p.id; s2.appendChild(o); }); if (!s2.options.length) { var o1 = el("option", null, "Aucun produit en ligne"); o1.value = ""; s2.appendChild(o1); } }
+    if (d === "prod") { var s2 = $("pmDestProd"); s2.textContent = ""; live.forEach(function (p) { var o = el("option", null, p.nom + " · " + p.boutiques.nom); o.value = "boutique?b=" + encodeURIComponent(p.boutiques.slug) + "&p=" + p.id; s2.appendChild(o); }); if (!s2.options.length) { var o1 = el("option", null, "Aucun produit en ligne"); o1.value = ""; s2.appendChild(o1); } }
   }
   $("pmDest").addEventListener("change", pmDestUI);
   function pmLinkValue() {
     switch ($("pmDest").value) {
-      case "all": return "./?all=1"; case "promo": return "./?promo=1"; case "vendre": return "vendre.html";
+      case "all": return "./?all=1"; case "promo": return "./?promo=1"; case "vendre": return "vendre";
       case "cat": return "./?cat=" + encodeURIComponent($("pmDestCat").value);
-      case "shop": return $("pmDestShop").value ? "boutique.html?b=" + encodeURIComponent($("pmDestShop").value) : null;
+      case "shop": return $("pmDestShop").value ? "boutique?b=" + encodeURIComponent($("pmDestShop").value) : null;
       case "prod": return $("pmDestProd").value || null;
       default: var v = $("pmLink").value.trim(); return v || null;
     }
@@ -1048,7 +1048,7 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
       row.produit_id = $("pmProd").value; row.fin = end.toISOString();
     } else {
       row.lien = pmLinkValue();
-      if ($("pmDest").value === "url" && row.lien && !/^(https:\/\/|\.\/|\?|boutique\.html|vendre\.html)/.test(row.lien)) { $("pmErr").textContent = "Le lien doit commencer par https://"; $("pmLink").focus(); return; }
+      if ($("pmDest").value === "url" && row.lien && !/^(https:\/\/|\.\/|\?|boutique(\.html)?\b|vendre(\.html)?\b)/.test(row.lien)) { $("pmErr").textContent = "Le lien doit commencer par https://"; $("pmLink").focus(); return; }
       if (!row.lien && $("pmDest").value !== "url") { $("pmErr").textContent = "Choisis la destination de la bannière."; return; }
       if ($("pmEndAll").value) { var f = new Date($("pmEndAll").value); if (!(f > new Date())) { $("pmErr").textContent = "La fin d’affichage doit être dans le futur."; return; } row.fin = f.toISOString(); }
     }

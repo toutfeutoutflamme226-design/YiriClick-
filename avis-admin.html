@@ -142,17 +142,17 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
       <span class="tag">Avis</span>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <a class="btn btn-line" href="admin.html">Tableau de bord</a>
-      <a class="btn btn-line" href="avis.html">Page publique</a>
+      <a class="btn btn-line" href="admin">Tableau de bord</a>
+      <a class="btn btn-line" href="avis">Page publique</a>
     </div>
   </div>
 </header>
 
 <section id="vLogin" class="wrap" hidden>
-  <div class="state"><h1>Connexion nécessaire</h1><p>Connecte-toi d’abord dans l’espace admin, puis reviens sur cette page.</p><a class="btn btn-orange" href="admin.html">Aller à l’espace admin</a></div>
+  <div class="state"><h1>Connexion nécessaire</h1><p>Connecte-toi d’abord dans l’espace admin, puis reviens sur cette page.</p><a class="btn btn-orange" href="admin">Aller à l’espace admin</a></div>
 </section>
 <section id="vDenied" class="wrap" hidden>
-  <div class="state"><h1>Accès refusé</h1><p>Ce compte n’est pas administrateur.</p><a class="btn btn-navy" href="admin.html">Changer de compte</a></div>
+  <div class="state"><h1>Accès refusé</h1><p>Ce compte n’est pas administrateur.</p><a class="btn btn-navy" href="admin">Changer de compte</a></div>
 </section>
 <section id="vSetup" class="wrap" hidden>
   <div class="state"><h1>Mise à jour de la base nécessaire</h1><p>Lance le script <code>supabase/schema-v14.sql</code> dans Supabase (SQL Editor), puis recharge cette page.</p><p class="err" id="setupErr"></p></div>
@@ -247,7 +247,7 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
   var SUPABASE_URL = "https://vtiakxfnechkoomagddl.supabase.co";
   var SUPABASE_KEY = "sb_publishable_415c2KQSDRx0SMofnkHKQA_PJ2IrzBA";
   var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  var SITE = location.href.replace(/avis-admin\.html.*$/, "");
+  var SITE = location.href.replace(/avis-admin(\.html)?([?#].*)?$/, "");
 
   var CAUSE = { abime: "Produit abîmé", non_conforme: "Différent de la description", qualite: "Qualité décevante", taille: "Mauvaise taille", manquant: "Article manquant",
     retard: "Livraison en retard", vendeur_injoignable: "Vendeur difficile à joindre", vendeur_impoli: "Vendeur peu aimable", prix: "Prix trop élevé", emballage: "Emballage insuffisant",
@@ -288,9 +288,9 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
     if (!s.data.session) { show("vLogin"); return; }
     var adm = await sb.rpc("is_admin");
     if (adm.error || adm.data !== true) {
-      // base v18: an admin with a 6-digit code confirms it on admin.html first
+      // base v18: an admin with a 6-digit code confirms it on admin first
       var st = await sb.rpc("admin_statut");
-      if (!st.error && st.data && st.data.admin) { location.replace("admin.html?retour=avis-admin.html"); return; }
+      if (!st.error && st.data && st.data.admin) { location.replace("admin?retour=avis-admin"); return; }
       show("vDenied"); return;
     }
     await load();
@@ -375,7 +375,7 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
     rows.forEach(function (s) {
       var c2 = {}; s.l.forEach(function (a) { if (a.note <= 3) causesOf(a).forEach(function (c) { c2[c] = (c2[c] || 0) + 1; }); });
       var top = Object.keys(c2).sort(function (a, b) { return c2[b] - c2[a]; })[0];
-      var tr2 = el("tr"), a1 = el("a", null, s.nom); a1.href = "boutique.html?b=" + encodeURIComponent(s.slug || ""); a1.target = "_blank"; a1.rel = "noopener";
+      var tr2 = el("tr"), a1 = el("a", null, s.nom); a1.href = "boutique?b=" + encodeURIComponent(s.slug || ""); a1.target = "_blank"; a1.rel = "noopener";
       var td = el("td"); td.appendChild(a1); tr2.appendChild(td);
       var negN = s.l.filter(function (a) { return a.note <= 2; }).length;
       [String(s.l.length), fmtN(s.avg), negN + " (" + Math.round(negN / s.l.length * 100) + " %)", top ? (CAUSE[top] || top) + " (" + c2[top] + ")" : "—",
@@ -468,7 +468,7 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
 
   /* ---------- delivered orders without a review (base v15) ---------- */
   function askMsg(o) {
-    var n = (o.client_nom || "").split(" ")[0], u = SITE + "noter.html?c=" + o.id, lg = (o.langue || "fr").slice(0, 2);
+    var n = (o.client_nom || "").split(" ")[0], u = SITE + "noter?c=" + o.id, lg = (o.langue || "fr").slice(0, 2);
     if (lg === "en") return "Hello " + n + ", thank you for your order " + o.numero + " from " + o.boutique + " on Yiriclick! Could you rate your order in 1 minute? It really helps us.\n" + u;
     if (lg === "es") return "Hola " + n + ", ¡gracias por tu pedido " + o.numero + " en " + o.boutique + " en Yiriclick! ¿Puedes valorar tu pedido en 1 minuto? Nos ayuda mucho.\n" + u;
     return "Bonjour " + n + ", merci pour votre commande " + o.numero + " chez " + o.boutique + " sur Yiriclick ! Pouvez-vous noter votre commande en 1 minute ? Cela nous aide beaucoup.\n" + u;
