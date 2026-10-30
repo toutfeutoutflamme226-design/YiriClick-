@@ -48,6 +48,16 @@ jobs:
           DB="postgresql://supabase_admin:postgres@127.0.0.1:54322/postgres"
           for i in $(seq 1 60); do psql "$DB" -tAc "select 1" > /dev/null 2>&1 && break; sleep 2; done
           psql "$DB" -tAc "select 1" > ready.log 2>&1 || { docker logs pg 2>&1 | tail -n 20 > ready.log; fail "démarrage de la base temporaire" ready.log; }
+          # Login accounts live in the auth schema, created by Supabase's auth server: run its migrations only
+          GT=$(curl -fsSL "https://hub.docker.com/v2/repositories/supabase/gotrue/tags?page_size=50&ordering=last_updated" \
+            | python3 -c "import sys,json,re; t=[x['name'] for x in json.load(sys.stdin)['results'] if re.fullmatch(r'v2\.[0-9]+\.[0-9]+', x['name'])]; print(t[0] if t else '')" || true)
+          if [ -n "$GT" ]; then
+            docker run --rm --network host -e GOTRUE_DB_DRIVER=postgres \
+              -e GOTRUE_DB_DATABASE_URL="postgres://supabase_auth_admin:postgres@127.0.0.1:54322/postgres" -e DATABASE_URL="postgres://supabase_auth_admin:postgres@127.0.0.1:54322/postgres" \
+              -e GOTRUE_JWT_SECRET=test-secret-test-secret-test-secret-00 -e GOTRUE_SITE_URL=http://localhost -e API_EXTERNAL_URL=http://localhost -e GOTRUE_API_HOST=127.0.0.1 -e PORT=9999 \
+              "supabase/gotrue:$GT" gotrue migrate > auth.log 2>&1 && echo "::notice::Tables des comptes créées (supabase/gotrue:$GT)" \
+              || echo "::warning::Tables des comptes non créées : $(tail -n 3 auth.log | tr '\n' ' ' | cut -c1-300)"
+          fi
           psql "$DB" -q -v ON_ERROR_STOP=0 -f work/1-roles.sql > roles.log 2>&1 || true
           psql "$DB" -q -v ON_ERROR_STOP=0 -f work/2-structure.sql > structure.log 2>&1 || true
           psql "$DB" -q -v ON_ERROR_STOP=0 -c 'SET session_replication_role = replica' -f work/3-donnees.sql > data.log 2>&1 || true
