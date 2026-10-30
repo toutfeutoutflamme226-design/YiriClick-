@@ -421,3 +421,13 @@ Si `schema-v12.sql` est relancé un jour, relancer ensuite `schema-v17.sql`.
 - **Visibilité** : seul l'admin affiche ou masque une boutique. Le vendeur demande une pause ou une réouverture (`demander_visibilite`).
 - **Boost** : mise en avant, vedette de l'accueil, boutique de la semaine (colonnes `boost`, `boost_debut`, `boost_fin`, `boost_raison`).
 - **Partenaires** : nouvel emplacement « Espace vendeurs », affiché aux vendeurs dont la boutique est complète à 100 %.
+
+## Base v27 : prix et contenu du site depuis l'admin, parrainage, codes promo
+
+- `supabase/schema-v27.sql` (après v26).
+- **Prix** : table `site_reglages` (clé `prix`) pour le mensuel, le trimestriel et l'annuel, par région, plus le Boost. Modifiable dans l'admin, vue « Contenu du site ». Grille de départ : 6 000, 12 000 et 18 000 FCFA ; 12,90, 24,90 et 39,90 € ; 14,90, 28,90 et 45,90 $ par mois.
+- **Prix verrouillé** : chaque abonnement garde le prix du jour de son activation (`dossiers.prix`), à vie pour les vendeurs fondateurs (`prix_a_vie`).
+- **Parrainage** : lien `vendre?parrain=<adresse de la boutique>`. Mois offerts automatiquement au parrain quand le filleul s'abonne (`parrainages`).
+- **Codes promo d'abonnement** : `codes_abonnement`, vérifiés par `verifier_code_abonnement`.
+- **Mode édition** : `assets/site.js` remplace les textes `data-t` modifiés par l'admin (`admin_texte`), affiche le bandeau d'annonce et le bouton « ✏️ Modifier » pour l'admin connecté.
+

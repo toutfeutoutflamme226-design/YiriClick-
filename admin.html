@@ -152,6 +152,13 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
 .viewsw button[aria-pressed="true"] { background: var(--navy); color: var(--white); }
 main:not(.abo) #aboView { display: none !important; }
 main.abo > *:not(.head):not(#loadErr):not(#aboView) { display: none !important; }
+main:not(.site) #siteView { display: none !important; }
+main.site > *:not(.head):not(#loadErr):not(#siteView) { display: none !important; }
+.ptable { width: 100%; min-width: 520px; border-collapse: collapse; }
+.ptable th, .ptable td { padding: 6px; border-bottom: 1px solid var(--rule); text-align: left; }
+.ptable input { width: 100%; min-width: 90px; padding: 8px; border: 2px solid var(--rule); font-variant-numeric: tabular-nums; }
+.sgrid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.savebar2 { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip { border: 2px solid var(--rule); background: var(--white); padding: 8px 12px; font-weight: 800; cursor: pointer; min-height: 40px; }
 .chip b { font-variant-numeric: tabular-nums; margin-left: 4px; }
@@ -233,7 +240,7 @@ main.abo > *:not(.head):not(#loadErr):not(#aboView) { display: none !important; 
       <p id="updated">Chargement…</p>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-      <div class="viewsw" role="group" aria-label="Vue"><button type="button" id="vwDash" aria-pressed="true">Tableau de bord</button><button type="button" id="vwAbo" aria-pressed="false">Abonnements <span class="badge-n" id="cAbo"></span></button></div>
+      <div class="viewsw" role="group" aria-label="Vue"><button type="button" id="vwDash" aria-pressed="true">Tableau de bord</button><button type="button" id="vwAbo" aria-pressed="false">Abonnements <span class="badge-n" id="cAbo"></span></button><button type="button" id="vwSite" aria-pressed="false">Contenu du site</button></div>
       <button class="btn btn-ghost" type="button" id="refresh">Actualiser</button>
     </div>
   </div>
@@ -366,6 +373,72 @@ main.abo > *:not(.head):not(#loadErr):not(#aboView) { display: none !important; 
       <div class="mlist" id="aboList"></div>
     </div>
   </section>
+  <section id="siteView" style="display:flex;flex-direction:column;gap:16px">
+    <div class="card">
+      <div class="head" style="align-items:center"><h2>Mode édition</h2></div>
+      <p class="notice">Ouvre une page du site : en bas à gauche, le bouton « ✏️ Modifier » entoure chaque texte modifiable en pointillés. Clique un texte, écris, enregistre. Le changement vaut pour la langue affichée. « Texte d’origine » annule.</p>
+      <div class="acts" style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-navy" href="./" target="_blank" rel="noopener">Accueil</a><a class="btn btn-navy" href="vendre" target="_blank" rel="noopener">Page Vendre et tarifs</a><a class="btn btn-ghost" href="contact" target="_blank" rel="noopener">Contact</a><a class="btn btn-ghost" href="juridique" target="_blank" rel="noopener">Page légale</a></div>
+      <p class="err" id="siteErr"></p>
+    </div>
+    <div class="card">
+      <h2>Prix des formules</h2>
+      <p class="notice">Les nouveaux prix s’affichent tout de suite sur la page Tarifs. Les vendeurs déjà abonnés gardent leur prix jusqu’à leur renouvellement, et les vendeurs fondateurs le gardent à vie.</p>
+      <div id="prixBox" style="display:flex;flex-direction:column;gap:14px"></div>
+      <div class="savebar2"><button class="btn btn-ghost" type="button" id="prixCalc">Calculer trimestre (−5 %) et an (2 mois offerts) depuis le mensuel</button><button class="btn btn-orange" type="button" id="prixSave">Enregistrer les prix</button><span class="notice" id="prixMsg" aria-live="polite"></span></div>
+    </div>
+    <div class="card">
+      <h2>Bandeau d’annonce</h2>
+      <p class="notice">Une bande orange en haut de toutes les pages publiques (ex. « Black Friday : formule Pro à −25 % avec le code BF2026 »).</p>
+      <label class="check" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="anOn"> Afficher le bandeau</label>
+      <div class="sgrid">
+        <div class="field"><label for="anFr">Texte en français</label><input id="anFr" maxlength="160"></div>
+        <div class="field"><label for="anEn">Texte en anglais</label><input id="anEn" maxlength="160"></div>
+        <div class="field"><label for="anEs">Texte en espagnol</label><input id="anEs" maxlength="160"></div>
+        <div class="field"><label for="anNl">Texte en néerlandais</label><input id="anNl" maxlength="160"></div>
+        <div class="field"><label for="anLink">Lien (facultatif)</label><input id="anLink" maxlength="300" placeholder="vendre#tarifs"></div>
+        <div class="field"><label for="anEnd">Dernier jour (facultatif)</label><input id="anEnd" type="date"></div>
+      </div>
+      <div class="savebar2"><button class="btn btn-orange" type="button" id="anSave">Enregistrer le bandeau</button><span class="notice" id="anMsg" aria-live="polite"></span></div>
+    </div>
+    <div class="card">
+      <h2>Coordonnées</h2>
+      <div class="sgrid">
+        <div class="field"><label for="coEmail">E-mail de contact (pages légales)</label><input id="coEmail" type="email" maxlength="120"></div>
+        <div class="field"><label for="coWa">WhatsApp de Yiriclick</label><input id="coWa" maxlength="25" placeholder="+31…"></div>
+        <div class="field"><label for="coIg">Instagram (lien)</label><input id="coIg" maxlength="200"></div>
+        <div class="field"><label for="coFb">Facebook (lien)</label><input id="coFb" maxlength="200"></div>
+        <div class="field"><label for="coTt">TikTok (lien)</label><input id="coTt" maxlength="200"></div>
+      </div>
+      <div class="savebar2"><button class="btn btn-orange" type="button" id="coSave">Enregistrer les coordonnées</button><span class="notice" id="coMsg" aria-live="polite"></span></div>
+    </div>
+    <div class="card">
+      <h2>Codes promo d’abonnement</h2>
+      <p class="notice">Le vendeur tape le code dans le formulaire d’abonnement. La remise s’applique au premier paiement.</p>
+      <div class="sgrid">
+        <div class="field"><label for="cpCode">Code</label><input id="cpCode" maxlength="30" placeholder="TABASKI2026" style="text-transform:uppercase"></div>
+        <div class="field"><label for="cpPct">Remise (%)</label><input id="cpPct" type="number" min="1" max="100" inputmode="numeric" value="20"></div>
+        <div class="field"><label for="cpEnd">Dernier jour (facultatif)</label><input id="cpEnd" type="date"></div>
+        <div class="field"><label for="cpMax">Nombre maximum (facultatif)</label><input id="cpMax" type="number" min="1" inputmode="numeric"></div>
+      </div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap"><label><input type="checkbox" class="cpF" value="basique" checked> Basique</label><label><input type="checkbox" class="cpF" value="pro" checked> Pro</label><label><input type="checkbox" class="cpF" value="entreprise" checked> Entreprise</label></div>
+      <div class="savebar2"><button class="btn btn-orange" type="button" id="cpAdd">Créer le code</button><span class="notice" id="cpMsg" aria-live="polite"></span></div>
+      <div class="mlist" id="cpList"></div>
+    </div>
+    <div class="card">
+      <h2>Parrainages</h2>
+      <p class="notice">Chaque vendeur a son lien de parrainage (onglet Marketing de son espace). Quand un vendeur parrainé passe en abonnement payant, son parrain reçoit automatiquement le nombre de mois offerts ci-dessous. Si le parrain n’est pas encore abonné, la récompense reste « en attente » : offre-la ici quand il s’abonne.</p>
+      <div class="field" style="max-width:260px"><label for="paMois">Mois offerts au parrain</label><input id="paMois" type="number" min="0" max="12" inputmode="numeric"></div>
+      <div class="mlist" id="paList"></div>
+    </div>
+    <div class="card">
+      <h2>Textes modifiés</h2>
+      <div class="mlist" id="txList"></div>
+    </div>
+    <div class="card">
+      <h2>Historique des changements</h2>
+      <div class="mlist" id="hiList"></div>
+    </div>
+  </section>
 </main>
 
 <div class="drawer" id="drawer" hidden>
@@ -412,7 +485,8 @@ main.abo > *:not(.head):not(#loadErr):not(#aboView) { display: none !important; 
 
   function $(id) { return document.getElementById(id); }
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
-  function show(view) { ["vLogin", "vMfa", "vDenied", "vApp"].forEach(function (v) { $(v).hidden = v !== view; }); $("logout").hidden = view !== "vApp"; }
+  function show(view) { ["vLogin", "vMfa", "vDenied", "vApp"].forEach(function (v) { $(v).hidden = v !== view; }); $("logout").hidden = view !== "vApp";
+    try { if (view === "vApp") localStorage.setItem("yc-admin", "1"); else localStorage.removeItem("yc-admin"); } catch (e) {} }
   function fmtDate(d, withTime) {
     var x = new Date(d); if (isNaN(x)) return "";
     return x.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" }) + (withTime ? " " + x.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) : "");
@@ -555,7 +629,7 @@ main.abo > *:not(.head):not(#loadErr):not(#aboView) { display: none !important; 
     $("updated").textContent = "Mis à jour le " + fmtDate(new Date(), true);
     renderKpis(); renderChart(); renderBreakdowns(); renderTable(); loadPromos(); loadAvisAdm();
     loadShops(); loadMessages(); loadEtat(); loadFond(); loadParts(); loadParcours(); loadAbo();
-    if (location.hash === "#abonnements") setView("abo");
+    if (location.hash === "#abonnements") setView("abo"); else if (location.hash === "#contenu") setView("site");
   }
 
   /* ---------- Trial sellers: where each one stands, and the reminder e-mails sent (base v24) ---------- */
@@ -744,7 +818,7 @@ main.abo > *:not(.head):not(#loadErr):not(#aboView) { display: none !important; 
   var SCRIPTS = { inscriptions: "Inscriptions (inscriptions.sql)", v2: "v2 · dossiers vendeurs, admin", v3: "v3 · boutiques et produits", v4: "v4 · promotions de la vitrine",
     v5: "v5 · boutiques personnalisables, statistiques", v6: "v6 · commandes et variantes", v7: "v7 · soldes, codes promo, avis", v8: "v8 · tailles pour toutes les formules",
     v9: "v9 · e-mails automatiques", v10: "v10 · essai gratuit immédiat", v11: "v11 · vitrine rapide", v12: "v12 · taux de change du jour",
-    v13: "v13 · formulaires pré-remplis", v14: "v14 · avis clients complets", v15: "v15 · demande d’avis après livraison", v16: "v16 · validation des boutiques, contact, état du site", v17: "v17 · taux de change à 7 h (Pays-Bas)", v18: "v18 · code admin, suppression de compte, ménage des données", v19: "v19 · protections anti-abus, surveillance des tâches", v20: "v20 · partenaires et vendeurs fondateurs", v21: "v21 · limites anti-spam (commandes, inscriptions)", v22: "v22 · promotions honnêtes, suivi des fondateurs", v23: "v23 · horaires des tâches planifiées", v24: "v24 · relances des nouveaux vendeurs", v25: "v25 · le néerlandais dans la base", v26: "v26 · abonnements, visibilité et Boost" };
+    v13: "v13 · formulaires pré-remplis", v14: "v14 · avis clients complets", v15: "v15 · demande d’avis après livraison", v16: "v16 · validation des boutiques, contact, état du site", v17: "v17 · taux de change à 7 h (Pays-Bas)", v18: "v18 · code admin, suppression de compte, ménage des données", v19: "v19 · protections anti-abus, surveillance des tâches", v20: "v20 · partenaires et vendeurs fondateurs", v21: "v21 · limites anti-spam (commandes, inscriptions)", v22: "v22 · promotions honnêtes, suivi des fondateurs", v23: "v23 · horaires des tâches planifiées", v24: "v24 · relances des nouveaux vendeurs", v25: "v25 · le néerlandais dans la base", v26: "v26 · abonnements, visibilité et Boost", v27: "v27 · prix, contenu du site, parrainage, codes promo" };
   async function loadEtat() {
     var sum = $("etatSum"), box = $("etatBox"), det = $("etatDet");
     var r = await sb.rpc("etat_site");
@@ -940,12 +1014,14 @@ main.abo > *:not(.head):not(#loadErr):not(#aboView) { display: none !important; 
 
   /* ---------- Abonnements view (base v26) ---------- */
   function setView(v) {
-    $("vApp").classList.toggle("abo", v === "abo");
-    $("vwDash").setAttribute("aria-pressed", String(v !== "abo")); $("vwAbo").setAttribute("aria-pressed", String(v === "abo"));
-    document.querySelector("#vApp .head h1").textContent = v === "abo" ? "Abonnements" : "Tableau de bord";
-    try { history.replaceState(null, "", v === "abo" ? "#abonnements" : location.pathname + location.search); } catch (e) {}
-    if (v === "abo") { window.scrollTo(0, 0); renderAbo(); }
+    $("vApp").classList.toggle("abo", v === "abo"); $("vApp").classList.toggle("site", v === "site");
+    $("vwDash").setAttribute("aria-pressed", String(v === "dash")); $("vwAbo").setAttribute("aria-pressed", String(v === "abo")); $("vwSite").setAttribute("aria-pressed", String(v === "site"));
+    document.querySelector("#vApp .head h1").textContent = v === "abo" ? "Abonnements" : v === "site" ? "Contenu du site" : "Tableau de bord";
+    try { history.replaceState(null, "", v === "abo" ? "#abonnements" : v === "site" ? "#contenu" : location.pathname + location.search); } catch (e) {}
+    window.scrollTo(0, 0);
+    if (v === "abo") renderAbo(); if (v === "site") loadSite();
   }
+  $("vwSite").addEventListener("click", function () { setView("site"); });
   $("vwDash").addEventListener("click", function () { setView("dash"); });
   $("vwAbo").addEventListener("click", function () { setView("abo"); });
   async function loadAbo() {
@@ -999,14 +1075,16 @@ main.abo > *:not(.head):not(#loadErr):not(#aboView) { display: none !important; 
     var wa = String(x.whatsapp || "").replace(/\D/g, ""), prenom = String(x.nom || "").split(" ")[0];
     // 1. Infos and subscription
     var b1 = el("div", "box"); b1.appendChild(el("h3", null, "Abonnement"));
-    var kv = el("div", "kv"); [["Formule", (PLAN[x.formule] || x.formule) + (x.periode ? (x.periode === "an" ? " · annuel" : " · mensuel") : "")], ["Début", x.debut ? fmtDate(x.debut) : "—"], ["Fin", x.fin ? fmtDate(x.fin) + " (" + daysTxt(x.jours) + ")" : "—"], ["E-mail", x.email], ["WhatsApp", x.whatsapp || "—"], ["Boutique", x.boutique || "pas encore créée"]]
+    var kv = el("div", "kv"); [["Formule", (PLAN[x.formule] || x.formule) + (x.periode ? (x.periode === "an" ? " · annuel" : x.periode === "trimestre" ? " · trimestriel" : " · mensuel") : "")],
+      ["Prix", x.prix != null ? (x.zone === "af" ? Math.round(x.prix).toLocaleString("fr-FR") + " FCFA" : Number(x.prix).toFixed(2).replace(".", ",") + (x.zone === "eu" ? " €" : " $")) + (x.prix_a_vie ? " · verrouillé à vie (fondateur)" : " · verrouillé jusqu’au renouvellement") : "—"],
+      ["Code promo", x.code_promo ? x.code_promo + " (−" + x.remise_pct + " %)" : "—"], ["Parrain", x.parrain || "—"], ["Début", x.debut ? fmtDate(x.debut) : "—"], ["Fin", x.fin ? fmtDate(x.fin) + " (" + daysTxt(x.jours) + ")" : "—"], ["E-mail", x.email], ["WhatsApp", x.whatsapp || "—"], ["Boutique", x.boutique || "pas encore créée"]]
       .forEach(function (p) { kv.appendChild(el("span", null, p[0])); kv.appendChild(el("b", null, p[1])); }); b1.appendChild(kv);
     var acts = el("div", "acts");
     if (x.dossier_id) {
       [[1, "+ 1 mois"], [12, "+ 1 an"]].forEach(function (m) { var bt = el("button", "btn btn-orange", m[1]); bt.type = "button"; bt.addEventListener("click", function () { if (window.confirm("Prolonger l’abonnement de " + (x.boutique || x.email) + " de " + m[1].replace("+ ", "") + " ?")) run(function () { return sb.rpc("admin_prolonger", { p_dossier: x.dossier_id, p_mois: m[0] }); }, "Abonnement prolongé."); }); acts.appendChild(bt); });
       var di = el("input"); di.type = "date"; di.value = x.fin || ""; var ds = el("button", "btn btn-ghost", "Changer la date de fin"); ds.type = "button";
       ds.addEventListener("click", function () { if (!di.value) return; run(function () { return sb.from("dossiers").update({ abonnement_fin: di.value }).eq("id", x.dossier_id); }, "Date de fin enregistrée."); });
-      var ps = el("select"); [["mois", "Paiement mensuel"], ["an", "Paiement annuel"]].forEach(function (o) { var op = el("option", null, o[1]); op.value = o[0]; ps.appendChild(op); }); ps.value = x.periode || "mois";
+      var ps = el("select"); [["mois", "Paiement mensuel"], ["trimestre", "Paiement trimestriel"], ["an", "Paiement annuel"]].forEach(function (o) { var op = el("option", null, o[1]); op.value = o[0]; ps.appendChild(op); }); ps.value = x.periode || "mois";
       ps.addEventListener("change", function () { run(function () { return sb.from("dossiers").update({ periode: ps.value }).eq("id", x.dossier_id); }, "Période enregistrée."); });
       b1.appendChild(acts); b1.appendChild(fld("Nouvelle date de fin", di)); b1.appendChild(ds); b1.appendChild(fld("Période", ps));
     } else if (x.inscription_id) {
@@ -1081,6 +1159,133 @@ main.abo > *:not(.head):not(#loadErr):not(#aboView) { display: none !important; 
     })();
     return d;
   }
+  /* ---------- Contenu du site (base v27) ---------- */
+  var site = { prix: null }, ZN = { af: "Afrique (FCFA)", eu: "Europe (€)", am: "Amérique ($)" }, PER = { mois: "Par mois", trimestre: "Par trimestre", an: "Par an" };
+  async function siteSave(cle, valeur, msgEl) {
+    msgEl.textContent = "Enregistrement…";
+    var r = await sb.from("site_reglages").upsert({ cle: cle, valeur: valeur });
+    msgEl.textContent = r.error ? r.error.message : "Enregistré ✓ (visible sur le site dans quelques secondes)";
+    if (!r.error) loadHist();
+    return !r.error;
+  }
+  async function loadSite() {
+    var r = await sb.from("site_reglages").select("cle,valeur");
+    if (r.error) { $("siteErr").textContent = "Exécute supabase/schema-v27.sql dans Supabase › SQL Editor pour activer cette page. (" + r.error.message + ")"; return; }
+    $("siteErr").textContent = "";
+    var d = {}; (r.data || []).forEach(function (x) { d[x.cle] = x.valeur; });
+    site.prix = d.prix || {}; renderPrix();
+    var a = d.annonce || {}, tx = a.texte || {};
+    $("anOn").checked = !!a.actif; $("anFr").value = tx.fr || ""; $("anEn").value = tx.en || ""; $("anEs").value = tx.es || ""; $("anNl").value = tx.nl || ""; $("anLink").value = a.lien || ""; $("anEnd").value = a.fin || "";
+    var c = d.contact || {}; $("coEmail").value = c.email || ""; $("coWa").value = c.whatsapp || ""; $("coIg").value = c.instagram || ""; $("coFb").value = c.facebook || ""; $("coTt").value = c.tiktok || "";
+    $("paMois").value = site.prix.parrainage_mois != null ? site.prix.parrainage_mois : 1;
+    renderTextes(d.textes || {}); loadCodes(); loadParr(); loadHist();
+  }
+  function renderPrix() {
+    var box = $("prixBox"); box.textContent = ""; var P = site.prix;
+    ["mois", "trimestre", "an"].forEach(function (per) {
+      box.appendChild(el("h3", null, PER[per]));
+      var w = el("div", "table-box"), t = el("table", "ptable"), hr = el("tr"); hr.appendChild(el("th", null, "Formule"));
+      ["af", "eu", "am"].forEach(function (z) { hr.appendChild(el("th", null, ZN[z])); }); var th = el("thead"); th.appendChild(hr); t.appendChild(th);
+      var tb = el("tbody");
+      ["basique", "pro", "entreprise"].forEach(function (f) {
+        var tr = el("tr"); tr.appendChild(el("td", null, PLAN[f]));
+        ["af", "eu", "am"].forEach(function (z) {
+          var td = el("td"), i = el("input"); i.type = "number"; i.min = "0"; i.step = z === "af" ? "100" : "0.1"; i.inputMode = "decimal"; i.setAttribute("aria-label", PLAN[f] + " " + PER[per] + " " + ZN[z]);
+          i.value = P[per] && P[per][z] && P[per][z][f] != null ? P[per][z][f] : ""; i.dataset.k = per + "|" + z + "|" + f; td.appendChild(i); tr.appendChild(td);
+        });
+        tb.appendChild(tr);
+      });
+      t.appendChild(tb); w.appendChild(t); box.appendChild(w);
+    });
+    box.appendChild(el("h3", null, "Boost payant (par semaine)"));
+    var g = el("div", "sgrid");
+    ["af", "eu", "am"].forEach(function (z) { var f = el("div", "field"), l = el("label", null, ZN[z]), i = el("input"); i.type = "number"; i.min = "0"; i.step = z === "af" ? "100" : "0.1"; i.id = "bo_" + z; l.htmlFor = i.id; i.value = P.boost && P.boost[z] != null ? P.boost[z] : ""; f.appendChild(l); f.appendChild(i); g.appendChild(f); });
+    box.appendChild(g);
+  }
+  $("prixCalc").addEventListener("click", function () {
+    document.querySelectorAll("#prixBox input[data-k^='mois|']").forEach(function (i) {
+      var k = i.dataset.k.split("|"), m = parseFloat(i.value); if (!(m > 0)) return;
+      var af = k[1] === "af", r = function (x) { return af ? Math.round(x / 100) * 100 : Math.ceil(x) - 0.1; };
+      var q = document.querySelector("#prixBox input[data-k='trimestre|" + k[1] + "|" + k[2] + "']"), a = document.querySelector("#prixBox input[data-k='an|" + k[1] + "|" + k[2] + "']");
+      if (q) q.value = r(m * 3 * 0.95); if (a) a.value = af ? Math.round(m * 10 / 100) * 100 : Math.round(m * 10);
+    });
+    $("prixMsg").textContent = "Calculé : vérifie puis enregistre.";
+  });
+  $("prixSave").addEventListener("click", async function () {
+    var P = JSON.parse(JSON.stringify(site.prix || {})), bad = false;
+    document.querySelectorAll("#prixBox input[data-k]").forEach(function (i) {
+      var k = i.dataset.k.split("|"), v = parseFloat(i.value); if (!(v > 0)) { bad = true; i.style.borderColor = "var(--bad)"; return; } i.style.borderColor = "";
+      P[k[0]] = P[k[0]] || {}; P[k[0]][k[1]] = P[k[0]][k[1]] || {}; P[k[0]][k[1]][k[2]] = v;
+    });
+    if (bad) { $("prixMsg").textContent = "Chaque prix doit être un nombre plus grand que 0."; return; }
+    P.boost = P.boost || {}; ["af", "eu", "am"].forEach(function (z) { var v = parseFloat($("bo_" + z).value); if (v > 0) P.boost[z] = v; });
+    if (!window.confirm("Publier ces prix sur le site ?")) return;
+    if (await siteSave("prix", P, $("prixMsg"))) site.prix = P;
+  });
+  $("anSave").addEventListener("click", function () {
+    var lk = $("anLink").value.trim(); if (lk && !/^(https:\/\/|[a-z0-9#?\/._-]+$)/i.test(lk)) { $("anMsg").textContent = "Le lien doit commencer par https:// ou être une page du site (ex. vendre#tarifs)."; return; }
+    siteSave("annonce", { actif: $("anOn").checked, texte: { fr: $("anFr").value.trim(), en: $("anEn").value.trim(), es: $("anEs").value.trim(), nl: $("anNl").value.trim() }, lien: lk, fin: $("anEnd").value || null }, $("anMsg"));
+  });
+  $("coSave").addEventListener("click", function () {
+    var c = { email: $("coEmail").value.trim(), whatsapp: $("coWa").value.trim(), instagram: $("coIg").value.trim(), facebook: $("coFb").value.trim(), tiktok: $("coTt").value.trim() };
+    if (c.email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(c.email)) { $("coMsg").textContent = "Adresse e-mail invalide."; return; }
+    if ([c.instagram, c.facebook, c.tiktok].some(function (u) { return u && !/^https:\/\//.test(u); })) { $("coMsg").textContent = "Les liens des réseaux doivent commencer par https://"; return; }
+    siteSave("contact", c, $("coMsg"));
+  });
+  $("paMois").addEventListener("change", async function () {
+    var P = JSON.parse(JSON.stringify(site.prix || {})); P.parrainage_mois = Math.max(0, Math.min(12, parseInt(this.value, 10) || 0));
+    if (await siteSave("prix", P, $("prixMsg"))) site.prix = P;
+  });
+  async function loadCodes() {
+    var r = await sb.from("codes_abonnement").select("*").order("created_at", { ascending: false }), box = $("cpList"); box.textContent = "";
+    (r.data || []).forEach(function (c) {
+      var it = el("div", "mitem" + (c.actif ? "" : " done")), mt = el("div", "mt");
+      mt.appendChild(el("b", null, c.code)); mt.appendChild(el("span", "pill p-actif", "−" + c.remise_pct + " %"));
+      mt.appendChild(el("span", "ms", c.formules.map(function (f) { return PLAN[f]; }).join(", ") + " · utilisé " + c.utilisations + (c.max_utilisations ? " / " + c.max_utilisations : "") + " fois" + (c.fin ? " · jusqu’au " + fmtDate(c.fin) : "")));
+      it.appendChild(mt); var a = el("div", "acts");
+      var tg = el("button", "btn btn-ghost", c.actif ? "Désactiver" : "Réactiver"); tg.type = "button"; tg.addEventListener("click", async function () { await sb.from("codes_abonnement").update({ actif: !c.actif }).eq("code", c.code); loadCodes(); });
+      var dl = el("button", "btn btn-ghost", "Supprimer"); dl.type = "button"; dl.addEventListener("click", async function () { if (!window.confirm("Supprimer le code " + c.code + " ?")) return; await sb.from("codes_abonnement").delete().eq("code", c.code); loadCodes(); });
+      a.appendChild(tg); a.appendChild(dl); it.appendChild(a); box.appendChild(it);
+    });
+    if (!(r.data || []).length) box.appendChild(el("p", "notice", "Aucun code pour l’instant."));
+  }
+  $("cpAdd").addEventListener("click", async function () {
+    var code = $("cpCode").value.trim().toUpperCase(), pct = parseInt($("cpPct").value, 10), fs = Array.prototype.filter.call(document.querySelectorAll(".cpF"), function (x) { return x.checked; }).map(function (x) { return x.value; });
+    if (!/^[A-Z0-9_-]{3,30}$/.test(code)) { $("cpMsg").textContent = "Le code : 3 à 30 lettres ou chiffres, sans espace."; return; }
+    if (!(pct >= 1 && pct <= 100) || !fs.length) { $("cpMsg").textContent = "Indique une remise (1 à 100 %) et au moins une formule."; return; }
+    var r = await sb.from("codes_abonnement").insert({ code: code, remise_pct: pct, formules: fs, fin: $("cpEnd").value || null, max_utilisations: parseInt($("cpMax").value, 10) || null });
+    $("cpMsg").textContent = r.error ? (/duplicate/i.test(r.error.message) ? "Ce code existe déjà." : r.error.message) : "Code " + code + " créé ✓"; if (!r.error) { $("cpCode").value = ""; loadCodes(); }
+  });
+  async function loadParr() {
+    var r = await sb.from("parrainages").select("*").order("le", { ascending: false }).limit(100), box = $("paList"); box.textContent = "";
+    (r.data || []).forEach(function (p) {
+      var it = el("div", "mitem"), mt = el("div", "mt"); mt.appendChild(el("b", null, p.parrain_slug + " → " + p.filleul_email));
+      mt.appendChild(el("span", "pill " + (p.statut === "offert" ? "p-actif" : "p-en_attente"), p.statut === "offert" ? "Offert le " + fmtDate(p.offert_le) : "En attente")); it.appendChild(mt);
+      if (p.statut !== "offert") { var b = el("button", "btn btn-orange", "Offrir maintenant"); b.type = "button"; b.addEventListener("click", async function () { var x = await sb.rpc("parrainage_offrir", { p_filleul: p.filleul_email }); window.alert(x.error ? x.error.message : x.data ? "Mois offert au parrain ✓" : "Le parrain n’a pas encore d’abonnement payant actif."); loadParr(); }); var a = el("div", "acts"); a.appendChild(b); it.appendChild(a); }
+      box.appendChild(it);
+    });
+    if (!(r.data || []).length) box.appendChild(el("p", "notice", "Aucun parrainage pour l’instant."));
+  }
+  function renderTextes(T) {
+    var box = $("txList"); box.textContent = ""; var keys = Object.keys(T);
+    if (!keys.length) { box.appendChild(el("p", "notice", "Aucun texte modifié. Utilise le mode édition sur le site.")); return; }
+    keys.sort().forEach(function (k) {
+      Object.keys(T[k]).forEach(function (l) {
+        var it = el("div", "mitem"), mt = el("div", "mt"); mt.appendChild(el("b", null, k.replace("|", " › "))); mt.appendChild(el("span", "pill p-verifie", l.toUpperCase())); it.appendChild(mt);
+        it.appendChild(el("p", null, T[k][l]));
+        var b = el("button", "btn btn-ghost", "Revenir au texte d’origine"); b.type = "button";
+        b.addEventListener("click", async function () { var x = await sb.rpc("admin_texte", { p_cle: k, p_lang: l, p_texte: "" }); if (x.error) window.alert(x.error.message); loadSite(); });
+        var a = el("div", "acts"); a.appendChild(b); it.appendChild(a); box.appendChild(it);
+      });
+    });
+  }
+  async function loadHist() {
+    var r = await sb.from("site_historique").select("id,le,cle").order("id", { ascending: false }).limit(20), box = $("hiList"); box.textContent = "";
+    var N = { prix: "Prix", contact: "Coordonnées", annonce: "Bandeau d’annonce", textes: "Textes" };
+    (r.data || []).forEach(function (h) { box.appendChild(el("div", "ms", fmtDate(h.le, true) + " · " + (N[h.cle] || h.cle) + " modifié(s)")); });
+    if (!(r.data || []).length) box.appendChild(el("p", "notice", "Aucun changement pour l’instant."));
+  }
+
   $("aboSetBtn").addEventListener("click", async function () {
     var f = $("aboSet"), open = f.hidden; f.hidden = !open; this.setAttribute("aria-expanded", String(open)); if (!open) return;
     var r = await sb.from("reglages_abonnements").select("*").eq("id", 1).maybeSingle();

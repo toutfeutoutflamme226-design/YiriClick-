@@ -404,6 +404,7 @@ section.block { margin-top: 28px; }
 <script src="assets/phone.js"></script>
 <script src="assets/nav.js"></script>
 <script src="assets/legal.js"></script>
+<script src="assets/site.js"></script>
 <script src="assets/shop.js"></script>
 <script>
 (function () {
@@ -887,7 +888,7 @@ section.block { margin-top: 28px; }
   function loadV20() {
     var today = new Date().toISOString().slice(0, 10);
     Y.sb.from("boutiques").select("nom,slug,logo,couverture,slogan,ville,pays,boost,boost_fin").not("boost", "is", null).limit(50).then(function (r) {
-      boosts = {}; (r.error ? [] : r.data || []).forEach(function (b) { if (!b.boost_fin || b.boost_fin >= today) boosts[b.slug] = b; });
+      boosts = {}; (!r.error && Array.isArray(r.data) ? r.data : []).forEach(function (b) { if (!b.boost_fin || b.boost_fin >= today) boosts[b.slug] = b; });
       if (st.view === "home") renderRails();
     });
     Y.sb.rpc("fondateurs_places").then(function (r) { fond = r.error ? null : r.data; if (st.view === "home") renderFond(); });

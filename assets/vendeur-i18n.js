@@ -7,6 +7,18 @@ window.YCV = (function () {
   if (["fr", "en", "es", "nl"].indexOf(lang) < 0) lang = "fr";
   var LOC = { fr: "fr-FR", en: "en-GB", es: "es-ES", nl: "nl-NL" };
   var D = {
+    /* referral, prices (base v27) */
+    "Partage ce lien à un autre vendeur. Quand il prend un abonnement payant, tu reçois {n} mois offert(s), automatiquement.": ["Share this link with another seller. When they take a paid plan, you get {n} free month(s), automatically.", "Comparte este enlace con otro vendedor. Cuando contrate un plan de pago, recibes {n} mes(es) gratis, automáticamente.", "Deel deze link met een andere verkoper. Neemt die een betaald abonnement, dan krijg je automatisch {n} gratis maand(en)."],
+    "J’ouvre ma boutique en ligne avec Yiriclick : 0 % de commission sur les ventes et 14 jours gratuits. Inscris-toi avec mon lien : ": ["I run my online shop with Yiriclick: 0% commission on sales and 14 days free. Sign up with my link: ", "Abro mi tienda en línea con Yiriclick: 0 % de comisión sobre las ventas y 14 días gratis. Inscríbete con mi enlace: ", "Ik heb mijn webwinkel bij Yiriclick: 0% commissie op verkopen en 14 dagen gratis. Schrijf je in via mijn link: "],
+    "Vendeurs inscrits avec ton lien : ": ["Sellers signed up with your link: ", "Vendedores inscritos con tu enlace: ", "Verkopers ingeschreven via je link: "],
+    "abonnés : ": ["subscribed: ", "suscritos: ", "geabonneerd: "],
+    "mois offerts : ": ["free months: ", "meses gratis: ", "gratis maanden: "],
+    "Copié ✓": ["Copied ✓", "Copiado ✓", "Gekopieerd ✓"],
+    " / semaine": [" / week", " / semana", " / week"],
+    "Paiement trimestriel": ["Quarterly payment", "Pago trimestral", "Betaling per kwartaal"],
+    "prix fondateur garanti à vie": ["founder price guaranteed for life", "precio de fundador garantizado de por vida", "oprichtersprijs voor altijd gegarandeerd"],
+    "Parraine un vendeur, gagne des mois offerts": ["Refer a seller, earn free months", "Recomienda a un vendedor, gana meses gratis", "Verwijs een verkoper door, verdien gratis maanden"],
+    "Inviter sur WhatsApp": ["Invite on WhatsApp", "Invitar por WhatsApp", "Uitnodigen via WhatsApp"],
     /* subscription, visibility, Boost, 100 % (base v26) */
     " visites de ta boutique depuis le début du Boost": [" visits to your shop since the Boost started", " visitas a tu tienda desde el inicio del Boost", " bezoeken aan je winkel sinds de start van de Boost"],
     ". L’équipe Yiriclick te répond très vite.": [". The Yiriclick team will answer very soon.", ". El equipo de Yiriclick te responde muy pronto.", ". Het Yiriclick-team antwoordt je heel snel."],

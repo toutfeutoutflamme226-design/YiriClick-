@@ -710,6 +710,13 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
         <nav class="fchips" aria-label="Outils marketing"><a class="chiplink" href="#mkShare">Partager</a><a class="chiplink" href="#mkCodes">Codes promo</a><a class="chiplink" href="#mkSoldes">Soldes</a><a class="chiplink" href="#mkVisuels">Visuels</a><a class="chiplink" href="#mkCat">Catalogue PDF</a></nav>
         <div class="card" id="shareNone" hidden><p style="margin:0">Crée d’abord ta boutique pour obtenir ton lien.</p><button class="btn btn-orange" type="button" data-goto="shop">Créer ma boutique</button></div>
         <div id="shareAll" style="display:flex;flex-direction:column;gap:18px">
+          <div class="card" id="refCard" hidden>
+            <h2>Parraine un vendeur, gagne des mois offerts</h2>
+            <p class="hint" style="margin:0" id="refTxt"></p>
+            <div class="share"><code id="refUrl"></code><button class="btn btn-ghost btn-sm" type="button" id="refCopy">Copier le lien</button></div>
+            <div class="sharebtns"><a class="btn btn-orange" id="refWa" target="_blank" rel="noopener">Inviter sur WhatsApp</a></div>
+            <p class="hint" style="margin:0" id="refStats"></p>
+          </div>
           <div class="card" id="mkShare">
             <h2>Ton lien</h2>
             <div class="share"><code id="shareUrl"></code><button class="btn btn-ghost btn-sm" type="button" id="copyLink">Copier le lien</button></div>
@@ -1251,6 +1258,8 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
           body.appendChild(g);
         }
         var ask = el("button", "btn btn-orange", L("Je veux le Boost")); ask.type = "button"; ask.style.alignSelf = "flex-start";
+        try { var sp = await sb.from("site_reglages").select("valeur").eq("cle", "prix").maybeSingle(); var bz = { XOF: "af", EUR: "eu", USD: "am" }[(st.shop && st.shop.devise) || "XOF"] || "af", bp = sp && sp.data && sp.data.valeur && sp.data.valeur.boost && sp.data.valeur.boost[bz];
+          if (bp) ask.textContent = L("Je veux le Boost") + " · " + (bz === "af" ? Math.round(bp).toLocaleString("fr-FR") + " FCFA" : String(bp).replace(".", ",") + (bz === "eu" ? " €" : " $")) + L(" / semaine"); } catch (e) {}
         ask.addEventListener("click", async function () { ask.disabled = true; var x = await sb.rpc("vendeur_ecrire", { p_texte: L("Bonjour, je souhaite obtenir le Boost Yiriclick pour ma boutique."), p_type: "message" }); ask.textContent = x.error ? L("Réessaie plus tard") : L("Demande envoyée ✓"); if (!x.error) loadMonAbo(true); });
         body.appendChild(ask);
       }
@@ -1265,7 +1274,8 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     if (A.formule) {
       var j = A.fin ? Math.ceil((new Date(A.fin + "T23:59:59") - new Date()) / 864e5) : null;
       info.appendChild(el("span", "big", L("Formule ") + (ABO_PLAN[A.formule] || A.formule)));
-      info.appendChild(el("span", null, A.periode === "an" ? L("Paiement annuel") : L("Paiement mensuel")));
+      info.appendChild(el("span", null, A.periode === "an" ? L("Paiement annuel") : A.periode === "trimestre" ? L("Paiement trimestriel") : L("Paiement mensuel")));
+      if (A.prix != null) info.appendChild(el("span", null, (A.zone === "af" ? Math.round(A.prix).toLocaleString("fr-FR") + " FCFA" : String(Number(A.prix).toFixed(2)).replace(".", ",") + (A.zone === "eu" ? " €" : " $")) + (A.prix_a_vie ? " · 🔒 " + L("prix fondateur garanti à vie") : "")));
       if (A.fin) info.appendChild(el("span", null, (j < 0 ? L("Terminé le ") : L("Jusqu’au ")) + fmtD(A.fin)));
       $("aboHint").textContent = j == null ? "" : j < 0 ? L("Renouvelle-le pour garder ta boutique ouverte") : j <= 14 ? (j <= 1 ? L("Se termine très bientôt") : j + L(" jours restants")) : "";
       $("aboHint").style.color = j != null && j <= 14 ? "var(--bad, #B3261E)" : "";
@@ -2290,7 +2300,18 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     var s = st.shop; return L("Découvre ma boutique ") + s.nom + L(" sur Yiriclick") + (s.slogan ? " : " + s.slogan : "") + ".\n" +
       (st.products.length ? st.products.length + L(" produits à commander directement sur WhatsApp.\n") : "") + "👉 " + shareUrl();
   }
+  /* Referral link (base v27) */
+  async function renderRef() {
+    var r = await sb.rpc("mes_parrainages"), c = $("refCard"); if (r.error || !r.data || !r.data.slug) { c.hidden = true; return; }
+    var R = r.data, url = location.origin + "/vendre?parrain=" + encodeURIComponent(R.slug); c.hidden = false;
+    $("refUrl").textContent = url;
+    $("refTxt").textContent = L("Partage ce lien à un autre vendeur. Quand il prend un abonnement payant, tu reçois {n} mois offert(s), automatiquement.").replace("{n}", R.mois);
+    $("refWa").href = "https://wa.me/?text=" + encodeURIComponent(L("J’ouvre ma boutique en ligne avec Yiriclick : 0 % de commission sur les ventes et 14 jours gratuits. Inscris-toi avec mon lien : ") + url);
+    $("refStats").textContent = L("Vendeurs inscrits avec ton lien : ") + R.inscrits + " · " + L("abonnés : ") + R.abonnes + " · " + L("mois offerts : ") + R.offerts * R.mois;
+  }
+  $("refCopy").addEventListener("click", function () { var u = $("refUrl").textContent, b = this; try { navigator.clipboard.writeText(u).then(function () { b.textContent = L("Copié ✓"); setTimeout(function () { b.textContent = L("Copier le lien"); }, 1800); }); } catch (e) {} });
   function renderShare() {
+    renderRef();
     $("shareNone").hidden = !!st.shop; $("shareAll").hidden = !st.shop;
     if (!st.shop) return;
     var u = shareUrl();
