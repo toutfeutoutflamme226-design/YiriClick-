@@ -407,3 +407,7 @@ Si `schema-v12.sql` est relancé un jour, relancer ensuite `schema-v17.sql`.
 - `supabase/schema-v24.sql` (après v23) : chaque jour à 11 h 17, un e-mail part aux vendeurs en essai qui en ont besoin : accès pas créé ou aucun produit 48 h après l'inscription, point au 7e jour, fin d'essai au 12e jour (pas aux fondateurs). Un seul e-mail par étape, en français, anglais ou espagnol. À l'installation, les étapes déjà dépassées ne sont pas rattrapées.
 - Admin : carte « Nouveaux vendeurs en essai » (entonnoir accès › boutique › produits › boutique complète, et e-mails envoyés à chacun).
 - Pour couper les relances : Table Editor › reglages_email › relances_vendeurs = false.
+
+## Base v25 : le néerlandais dans la base
+
+- `supabase/schema-v25.sql` (après v24) : les inscriptions, dossiers, visites et messages acceptent la langue « nl », et les e-mails de relance existent en néerlandais. Avant ce script, le site enregistre un visiteur néerlandophone en anglais (il le détecte tout seul).

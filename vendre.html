@@ -1128,8 +1128,11 @@ h1 span { display: block; }
   }
   var PLAN_KEYS = ["essai", "basique", "pro", "entreprise"];
   var su = { plan: "essai", zone: state.zone, last: null, dossier: false };
-  /* The database accepts fr / en / es for "langue": Dutch visitors are stored as "en" (their e-mails come in English) */
-  function dbLang(l) { return l === "nl" ? "en" : l; }
+  /* "langue" columns accept Dutch once base v25 is installed (asked once per visit); until then Dutch is stored as "en" */
+  var NL_DB = false;
+  try { fetch(sbBase() + "/rest/v1/rpc/langues_acceptees", { method: "POST", headers: sbHeaders({ "Content-Type": "application/json" }), body: "{}" })
+    .then(function (r) { return r.ok ? r.json() : null; }).then(function (a) { NL_DB = Array.isArray(a) && a.indexOf("nl") >= 0; }, function () {}); } catch (e) {}
+  function dbLang(l) { return l === "nl" && !NL_DB ? "en" : l; }
   var CC_LABEL = { fr: "Indicatif du pays", en: "Country code", es: "Prefijo del país", nl: "Landcode" };
   if (window.YPhone) YPhone.attach(document.getElementById("suPhone"), { label: CC_LABEL[state.lang] });
   var modal = document.getElementById("signup"), form = document.getElementById("suForm"), done = document.getElementById("suDone");

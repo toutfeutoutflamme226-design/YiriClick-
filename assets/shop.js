@@ -3,6 +3,10 @@ window.YC = (function () {
   var URL_SB = "https://vtiakxfnechkoomagddl.supabase.co";
   var KEY_SB = "sb_publishable_415c2KQSDRx0SMofnkHKQA_PJ2IrzBA";
   var sb = window.supabase.createClient(URL_SB, KEY_SB, { auth: { persistSession: false } });
+  /* "langue" columns accept Dutch once base v25 is installed; until then a Dutch visitor is stored as "en" */
+  var NL_DB = false;
+  try { sb.rpc("langues_acceptees").then(function (r) { NL_DB = !r.error && Array.isArray(r.data) && r.data.indexOf("nl") >= 0; }, function () {}); } catch (e) {}
+  function dbLang(l) { return l === "nl" && !NL_DB ? "en" : l; }
 
   /* ECB reference rates of 23 October 2026 (1 EUR = x). The CFA franc is pegged: 1 EUR = 655.957 FCFA. */
   var RATES = { EUR: 1, XOF: 655.957, USD: 1.1193 }, RATES_DATE = new Date("2026-10-23T16:00:00Z");
@@ -827,7 +831,7 @@ window.YC = (function () {
     f.addEventListener("submit", async function (e) {
       e.preventDefault(); if (!d.note) { err.textContent = t("revPick"); f.querySelector(".rev-stars button").focus(); return; }
       if (bad() && !d.causes.length && ta.value.trim().length < 10) { err.textContent = t("rvNeedWhy"); cz.querySelector("input").focus(); return; }
-      var payload = { note: d.note, commentaire: ta.value.trim(), criteres: d.criteres, causes: bad() ? d.causes : [], recontact: bad() && d.recontact, langue: prefs.lang === "nl" ? "en" : prefs.lang,
+      var payload = { note: d.note, commentaire: ta.value.trim(), criteres: d.criteres, causes: bad() ? d.causes : [], recontact: bad() && d.recontact, langue: dbLang(prefs.lang),
         yc: { note: d.yc.note || null, commentaire: yta.value.trim(), criteres: d.yc.criteres, recommande: d.yc.recommande } };
       go.disabled = true; err.textContent = "";
       var r = await sb.rpc("laisser_avis_v2", { p_commande: o.id, p_data: payload });
@@ -1147,7 +1151,7 @@ window.YC = (function () {
   /* Pages can add their own texts: YC.extend({ fr: {...}, en: {...}, es: {...} }) */
   function extend(d) { Object.keys(d).forEach(function (L) { T[L] = T[L] || {}; Object.keys(d[L]).forEach(function (k) { T[L][k] = d[L][k]; }); }); }
 
-  return { extend: extend, track: track, hasVar: hasVar, prep: prep, cartAdd: function (p, shop, q, b, v) { cartAdd(p, shop, q || 1, b, v); }, openOrders: function () { openCart("orders"); }, sb: sb, t: t, cat: cat, el: el, pub: pub, money: money, card: card, openProduct: openProduct, closeProduct: closeProduct, reviewsUI: reviewsUI, reviewForm: function (box, o, done) { reviewForm(box, o, done || function () {}); }, onProduct: function (f) { productListeners.push(f); }, wirePrefs: wirePrefs, setPrefs: setPrefs, labels: labels, catOptions: catOptions, norm: norm, prefs: prefs,
+  return { dbLang: function (l) { return dbLang(l || prefs.lang); }, extend: extend, track: track, hasVar: hasVar, prep: prep, cartAdd: function (p, shop, q, b, v) { cartAdd(p, shop, q || 1, b, v); }, openOrders: function () { openCart("orders"); }, sb: sb, t: t, cat: cat, el: el, pub: pub, money: money, card: card, openProduct: openProduct, closeProduct: closeProduct, reviewsUI: reviewsUI, reviewForm: function (box, o, done) { reviewForm(box, o, done || function () {}); }, onProduct: function (f) { productListeners.push(f); }, wirePrefs: wirePrefs, setPrefs: setPrefs, labels: labels, catOptions: catOptions, norm: norm, prefs: prefs,
     convert: convert, discount: discount, priceBlock: priceBlock, favButton: favButton, isFav: isFav, favs: function () { return favs.slice(); }, onFavs: function (f) { favListeners.push(f); },
     openCart: function () { openCart(); }, CATS: CATS, FAMILIES: FAMILIES, THEMES: THEMES, LOCALE: LOCALE, URL_SB: URL_SB, HEART: HEART, CART_SVG: CART_SVG };
 })();

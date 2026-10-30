@@ -158,7 +158,7 @@
       if (hp.value || Date.now() - opened < 2500) { sent = true; render(); return; } // robots: pretend it worked
       go.disabled = true; go.textContent = t("ctSending");
       var r = await Y.sb.from("messages_contact").insert({ nom: nom.value.trim(), contact: c, sujet: sujet.value, message: message.value.trim(),
-        page: (document.referrer || "").slice(0, 300) || null, langue: Y.prefs.lang === "nl" ? "en" : Y.prefs.lang });
+        page: (document.referrer || "").slice(0, 300) || null, langue: Y.dbLang(Y.prefs.lang) });
       go.disabled = false; go.textContent = t("ctSend");
       if (r.error) { err.textContent = /Trop de messages/i.test(r.error.message || "") ? t("ctTooMany") : t("ctErr"); return; }
       sent = true; draft.message = ""; render(); window.scrollTo(0, 0);
