@@ -12,6 +12,8 @@ window.YPhone = (function () {
     ["LB", "961"], ["QA", "974"], ["MY", "60"], ["AU", "61"]];
   /* Countries whose national numbers keep their leading 0 after the dialling code */
   var KEEP0 = { "225": 1, "229": 1, "39": 1 };
+  /* Exact number of digits after the dialling code, for countries where it is fixed (other countries: 6 to 13) */
+  var LEN = { "226": 8, "223": 8, "227": 8, "228": 8, "221": 9, "224": 9, "237": 9, "225": 10, "229": 10, "33": 9, "31": 9 };
   function dialOf(c) { for (var i = 0; i < C.length; i++) if (C[i][0] === c) return C[i][1]; return null; }
   function flag(c) { return String.fromCodePoint.apply(null, c.split("").map(function (ch) { return 127397 + ch.charCodeAt(0); })); }
   function lang() { var l = ""; try { l = localStorage.getItem("yc-lang") || ""; } catch (e) {} return l || document.documentElement.lang || "fr"; }
@@ -68,7 +70,9 @@ window.YPhone = (function () {
       select: sel,
       value: function () { var raw = input.value.trim(); if (!raw) return ""; var p = parse(raw); return p ? "+" + dialOf(p.c) + p.n.replace(/\D/g, "") : build(dialOf(sel.value), raw); },
       set: function (v) { var p = parse(v); if (p) { sel.value = p.c; input.value = p.n; } else input.value = v || ""; },
-      valid: function () { var v = api.value(), p = parse(v); return !!p && p.n.length >= 6 && p.n.length <= 13; }
+      valid: function () { var v = api.value(), p = parse(v); if (!p) return false; var need = LEN[dialOf(p.c)]; return need ? p.n.length === need : p.n.length >= 6 && p.n.length <= 13; },
+      /* digits expected for the chosen country, or 0 when the length is not fixed */
+      expected: function () { var p = parse(api.value()); return LEN[dialOf(p ? p.c : sel.value)] || 0; }
     };
     sel.value = o.country && dialOf(o.country) ? o.country : defCountry();
     api.set(input.value);
@@ -80,6 +84,7 @@ window.YPhone = (function () {
     attach: attach, list: C, flag: flag, cname: cname, parse: parse, build: build, dialOf: dialOf, defCountry: defCountry, guess: guess, international: international, options: options,
     value: function (i) { return i && i.__yp ? i.__yp.value() : (i ? i.value.trim() : ""); },
     set: function (i, v) { if (!i) return; if (i.__yp) i.__yp.set(v); else i.value = v || ""; },
-    valid: function (i) { return i && i.__yp ? i.__yp.valid() : false; }
+    valid: function (i) { return i && i.__yp ? i.__yp.valid() : false; },
+    expected: function (i) { return i && i.__yp ? i.__yp.expected() : 0; }
   };
 })();

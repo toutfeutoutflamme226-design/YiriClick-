@@ -1345,6 +1345,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     if (slug.length < 3) { $("bErr").textContent = L("L’adresse doit faire au moins 3 caractères."); $("bSlug").focus(); return; }
     var bad = faq.filter(function (x) { return (x.q.trim() && !x.r.trim()) || (!x.q.trim() && x.r.trim()); });
     if (bad.length) { $("bErr").textContent = L("Complète chaque question avec sa réponse (ou retire-la)."); return; }
+    if (window.YPhone && $("bWa").value.trim() && !YPhone.valid($("bWa"))) { var nd = YPhone.expected($("bWa")); $("bErr").textContent = nd ? L("Ton numéro WhatsApp doit avoir {n} chiffres, sans l’indicatif. C’est là que tes clients t’envoient leurs commandes.").split("{n}").join(nd) : L("Vérifie ton numéro WhatsApp : c’est là que tes clients t’envoient leurs commandes."); $("bWa").focus(); return; }
     var btn = $("bSave"); btn.disabled = true; btn.textContent = L("Enregistrement…");
     var fresh = [];
     try {

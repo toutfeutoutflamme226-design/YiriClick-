@@ -609,7 +609,7 @@ h1 span { display: block; }
       perMonth: "/ mois", launch: "prix de lancement", trialSum: "Gratuit pendant 14 jours, sans carte bancaire",
       phCountry: "Choisis ou écris ton pays", phPhone: "70 00 00 00", phEmail: "nom@exemple.com", ccEmpty: "Aucun pays trouvé. Tu peux garder ce que tu as écrit.",
       eReq: "Ce champ est obligatoire.", eEmail: "Entre une adresse e-mail valide, par exemple nom@exemple.com.",
-      ePhone: "Choisis ton pays, puis entre ton numéro WhatsApp.", eConsent: "Coche la case pour continuer.",
+      ePhone: "Choisis ton pays, puis entre ton numéro WhatsApp.", ePhoneN: "Ce numéro doit avoir {n} chiffres, sans l’indicatif. Vérifie qu’il est complet.", eConsent: "Coche la case pour continuer.",
       eSend: "L’envoi n’a pas fonctionné. Vérifie ta connexion et réessaie.",
       okTitle: "Ton essai est ouvert !", okText: "Dernière étape : crée ton mot de passe avec la même adresse e-mail, confirme-la grâce au lien reçu, et ta boutique est à toi pendant 14 jours.",
       pvTitle: "Formulaire prêt", pvText: "Les inscriptions seront enregistrées dès que le site sera relié à Supabase. Pour l’instant, rien n’a été envoyé.",
@@ -652,7 +652,7 @@ h1 span { display: block; }
       perMonth: "/ month", launch: "launch price", trialSum: "Free for 14 days, no credit card",
       phCountry: "Choose or type your country", phPhone: "70 00 00 00", phEmail: "name@example.com", ccEmpty: "No country found. You can keep what you typed.",
       eReq: "This field is required.", eEmail: "Enter a valid email address, for example name@example.com.",
-      ePhone: "Choose your country, then enter your WhatsApp number.", eConsent: "Tick the box to continue.",
+      ePhone: "Choose your country, then enter your WhatsApp number.", ePhoneN: "This number must have {n} digits, without the country code. Check it is complete.", eConsent: "Tick the box to continue.",
       eSend: "Sending didn’t work. Check your connection and try again.",
       okTitle: "Your trial is open!", okText: "Last step: create your password with the same email address, confirm it with the link you receive, and your shop is yours for 14 days.",
       pvTitle: "Form ready", pvText: "Sign-ups will be saved once the site is connected to Supabase. Nothing has been sent yet.",
@@ -695,7 +695,7 @@ h1 span { display: block; }
       perMonth: "/ mes", launch: "precio de lanzamiento", trialSum: "Gratis durante 14 días, sin tarjeta bancaria",
       phCountry: "Elige o escribe tu país", phPhone: "70 00 00 00", phEmail: "nombre@ejemplo.com", ccEmpty: "Ningún país encontrado. Puedes dejar lo que escribiste.",
       eReq: "Este campo es obligatorio.", eEmail: "Introduce un correo válido, por ejemplo nombre@ejemplo.com.",
-      ePhone: "Elige tu país y luego escribe tu número de WhatsApp.", eConsent: "Marca la casilla para continuar.",
+      ePhone: "Elige tu país y luego escribe tu número de WhatsApp.", ePhoneN: "Este número debe tener {n} cifras, sin el prefijo. Comprueba que está completo.", eConsent: "Marca la casilla para continuar.",
       eSend: "El envío no funcionó. Revisa tu conexión e inténtalo de nuevo.",
       okTitle: "¡Tu prueba está abierta!", okText: "Último paso: crea tu contraseña con el mismo correo, confírmalo con el enlace que recibirás y tu tienda es tuya durante 14 días.",
       pvTitle: "Formulario listo", pvText: "Las inscripciones se guardarán cuando el sitio esté conectado a Supabase. Por ahora no se ha enviado nada.",
@@ -1195,7 +1195,7 @@ h1 span { display: block; }
     function need(id, test, msg) { var v = document.getElementById(id).value.trim(); var good = v && (!test || test(v)); if (!setErr(id, good ? "" : (v ? msg : t.eReq))) { ok = false; first = first || id; } return v; }
     var row = {
       nom: need("suName"), boutique: need("suShop"), pays: need("suCountry"),
-      whatsapp: need("suPhone", function (v) { return window.YPhone ? YPhone.valid(document.getElementById("suPhone")) : /^\+?[0-9 ().-]{8,20}$/.test(v) && v.replace(/\D/g, "").length >= 8; }, t.ePhone),
+      whatsapp: need("suPhone", function (v) { return window.YPhone ? YPhone.valid(document.getElementById("suPhone")) : /^\+?[0-9 ().-]{8,20}$/.test(v) && v.replace(/\D/g, "").length >= 8; }, window.YPhone && YPhone.expected(document.getElementById("suPhone")) ? t.ePhoneN.split("{n}").join(YPhone.expected(document.getElementById("suPhone"))) : t.ePhone),
       email: need("suEmail", function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); }, t.eEmail),
       formule: su.plan, zone: su.zone, langue: state.lang, consentement: document.getElementById("suConsent").checked
     };

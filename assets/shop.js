@@ -28,7 +28,7 @@ window.YC = (function () {
       qty: "Quantité", less: "Retirer un", more: "Ajouter un", remove: "Retirer", subtotal: "Sous-total", total: "Total estimé", maxStock: "Stock maximum atteint",
       gone: "Certains produits ne sont plus disponibles et ont été retirés de ton panier.", checkout: "Valider ma commande",
       yourInfo: "Tes coordonnées", cName: "Nom complet", cPhone: "Téléphone (WhatsApp)", cAddr: "Adresse de livraison", cNote: "Message pour le vendeur (facultatif)",
-      eReq: "Ce champ est obligatoire.", ePhone: "Choisis ton pays, puis entre ton numéro WhatsApp.",
+      eReq: "Ce champ est obligatoire.", ePhone: "Choisis ton pays, puis entre ton numéro WhatsApp.", ePhoneN: "Ce numéro doit avoir {n} chiffres, sans l’indicatif. Vérifie qu’il est complet.",
       sendTitle: "Envoie ta commande à chaque vendeur", sendHelp: "Ton panier contient des produits de plusieurs vendeurs : envoie la commande à chacun. Le vendeur te confirme la disponibilité, la livraison et le paiement.",
       sendTo: "Envoyer à {s} sur WhatsApp", sent: "Envoyé à {s}", noWaShop: "{s} n’a pas indiqué de numéro WhatsApp : sa commande ne peut pas être envoyée pour l’instant.",
       sentTitle: "Commandes envoyées", sentLine: "{s} · {n} article(s) · {h}", restore: "Remettre dans le panier", doneTitle: "Commande envoyée", doneText: "Ton panier a été vidé. Le vendeur te répond sur WhatsApp pour confirmer la disponibilité, la livraison et le paiement. Si le message n’est pas parti, touche « Remettre dans le panier ».", editInfo: "Modifier mes coordonnées", orderDirect: "Commander directement sur WhatsApp",
@@ -44,7 +44,7 @@ window.YC = (function () {
       qty: "Quantity", less: "Remove one", more: "Add one", remove: "Remove", subtotal: "Subtotal", total: "Estimated total", maxStock: "Maximum stock reached",
       gone: "Some products are no longer available and were removed from your cart.", checkout: "Place my order",
       yourInfo: "Your details", cName: "Full name", cPhone: "Phone (WhatsApp)", cAddr: "Delivery address", cNote: "Message for the seller (optional)",
-      eReq: "This field is required.", ePhone: "Choose your country, then enter your WhatsApp number.",
+      eReq: "This field is required.", ePhone: "Choose your country, then enter your WhatsApp number.", ePhoneN: "This number must have {n} digits, without the country code. Check it is complete.",
       sendTitle: "Send your order to each seller", sendHelp: "Your cart has products from several sellers: send the order to each one. The seller confirms availability, delivery and payment with you.",
       sendTo: "Send to {s} on WhatsApp", sent: "Sent to {s}", noWaShop: "{s} has not added a WhatsApp number: this order cannot be sent yet.",
       sentTitle: "Orders sent", sentLine: "{s} · {n} item(s) · {h}", restore: "Put back in the cart", doneTitle: "Order sent", doneText: "Your cart has been emptied. The seller will reply on WhatsApp to confirm availability, delivery and payment. If the message did not go through, tap “Put back in the cart”.", editInfo: "Edit my details", orderDirect: "Order directly on WhatsApp",
@@ -60,7 +60,7 @@ window.YC = (function () {
       qty: "Cantidad", less: "Quitar uno", more: "Añadir uno", remove: "Quitar", subtotal: "Subtotal", total: "Total estimado", maxStock: "Stock máximo alcanzado",
       gone: "Algunos productos ya no están disponibles y se han quitado de tu carrito.", checkout: "Confirmar mi pedido",
       yourInfo: "Tus datos", cName: "Nombre completo", cPhone: "Teléfono (WhatsApp)", cAddr: "Dirección de entrega", cNote: "Mensaje para el vendedor (opcional)",
-      eReq: "Este campo es obligatorio.", ePhone: "Elige tu país y luego escribe tu número de WhatsApp.",
+      eReq: "Este campo es obligatorio.", ePhone: "Elige tu país y luego escribe tu número de WhatsApp.", ePhoneN: "Este número debe tener {n} cifras, sin el prefijo. Comprueba que está completo.",
       sendTitle: "Envía tu pedido a cada vendedor", sendHelp: "Tu carrito tiene productos de varios vendedores: envía el pedido a cada uno. El vendedor te confirma disponibilidad, entrega y pago.",
       sendTo: "Enviar a {s} por WhatsApp", sent: "Enviado a {s}", noWaShop: "{s} no ha indicado un número de WhatsApp: este pedido aún no se puede enviar.",
       sentTitle: "Pedidos enviados", sentLine: "{s} · {n} artículo(s) · {h}", restore: "Volver a poner en el carrito", doneTitle: "Pedido enviado", doneText: "Tu carrito se ha vaciado. El vendedor te responderá por WhatsApp para confirmar disponibilidad, entrega y pago. Si el mensaje no se envió, toca «Volver a poner en el carrito».", editInfo: "Modificar mis datos", orderDirect: "Pedir directamente por WhatsApp",
@@ -600,7 +600,7 @@ window.YC = (function () {
       function err(i, m) { document.getElementById(i.id + "-err").textContent = m || ""; if (m) { i.setAttribute("aria-invalid", "true"); ok = false; first = first || i; } else i.removeAttribute("aria-invalid"); }
       err(n, n.value.trim().length >= 2 ? "" : t("eReq"));
       var pv = window.YPhone ? YPhone.value(ph) : ph.value.trim();
-      err(ph, !ph.value.trim() ? t("eReq") : (window.YPhone ? YPhone.valid(ph) : /^\+?[0-9 ().-]{8,20}$/.test(pv) && pv.replace(/\D/g, "").length >= 8) ? "" : t("ePhone"));
+      err(ph, !ph.value.trim() ? t("eReq") : (window.YPhone ? YPhone.valid(ph) : /^\+?[0-9 ().-]{8,20}$/.test(pv) && pv.replace(/\D/g, "").length >= 8) ? "" : (window.YPhone && YPhone.expected(ph) ? t("ePhoneN", { n: YPhone.expected(ph) }) : t("ePhone")));
       err(ad, ad.value.trim().length >= 3 ? "" : t("eReq"));
       if (!ok) { first.focus(); return; }
       buyer = { cName: n.value.trim(), cPhone: pv, cAddr: ad.value.trim(), cNote: no.value.trim() };
