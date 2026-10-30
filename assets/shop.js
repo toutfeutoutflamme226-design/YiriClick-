@@ -33,7 +33,7 @@ window.YC = (function () {
       sendTo: "Envoyer à {s} sur WhatsApp", sent: "Envoyé à {s}", noWaShop: "{s} n’a pas indiqué de numéro WhatsApp : sa commande ne peut pas être envoyée pour l’instant.",
       sentTitle: "Commandes envoyées", sentLine: "{s} · {n} article(s) · {h}", restore: "Remettre dans le panier", doneTitle: "Commande envoyée", doneText: "Ton panier a été vidé. Le vendeur te répond sur WhatsApp pour confirmer la disponibilité, la livraison et le paiement. Si le message n’est pas parti, touche « Remettre dans le panier ».", editInfo: "Modifier mes coordonnées", orderDirect: "Commander directement sur WhatsApp",
       waCart: "Bonjour {s}, je souhaite commander sur Yiriclick :", waTotal: "Total", waName: "Nom", waPhone: "Téléphone", waAddr: "Adresse de livraison", waNote: "Message",
-      waEnd: "Merci de me confirmer la disponibilité, les frais de livraison et le mode de paiement.", approxSign: "≈ " },
+      waEnd: "Merci de me confirmer la disponibilité, les frais de livraison et le mode de paiement.", approxSign: "≈ ", crumbs: "Fil d’Ariane" },
     en: { lang: "Language", cur: "Currency", showcase: "Showcase", sellers: "Seller space", search: "Search for a product…", allCats: "All categories",
       noProducts: "No products yet.", noMatch: "No product matches your search.", stock: "In stock: {n}", outStock: "Out of stock",
       order: "Order on WhatsApp", noWa: "This seller has not added a WhatsApp number yet.", waMsg: "Hello, I am interested in “{p}” ({x}) seen on your Yiriclick shop: {u}",
@@ -49,7 +49,7 @@ window.YC = (function () {
       sendTo: "Send to {s} on WhatsApp", sent: "Sent to {s}", noWaShop: "{s} has not added a WhatsApp number: this order cannot be sent yet.",
       sentTitle: "Orders sent", sentLine: "{s} · {n} item(s) · {h}", restore: "Put back in the cart", doneTitle: "Order sent", doneText: "Your cart has been emptied. The seller will reply on WhatsApp to confirm availability, delivery and payment. If the message did not go through, tap “Put back in the cart”.", editInfo: "Edit my details", orderDirect: "Order directly on WhatsApp",
       waCart: "Hello {s}, I would like to order on Yiriclick:", waTotal: "Total", waName: "Name", waPhone: "Phone", waAddr: "Delivery address", waNote: "Message",
-      waEnd: "Please confirm availability, delivery costs and payment method.", approxSign: "≈ " },
+      waEnd: "Please confirm availability, delivery costs and payment method.", approxSign: "≈ ", crumbs: "Breadcrumb" },
     es: { lang: "Idioma", cur: "Moneda", showcase: "Escaparate", sellers: "Espacio vendedor", search: "Buscar un producto…", allCats: "Todas las categorías",
       noProducts: "Todavía no hay productos.", noMatch: "Ningún producto coincide con tu búsqueda.", stock: "En stock: {n}", outStock: "Agotado",
       order: "Pedir por WhatsApp", noWa: "Este vendedor aún no ha indicado un número de WhatsApp.", waMsg: "Hola, me interesa «{p}» ({x}) visto en su tienda Yiriclick: {u}",
@@ -65,7 +65,7 @@ window.YC = (function () {
       sendTo: "Enviar a {s} por WhatsApp", sent: "Enviado a {s}", noWaShop: "{s} no ha indicado un número de WhatsApp: este pedido aún no se puede enviar.",
       sentTitle: "Pedidos enviados", sentLine: "{s} · {n} artículo(s) · {h}", restore: "Volver a poner en el carrito", doneTitle: "Pedido enviado", doneText: "Tu carrito se ha vaciado. El vendedor te responderá por WhatsApp para confirmar disponibilidad, entrega y pago. Si el mensaje no se envió, toca «Volver a poner en el carrito».", editInfo: "Modificar mis datos", orderDirect: "Pedir directamente por WhatsApp",
       waCart: "Hola {s}, quiero hacer un pedido en Yiriclick:", waTotal: "Total", waName: "Nombre", waPhone: "Teléfono", waAddr: "Dirección de entrega", waNote: "Mensaje",
-      waEnd: "Por favor, confírmame disponibilidad, gastos de envío y forma de pago.", approxSign: "≈ " }, nl: { lang: "Taal", cur: "Valuta", showcase: "Etalage", sellers: "Verkopersruimte", search: "Zoek een product…", allCats: "Alle categorieën",
+      waEnd: "Por favor, confírmame disponibilidad, gastos de envío y forma de pago.", approxSign: "≈ ", crumbs: "Ruta de navegación" }, nl: { lang: "Taal", cur: "Valuta", showcase: "Etalage", sellers: "Verkopersruimte", search: "Zoek een product…", allCats: "Alle categorieën",
       noProducts: "Nog geen producten.", noMatch: "Geen product komt overeen met je zoekopdracht.", stock: "Op voorraad: {n}", outStock: "Uitverkocht",
       order: "Bestellen via WhatsApp", noWa: "Deze verkoper heeft nog geen WhatsApp-nummer opgegeven.", waMsg: "Hallo, ik ben geïnteresseerd in “{p}” ({x}), gezien in je Yiriclick-winkel: {u}",
       approx: "≈ {v} tegen de koers van {d}", close: "Sluiten", verified: "Verkoper geverifieerd door Yiriclick", notFound: "Winkel niet gevonden", notFoundP: "Deze winkel bestaat niet of is op dit moment niet zichtbaar.",
@@ -80,7 +80,7 @@ window.YC = (function () {
       sendTo: "Naar {s} sturen via WhatsApp", sent: "Verstuurd naar {s}", noWaShop: "{s} heeft geen WhatsApp-nummer opgegeven: deze bestelling kan nog niet worden verstuurd.",
       sentTitle: "Verstuurde bestellingen", sentLine: "{s} · {n} artikel(en) · {h}", restore: "Terug in winkelwagen", doneTitle: "Bestelling verstuurd", doneText: "Je winkelwagen is geleegd. De verkoper antwoordt je via WhatsApp om beschikbaarheid, levering en betaling te bevestigen. Is het bericht niet verstuurd? Tik dan op “Terug in winkelwagen”.", editInfo: "Mijn gegevens wijzigen", orderDirect: "Direct bestellen via WhatsApp",
       waCart: "Hallo {s}, ik wil graag bestellen op Yiriclick:", waTotal: "Totaal", waName: "Naam", waPhone: "Telefoon", waAddr: "Afleveradres", waNote: "Bericht",
-      waEnd: "Wil je de beschikbaarheid, de verzendkosten en de betaalwijze bevestigen?", approxSign: "≈ " }
+      waEnd: "Wil je de beschikbaarheid, de verzendkosten en de betaalwijze bevestigen?", approxSign: "≈ ", crumbs: "Kruimelpad" }
   };
   var CATS = {
     fr: { mode: "Mode et vêtements", chaussures: "Chaussures et maroquinerie", bijoux: "Bijoux et accessoires", textile: "Tissus et pagnes", beaute: "Beauté et cosmétiques", sante: "Santé et bien-être", alim: "Alimentation et épicerie", boissons: "Boissons", agri: "Produits agricoles et élevage", artisanat: "Artisanat et art", deco: "Décoration et maison", meubles: "Meubles", electromenager: "Électroménager", tech: "Téléphones et électronique", info: "Informatique", auto: "Auto et moto", btp: "Bâtiment et matériaux", bebe: "Bébé et enfants", jouets: "Jouets et jeux", sport: "Sport et loisirs", livres: "Livres et fournitures scolaires", musique: "Musique et instruments", animaux: "Animaux", numerique: "Produits numériques", services: "Services", autre: "Autre" },
@@ -194,6 +194,8 @@ window.YC = (function () {
   function pub(path) { return path ? URL_SB + "/storage/v1/object/public/boutiques/" + path.split("/").map(encodeURIComponent).join("/") : ""; }
   function money(v, d) {
     var whole = d === "XOF";
+    /* CFA franc: always "2 500 FCFA" (locale grouping, even for 4 digits), never the code "XOF" or "FCFA 2.500" */
+    if (whole) { try { return new Intl.NumberFormat(LOCALE[prefs.lang], { maximumFractionDigits: 0, useGrouping: "always" }).format(v) + "\u00A0FCFA"; } catch (e) { try { return new Intl.NumberFormat(LOCALE[prefs.lang], { maximumFractionDigits: 0 }).format(v) + "\u00A0FCFA"; } catch (x) {} } }
     try { return new Intl.NumberFormat(LOCALE[prefs.lang], { style: "currency", currency: d, minimumFractionDigits: whole ? 0 : 2, maximumFractionDigits: whole ? 0 : 2 }).format(v); }
     catch (e) { return Number(v).toFixed(whole ? 0 : 2) + " " + d; }
   }
@@ -825,7 +827,7 @@ window.YC = (function () {
     f.addEventListener("submit", async function (e) {
       e.preventDefault(); if (!d.note) { err.textContent = t("revPick"); f.querySelector(".rev-stars button").focus(); return; }
       if (bad() && !d.causes.length && ta.value.trim().length < 10) { err.textContent = t("rvNeedWhy"); cz.querySelector("input").focus(); return; }
-      var payload = { note: d.note, commentaire: ta.value.trim(), criteres: d.criteres, causes: bad() ? d.causes : [], recontact: bad() && d.recontact, langue: prefs.lang,
+      var payload = { note: d.note, commentaire: ta.value.trim(), criteres: d.criteres, causes: bad() ? d.causes : [], recontact: bad() && d.recontact, langue: prefs.lang === "nl" ? "en" : prefs.lang,
         yc: { note: d.yc.note || null, commentaire: yta.value.trim(), criteres: d.yc.criteres, recommande: d.yc.recommande } };
       go.disabled = true; err.textContent = "";
       var r = await sb.rpc("laisser_avis_v2", { p_commande: o.id, p_data: payload });

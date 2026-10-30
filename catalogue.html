@@ -75,6 +75,7 @@ h2::before { content: ""; width: 5px; height: 18px; background: var(--brand); }
     es: { cTitle: "Catálogo", cPrint: "Imprimir o guardar en PDF", cHelp: "En el teléfono: Compartir › Imprimir y luego Guardar en PDF.", cScan: "Escanea para pedir", cDate: "Catálogo del {d} · precios sujetos a cambios", cNone: "Tienda no encontrada.", cOut: "Agotado" }, nl: { cTitle: "Catalogus", cPrint: "Afdrukken of opslaan als pdf", cHelp: "Op de telefoon: Delen › Afdrukken en daarna Opslaan als pdf.", cScan: "Scan om te bestellen", cDate: "Catalogus van {d} · prijzen onder voorbehoud", cNone: "Winkel niet gevonden.", cOut: "Uitverkocht" }
   });
   var t = Y.t, el = Y.el;
+  document.documentElement.lang = Y.prefs.lang;
   function $(id) { return document.getElementById(id); }
   $("printBtn").textContent = t("cPrint");
   $("printBtn").addEventListener("click", function () { window.print(); });

@@ -70,7 +70,17 @@
 <script src="assets/legal-texts.js"></script>
 <script>
 (function () {
-  var Y = window.YC, el = Y.el, box = document.getElementById("lg"), L = window.YLEGAL || {}, TX = window.YLEGAL_TEXTS;
+  var Y = window.YC, el = Y.el, box = document.getElementById("lg"), L = {}, TX = window.YLEGAL_TEXTS;
+  /* Identity in the visitor's language: country name of the address and date of the last update */
+  function localIdentity() {
+    var src = window.YLEGAL || {}, lang = Y.prefs.lang, o = {};
+    Object.keys(src).forEach(function (k) { o[k] = src[k]; });
+    var country = src.pays || "";
+    try { if (country) country = new Intl.DisplayNames([lang], { type: "region" }).of(src.pays); } catch (e) {}
+    if (src.adresse && country) o.adresse = src.adresse + ", " + country;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(src.majLe || "")) { try { o.majLe = new Date(src.majLe + "T12:00:00").toLocaleDateString(Y.LOCALE[lang] || "fr-FR", { day: "numeric", month: "long", year: "numeric" }); } catch (e) {} }
+    return o;
+  }
   var TABS = ["mentions", "conditions", "vendeurs", "confidentialite"];
   function cur() { var h = location.hash.slice(1); return TABS.indexOf(h) >= 0 ? h : "mentions"; }
 
@@ -87,7 +97,7 @@
     });
   }
   function render() {
-    Y.labels();
+    Y.labels(); L = localIdentity();
     var D = TX[Y.prefs.lang] || TX.fr, tab = cur();
     document.documentElement.lang = TX[Y.prefs.lang] ? Y.prefs.lang : "fr";
     document.title = D.tabs[tab] + " · Yiriclick";
