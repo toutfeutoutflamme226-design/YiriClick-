@@ -33,7 +33,7 @@
     </a>
     <div class="prefs">
       <a href="./"><span aria-hidden="true">← </span><span data-t="showcase">Vitrine</span></a>
-      <select id="prefLang" data-ta="lang"><option value="fr">FR</option><option value="en">EN</option><option value="es">ES</option></select>
+      <select id="prefLang" data-ta="lang"><option value="fr">FR</option><option value="en">EN</option><option value="es">ES</option><option value="nl">NL</option></select>
       <select id="prefCur" data-ta="cur"><option value="">—</option><option value="XOF">FCFA</option><option value="EUR">€</option><option value="USD">$</option></select>
     </div>
   </div>
@@ -67,7 +67,7 @@
   Y.extend({
     fr: { avT: "Avis clients sur Yiriclick", avP: "Ce que nos clients pensent de leur expérience sur Yiriclick : commander, suivre sa commande, faire confiance aux vendeurs. Les avis sur chaque vendeur se trouvent sur sa boutique.", avErr: "Les avis ne peuvent pas être chargés pour le moment." },
     en: { avT: "Customer reviews of Yiriclick", avP: "What our customers think of their experience on Yiriclick: ordering, tracking their order, trusting the sellers. Reviews of each seller are on their shop page.", avErr: "Reviews cannot be loaded right now." },
-    es: { avT: "Opiniones de clientes sobre Yiriclick", avP: "Lo que piensan nuestros clientes de su experiencia en Yiriclick: pedir, seguir su pedido y confiar en los vendedores. Las opiniones sobre cada vendedor están en su tienda.", avErr: "No se pueden cargar las opiniones en este momento." }
+    es: { avT: "Opiniones de clientes sobre Yiriclick", avP: "Lo que piensan nuestros clientes de su experiencia en Yiriclick: pedir, seguir su pedido y confiar en los vendedores. Las opiniones sobre cada vendedor están en su tienda.", avErr: "No se pueden cargar las opiniones en este momento." }, nl: { avT: "Klantbeoordelingen over Yiriclick", avP: "Wat onze klanten vinden van hun ervaring op Yiriclick: bestellen, hun bestelling volgen en de verkopers vertrouwen. Beoordelingen over elke verkoper staan in zijn winkel.", avErr: "De beoordelingen kunnen nu niet worden geladen." }
   });
   function render() {
     Y.labels(); document.title = Y.t("avT") + " · Yiriclick";

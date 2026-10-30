@@ -47,7 +47,7 @@
     </a>
     <div class="prefs">
       <a href="./"><span aria-hidden="true">← </span><span data-t="showcase">Vitrine</span></a>
-      <select id="prefLang" data-ta="lang"><option value="fr">FR</option><option value="en">EN</option><option value="es">ES</option></select>
+      <select id="prefLang" data-ta="lang"><option value="fr">FR</option><option value="en">EN</option><option value="es">ES</option><option value="nl">NL</option></select>
     </div>
   </div>
 </header>
@@ -94,7 +94,14 @@
       ctSend: "Enviar el mensaje", ctSending: "Enviando…", ctReq: "Este campo es obligatorio.", ctBadContact: "Indica un correo o un número válido.", ctShort: "Tu mensaje es un poco corto.",
       ctErr: "El mensaje no se envió. Comprueba tu conexión e inténtalo de nuevo.", ctTooMany: "Demasiados mensajes enviados. Inténtalo dentro de una hora.",
       ctDone: "¡Mensaje enviado, gracias!", ctDoneP: "El equipo de Yiriclick te responderá lo antes posible. Para un pedido, también puedes escribir al vendedor desde su tienda.",
-      ctAgain: "Enviar otro mensaje", ctHome: "Volver al escaparate", ctMail: "También puedes escribir a" }
+      ctAgain: "Enviar otro mensaje", ctHome: "Volver al escaparate", ctMail: "También puedes escribir a" }, nl: { ctT: "Neem contact op", ctFond: "OPRICHTER – Ik wil lid worden van de Club van 50 oprichtende verkopers. Wat ik verkoop: ", ctRepIntro: "Ik meld het product", ctRepWhy: "Reden:", ctLead: "Een vraag over een bestelling, je winkel of een samenwerking? Schrijf ons: het Yiriclick-team antwoordt je per e-mail of via WhatsApp.",
+      ctName: "Je naam", ctContact: "Je e-mailadres of WhatsApp-nummer", ctContactHint: "Zodat we je kunnen antwoorden. Wordt nooit getoond.",
+      ctTopic: "Onderwerp", ctT1: "Ik ben klant (bestelling, levering…)", ctT2: "Ik ben verkoper (mijn winkel, mijn formule…)", ctT3: "Samenwerking of pers", ctT4: "Een probleem of oplichting melden", ctT5: "Overig",
+      ctMsg: "Je bericht", ctMsgHint: "Gaat het om een bestelling? Vermeld dan het nummer (bijvoorbeeld YC-7F3A21).",
+      ctSend: "Bericht versturen", ctSending: "Bezig met versturen…", ctReq: "Dit veld is verplicht.", ctBadContact: "Vul een geldig e-mailadres of nummer in.", ctShort: "Je bericht is wat kort.",
+      ctErr: "Het bericht is niet verstuurd. Controleer je verbinding en probeer het opnieuw.", ctTooMany: "Te veel berichten verstuurd. Probeer het over een uur opnieuw.",
+      ctDone: "Bericht verstuurd, bedankt!", ctDoneP: "Het Yiriclick-team antwoordt je zo snel mogelijk. Voor een bestelling kun je de verkoper ook schrijven vanuit zijn winkel.",
+      ctAgain: "Nog een bericht sturen", ctHome: "Terug naar de etalage", ctMail: "Je kunt ook schrijven naar" }
   });
   var t = Y.t, box = document.getElementById("ct");
   var TOPICS = [["acheteur", "ctT1"], ["vendeur", "ctT2"], ["partenariat", "ctT3"], ["signalement", "ctT4"], ["autre", "ctT5"]];
@@ -151,7 +158,7 @@
       if (hp.value || Date.now() - opened < 2500) { sent = true; render(); return; } // robots: pretend it worked
       go.disabled = true; go.textContent = t("ctSending");
       var r = await Y.sb.from("messages_contact").insert({ nom: nom.value.trim(), contact: c, sujet: sujet.value, message: message.value.trim(),
-        page: (document.referrer || "").slice(0, 300) || null, langue: Y.prefs.lang });
+        page: (document.referrer || "").slice(0, 300) || null, langue: Y.prefs.lang === "nl" ? "en" : Y.prefs.lang });
       go.disabled = false; go.textContent = t("ctSend");
       if (r.error) { err.textContent = /Trop de messages/i.test(r.error.message || "") ? t("ctTooMany") : t("ctErr"); return; }
       sent = true; draft.message = ""; render(); window.scrollTo(0, 0);

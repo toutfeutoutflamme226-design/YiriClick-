@@ -471,6 +471,7 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
     var n = (o.client_nom || "").split(" ")[0], u = SITE + "noter?c=" + o.id, lg = (o.langue || "fr").slice(0, 2);
     if (lg === "en") return "Hello " + n + ", thank you for your order " + o.numero + " from " + o.boutique + " on Yiriclick! Could you rate your order in 1 minute? It really helps us.\n" + u;
     if (lg === "es") return "Hola " + n + ", ¡gracias por tu pedido " + o.numero + " en " + o.boutique + " en Yiriclick! ¿Puedes valorar tu pedido en 1 minuto? Nos ayuda mucho.\n" + u;
+    if (lg === "nl") return "Hallo " + n + ", bedankt voor je bestelling " + o.numero + " bij " + o.boutique + " op Yiriclick! Wil je je bestelling in 1 minuut beoordelen? Dat helpt ons enorm.\n" + u;
     return "Bonjour " + n + ", merci pour votre commande " + o.numero + " chez " + o.boutique + " sur Yiriclick ! Pouvez-vous noter votre commande en 1 minute ? Cela nous aide beaucoup.\n" + u;
   }
   async function loadAsk() {

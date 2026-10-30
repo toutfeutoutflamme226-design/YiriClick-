@@ -358,7 +358,7 @@ section.block { margin-top: 28px; }
     <div class="ch-top">
       <span class="word" style="font-size:30px"><span class="a">yiri</span><span class="b">click</span></span>
       <div class="ch-langs" role="group" aria-label="Langue">
-        <button type="button" data-l="fr">FR</button><button type="button" data-l="en">EN</button><button type="button" data-l="es">ES</button>
+        <button type="button" data-l="fr">FR</button><button type="button" data-l="en">EN</button><button type="button" data-l="es">ES</button><button type="button" data-l="nl">NL</button>
       </div>
     </div>
     <h1 id="chT" data-t="welcome">Bienvenue sur Yiriclick</h1>
@@ -373,7 +373,7 @@ section.block { margin-top: 28px; }
       <div id="clist" role="radiogroup" aria-labelledby="chT"></div>
       <div class="ch-prefs">
         <div class="ch-f"><label for="prefLang" data-t="language">Langue</label>
-          <select id="prefLang"><option value="fr">Français</option><option value="en">English</option><option value="es">Español</option></select></div>
+          <select id="prefLang"><option value="fr">Français</option><option value="en">English</option><option value="es">Español</option><option value="nl">Nederlands</option></select></div>
         <div class="ch-f"><label for="prefCur" data-t="currency">Monnaie</label>
           <select id="prefCur"><option value="">—</option><option value="XOF">FCFA</option><option value="EUR">Euro (€)</option><option value="USD">Dollar ($)</option></select></div>
       </div>
@@ -407,7 +407,9 @@ section.block { margin-top: 28px; }
       prodS: "Products", shopS: "Shops", catS: "Categories", installGen: "In your browser menu, choose “Add to Home Screen”.", nProd: "{n} product(s)", noRes: "No product matches. Try other words or remove filters.", favsLink: "My favourites", homeLink: "Showcase home" },
     es: { currency: "Moneda", other: "Otro país", loading: "Cargando…", hero1T: "El mercado del mundo, en tu bolsillo", hero1P: "Vendedores verificados de África, Europa y más allá.", hero1C: "Descubrir",
       hero2T: "Vende en Yiriclick", hero2P: "Abre tu tienda en minutos. 14 días gratis.", hero2C: "Abrir mi tienda", tileSee: "Ver productos", voiceNo: "La búsqueda por voz no está disponible en este navegador.",
-      prodS: "Productos", shopS: "Tiendas", catS: "Categorías", installGen: "En el menú de tu navegador, elige «Añadir a pantalla de inicio».", nProd: "{n} producto(s)", noRes: "Ningún producto coincide. Prueba otras palabras o quita filtros.", favsLink: "Mis favoritos", homeLink: "Inicio del escaparate" }
+      prodS: "Productos", shopS: "Tiendas", catS: "Categorías", installGen: "En el menú de tu navegador, elige «Añadir a pantalla de inicio».", nProd: "{n} producto(s)", noRes: "Ningún producto coincide. Prueba otras palabras o quita filtros.", favsLink: "Mis favoritos", homeLink: "Inicio del escaparate" }, nl: { currency: "Valuta", other: "Ander land", loading: "Laden…", hero1T: "De markt van de wereld, in je broekzak", hero1P: "Geverifieerde verkopers uit Afrika, Europa en daarbuiten.", hero1C: "Ontdekken",
+      hero2T: "Verkoop op Yiriclick", hero2P: "Open je winkel in een paar minuten. 14 dagen gratis.", hero2C: "Open mijn winkel", tileSee: "Bekijk producten", voiceNo: "Zoeken met je stem werkt niet in deze browser.",
+      prodS: "Producten", shopS: "Winkels", catS: "Categorieën", installGen: "Kies in het menu van je browser “Toevoegen aan beginscherm”.", nProd: "{n} product(en)", noRes: "Geen product gevonden. Probeer andere woorden of verwijder filters.", favsLink: "Mijn favorieten", homeLink: "Begin van de etalage" }
   });
 
   /* Countries offered at first visit, with the currency they switch to */
@@ -643,7 +645,7 @@ section.block { margin-top: 28px; }
   function prodUrl(p) { var u = new URLSearchParams(location.search); u.set("produit", p.id); return location.pathname + "?" + u.toString(); }
   function show(p, list) { Y.openProduct(p, p.boutiques, { showShop: true, url: prodUrl, list: list ? list.map(function (x) { return [x, x.boutiques]; }) : null }); }
   function cards(list, box) { list.forEach(function (p) { box.appendChild(Y.card(p, p.boutiques, true, function () { show(p, list); })); }); }
-  function namesOf(c) { return ["fr", "en", "es"].map(function (l) { return Y.norm(cname(c, l)); }); }
+  function namesOf(c) { return ["fr", "en", "es", "nl"].map(function (l) { return Y.norm(cname(c, l)); }); }
   function renderRails() {
     var promoL = items.filter(function (p) { return Y.discount(p); }).sort(function (a, b) { return Y.discount(b) - Y.discount(a); });
     if (promoL.length < 4) promoL = promoL.concat(items.filter(function (p) { return !Y.discount(p); }).sort(function (a, b) { return inDisp(a) - inDisp(b); })).slice(0, 12);
@@ -794,7 +796,7 @@ section.block { margin-top: 28px; }
     return "ZZ";
   }
   function curOf(c) { var f = COUNTRIES.filter(function (x) { return x[0] === c; })[0]; return f ? f[1] : "USD"; }
-  var CURN = { XOF: "FCFA", EUR: "Euro (€)", USD: "Dollar ($)" }, LANGN = { fr: "Français", en: "English", es: "Español" };
+  var CURN = { XOF: "FCFA", EUR: "Euro (€)", USD: "Dollar ($)" }, LANGN = { fr: "Français", en: "English", es: "Español", nl: "Nederlands" };
   function paintCard() {
     var c = pickCountry || "ZZ";
     $("chFlag").textContent = flag(c); $("chName").textContent = cname(c);

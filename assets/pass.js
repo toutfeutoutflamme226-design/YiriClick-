@@ -8,7 +8,8 @@ window.YPass = (function () {
   var TX = {
     fr: ["Afficher le mot de passe", "Masquer le mot de passe", "Les deux mots de passe sont identiques.", "Les deux mots de passe ne sont pas identiques."],
     en: ["Show password", "Hide password", "The two passwords match.", "The two passwords do not match."],
-    es: ["Mostrar la contraseña", "Ocultar la contraseña", "Las dos contraseñas coinciden.", "Las dos contraseñas no coinciden."]
+    es: ["Mostrar la contraseña", "Ocultar la contraseña", "Las dos contraseñas coinciden.", "Las dos contraseñas no coinciden."],
+    nl: ["Wachtwoord tonen", "Wachtwoord verbergen", "De twee wachtwoorden komen overeen.", "De twee wachtwoorden komen niet overeen."]
   }[lang] || null;
   if (!TX) TX = ["Afficher le mot de passe", "Masquer le mot de passe", "Les deux mots de passe sont identiques.", "Les deux mots de passe ne sont pas identiques."];
 

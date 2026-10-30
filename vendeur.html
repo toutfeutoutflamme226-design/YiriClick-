@@ -357,7 +357,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
       <span class="tag">Vendeur</span>
     </a>
     <div class="top-acts">
-      <select id="vLang" class="lang-sel" aria-label="Langue"><option value="fr">FR</option><option value="en">EN</option><option value="es">ES</option></select>
+      <select id="vLang" class="lang-sel" aria-label="Langue"><option value="fr">FR</option><option value="en">EN</option><option value="es">ES</option><option value="nl">NL</option></select>
       <a class="btn btn-line btn-sm" id="topShop" href="#" target="_blank" rel="noopener" hidden>Ma boutique</a>
       <button class="btn btn-line btn-sm" id="logout" type="button" hidden>Déconnexion</button>
     </div>
@@ -1696,6 +1696,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     var n = o.client_nom.split(" ")[0], s = st.shop.nom, num = o.numero, u = reviewLink(o), lg = (o.langue || "fr").slice(0, 2);
     if (lg === "en") return "Hello " + n + ", thank you for your order " + num + " from " + s + "! Your opinion matters a lot: could you rate your order in 1 minute?\n" + u;
     if (lg === "es") return "Hola " + n + ", ¡gracias por tu pedido " + num + " en " + s + "! Tu opinión es muy importante: ¿puedes valorar tu pedido en 1 minuto?\n" + u;
+    if (lg === "nl") return "Hallo " + n + ", bedankt voor je bestelling " + num + " bij " + s + "! Je mening is heel belangrijk: wil je je bestelling in 1 minuut beoordelen?\n" + u;
     return "Bonjour " + n + ", merci pour votre commande " + num + " chez " + s + " ! Votre avis compte beaucoup : pouvez-vous noter votre commande en 1 minute ?\n" + u;
   }
   function reviewBlock(o, waNum) {

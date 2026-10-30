@@ -43,7 +43,7 @@
     </a>
     <div class="prefs">
       <a href="./"><span aria-hidden="true">← </span><span data-t="showcase">Vitrine</span></a>
-      <select id="prefLang" data-ta="lang"><option value="fr">FR</option><option value="en">EN</option><option value="es">ES</option></select>
+      <select id="prefLang" data-ta="lang"><option value="fr">FR</option><option value="en">EN</option><option value="es">ES</option><option value="nl">NL</option></select>
       <select id="prefCur" data-ta="cur"><option value="">—</option><option value="XOF">FCFA</option><option value="EUR">€</option><option value="USD">$</option></select>
     </div>
   </div>
@@ -83,7 +83,11 @@
       ntOrder: "Pedido {n}", ntNone: "Enlace de opinión no encontrado", ntNoneP: "Este enlace no es válido. Comprueba que copiaste el enlace completo recibido por WhatsApp.",
       ntWait: "Tu pedido aún no está marcado como entregado", ntWaitP: "Podrás opinar en cuanto el vendedor lo marque como entregado. Guarda este enlace.",
       ntAlready: "Ya has opinado sobre este pedido", ntThanks: "¡Gracias {p}!", ntThanksP: "Tu opinión se ha guardado. Ayuda a toda la comunidad Yiriclick.",
-      ntShop: "Volver a la tienda", ntHome: "Descubrir Yiriclick" }
+      ntShop: "Volver a la tienda", ntHome: "Descubrir Yiriclick" }, nl: { ntT: "Hoe was je bestelling?", ntLead: "Je beoordeling helpt andere klanten en de verkoper om beter te worden. Het kost je minder dan een minuut.",
+      ntOrder: "Bestelling {n}", ntNone: "Beoordelingslink niet gevonden", ntNoneP: "Deze link is niet geldig. Controleer of je de volledige link uit WhatsApp hebt gekopieerd.",
+      ntWait: "Je bestelling is nog niet als geleverd gemarkeerd", ntWaitP: "Je kunt een beoordeling geven zodra de verkoper de bestelling als geleverd markeert. Bewaar deze link.",
+      ntAlready: "Je hebt deze bestelling al beoordeeld", ntThanks: "Bedankt {p}!", ntThanksP: "Je beoordeling is opgeslagen. Ze helpt de hele Yiriclick-gemeenschap.",
+      ntShop: "Terug naar de winkel", ntHome: "Ontdek Yiriclick" }
   });
   var t = Y.t, box = document.getElementById("nt");
   function msg(title, text, big) {
@@ -121,7 +125,7 @@
     if (r.error || !r.data) { state = "none"; render(); return; }
     order = r.data; state = "form";
     var chosen = null; try { chosen = localStorage.getItem("yc-lang"); } catch (e) {}
-    if (!chosen && order.langue && ["fr", "en", "es"].indexOf(order.langue) >= 0 && order.langue !== Y.prefs.lang) { Y.setPrefs(order.langue, null); return; }
+    if (!chosen && order.langue && ["fr", "en", "es", "nl"].indexOf(order.langue) >= 0 && order.langue !== Y.prefs.lang) { Y.setPrefs(order.langue, null); return; }
     render();
   }
   start();

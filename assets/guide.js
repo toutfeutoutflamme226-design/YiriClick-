@@ -151,6 +151,54 @@ window.YGuide = (function () {
         "Publica un producto al día en Facebook con el enlace de tu tienda."
       ],
       allDone: "Todo listo", close: "Cerrar", open: "Abrir Yiri"
+    }, nl: {
+      hiTitle: "Gefeliciteerd, {p}!", hiTitleNo: "Gefeliciteerd!",
+      hiText: "Welkom bij Yiriclick. Je online winkel begint vandaag.",
+      hiFounder: "Je hoort bij de Club van 50 oprichtende verkopers. Bedankt dat je ons vanaf het begin vertrouwt.",
+      meet: "Maak kennis met Yiri", later: "Later",
+      meTitle: "Ik ben Yiri", meRole: "Je assistent van Yiriclick",
+      meText: "Ik help je je winkel in een paar minuten op te zetten en daarna bekend te maken. Eerst drie korte vragen?",
+      q1: "Wat verkoop je?", q1o: ["Mode en beauty", "Voeding", "Ambacht en wonen", "Iets anders"],
+      q2: "Waar zijn je klanten?", q2o: ["In mijn stad", "In het hele land", "Ook in het buitenland"],
+      q3: "Heb je al foto's van je producten?", q3o: ["Ja", "Nog niet"],
+      next: "Volgende", skip: "Overslaan", start: "Aan de slag", finish: "Klaar",
+      tourIntro: "Ik laat je je ruimte zien in 5 stappen.",
+      tour: {
+        dash: ["Home", "Je bezoeken, je WhatsApp-contacten en je lijst om je winkel te lanceren. Je begint hier elke dag."],
+        orders: ["Bestellingen", "Elke bestelling komt hier binnen, compleet: producten, klant, adres. Je krijgt hem ook per e-mail, en via WhatsApp als de klant hem verstuurt."],
+        shop: ["Winkel", "Je naam, logo, omslagfoto, WhatsApp-nummer en levering. Het is de etalage van je zaak."],
+        prod: ["Producten", "Voeg je producten toe met foto's en prijzen. Elke klant ziet de prijs in zijn eigen valuta en taal."],
+        share: ["Marketing", "Je link, je QR-code en kant-en-klare berichten voor WhatsApp en Facebook. Zo komen de klanten."]
+      },
+      coach: "Yiri · je assistent", progress: "{d} van {n} stappen", doIt: "Nu doen", hide: "Verkleinen", replay: "Rondleiding opnieuw bekijken",
+      tips: [
+        "Kies een eenvoudige naam, makkelijk om uit te spreken en te typen. Het adres van je winkel wordt vanzelf gemaakt.",
+        "Een vierkant, scherp logo op een lichte achtergrond. Geen logo? Een mooie foto van je topproduct werkt ook.",
+        "De omslagfoto is de grote afbeelding bovenaan je winkel: laat je producten of je kraam zien.",
+        "Een korte zin die zegt wat je verkoopt. Bijvoorbeeld: “Pure sheaboter uit Bobo, bij jou thuisbezorgd.”",
+        "Stel jezelf voor: wie je bent, wat je verkoopt, waar het vandaan komt. Mensen kopen makkelijker bij iemand die ze kennen.",
+        "Je klanten sturen hun bestellingen naar dit nummer. Controleer of het volledig is.",
+        "Vertel waar je levert, hoe snel en tegen welke prijs. Dat is de eerste vraag van klanten.",
+        "Voeg je Instagram, Facebookpagina of TikTok toe zodat je klanten je kunnen volgen.",
+        "Begin met je 5 bestverkopende producten. De rest voeg je later toe.",
+        "Een scherpe foto, bij daglicht, op een effen achtergrond: dat is wat verkoopt.",
+        "Zet je topproduct in de kijker: het verschijnt als eerste in je winkel."
+      ],
+      tipAbroad: "Verkoop je ook in het buitenland? Vermeld of je per pakket verstuurt of via iemand die reist.",
+      tipNoPhoto: "Nog geen foto's? Maak ze bij daglicht, bij een raam, op een effen laken of muur.",
+      firstProd: "Je eerste product staat online! Ga zo door.",
+      readyTitle: "Je winkel is klaar!", readyText: "Bravo {p}. Maak hem nu bekend: deel je link overal waar je klanten zijn.",
+      share: "Mijn winkel delen", copy: "Bericht kopiëren", copied: "Bericht gekopieerd",
+      shareMsg: "Ontdek mijn winkel {s} op Yiriclick: al mijn producten en prijzen op één plek. Bestel direct via WhatsApp: {u}",
+      tipDay: "Tip van de dag",
+      market: [
+        "Zet elke ochtend je link in je WhatsApp-status, met een product en de prijs.",
+        "Voeg de link van je winkel toe aan je bio op Instagram, TikTok en Facebook.",
+        "Print je QR-code (tabblad Marketing) en zet hem op je kraam of toonbank.",
+        "Vraag na elke levering een beoordeling aan je klant: beoordelingen geven nieuwe klanten vertrouwen.",
+        "Publiceer elke dag een product op Facebook met de link van je winkel."
+      ],
+      allDone: "Alles klaar", close: "Sluiten", open: "Open Yiri"
     }
   };
   var TOUR = ["dash", "orders", "shop", "prod", "share"];

@@ -27,7 +27,7 @@
     </a>
     <div class="prefs">
       <a href="./" id="toVitrine"><span aria-hidden="true">← </span><span data-t="showcase">Vitrine</span></a>
-      <select id="prefLang" data-ta="lang"><option value="fr">FR</option><option value="en">EN</option><option value="es">ES</option></select>
+      <select id="prefLang" data-ta="lang"><option value="fr">FR</option><option value="en">EN</option><option value="es">ES</option><option value="nl">NL</option></select>
       <select id="prefCur" data-ta="cur"><option value="">—</option><option value="XOF">FCFA</option><option value="EUR">€</option><option value="USD">$</option></select>
     </div>
   </div>
@@ -112,7 +112,9 @@
       waHello: "Hello, I am contacting you from your Yiriclick shop: {u}", nProducts: "{n} products" },
     es: { contact: "Contactar por WhatsApp", share: "Compartir la tienda", copied: "Enlace copiado", sections: "Secciones de la tienda", sUne: "Destacados", sPromo: "Ofertas", sNew: "Novedades",
       sAll: "Todos los productos", sInfo: "Información práctica", hours: "Horario", delivery: "Envío", returns: "Devoluciones y cambios", address: "Dirección", faqT: "Preguntas frecuentes", site: "Sitio web",
-      waHello: "Hola, le contacto desde su tienda Yiriclick: {u}", nProducts: "{n} productos" }
+      waHello: "Hola, le contacto desde su tienda Yiriclick: {u}", nProducts: "{n} productos" }, nl: { contact: "Contact via WhatsApp", share: "Winkel delen", copied: "Link gekopieerd", sections: "Afdelingen van de winkel", sUne: "Uitgelicht", sPromo: "Aanbiedingen", sNew: "Nieuw binnen",
+      sAll: "Alle producten", sInfo: "Praktische informatie", hours: "Openingstijden", delivery: "Verzending", returns: "Retouren en ruilen", address: "Adres", faqT: "Veelgestelde vragen", site: "Website",
+      waHello: "Hallo, ik neem contact met je op via je Yiriclick-winkel: {u}", nProducts: "{n} producten" }
   });
   function $(id) { return document.getElementById(id); }
   function sec(k) { var s = shop && shop.sections; return !s || s[k] !== false; }
