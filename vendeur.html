@@ -346,6 +346,40 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
   @page { margin: 12mm; }
 }
 @media (prefers-reduced-motion: reduce) { .progress i { transition: none; } }
+
+/* v26: celebration, Yiriclick slot, subscription and messages */
+.cele { position: relative; overflow: hidden; background: linear-gradient(120deg, var(--navy) 0%, #13414A 100%); color: #fff; border: 0; }
+.cele h2 { color: #fff; font-size: clamp(22px, 4vw, 28px); }
+.cele p { margin: 0; color: #D7EEF0; font-size: 16px; }
+.cele .badge100 { display: inline-flex; align-items: center; gap: 8px; align-self: flex-start; background: var(--orange); color: var(--navy); font-weight: 900; padding: 6px 12px; font-size: 14px; }
+.cele .acts { display: flex; gap: 10px; flex-wrap: wrap; }
+.cele .btn-ghost { background: transparent; color: #fff; border-color: #3E5C64; }
+.cele-close { position: absolute; top: 8px; right: 8px; background: transparent; border: 0; color: #fff; font-size: 24px; width: 44px; height: 44px; cursor: pointer; }
+#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 9998; }
+.slot { border: 0; padding: 0; overflow: hidden; background: var(--white); outline: 1px solid var(--rule); }
+.slot .lab { display: flex; justify-content: space-between; gap: 10px; padding: 10px 14px 0; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--soft); }
+.slot .body { padding: 12px 14px 16px; display: flex; flex-direction: column; gap: 12px; }
+.slot .poster { display: block; width: 100%; aspect-ratio: 16 / 7; object-fit: cover; background: var(--tint); }
+.slot h3 { margin: 0; font-size: 20px; font-weight: 900; letter-spacing: -.3px; }
+.slot p { margin: 0; color: var(--soft); }
+.une { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+.une a { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 14px 10px; border: 1px solid var(--rule); text-decoration: none; color: var(--navy); font-weight: 800; font-size: 14px; text-align: center; background: linear-gradient(180deg, var(--tint), #fff 60%); }
+.une img, .une .ph { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; background: #fff; border: 3px solid #fff; box-shadow: 0 0 0 2px var(--orange); }
+.une .ph { display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 900; color: var(--teal-deep); }
+.une small { font-weight: 700; color: var(--orange); font-size: 11px; text-transform: uppercase; letter-spacing: .5px; }
+.aboc .row { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: baseline; }
+.aboc .big { font-size: 22px; font-weight: 900; }
+.aboc .tagb { display: inline-block; font-size: 12px; font-weight: 800; padding: 3px 8px; background: #EDE7FF; color: #4B2BA8; }
+.thread { display: flex; flex-direction: column; gap: 6px; max-height: 280px; overflow-y: auto; }
+.msg { padding: 8px 10px; font-size: 14px; max-width: 92%; white-space: pre-wrap; overflow-wrap: anywhere; }
+.msg small { display: block; font-size: 11px; color: var(--soft); margin-top: 2px; }
+.msg.me { background: var(--tint); align-self: flex-end; }
+.msg.yc { background: #FFF1E0; align-self: flex-start; }
+.msg.sys { background: var(--bg, #F3F6F7); align-self: center; font-style: italic; }
+.visstate { display: flex; gap: 10px; align-items: center; font-weight: 800; }
+.visstate i { width: 12px; height: 12px; border-radius: 50%; background: var(--ok, #1E7F4F); }
+.visstate.off i { background: var(--bad, #B3261E); }
+@media (prefers-reduced-motion: reduce) { #confetti { display: none; } }
 </style>
 </head>
 <body>
@@ -448,6 +482,24 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
           <div class="kpis" id="ordKpis" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr))"></div>
           <button class="btn btn-orange" type="button" data-goto="orders" id="ordGo">Voir les commandes</button>
         </div>
+        <div class="card aboc" id="aboCard" hidden>
+          <div style="display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap"><h2 id="abo" tabindex="-1">Mon abonnement</h2><span class="hint" id="aboHint"></span></div>
+          <div class="row" id="aboInfo"></div>
+          <div id="boostBox" hidden></div>
+          <h3 style="margin:6px 0 0;font-size:16px">Messages avec Yiriclick <span class="nbadge" id="aboUnread" style="position:static;display:inline-flex" hidden></span></h3>
+          <div class="thread" id="aboThread"></div>
+          <div class="field"><label for="aboReply">Écrire à l’équipe Yiriclick</label><textarea id="aboReply" rows="2" maxlength="2000"></textarea></div>
+          <p class="err" id="aboErr"></p>
+          <button class="btn btn-orange" type="button" id="aboSend" style="align-self:flex-start">Envoyer</button>
+        </div>
+        <div class="card cele" id="celeCard" hidden>
+          <button class="cele-close" type="button" id="celeClose" aria-label="Fermer">×</button>
+          <span class="badge100">✓ 100 %</span>
+          <h2 id="celeTitle"></h2>
+          <p id="celeText"></p>
+          <div class="acts"><button class="btn btn-orange" type="button" data-goto="share">Partager ma boutique</button><button class="btn btn-ghost" type="button" data-goto="prod">Ajouter d’autres produits</button></div>
+        </div>
+        <div class="card slot" id="slotCard" hidden></div>
         <div class="card" id="setup">
           <div style="display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap"><h2>Boutique complète à <span id="pct">0</span> %</h2><span class="hint" id="pctHint"></span></div>
           <div class="progress" role="progressbar" aria-labelledby="setup" id="pbar" aria-valuemin="0" aria-valuemax="100"><i id="pfill" style="width:0"></i></div>
@@ -598,8 +650,14 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
 
           <div class="card">
             <h2>Visibilité</h2>
-            <label class="check"><input type="checkbox" id="bVisible" checked>Boutique visible par les clients</label>
-            <span class="hint">Décoche pendant une pause ou des travaux : ta boutique et tes produits sont cachés, rien n’est supprimé.</span>
+            <div class="visstate" id="visState"><i></i><span id="visTxt">Boutique visible par les clients</span></div>
+            <span class="hint" id="visHint">La visibilité de ta boutique est gérée par l’équipe Yiriclick. Besoin d’une pause (vacances, stock épuisé, travaux) ? Fais une demande : rien n’est supprimé.</span>
+            <div id="visAskBox" style="display:flex;flex-direction:column;gap:10px">
+              <div class="field"><label for="visMotif">Raison (facultatif)</label><input id="visMotif" maxlength="300"></div>
+              <button class="btn btn-ghost" type="button" id="visAsk" style="align-self:flex-start">Demander une pause</button>
+            </div>
+            <div id="visPending" hidden style="display:flex;flex-direction:column;gap:10px"><p class="hint" id="visPendTxt" style="margin:0"></p><button class="btn btn-ghost" type="button" id="visCancel" style="align-self:flex-start">Annuler ma demande</button></div>
+            <p class="err" id="visErr"></p>
           </div>
 
           <div class="savebar">
@@ -617,7 +675,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
       </div>
       <div class="card danger" id="delCard">
         <h2>Supprimer mon compte</h2>
-        <p class="hint" style="margin:0">Ta boutique, tes produits, tes commandes, tes avis et ton accès seront effacés définitivement. Pour une simple pause, décoche plutôt « Boutique visible par les clients ». Ton dossier d’identité, s’il existe, est gardé 6 mois comme l’exige la loi européenne, puis effacé.</p>
+        <p class="hint" style="margin:0">Ta boutique, tes produits, tes commandes, tes avis et ton accès seront effacés définitivement. Pour une simple pause, demande plutôt une pause dans l’onglet Ma boutique. Ton dossier d’identité, s’il existe, est gardé 6 mois comme l’exige la loi européenne, puis effacé.</p>
         <button class="btn btn-ghost" type="button" id="delStart" style="align-self:flex-start;color:var(--bad)">Supprimer mon compte…</button>
         <div id="delConfirmBox" hidden style="display:flex;flex-direction:column;gap:10px">
           <div class="field"><label for="delWord">Pour confirmer, écris SUPPRIMER</label><input id="delWord" autocomplete="off" autocapitalize="characters"></div>
@@ -1120,6 +1178,129 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     } catch (e) {}
     guideInit.done = true;
   }
+  /* ---------- 100 % celebration, Yiriclick slot, subscription and messages (base v26) ---------- */
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function confetti() {
+    if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var c = document.createElement("canvas"); c.id = "confetti"; document.body.appendChild(c);
+    var x = c.getContext("2d"), W, H, dpr = Math.min(2, window.devicePixelRatio || 1);
+    function size() { W = innerWidth; H = innerHeight; c.width = W * dpr; c.height = H * dpr; c.style.width = W + "px"; c.style.height = H + "px"; x.setTransform(dpr, 0, 0, dpr, 0, 0); }
+    size(); addEventListener("resize", size);
+    var colors = ["#FF7A2E", "#4FC7CF", "#0E6E78", "#FFC94D", "#FFFFFF"], P = [];
+    for (var i = 0; i < 160; i++) { var left = i % 2 === 0; P.push({ x: left ? -10 : W + 10, y: H * (.55 + Math.random() * .3), vx: (left ? 1 : -1) * (4 + Math.random() * 7), vy: -(9 + Math.random() * 9), r: 4 + Math.random() * 5, a: Math.random() * 6, va: (Math.random() - .5) * .3, c: colors[i % colors.length], s: Math.random() < .5 }); }
+    var t0 = performance.now();
+    (function frame(t) {
+      var el2 = t - t0; x.clearRect(0, 0, W, H);
+      P.forEach(function (p) { p.vy += .32; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.a += p.va; x.save(); x.translate(p.x, p.y); x.rotate(p.a); x.fillStyle = p.c; x.globalAlpha = Math.max(0, 1 - el2 / 3600);
+        if (p.s) x.fillRect(-p.r, -p.r / 2, p.r * 2, p.r); else { x.beginPath(); x.arc(0, 0, p.r / 1.6, 0, 7); x.fill(); } x.restore(); });
+      if (el2 < 3600) requestAnimationFrame(frame); else { removeEventListener("resize", size); c.remove(); }
+    })(t0);
+  }
+  function celeText() {
+    var made = st.shop && st.shop.created_at ? new Date(st.shop.created_at) : new Date(), h = (Date.now() - made) / 36e5, d = Math.max(1, Math.round(h / 24));
+    var n = (known().nom || "").trim().split(/\s+/)[0], who = (n ? " " + n : "") + (YCV.lang === "fr" ? " " : "");
+    var V = h < 24 ? [[L("Record battu") + who + "! 🚀", L("Ta boutique est complète en moins d’une journée. Cette énergie, tes clients vont la sentir : partage ton lien dès maintenant.")],
+                      [L("Quelle rapidité") + who + "! ⚡", L("100 % en une seule journée. Les vendeurs qui partagent leur boutique le premier jour reçoivent leurs premières commandes plus vite.")]]
+      : h < 24 * 7 ? [[L("Bravo") + who + "! 🎉", L("Tu as tout bouclé en {d} jours. Ta boutique est prête à vendre partout.").replace("{d}", d)],
+                      [L("Mission accomplie") + who + "! 🏆", L("{d} jours pour une boutique complète et professionnelle : bien joué. Place aux ventes !").replace("{d}", d)]]
+      : [[L("Tu as tenu bon") + who + "! 💪", L("Après {d} jours d’efforts, ta boutique est complète à 100 %. Chaque étape compte : maintenant, fais-la connaître.").replace("{d}", d)],
+         [L("Félicitations") + who + "! 🎊", L("Ta persévérance paie : ta boutique est complète. Les clients n’attendent plus que ton lien.")]];
+    return V[Math.floor(Math.random() * V.length)];
+  }
+  function renderDone(pct) {
+    var key = "yc-done-" + (st.shop ? st.shop.id : ""), seen = lsGet(key), card = $("celeCard");
+    $("setup").hidden = pct === 100 && !!seen;
+    if (pct === 100 && st.shop) {
+      if (!seen) {
+        var t = celeText(); $("celeTitle").textContent = t[0]; $("celeText").textContent = t[1]; card.hidden = false;
+        lsSet(key, String(Date.now())); $("setup").hidden = true; setTimeout(confetti, 250);
+      }
+      renderSlot();
+    } else { card.hidden = true; $("slotCard").hidden = true; }
+  }
+  $("celeClose").addEventListener("click", function () { $("celeCard").hidden = true; });
+  var slotSeen = {};
+  async function renderSlot() {
+    var box = $("slotCard"); if (renderSlot.busy) return; renderSlot.busy = true;
+    try {
+      var r = await sb.from("partenaires").select("id,nom,texte,lien,logo,affiche").eq("emplacement", "vendeurs").order("ordre").limit(5);
+      var items = r.error ? [] : (r.data || []); box.textContent = "";
+      var lab = el("div", "lab"); lab.appendChild(el("span", null, items.length ? L("Sponsorisé par Yiriclick") : L("À la une sur Yiriclick"))); lab.appendChild(el("span", null, "Yiriclick")); box.appendChild(lab);
+      var body = el("div", "body");
+      if (items.length) {
+        var p = items[Math.floor(Math.random() * items.length)], img = p.affiche || p.logo;
+        if (img) { var im = el("img", "poster"); im.alt = p.nom; im.loading = "lazy"; im.src = sb.storage.from("partenaires").getPublicUrl(img).data.publicUrl; body.appendChild(im); }
+        body.appendChild(el("h3", null, p.nom)); if (p.texte) body.appendChild(el("p", null, p.texte));
+        if (p.lien) { var a = el("a", "btn btn-orange", L("Découvrir")); a.href = p.lien; a.target = "_blank"; a.rel = "noopener sponsored"; a.style.alignSelf = "flex-start"; a.addEventListener("click", function () { sb.rpc("partenaire_compter", { p_id: p.id, p_type: "clic" }); }); body.appendChild(a); }
+        if (!slotSeen[p.id]) { slotSeen[p.id] = 1; sb.rpc("partenaire_compter", { p_id: p.id, p_type: "vue" }); }
+      } else {
+        // Default: shops in the spotlight (Boost first), with their real logos
+        var q = await sb.from("boutiques").select("id,nom,slug,logo,boost,boost_fin").eq("visible", true).not("logo", "is", null).limit(40);
+        var today = new Date().toISOString().slice(0, 10), rank = { semaine: 0, vedette: 1, avant: 2 };
+        var shops = (Array.isArray(q.data) ? q.data : []).filter(function (b) { return !st.shop || b.id !== st.shop.id; }).sort(function (a, b) {
+          var ra = a.boost && (!a.boost_fin || a.boost_fin >= today) ? rank[a.boost] : 9, rb = b.boost && (!b.boost_fin || b.boost_fin >= today) ? rank[b.boost] : 9; return ra - rb || Math.random() - .5; }).slice(0, 4);
+        body.appendChild(el("h3", null, L("Ta boutique pourrait être ici")));
+        body.appendChild(el("p", null, L("Avec le Boost Yiriclick, ta boutique passe en vedette sur l’accueil et devant les clients de ta catégorie. Les vendeurs fondateurs, les boutiques les mieux notées et les formules Pro et Entreprise y ont accès en priorité.")));
+        if (shops.length) {
+          var g = el("div", "une"); shops.concat(st.shop && st.shop.logo ? [{ nom: st.shop.nom, slug: st.shop.slug, logo: st.shop.logo, moi: true }] : []).slice(0, 4).forEach(function (b) {
+            var a = el("a"); a.href = "boutique?b=" + encodeURIComponent(b.slug); a.target = "_blank"; a.rel = "noopener";
+            var im = el("img"); im.alt = ""; im.loading = "lazy"; im.src = pub(b.logo); im.onerror = function () { var ph = el("span", "ph", (b.nom || "?").charAt(0).toUpperCase()); im.replaceWith(ph); };
+            a.appendChild(im); a.appendChild(el("span", null, b.nom)); a.appendChild(el("small", null, b.moi ? L("Bientôt toi ?") : b.boost === "semaine" ? L("Boutique de la semaine") : b.boost ? L("En vedette") : L("À découvrir"))); g.appendChild(a);
+          });
+          body.appendChild(g);
+        }
+        var ask = el("button", "btn btn-orange", L("Je veux le Boost")); ask.type = "button"; ask.style.alignSelf = "flex-start";
+        ask.addEventListener("click", async function () { ask.disabled = true; var x = await sb.rpc("vendeur_ecrire", { p_texte: L("Bonjour, je souhaite obtenir le Boost Yiriclick pour ma boutique."), p_type: "message" }); ask.textContent = x.error ? L("Réessaie plus tard") : L("Demande envoyée ✓"); if (!x.error) loadMonAbo(true); });
+        body.appendChild(ask);
+      }
+      box.appendChild(body); box.hidden = false;
+    } finally { renderSlot.busy = false; }
+  }
+  var ABO_PLAN = { basique: "Basique", pro: "Pro", entreprise: "Entreprise" }, BOOSTS = { avant: "Mise en avant", vedette: "Vedette de l’accueil", semaine: "Boutique de la semaine" };
+  async function loadMonAbo(force) {
+    if (!st.user || (!force && loadMonAbo.t && Date.now() - loadMonAbo.t < 60000)) return; loadMonAbo.t = Date.now();
+    var r = await sb.rpc("mon_abonnement"); if (r.error || !r.data) { $("aboCard").hidden = true; return; }
+    var A = r.data, card = $("aboCard"), info = $("aboInfo"); info.textContent = ""; card.hidden = false; st.abo = A;
+    if (A.formule) {
+      var j = A.fin ? Math.ceil((new Date(A.fin + "T23:59:59") - new Date()) / 864e5) : null;
+      info.appendChild(el("span", "big", L("Formule ") + (ABO_PLAN[A.formule] || A.formule)));
+      info.appendChild(el("span", null, A.periode === "an" ? L("Paiement annuel") : L("Paiement mensuel")));
+      if (A.fin) info.appendChild(el("span", null, (j < 0 ? L("Terminé le ") : L("Jusqu’au ")) + fmtD(A.fin)));
+      $("aboHint").textContent = j == null ? "" : j < 0 ? L("Renouvelle-le pour garder ta boutique ouverte") : j <= 14 ? (j <= 1 ? L("Se termine très bientôt") : j + L(" jours restants")) : "";
+      $("aboHint").style.color = j != null && j <= 14 ? "var(--bad, #B3261E)" : "";
+    } else { info.appendChild(el("span", null, L("Pas encore d’abonnement payant. Tes rappels et les messages de l’équipe Yiriclick s’affichent ici."))); $("aboHint").textContent = ""; }
+    var bb = $("boostBox"); bb.textContent = ""; bb.hidden = !A.boost;
+    if (A.boost) { bb.appendChild(el("span", "tagb", "Boost : " + L(BOOSTS[A.boost]))); bb.appendChild(el("p", "hint", (A.boost_fin ? L("Jusqu’au ") + fmtD(A.boost_fin) + " · " : "") + (A.boost_vues || 0) + L(" visites de ta boutique depuis le début du Boost") + (A.boost_raison ? " · " + A.boost_raison : ""))); }
+    renderVis(A);
+    var u = $("aboUnread"); u.hidden = !(A.non_lus > 0); u.textContent = A.non_lus || "";
+    var m = await sb.from("vendeurs_suivi").select("id,created_at,de,type,texte").order("created_at", { ascending: true }).limit(100);
+    var th = $("aboThread"); th.textContent = "";
+    (m.data || []).forEach(function (x) { var c = el("div", "msg " + (x.de === "vendeur" ? "me" : x.de === "admin" ? "yc" : "sys"), x.texte); c.appendChild(el("small", null, (x.de === "vendeur" ? L("Toi") : "Yiriclick") + (x.type === "question" ? " · " + L("question") : "") + " · " + fmtD(x.created_at, true))); th.appendChild(c); });
+    if (!(m.data || []).length) th.appendChild(el("p", "hint", L("Aucun message pour l’instant.")));
+    th.scrollTop = th.scrollHeight;
+    if (A.non_lus > 0) sb.rpc("vendeur_suivi_lu");
+  }
+  function fmtD(d, t) { var x = new Date(String(d).length === 10 ? d + "T12:00:00" : d); return x.toLocaleDateString(YCV.loc || "fr-FR", t ? { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" } : { day: "2-digit", month: "2-digit", year: "numeric" }); }
+  $("aboSend").addEventListener("click", async function () {
+    var t = $("aboReply").value.trim(); if (!t) return; var b = this; b.disabled = true; $("aboErr").textContent = "";
+    var r = await sb.rpc("vendeur_ecrire", { p_texte: t, p_type: "reponse" }); b.disabled = false;
+    if (r.error) { $("aboErr").textContent = r.error.message; return; } $("aboReply").value = ""; loadMonAbo(true);
+  });
+  function renderVis(A) {
+    var on = A.visible !== false, w = $("visState"); w.classList.toggle("off", !on);
+    $("visTxt").textContent = on ? L("Boutique visible par les clients") : A.masquee_pour === "pause" ? L("Boutique en pause (masquée)") : A.masquee_pour === "abonnement" ? L("Boutique masquée : abonnement terminé") : L("Boutique masquée par l’équipe Yiriclick");
+    $("visAsk").textContent = on ? L("Demander une pause") : L("Demander la réouverture");
+    $("visAskBox").hidden = !!A.demande || A.masquee_pour === "abonnement"; $("visPending").hidden = !A.demande;
+    if (A.demande) $("visPendTxt").textContent = (A.demande === "pause" ? L("Demande de pause envoyée le ") : L("Demande de réouverture envoyée le ")) + fmtD(A.demande_le, true) + L(". L’équipe Yiriclick te répond très vite.");
+  }
+  $("visAsk").addEventListener("click", async function () {
+    var b = this; b.disabled = true; $("visErr").textContent = "";
+    var r = await sb.rpc("demander_visibilite", { p_action: st.abo && st.abo.visible === false ? "reprise" : "pause", p_motif: $("visMotif").value.trim() || null });
+    b.disabled = false; if (r.error) { $("visErr").textContent = /demander_visibilite|function/i.test(r.error.message) ? L("Cette fonction arrive bientôt. Écris-nous sur WhatsApp en attendant.") : r.error.message; return; }
+    $("visMotif").value = ""; loadMonAbo(true);
+  });
+  $("visCancel").addEventListener("click", async function () { var r = await sb.rpc("demander_visibilite", { p_action: "annuler" }); if (r.error) { $("visErr").textContent = r.error.message; return; } loadMonAbo(true); });
   function renderDash() {
     renderPlanBar();
     $("dName").textContent = st.shop ? st.shop.nom : L("Mon espace");
@@ -1128,6 +1309,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     var list = checklist(), done = list.filter(function (x) { return x[1]; }).length, pct = Math.round(done / list.length * 100);
     $("pct").textContent = pct; $("pfill").style.width = pct + "%"; $("pbar").setAttribute("aria-valuenow", pct);
     $("pctHint").textContent = pct === 100 ? L("Bravo, ta boutique est prête à vendre !") : (list.length - done) + L(" étapes restantes");
+    loadMonAbo();
     var ul = $("todo"); ul.textContent = "";
     list.forEach(function (x) {
       var li = el("li", x[1] ? "done" : ""), b = el("button"); b.type = "button";
@@ -1136,6 +1318,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
       li.appendChild(b); ul.appendChild(li);
     });
     $("setup").hidden = !st.shop;
+    renderDone(pct);
 
     /* KPI tiles */
     var K = [[L("Visites de la boutique"), ["vue_boutique"]], [L("Vues de produits"), ["vue_produit"]], [L("Ajouts au panier"), ["ajout_panier"]], [L("Contacts WhatsApp"), ["clic_whatsapp", "commande_envoyee"]], [L("Mis en favoris"), ["favori"]]];
@@ -1254,7 +1437,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     $("bNom").value = s.nom || ""; $("bSlug").value = s.slug || ""; $("bDesc").value = s.description || ""; $("bSlogan").value = s.slogan || "";
     if (window.YPhone) YPhone.set($("bWa"), s.whatsapp || ""); else $("bWa").value = s.whatsapp || ""; $("bVille").value = s.ville || ""; $("bPays").value = s.pays || ""; $("bAdresse").value = s.adresse || "";
     $("bHoraires").value = s.horaires || ""; $("bLivraison").value = s.livraison || ""; $("bRetours").value = s.retours || "";
-    $("bDevise").value = s.devise || "XOF"; $("bVisible").checked = s.visible !== false;
+    $("bDevise").value = s.devise || "XOF";
     if (!st.shop) {
       // new shop: start from the details given at sign-up
       var k = known(), pre = false;
@@ -1370,7 +1553,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     var fresh = [];
     try {
       var row = { nom: nom, slug: slug, description: $("bDesc").value.trim() || null, whatsapp: (window.YPhone ? YPhone.value($("bWa")) : $("bWa").value.trim()) || null,
-        ville: $("bVille").value.trim() || null, pays: $("bPays").value.trim() || null, devise: $("bDevise").value, visible: $("bVisible").checked };
+        ville: $("bVille").value.trim() || null, pays: $("bPays").value.trim() || null, devise: $("bDevise").value };
       var rs = {}; document.querySelectorAll("[data-net]").forEach(function (i) { var u = netToUrl(i.getAttribute("data-net"), i.value); if (u) rs[i.getAttribute("data-net")] = u; });
       var secs = {}; document.querySelectorAll("[data-sec]").forEach(function (c) { secs[c.getAttribute("data-sec")] = c.checked; });
       var extra = { slogan: $("bSlogan").value.trim() || null, theme: themeVal(), sections: secs, adresse: $("bAdresse").value.trim() || null,

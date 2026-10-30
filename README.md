@@ -411,3 +411,13 @@ Si `schema-v12.sql` est relancé un jour, relancer ensuite `schema-v17.sql`.
 ## Base v25 : le néerlandais dans la base
 
 - `supabase/schema-v25.sql` (après v24) : les inscriptions, dossiers, visites et messages acceptent la langue « nl », et les e-mails de relance existent en néerlandais. Avant ce script, le site enregistre un visiteur néerlandophone en anglais (il le détecte tout seul).
+
+## Base v26 : abonnements, visibilité réservée à l'admin, Boost
+
+- `supabase/schema-v26.sql` (après v25), à coller dans Supabase › SQL Editor › New query, puis Run.
+- **Abonnements** : chaque dossier actif a une date de début, une date de fin et une période (mois / an). Les abonnements déjà actifs reçoivent une fin dans 30 jours : ajuste-les dans l'admin, vue « Abonnements ».
+- **Rappels** : chaque jour à 10 h 37 UTC (tâche `yiriclick-abonnements`), e-mail et message dans l'espace vendeur à J-14, J-7, J-1 et J0, puis boutique masquée après le délai de grâce (7 jours). Elle revient toute seule quand l'admin prolonge. Réglages dans l'admin.
+- **Suivi** : fil de messages admin ↔ vendeur (`vendeurs_suivi`), questions rapides, notes privées, relance WhatsApp ou e-mail pré-remplie.
+- **Visibilité** : seul l'admin affiche ou masque une boutique. Le vendeur demande une pause ou une réouverture (`demander_visibilite`).
+- **Boost** : mise en avant, vedette de l'accueil, boutique de la semaine (colonnes `boost`, `boost_debut`, `boost_fin`, `boost_raison`).
+- **Partenaires** : nouvel emplacement « Espace vendeurs », affiché aux vendeurs dont la boutique est complète à 100 %.

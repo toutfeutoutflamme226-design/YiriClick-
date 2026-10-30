@@ -124,6 +124,18 @@ section.block { margin-top: 28px; }
 .shop-card { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px 10px; border: 1px solid var(--rule); background: var(--white); text-decoration: none; color: var(--ink); text-align: center; min-width: 0; }
 .shop-card .lg { width: 72px; height: 72px; border-radius: 50%; background: var(--tint) center / cover no-repeat; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 26px; color: var(--teal-deep); }
 .shop-card b { font-size: 14px; overflow-wrap: anywhere; }
+.shop-card .bst { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; color: var(--navy); background: #FFC94D; padding: 2px 8px; }
+.shop-card.boosted { border-color: #FFC94D; box-shadow: inset 0 3px 0 #FFC94D; }
+.week { display: grid; grid-template-columns: minmax(0, 1fr); background: var(--navy); color: #fff; text-decoration: none; overflow: hidden; }
+.week .cv { min-height: 140px; background: #13414A center / cover no-repeat; }
+.week .in { padding: 18px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+.week .lg { width: 72px; height: 72px; border-radius: 50%; background: #fff center / cover no-repeat; border: 3px solid #FFC94D; flex: none; display: flex; align-items: center; justify-content: center; color: var(--navy); font-weight: 900; font-size: 26px; }
+.week .tx { flex: 1 1 200px; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.week .tg { color: #FFC94D; font-size: 12px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+.week b { font-size: 24px; font-weight: 900; letter-spacing: -.5px; overflow-wrap: anywhere; }
+.week .tx span { color: #CFE6E8; }
+.week .go { background: var(--orange); color: var(--navy); font-weight: 800; padding: 12px 16px; }
+@media (min-width: 760px) { .week { grid-template-columns: 2fr 3fr; } .week .cv { min-height: 180px; } }
 .shop-card small { font-size: 12px; color: var(--soft); }
 
 /* Discover accordion and footer */
@@ -297,6 +309,7 @@ section.block { margin-top: 28px; }
       <section class="block" id="dealsRow" hidden><div class="sec-head"><h2 data-t="deals">Petits prix</h2><button type="button" data-go="promo" data-t="seeAll">Tout voir</button></div><div class="rail" id="dealsRail"></div></section>
       <section class="block" id="trendSec"><div class="sec-head"><h2 data-t="trends">Tendances du moment</h2><button type="button" data-go="all" data-t="seeAll">Tout voir</button></div><div class="grid2" id="trendGrid"><div class="empty-box" data-t="loading">Chargement…</div></div></section>
       <section class="block" id="nearSec" hidden><div class="sec-head"><h2 data-t="near">Près de chez toi</h2></div><div class="rail" id="nearRail"></div></section>
+      <section class="block" id="weekSec" hidden></section>
       <section class="block" id="shopsSec" hidden><div class="sec-head"><h2 data-t="shops">Boutiques à découvrir</h2></div><div class="rail" id="shopsRail"></div></section>
       <section class="block" id="partSec" hidden></section>
       <section class="block"><div class="sec-head"><h2 data-t="discover">Découvrez tout Yiriclick</h2></div><div class="acc" id="discover"></div></section>
@@ -659,14 +672,28 @@ section.block { margin-top: 28px; }
     var shops = {}, order = [];
     if (srv && stats) (stats.shops || []).forEach(function (b) { shops[b.slug] = { b: b, n: b.n }; order.push(b.slug); });
     else items.forEach(function (p) { var b = p.boutiques; if (!shops[b.slug]) { shops[b.slug] = { b: b, n: 0 }; order.push(b.slug); } shops[b.slug].n++; });
+    Object.keys(boosts).forEach(function (k) { if (!shops[k]) { shops[k] = { b: boosts[k], n: 0 }; order.push(k); } });
+    order = order.map(function (k, i) { return [k, i]; }).sort(function (a, b) { return boostRank(a[0]) - boostRank(b[0]) || a[1] - b[1]; }).map(function (x) { return x[0]; });
+    renderWeek();
     var sr = $("shopsRail"); sr.textContent = "";
     order.slice(0, 16).forEach(function (k) {
-      var s = shops[k], a = el("a", "shop-card"); a.href = "boutique?b=" + encodeURIComponent(k);
+      var s = shops[k], a = el("a", "shop-card" + (boosts[k] ? " boosted" : "")); a.href = "boutique?b=" + encodeURIComponent(k);
+      if (boosts[k]) a.appendChild(el("span", "bst", t("boosted")));
       var lg = el("span", "lg"); if (s.b.logo) lg.style.backgroundImage = "url(\"" + Y.pub(s.b.logo) + "\")"; else lg.textContent = s.b.nom.charAt(0).toUpperCase();
       a.appendChild(lg); a.appendChild(el("b", null, s.b.nom)); a.appendChild(el("small", null, [s.b.ville, s.b.pays].filter(Boolean).join(", ") || t("nProd", { n: s.n })));
       sr.appendChild(a);
     });
     $("shopsSec").hidden = order.length < 1;
+  }
+  function renderWeek() {
+    var sec = $("weekSec"), w = Object.keys(boosts).map(function (k) { return boosts[k]; }).filter(function (b) { return b.boost === "semaine"; })[0];
+    sec.textContent = ""; sec.hidden = !w; if (!w) return;
+    var a = el("a", "week"); a.href = "boutique?b=" + encodeURIComponent(w.slug);
+    var cv = el("div", "cv"); if (w.couverture) cv.style.backgroundImage = "url(\"" + Y.pub(w.couverture) + "\")"; a.appendChild(cv);
+    var inn = el("div", "in"), lg = el("span", "lg"); if (w.logo) lg.style.backgroundImage = "url(\"" + Y.pub(w.logo) + "\")"; else lg.textContent = w.nom.charAt(0).toUpperCase();
+    var tx = el("div", "tx"); tx.appendChild(el("span", "tg", "★ " + t("weekShop"))); tx.appendChild(el("b", null, w.nom));
+    var sub = w.slogan || [w.ville, w.pays].filter(Boolean).join(", "); if (sub) tx.appendChild(el("span", null, sub));
+    inn.appendChild(lg); inn.appendChild(tx); inn.appendChild(el("span", "go", t("weekGo") + " →")); a.appendChild(inn); sec.appendChild(a);
   }
   function famAccordion(box, onPick) {
     box.textContent = "";
@@ -699,6 +726,7 @@ section.block { margin-top: 28px; }
     else if (st.sort === "desc") list.sort(function (a, b) { return inDisp(b) - inDisp(a); });
     else if (st.sort === "promo") list.sort(function (a, b) { return Y.discount(b) - Y.discount(a); });
     else if (st.fav) list.sort(function (a, b) { return favIds.indexOf(a.id) - favIds.indexOf(b.id); });
+    else if (st.cat || st.fam || st.q) { var ix = new Map(list.map(function (p, i) { return [p, i]; })); list.sort(function (a, b) { return boostRank(a.boutiques.slug) - boostRank(b.boutiques.slug) || ix.get(a) - ix.get(b); }); }
     return list;
   }
   function renderResults() {
@@ -854,10 +882,16 @@ section.block { margin-top: 28px; }
 
   /* ---------- render ---------- */
   /* ---------- Club des 50 fondateurs and partners (base v20) ---------- */
-  var fond = null, parts = null;
+  var fond = null, parts = null, boosts = {};
+  function boostRank(slug) { var b = boosts[slug]; return b ? ({ semaine: 0, vedette: 1, avant: 2 }[b.boost] || 3) : 9; }
   function loadV20() {
+    var today = new Date().toISOString().slice(0, 10);
+    Y.sb.from("boutiques").select("nom,slug,logo,couverture,slogan,ville,pays,boost,boost_fin").not("boost", "is", null).limit(50).then(function (r) {
+      boosts = {}; (r.error ? [] : r.data || []).forEach(function (b) { if (!b.boost_fin || b.boost_fin >= today) boosts[b.slug] = b; });
+      if (st.view === "home") renderRails();
+    });
     Y.sb.rpc("fondateurs_places").then(function (r) { fond = r.error ? null : r.data; if (st.view === "home") renderFond(); });
-    Y.sb.from("partenaires").select("id,nom,texte,lien,logo,affiche,emplacement,ordre").order("ordre").then(function (r) { parts = r.error ? [] : (r.data || []); if (st.view === "home") renderParts(); });
+    Y.sb.from("partenaires").select("id,nom,texte,lien,logo,affiche,emplacement,ordre").in("emplacement", ["principal", "bande"]).order("ordre").then(function (r) { parts = r.error ? [] : (r.data || []); if (st.view === "home") renderParts(); });
   }
   function partImg(p) { return p ? Y.sb.storage.from("partenaires").getPublicUrl(p).data.publicUrl : ""; }
   function renderFond() {
@@ -886,7 +920,7 @@ section.block { margin-top: 28px; }
       var d = el("div"); d.appendChild(el("small", null, t("ptMain"))); d.appendChild(el("b", null, main.nom)); if (main.texte) d.appendChild(el("p", null, main.texte)); a.appendChild(d);
       sec.appendChild(a);
     }
-    var band = parts.filter(function (p) { return p.emplacement !== "principal"; });
+    var band = parts.filter(function (p) { return p.emplacement === "bande"; });
     sec.appendChild(el("p", "plogos-t", t("ptBand")));
     var g = el("div", "plogos");
     band.forEach(function (p) { var a = el("a"); link(a, p); if (p.logo) { var im = el("img"); im.src = partImg(p.logo); im.alt = p.nom; im.loading = "lazy"; a.appendChild(im); } else a.textContent = p.nom; a.title = p.nom; g.appendChild(a); });

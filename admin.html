@@ -141,6 +141,49 @@ dd { margin: 0; overflow-wrap: anywhere; }
 .pm-acts { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
 .pm-acts .btn { min-height: 40px; padding: 0 12px; font-size: 14px; }
 code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
+
+/* v26: clickable KPIs, Abonnements view */
+.kpi.click { cursor: pointer; text-align: left; font: inherit; color: inherit; }
+.kpi.click:hover { border-color: var(--teal-deep); }
+.kpi.click[aria-expanded="true"] { border-color: var(--navy); box-shadow: inset 0 -4px 0 var(--teal-deep); }
+.kpi.click small:after { content: " ›"; font-weight: 800; }
+.viewsw { display: flex; gap: 0; border: 2px solid var(--navy); }
+.viewsw button { border: 0; background: var(--white); color: var(--navy); padding: 10px 14px; font-weight: 800; cursor: pointer; min-height: 44px; display: inline-flex; gap: 6px; align-items: center; }
+.viewsw button[aria-pressed="true"] { background: var(--navy); color: var(--white); }
+main:not(.abo) #aboView { display: none !important; }
+main.abo > *:not(.head):not(#loadErr):not(#aboView) { display: none !important; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { border: 2px solid var(--rule); background: var(--white); padding: 8px 12px; font-weight: 800; cursor: pointer; min-height: 40px; }
+.chip b { font-variant-numeric: tabular-nums; margin-left: 4px; }
+.chip[aria-pressed="true"] { border-color: var(--navy); background: var(--navy); color: var(--white); }
+.p-bientot, .p-essai { background: #FFF1E0; color: var(--warn); }
+.p-grace, .p-expire, .p-essai_fini { background: #FCE8E6; color: var(--bad); }
+.p-fondateur { background: #FFF6D6; color: #6B4E00; }
+.p-boost { background: #EDE7FF; color: #4B2BA8; }
+.abo-row { border: 1px solid var(--rule); background: var(--white); }
+.abo-row > button { all: unset; box-sizing: border-box; width: 100%; padding: 12px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 12px; cursor: pointer; }
+.abo-row > button:focus-visible { outline: 3px solid var(--orange); }
+.abo-row .who b { font-size: 16px; } .abo-row .who small { display: block; color: var(--soft); font-size: 13px; overflow-wrap: anywhere; }
+.abo-row .when { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.abo-row .when b { display: block; font-size: 18px; } .abo-row .when small { color: var(--soft); font-size: 12px; }
+.abo-row .tags { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; }
+.abo-det { border-top: 1px solid var(--rule); padding: 14px 12px; display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); background: #FAFCFC; }
+.abo-det h3 { margin: 0 0 8px; font-size: 14px; text-transform: uppercase; letter-spacing: .5px; color: var(--soft); }
+.abo-det .box { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.abo-det .acts { display: flex; flex-wrap: wrap; gap: 8px; }
+.abo-det textarea, .abo-det input, .abo-det select { padding: 10px; border: 2px solid var(--rule); width: 100%; background: var(--white); }
+.thread { display: flex; flex-direction: column; gap: 6px; max-height: 320px; overflow-y: auto; }
+.msg { padding: 8px 10px; font-size: 14px; max-width: 92%; white-space: pre-wrap; overflow-wrap: anywhere; }
+.msg small { display: block; font-size: 11px; color: var(--soft); margin-top: 2px; }
+.msg.admin { background: var(--tint); align-self: flex-end; }
+.msg.vendeur { background: #FFF1E0; align-self: flex-start; }
+.msg.systeme { background: var(--bg); align-self: center; font-style: italic; }
+.msg.note { background: #FFF6D6; align-self: flex-end; border-left: 3px solid #C9A100; }
+.kv { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 12px; font-size: 14px; }
+.kv span { color: var(--soft); } .kv b { overflow-wrap: anywhere; }
+.dtable { width: 100%; min-width: 0; font-size: 14px; }
+.dtable td, .dtable th { padding: 8px; }
+.dtable tbody tr { cursor: default; }
 </style>
 </head>
 <body>
@@ -189,7 +232,10 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
       <h1>Tableau de bord</h1>
       <p id="updated">Chargement…</p>
     </div>
-    <button class="btn btn-ghost" type="button" id="refresh">Actualiser</button>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <div class="viewsw" role="group" aria-label="Vue"><button type="button" id="vwDash" aria-pressed="true">Tableau de bord</button><button type="button" id="vwAbo" aria-pressed="false">Abonnements <span class="badge-n" id="cAbo"></span></button></div>
+      <button class="btn btn-ghost" type="button" id="refresh">Actualiser</button>
+    </div>
   </div>
   <p class="err" id="loadErr"></p>
 
@@ -234,6 +280,7 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
   </div>
 
   <div class="kpis" id="kpis"></div>
+  <div class="card" id="kpiDet" hidden></div>
 
   <div class="card">
     <h2>Activité des 14 derniers jours</h2>
@@ -301,6 +348,24 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
     </form>
     <div class="pm-list" id="pmList"></div>
   </div>
+
+  <section id="aboView" style="display:flex;flex-direction:column;gap:16px">
+    <div class="card">
+      <div class="head" style="align-items:center"><h2>Abonnements des vendeurs</h2><button class="btn btn-ghost" type="button" id="aboSetBtn" aria-expanded="false">Réglages des rappels</button></div>
+      <p class="notice" id="aboNote">Chaque jour à 11 h 37 (heure d’Amsterdam en hiver), Yiriclick envoie les rappels avant la fin de chaque abonnement, puis masque la boutique après le délai de grâce. Rien n’est jamais supprimé : quand tu prolonges, la boutique revient toute seule.</p>
+      <form id="aboSet" hidden style="display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));border:1px solid var(--rule);padding:14px">
+        <div class="field"><label for="asRap">Rappels (jours avant la fin)</label><input id="asRap" inputmode="numeric" placeholder="14, 7, 1, 0"><span class="notice">0 = le jour même.</span></div>
+        <div class="field"><label for="asGrace">Délai de grâce (jours)</label><input id="asGrace" type="number" min="0" max="60" inputmode="numeric"><span class="notice">La boutique reste ouverte pendant ce délai après la fin.</span></div>
+        <label class="check" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="asOn"> Envoyer les rappels</label>
+        <label class="check" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="asHide"> Masquer la boutique après le délai de grâce</label>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button class="btn btn-orange" type="submit">Enregistrer</button><span class="notice" id="asMsg" aria-live="polite"></span></div>
+      </form>
+      <div class="chips" id="aboChips" role="group" aria-label="Filtrer"></div>
+      <div class="tools"><label for="aboQ" style="position:absolute;left:-9999px">Rechercher</label><input id="aboQ" type="search" placeholder="Rechercher un vendeur, une boutique, un e-mail…"></div>
+      <p class="err" id="aboErr"></p>
+      <div class="mlist" id="aboList"></div>
+    </div>
+  </section>
 </main>
 
 <div class="drawer" id="drawer" hidden>
@@ -489,7 +554,8 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
     data.produits = (r[3].data || []).map(function (p) { p.statut = p.masque_admin ? "masque" : "visible"; p.boutique = p.boutiques ? p.boutiques.nom : ""; return p; });
     $("updated").textContent = "Mis à jour le " + fmtDate(new Date(), true);
     renderKpis(); renderChart(); renderBreakdowns(); renderTable(); loadPromos(); loadAvisAdm();
-    loadShops(); loadMessages(); loadEtat(); loadFond(); loadParts(); loadParcours();
+    loadShops(); loadMessages(); loadEtat(); loadFond(); loadParts(); loadParcours(); loadAbo();
+    if (location.hash === "#abonnements") setView("abo");
   }
 
   /* ---------- Trial sellers: where each one stands, and the reminder e-mails sent (base v24) ---------- */
@@ -600,7 +666,7 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
       var d = el("div", "mitem"), tt = el("div", "mt"), o = tot[p.id] || { v: 0, c: 0 };
       var live = p.actif && (!p.debut || p.debut <= today) && (!p.fin || p.fin >= today);
       tt.appendChild(el("b", null, p.nom + (live ? "" : p.actif ? " · programmé ou terminé" : " · en pause")));
-      tt.appendChild(el("span", "ms", (p.emplacement === "principal" ? "Grande affiche" : "Bande de logos") + " · " + (p.debut ? "du " + p.debut : "dès maintenant") + (p.fin ? " au " + p.fin : ", sans fin") + " · 30 jours : " + o.v + " affichages, " + o.c + " clics"));
+      tt.appendChild(el("span", "ms", (p.emplacement === "principal" ? "Grande affiche" : p.emplacement === "vendeurs" ? "Espace vendeurs" : "Bande de logos") + " · " + (p.debut ? "du " + p.debut : "dès maintenant") + (p.fin ? " au " + p.fin : ", sans fin") + " · 30 jours : " + o.v + " affichages, " + o.c + " clics"));
       d.appendChild(tt);
       var acts = el("div", "acts");
       var rep = el("button", "btn btn-ghost", "Copier le rapport"); rep.type = "button";
@@ -617,7 +683,7 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
     function fld(label, inp) { var w = el("div", "field"), l = el("label", null, label); w.appendChild(l); w.appendChild(inp); f.appendChild(w); return inp; }
     function inp(type, v, max) { var i = el("input"); i.type = type; i.value = v || ""; if (max) i.maxLength = max; return i; }
     var nom = fld("Nom du partenaire", inp("text", p.nom, 80)), texte = fld("Phrase courte (facultatif)", inp("text", p.texte, 200)), lien = fld("Lien de son site (commence par https://)", inp("url", p.lien, 300));
-    var emp = el("select"); [["bande", "Bande de logos"], ["principal", "Grande affiche (partenaire principal)"]].forEach(function (o) { var x = el("option", null, o[1]); x.value = o[0]; emp.appendChild(x); }); emp.value = p.emplacement; fld("Emplacement", emp);
+    var emp = el("select"); [["bande", "Bande de logos (accueil)"], ["principal", "Grande affiche (accueil)"], ["vendeurs", "Espace vendeurs (boutiques complètes)"]].forEach(function (o) { var x = el("option", null, o[1]); x.value = o[0]; emp.appendChild(x); }); emp.value = p.emplacement; fld("Emplacement", emp);
     var deb = fld("Début (facultatif)", inp("date", p.debut)), fin = fld("Fin (facultatif)", inp("date", p.fin)), ord = fld("Ordre d’affichage (0 = en premier)", inp("number", String(p.ordre || 0)));
     var logo = fld("Logo (JPG, PNG ou WebP, 3 Mo max)" + (p.logo ? " : un logo est déjà enregistré" : ""), inp("file")); logo.accept = "image/jpeg,image/png,image/webp";
     var aff = fld("Grande affiche, format 2:1, ex. 1200 × 600 (pour le partenaire principal)" + (p.affiche ? " : déjà enregistrée" : ""), inp("file")); aff.accept = "image/jpeg,image/png,image/webp";
@@ -678,7 +744,7 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
   var SCRIPTS = { inscriptions: "Inscriptions (inscriptions.sql)", v2: "v2 · dossiers vendeurs, admin", v3: "v3 · boutiques et produits", v4: "v4 · promotions de la vitrine",
     v5: "v5 · boutiques personnalisables, statistiques", v6: "v6 · commandes et variantes", v7: "v7 · soldes, codes promo, avis", v8: "v8 · tailles pour toutes les formules",
     v9: "v9 · e-mails automatiques", v10: "v10 · essai gratuit immédiat", v11: "v11 · vitrine rapide", v12: "v12 · taux de change du jour",
-    v13: "v13 · formulaires pré-remplis", v14: "v14 · avis clients complets", v15: "v15 · demande d’avis après livraison", v16: "v16 · validation des boutiques, contact, état du site", v17: "v17 · taux de change à 7 h (Pays-Bas)", v18: "v18 · code admin, suppression de compte, ménage des données", v19: "v19 · protections anti-abus, surveillance des tâches", v20: "v20 · partenaires et vendeurs fondateurs", v21: "v21 · limites anti-spam (commandes, inscriptions)", v22: "v22 · promotions honnêtes, suivi des fondateurs", v23: "v23 · horaires des tâches planifiées", v24: "v24 · relances des nouveaux vendeurs", v25: "v25 · le néerlandais dans la base" };
+    v13: "v13 · formulaires pré-remplis", v14: "v14 · avis clients complets", v15: "v15 · demande d’avis après livraison", v16: "v16 · validation des boutiques, contact, état du site", v17: "v17 · taux de change à 7 h (Pays-Bas)", v18: "v18 · code admin, suppression de compte, ménage des données", v19: "v19 · protections anti-abus, surveillance des tâches", v20: "v20 · partenaires et vendeurs fondateurs", v21: "v21 · limites anti-spam (commandes, inscriptions)", v22: "v22 · promotions honnêtes, suivi des fondateurs", v23: "v23 · horaires des tâches planifiées", v24: "v24 · relances des nouveaux vendeurs", v25: "v25 · le néerlandais dans la base", v26: "v26 · abonnements, visibilité et Boost" };
   async function loadEtat() {
     var sum = $("etatSum"), box = $("etatBox"), det = $("etatDet");
     var r = await sb.rpc("etat_site");
@@ -759,7 +825,7 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
     return (j ? j + " j " : "") + (j || h ? h + " h " : "") + String(m).padStart(2, "0") + " min " + String(s % 60).padStart(2, "0") + " s";
   }
   function fmtNext(d) { return d.toLocaleString("fr-FR", { timeZone: "Europe/Amsterdam", weekday: "short", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }); }
-  var TACHES = { "yiriclick-taux-demande": "Demande des taux de change", "yiriclick-taux-lecture": "Lecture des taux de change", "yiriclick-menage": "Ménage mensuel des données", "yiriclick-prix-menage": "Ménage de l’historique des prix", "yiriclick-relances": "Relances e-mail des nouveaux vendeurs" };
+  var TACHES = { "yiriclick-taux-demande": "Demande des taux de change", "yiriclick-taux-lecture": "Lecture des taux de change", "yiriclick-menage": "Ménage mensuel des données", "yiriclick-prix-menage": "Ménage de l’historique des prix", "yiriclick-abonnements": "Rappels des abonnements", "yiriclick-relances": "Relances e-mail des nouveaux vendeurs" };
   var tachesTimer = null;
   function renderTaches(list, box) {
     var g = el("div"); g.appendChild(el("h3", null, "Tâches planifiées")); var ul = el("ul"); g.appendChild(ul);
@@ -785,18 +851,250 @@ code { font-size: 12px; background: var(--tint); padding: 1px 4px; }
 
   /* ---------- KPIs ---------- */
   function inLastDays(d, n) { var t = new Date(); t.setDate(t.getDate() - (n - 1)); t.setHours(0, 0, 0, 0); return new Date(d) >= t; }
+  var kpiOpen = null, abo = { rows: null, filtre: "tous", ouvert: null, reglages: null };
+  var PLAN = { essai: "Essai", basique: "Basique", pro: "Pro", entreprise: "Entreprise" };
+  var ABO_ST = { actif: "Actif", bientot: "Se termine bientôt", grace: "Délai de grâce", expire: "Expiré", essai: "Essai gratuit", essai_fini: "Essai terminé" };
+  function daysTxt(n) { return n == null ? "" : n === 0 ? "aujourd’hui" : n > 0 ? "dans " + n + " j" : "depuis " + (-n) + " j"; }
+  function isActiveSeller(x) { return ["actif", "bientot", "grace", "essai"].indexOf(x.statut) >= 0; }
   function renderKpis() {
     var v = data.visites, box = $("kpis"); box.textContent = "";
-    var visits7 = v.filter(function (x) { return x.type === "visite" && inLastDays(x.created_at, 7); }).length;
-    var forms7 = v.filter(function (x) { return x.type === "formulaire" && inLastDays(x.created_at, 7); }).length;
-    var trials = data.inscriptions.length, trials7 = data.inscriptions.filter(function (x) { return inLastDays(x.created_at, 7); }).length;
-    var pending = data.dossiers.filter(function (x) { return x.statut === "en_attente"; }).length;
-    var active = data.dossiers.filter(function (x) { return x.statut === "actif"; }).length + data.inscriptions.filter(function (x) { return x.statut === "actif"; }).length;
-    var conv = visits7 ? Math.round((v.filter(function (x) { return (x.type === "essai" || x.type === "dossier") && inLastDays(x.created_at, 7); }).length / visits7) * 1000) / 10 : 0;
-    [["Visites", visits7, "7 derniers jours"], ["Formulaires ouverts", forms7, "7 derniers jours"], ["Essais gratuits", trials, trials7 + " cette semaine"],
-     ["Dossiers à vérifier", pending, "en attente", pending > 0], ["Partenaires actifs", active, "essais et abonnés"], ["Produits en ligne", data.produits.filter(function (p) { return p.visible && !p.masque_admin; }).length, data.produits.length + " au total"], ["Taux d’inscription", String(conv).replace(".", ",") + " %", "inscriptions / visites, 7 jours"]
-    ].forEach(function (k) { var d = el("div", "kpi" + (k[3] ? " alert" : "")); d.appendChild(el("span", null, k[0])); d.appendChild(el("b", null, String(k[1]))); d.appendChild(el("small", null, k[2])); box.appendChild(d); });
+    var visits7 = v.filter(function (x) { return x.type === "visite" && inLastDays(x.created_at, 7); });
+    var forms7 = v.filter(function (x) { return x.type === "formulaire" && inLastDays(x.created_at, 7); });
+    var trials7 = data.inscriptions.filter(function (x) { return inLastDays(x.created_at, 7); });
+    var pending = data.dossiers.filter(function (x) { return x.statut === "en_attente"; });
+    var today = new Date().toISOString().slice(0, 10);
+    var paid = data.dossiers.filter(function (x) { return x.statut === "actif" && (!x.abonnement_fin || x.abonnement_fin >= today); });
+    var sellers = abo.rows ? abo.rows.filter(isActiveSeller).length : data.dossiers.filter(function (x) { return x.statut === "actif"; }).length + data.inscriptions.filter(function (x) { return x.statut === "actif"; }).length;
+    var byPlan = function (list, key) { var c = {}; list.forEach(function (x) { var k = x[key] || "?"; c[k] = (c[k] || 0) + 1; }); return ["basique", "pro", "entreprise", "essai"].filter(function (k) { return c[k]; }).map(function (k) { return c[k] + " " + PLAN[k]; }).join(" · "); };
+    var conv = visits7.length ? Math.round((v.filter(function (x) { return (x.type === "essai" || x.type === "dossier") && inLastDays(x.created_at, 7); }).length / visits7.length) * 1000) / 10 : 0;
+    [["visites", "Visites", visits7.length, "7 derniers jours"],
+     ["formulaires", "Formulaires ouverts", forms7.length, byPlan(forms7, "detail") || "7 derniers jours"],
+     ["essais", "Essais gratuits", trials7.length, "7 derniers jours · " + data.inscriptions.length + " au total"],
+     ["dossiers", "Dossiers à vérifier", pending.length, "en attente", pending.length > 0],
+     ["vendeurs", "Vendeurs actifs", sellers, "essais et abonnés"],
+     ["abonnes", "Abonnements payants actifs", paid.length, byPlan(paid, "formule") || "aucun pour l’instant"],
+     ["produits", "Produits en ligne", data.produits.filter(function (p) { return p.visible && !p.masque_admin; }).length, data.produits.length + " au total"],
+     [null, "Taux d’inscription", String(conv).replace(".", ",") + " %", "inscriptions / visites, 7 jours"]
+    ].forEach(function (k) {
+      var d = el(k[0] ? "button" : "div", "kpi" + (k[0] ? " click" : "") + (k[4] ? " alert" : ""));
+      if (k[0]) { d.type = "button"; d.setAttribute("aria-expanded", String(kpiOpen === k[0])); d.setAttribute("aria-controls", "kpiDet"); d.addEventListener("click", function () { if (k[0] === "abonnes") { setView("abo"); return; } kpiOpen = kpiOpen === k[0] ? null : k[0]; renderKpis(); }); }
+      d.appendChild(el("span", null, k[1])); d.appendChild(el("b", null, String(k[2]))); d.appendChild(el("small", null, k[3])); box.appendChild(d);
+    });
+    renderKpiDet({ visites: visits7, formulaires: forms7, essais: trials7, dossiers: pending });
   }
+  function dtable(head, rows) {
+    var w = el("div", "table-box"), t = el("table", "dtable"), th = el("thead"), tr = el("tr");
+    head.forEach(function (h) { tr.appendChild(el("th", null, h)); }); th.appendChild(tr); t.appendChild(th);
+    var tb = el("tbody"); rows.forEach(function (r) { var x = el("tr"); r.forEach(function (c) { var td = el("td"); if (c instanceof Node) td.appendChild(c); else td.textContent = c == null ? "" : String(c); x.appendChild(td); }); tb.appendChild(x); });
+    if (!rows.length) { var x = el("tr"), td = el("td", null, "Rien pour l’instant."); td.colSpan = head.length; x.appendChild(td); tb.appendChild(x); }
+    t.appendChild(tb); w.appendChild(t); return w;
+  }
+  function countBars(list, key, labels) {
+    var c = {}; list.forEach(function (x) { var k = x[key] || "inconnu"; c[k] = (c[k] || 0) + 1; });
+    var max = Math.max.apply(null, Object.values(c).concat([1])), box = el("div", "bars");
+    Object.keys(c).sort(function (a, b) { return c[b] - c[a]; }).forEach(function (k) {
+      var r = el("div", "bar-row"); r.appendChild(el("span", null, (labels && labels[k]) || k));
+      var tr = el("div", "bar-track"), f = el("div", "bar-fill"); f.style.width = (c[k] / max * 100) + "%"; tr.appendChild(f); r.appendChild(tr); r.appendChild(el("b", null, String(c[k]))); box.appendChild(r);
+    });
+    return box;
+  }
+  function renderKpiDet(L) {
+    var box = $("kpiDet"); box.textContent = ""; box.hidden = !kpiOpen; if (!kpiOpen) return;
+    var head = el("div", "head"); head.style.alignItems = "center"; var close = el("button", "btn btn-ghost", "Fermer"); close.type = "button";
+    close.addEventListener("click", function () { kpiOpen = null; renderKpis(); });
+    var T = { visites: "Visites des 7 derniers jours", formulaires: "Formulaires ouverts : quelle formule ?", essais: "Essais gratuits des 7 derniers jours", dossiers: "Dossiers à vérifier", vendeurs: "Vendeurs actifs", produits: "Produits" };
+    head.appendChild(el("h2", null, T[kpiOpen])); head.appendChild(close); box.appendChild(head);
+    if (kpiOpen === "visites") {
+      box.appendChild(el("p", "notice", "D’où viennent les visiteurs :")); box.appendChild(countBars(L.visites, "source"));
+    } else if (kpiOpen === "formulaires") {
+      box.appendChild(countBars(L.formulaires, "detail", PLAN));
+      box.appendChild(dtable(["Date", "Formule", "Provenance"], L.formulaires.slice(0, 200).map(function (x) { return [fmtDate(x.created_at, true), PLAN[x.detail] || x.detail || "?", x.source || ""]; })));
+      box.appendChild(el("p", "notice", "Un formulaire ouvert n’est pas forcément envoyé : compare avec « Essais gratuits » pour voir qui est allé jusqu’au bout."));
+    } else if (kpiOpen === "essais") {
+      box.appendChild(countBars(L.essais, "formule", PLAN));
+      box.appendChild(dtable(["Inscrit le", "Nom", "Boutique", "Formule visée", "Fin d’essai", "Contact"], L.essais.map(function (x) {
+        var c = el("span"); var wa = String(x.whatsapp || "").replace(/\D/g, "");
+        if (wa.length >= 8) { var a = el("a", null, "WhatsApp"); a.href = "https://wa.me/" + wa; a.target = "_blank"; a.rel = "noopener"; c.appendChild(a); c.appendChild(document.createTextNode(" · ")); }
+        var m = el("a", null, x.email); m.href = "mailto:" + x.email; c.appendChild(m);
+        var fin = x.essai_fin ? Math.ceil((new Date(x.essai_fin) - new Date()) / 864e5) : null;
+        return [fmtDate(x.created_at), x.nom, x.boutique, PLAN[x.formule] || x.formule, x.essai_fin ? fmtDate(x.essai_fin) + " (" + daysTxt(fin) + ")" : "", c];
+      })));
+    } else if (kpiOpen === "dossiers") {
+      box.appendChild(dtable(["Reçu le", "Nom", "Boutique", "Formule", "Pays", ""], L.dossiers.map(function (x) {
+        var b = el("button", "btn btn-navy", "Ouvrir le dossier"); b.type = "button";
+        b.addEventListener("click", function () { kpiOpen = null; renderKpis(); setTab("dossiers"); var f = $("fStatut"); f.value = "en_attente"; renderTable(); var row = document.querySelector("#tbody tr"); $("tbody").scrollIntoView({ behavior: "smooth", block: "start" }); });
+        return [fmtDate(x.created_at), x.nom, x.boutique, PLAN[x.formule] || x.formule, x.pays, b];
+      })));
+    } else if (kpiOpen === "vendeurs") {
+      if (!abo.rows) { box.appendChild(el("p", "notice", "Exécute le script v26 pour voir la liste détaillée des vendeurs.")); return; }
+      var act = abo.rows.filter(isActiveSeller);
+      box.appendChild(countBars(act, "formule", PLAN));
+      box.appendChild(dtable(["Vendeur", "Boutique", "Formule", "Statut", "Fin"], act.map(function (x) {
+        var a = el("a", null, x.boutique || "(pas encore de boutique)"); if (x.slug) { a.href = "boutique?b=" + x.slug; a.target = "_blank"; a.rel = "noopener"; }
+        return [x.nom || x.email, a, PLAN[x.formule] || x.formule, ABO_ST[x.statut] || x.statut, x.fin ? fmtDate(x.fin) + " (" + daysTxt(x.jours) + ")" : "—"];
+      })));
+    } else if (kpiOpen === "produits") {
+      setTab("produits"); kpiOpen = null; box.hidden = true; $("tbody").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
+  /* ---------- Abonnements view (base v26) ---------- */
+  function setView(v) {
+    $("vApp").classList.toggle("abo", v === "abo");
+    $("vwDash").setAttribute("aria-pressed", String(v !== "abo")); $("vwAbo").setAttribute("aria-pressed", String(v === "abo"));
+    document.querySelector("#vApp .head h1").textContent = v === "abo" ? "Abonnements" : "Tableau de bord";
+    try { history.replaceState(null, "", v === "abo" ? "#abonnements" : location.pathname + location.search); } catch (e) {}
+    if (v === "abo") { window.scrollTo(0, 0); renderAbo(); }
+  }
+  $("vwDash").addEventListener("click", function () { setView("dash"); });
+  $("vwAbo").addEventListener("click", function () { setView("abo"); });
+  async function loadAbo() {
+    var r = await sb.rpc("abonnements_liste");
+    if (r.error) { abo.rows = null; $("aboErr").textContent = /abonnements_liste|function/i.test(r.error.message) ? "Exécute supabase/schema-v26.sql dans Supabase › SQL Editor pour activer cette page." : r.error.message; $("cAbo").textContent = ""; return; }
+    $("aboErr").textContent = ""; abo.rows = r.data || [];
+    var todo = abo.rows.filter(function (x) { return x.demande || x.non_lus > 0 || x.statut === "grace" || x.statut === "expire"; }).length;
+    $("cAbo").textContent = todo ? String(todo) : "";
+    renderKpis(); renderAbo();
+  }
+  var FILTRES = [["tous", "Tous", function () { return true; }], ["action", "À traiter", function (x) { return x.demande || x.non_lus > 0 || x.statut === "grace" || x.statut === "expire" || x.statut === "essai_fini"; }],
+    ["bientot", "Se termine bientôt", function (x) { return x.statut === "bientot"; }], ["grace", "Délai de grâce", function (x) { return x.statut === "grace"; }],
+    ["expire", "Expirés", function (x) { return x.statut === "expire" || x.statut === "essai_fini"; }], ["actif", "Payants actifs", function (x) { return ["actif", "bientot", "grace"].indexOf(x.statut) >= 0; }],
+    ["essai", "Essais", function (x) { return x.statut === "essai"; }], ["fondateur", "Fondateurs", function (x) { return x.fondateur; }], ["boost", "Boost", function (x) { return !!x.boost; }]];
+  function renderAbo() {
+    if (!$("vApp").classList.contains("abo")) return;
+    var chips = $("aboChips"), list = $("aboList"); chips.textContent = ""; list.textContent = "";
+    if (!abo.rows) return;
+    FILTRES.forEach(function (f) {
+      var n = abo.rows.filter(f[2]).length, b = el("button", "chip", f[1]); b.type = "button"; b.appendChild(el("b", null, String(n)));
+      b.setAttribute("aria-pressed", String(abo.filtre === f[0])); b.addEventListener("click", function () { abo.filtre = f[0]; renderAbo(); }); chips.appendChild(b);
+    });
+    var f = FILTRES.filter(function (x) { return x[0] === abo.filtre; })[0][2], q = norm($("aboQ").value.trim());
+    var rows = abo.rows.filter(f).filter(function (x) { return !q || norm([x.nom, x.email, x.boutique, x.whatsapp].join(" ")).indexOf(q) >= 0; });
+    if (!rows.length) { list.appendChild(el("p", "notice", "Aucun vendeur dans cette liste.")); return; }
+    rows.forEach(function (x) { list.appendChild(aboRow(x)); });
+  }
+  $("aboQ").addEventListener("input", renderAbo);
+  function aboRow(x) {
+    var w = el("div", "abo-row"), b = el("button"); b.type = "button"; b.setAttribute("aria-expanded", String(abo.ouvert === x.cle));
+    var who = el("div", "who"); who.appendChild(el("b", null, x.boutique || x.nom || x.email)); who.appendChild(el("small", null, (x.nom || "") + " · " + x.email));
+    var when = el("div", "when"); when.appendChild(el("b", null, x.fin ? daysTxt(x.jours) : "—")); when.appendChild(el("small", null, x.fin ? "fin le " + fmtDate(x.fin) : "sans date de fin"));
+    var tags = el("div", "tags");
+    tags.appendChild(el("span", "pill p-" + (x.formule === "essai" ? "essai" : "actif"), PLAN[x.formule] || x.formule));
+    tags.appendChild(el("span", "pill p-" + x.statut, ABO_ST[x.statut] || x.statut));
+    if (x.fondateur) tags.appendChild(el("span", "pill p-fondateur", "Fondateur"));
+    if (x.boost) tags.appendChild(el("span", "pill p-boost", "Boost : " + BOOST[x.boost]));
+    if (x.visible === false) tags.appendChild(el("span", "pill p-masque", "Boutique masquée" + (x.masquee_pour === "pause" ? " (pause)" : x.masquee_pour === "abonnement" ? " (abonnement)" : "")));
+    if (x.demande) tags.appendChild(el("span", "pill p-en_attente", x.demande === "pause" ? "Demande de pause" : "Demande de réouverture"));
+    if (x.non_lus > 0) tags.appendChild(el("span", "pill p-en_attente", x.non_lus + " message(s) non lu(s)"));
+    b.appendChild(who); b.appendChild(when); b.appendChild(tags); w.appendChild(b);
+    b.addEventListener("click", function () { abo.ouvert = abo.ouvert === x.cle ? null : x.cle; renderAbo(); });
+    if (abo.ouvert === x.cle) w.appendChild(aboDetail(x));
+    return w;
+  }
+  var BOOST = { avant: "Mise en avant", vedette: "Vedette de l’accueil", semaine: "Boutique de la semaine" };
+  function fld(label, input) { var f = el("div", "field"), l = el("label", null, label); l.htmlFor = input.id = "f" + Math.random().toString(36).slice(2, 8); f.appendChild(l); f.appendChild(input); return f; }
+  function aboDetail(x) {
+    var d = el("div", "abo-det"), msg = el("p", "err"), ok = el("p", "notice"); ok.setAttribute("aria-live", "polite");
+    async function run(fn, done) { msg.textContent = ""; try { var r = await fn(); if (r && r.error) throw r.error; ok.textContent = done || "C’est fait."; await loadAbo(); } catch (e) { msg.textContent = e.message || String(e); } }
+    var wa = String(x.whatsapp || "").replace(/\D/g, ""), prenom = String(x.nom || "").split(" ")[0];
+    // 1. Infos and subscription
+    var b1 = el("div", "box"); b1.appendChild(el("h3", null, "Abonnement"));
+    var kv = el("div", "kv"); [["Formule", (PLAN[x.formule] || x.formule) + (x.periode ? (x.periode === "an" ? " · annuel" : " · mensuel") : "")], ["Début", x.debut ? fmtDate(x.debut) : "—"], ["Fin", x.fin ? fmtDate(x.fin) + " (" + daysTxt(x.jours) + ")" : "—"], ["E-mail", x.email], ["WhatsApp", x.whatsapp || "—"], ["Boutique", x.boutique || "pas encore créée"]]
+      .forEach(function (p) { kv.appendChild(el("span", null, p[0])); kv.appendChild(el("b", null, p[1])); }); b1.appendChild(kv);
+    var acts = el("div", "acts");
+    if (x.dossier_id) {
+      [[1, "+ 1 mois"], [12, "+ 1 an"]].forEach(function (m) { var bt = el("button", "btn btn-orange", m[1]); bt.type = "button"; bt.addEventListener("click", function () { if (window.confirm("Prolonger l’abonnement de " + (x.boutique || x.email) + " de " + m[1].replace("+ ", "") + " ?")) run(function () { return sb.rpc("admin_prolonger", { p_dossier: x.dossier_id, p_mois: m[0] }); }, "Abonnement prolongé."); }); acts.appendChild(bt); });
+      var di = el("input"); di.type = "date"; di.value = x.fin || ""; var ds = el("button", "btn btn-ghost", "Changer la date de fin"); ds.type = "button";
+      ds.addEventListener("click", function () { if (!di.value) return; run(function () { return sb.from("dossiers").update({ abonnement_fin: di.value }).eq("id", x.dossier_id); }, "Date de fin enregistrée."); });
+      var ps = el("select"); [["mois", "Paiement mensuel"], ["an", "Paiement annuel"]].forEach(function (o) { var op = el("option", null, o[1]); op.value = o[0]; ps.appendChild(op); }); ps.value = x.periode || "mois";
+      ps.addEventListener("change", function () { run(function () { return sb.from("dossiers").update({ periode: ps.value }).eq("id", x.dossier_id); }, "Période enregistrée."); });
+      b1.appendChild(acts); b1.appendChild(fld("Nouvelle date de fin", di)); b1.appendChild(ds); b1.appendChild(fld("Période", ps));
+    } else if (x.inscription_id) {
+      var e7 = el("button", "btn btn-orange", "+ 7 jours d’essai"); e7.type = "button";
+      e7.addEventListener("click", function () { var base = x.fin && new Date(x.fin) > new Date() ? new Date(x.fin) : new Date(); base.setDate(base.getDate() + 7); run(function () { return sb.from("inscriptions").update({ essai_fin: base.toISOString(), statut: "actif" }).eq("id", x.inscription_id); }, "Essai prolongé de 7 jours."); });
+      acts.appendChild(e7); b1.appendChild(acts);
+      b1.appendChild(el("p", "notice", "Pour passer ce vendeur en abonnement payant : valide son dossier dans « Dossiers vendeurs ». La date de fin se crée toute seule."));
+    }
+    d.appendChild(b1);
+    // 2. Follow-up: contact and messages
+    var b2 = el("div", "box"); b2.appendChild(el("h3", null, "Suivi et messages"));
+    var quick = el("div", "acts"), txt = x.statut === "grace" || x.statut === "expire" ? "Bonjour " + prenom + ", ton abonnement Yiriclick " + (PLAN[x.formule] || "") + " est terminé depuis le " + (x.fin ? fmtDate(x.fin) : "") + ". Veux-tu le renouveler ? Ta boutique et tes produits sont toujours là."
+      : x.statut === "essai" || x.statut === "essai_fini" ? "Bonjour " + prenom + ", c’est l’équipe Yiriclick. Comment se passe ton essai ? Veux-tu qu’on t’aide à choisir ta formule ?"
+      : "Bonjour " + prenom + ", c’est l’équipe Yiriclick. Ton abonnement " + (PLAN[x.formule] || "") + " se termine le " + (x.fin ? fmtDate(x.fin) : "") + ". Veux-tu le renouveler ?";
+    if (wa.length >= 8) { var aw = el("a", "btn btn-navy", "Relancer sur WhatsApp"); aw.href = "https://wa.me/" + wa + "?text=" + encodeURIComponent(txt); aw.target = "_blank"; aw.rel = "noopener"; quick.appendChild(aw); }
+    var am = el("a", "btn btn-ghost", "Relancer par e-mail"); am.href = "mailto:" + x.email + "?subject=" + encodeURIComponent("Ton abonnement Yiriclick") + "&body=" + encodeURIComponent(txt + "\n\nL’équipe Yiriclick"); quick.appendChild(am);
+    b2.appendChild(quick);
+    var th = el("div", "thread"); th.appendChild(el("p", "notice", "Chargement…")); b2.appendChild(th);
+    var ta = el("textarea"); ta.rows = 3; ta.maxLength = 2000; ta.placeholder = "Écris ici…";
+    var kind = el("select"); [["question", "Demander une information (le vendeur répond depuis son espace)"], ["message", "Message au vendeur"], ["note", "Note privée (visible seulement par toi)"]].forEach(function (o) { var op = el("option", null, o[1]); op.value = o[0]; kind.appendChild(op); });
+    var Q = el("div", "acts"); [["Numéro de téléphone à jour ?", "Peux-tu confirmer ton numéro WhatsApp actuel ?"], ["Mode de paiement", "Comment souhaites-tu payer ton abonnement : Mobile Money, virement ou carte ?"], ["Mensuel ou annuel ?", "Préfères-tu payer chaque mois, ou à l’année (2 mois offerts) ?"], ["Avis sur Yiriclick", "Qu’est-ce qui t’aiderait à vendre plus sur Yiriclick ?"]]
+      .forEach(function (p) { var bq = el("button", "chip", p[0]); bq.type = "button"; bq.addEventListener("click", function () { ta.value = p[1]; kind.value = "question"; ta.focus(); }); Q.appendChild(bq); });
+    b2.appendChild(el("span", "notice", "Questions rapides :")); b2.appendChild(Q);
+    b2.appendChild(fld("Type", kind)); b2.appendChild(fld("Texte", ta));
+    var send = el("button", "btn btn-orange", "Envoyer"); send.type = "button";
+    send.addEventListener("click", function () { var t = ta.value.trim(); if (!t) return; run(async function () { var r = await sb.from("vendeurs_suivi").insert({ email: x.email, de: "admin", type: kind.value, texte: t, lu_admin: true }); if (!r.error) { ta.value = ""; } return r; }, kind.value === "note" ? "Note enregistrée." : "Envoyé : le vendeur le verra dans son espace."); });
+    b2.appendChild(send); d.appendChild(b2);
+    // 3. Visibility and Boost
+    var b3 = el("div", "box"); b3.appendChild(el("h3", null, "Visibilité et Boost"));
+    if (!x.boutique_id) { b3.appendChild(el("p", "notice", "Ce vendeur n’a pas encore créé sa boutique.")); }
+    else {
+      b3.appendChild(el("p", null, x.visible ? "Boutique visible par les clients." : "Boutique masquée" + (x.masquee_pour === "pause" ? " (pause demandée par le vendeur)." : x.masquee_pour === "abonnement" ? " (abonnement terminé)." : ".")));
+      if (x.demande) { var dm = el("p", "notice", (x.demande === "pause" ? "Demande de pause" : "Demande de réouverture") + " du " + fmtDate(x.demande_le, true) + (x.motif ? " : « " + x.motif + " »" : "")); b3.appendChild(dm); }
+      var va = el("div", "acts");
+      if (x.demande === "pause") { var ap = el("button", "btn btn-orange", "Accepter la pause"); ap.type = "button"; ap.addEventListener("click", function () { run(function () { return sb.rpc("admin_visibilite", { p_boutique: x.boutique_id, p_visible: false, p_raison: "pause" }); }, "Pause acceptée, le vendeur est prévenu."); }); va.appendChild(ap); }
+      if (x.demande === "reprise") { var ar = el("button", "btn btn-orange", "Accepter la réouverture"); ar.type = "button"; ar.addEventListener("click", function () { run(function () { return sb.rpc("admin_visibilite", { p_boutique: x.boutique_id, p_visible: true }); }, "Boutique rouverte, le vendeur est prévenu."); }); va.appendChild(ar); }
+      if (x.demande) { var rf = el("button", "btn btn-ghost", "Refuser la demande"); rf.type = "button"; rf.addEventListener("click", function () { run(async function () { var r = await sb.from("boutiques").update({ visibilite_demande: null, visibilite_demande_le: null, visibilite_motif: null }).eq("id", x.boutique_id); if (!r.error) await sb.from("vendeurs_suivi").insert({ email: x.email, de: "admin", type: "info", texte: "Ta demande n’a pas été acceptée pour l’instant. Écris-nous ici si tu veux en parler.", lu_admin: true }); return r; }, "Demande refusée, le vendeur est prévenu."); }); va.appendChild(rf); }
+      var tg = el("button", "btn btn-navy", x.visible ? "Masquer la boutique" : "Rendre la boutique visible"); tg.type = "button";
+      tg.addEventListener("click", function () { if (x.visible && !window.confirm("Masquer « " + x.boutique + " » ? Rien n’est supprimé, le vendeur est prévenu.")) return; run(function () { return sb.rpc("admin_visibilite", { p_boutique: x.boutique_id, p_visible: !x.visible, p_raison: "admin" }); }, "Visibilité changée."); });
+      va.appendChild(tg); if (x.slug) { var vs = el("a", "btn btn-ghost", "Voir la boutique"); vs.href = "boutique?b=" + x.slug; vs.target = "_blank"; vs.rel = "noopener"; va.appendChild(vs); }
+      b3.appendChild(va);
+      var bl = el("select"); [["", "Aucun Boost"], ["avant", "Mise en avant (en haut de sa catégorie)"], ["vedette", "Vedette de l’accueil"], ["semaine", "Boutique de la semaine"]].forEach(function (o) { var op = el("option", null, o[1]); op.value = o[0]; bl.appendChild(op); }); bl.value = x.boost || "";
+      var bd = el("input"); bd.type = "date"; bd.value = new Date().toISOString().slice(0, 10);
+      var bf = el("input"); bf.type = "date"; bf.value = x.boost_fin || ""; if (!bf.value) { var t7 = new Date(); t7.setDate(t7.getDate() + 7); bf.value = t7.toISOString().slice(0, 10); }
+      var br = el("select"); ["Offert : vendeur fondateur", "Récompense : très bons avis", "Récompense : commandes livrées", "Inclus dans sa formule", "Option achetée", "Geste commercial"].forEach(function (o) { var op = el("option", null, o); op.value = o; br.appendChild(op); });
+      b3.appendChild(fld("Niveau de Boost", bl)); b3.appendChild(fld("Début", bd)); b3.appendChild(fld("Fin", bf)); b3.appendChild(fld("Raison (visible par le vendeur)", br));
+      var bs = el("button", "btn btn-orange", "Enregistrer le Boost"); bs.type = "button";
+      bs.addEventListener("click", function () { run(async function () {
+        var row = bl.value ? { boost: bl.value, boost_debut: bd.value || null, boost_fin: bf.value || null, boost_raison: br.value } : { boost: null, boost_debut: null, boost_fin: null, boost_raison: null };
+        var r = await sb.from("boutiques").update(row).eq("id", x.boutique_id);
+        if (!r.error && bl.value) await sb.from("vendeurs_suivi").insert({ email: x.email, de: "admin", type: "info", texte: "Bonne nouvelle : ta boutique reçoit le Boost « " + BOOST[bl.value] + " » jusqu’au " + fmtDate(bf.value) + " (" + br.value + ").", lu_admin: true });
+        return r; }, "Boost enregistré."); });
+      b3.appendChild(bs);
+    }
+    d.appendChild(b3);
+    var foot = el("div"); foot.style.gridColumn = "1 / -1"; foot.appendChild(ok); foot.appendChild(msg); d.appendChild(foot);
+    // load the thread and mark the seller's messages as read
+    (async function () {
+      var r = await sb.from("vendeurs_suivi").select("*").ilike("email", x.email).order("created_at", { ascending: true }).limit(200);
+      var rp = await sb.from("abonnement_rappels").select("*").ilike("email", x.email).order("envoye_le", { ascending: true });
+      th.textContent = "";
+      var items = (r.data || []).map(function (m) { return { t: m.created_at, m: m }; }).concat((rp.data || []).filter(function (a) { return a.envoye; }).map(function (a) { return { t: a.envoye_le, a: a }; }));
+      items.sort(function (a, b) { return new Date(a.t) - new Date(b.t); });
+      if (!items.length) th.appendChild(el("p", "notice", "Aucun échange pour l’instant."));
+      items.forEach(function (it) {
+        if (it.a) { var s = el("div", "msg systeme", it.a.etape < 0 ? "E-mail : boutique masquée (fin + délai de grâce)" : "E-mail de rappel envoyé (J-" + it.a.etape + ")"); s.appendChild(el("small", null, fmtDate(it.t, true))); th.appendChild(s); return; }
+        var m = it.m, lab = { question: "Question", note: "Note privée", reponse: "Réponse", pause: "Demande", reprise: "Demande", relance: "Rappel automatique", info: "Info", message: "Message" }[m.type] || "";
+        var c = el("div", "msg " + (m.type === "note" ? "note" : m.de), m.texte); c.appendChild(el("small", null, (m.de === "vendeur" ? "Vendeur" : m.de === "admin" ? "Toi" : "Yiriclick") + " · " + lab + " · " + fmtDate(m.created_at, true) + (m.de === "admin" && m.type !== "note" ? (m.lu_vendeur ? " · lu" : " · pas encore lu") : ""))); th.appendChild(c);
+      });
+      th.scrollTop = th.scrollHeight;
+      if (x.non_lus > 0) { await sb.from("vendeurs_suivi").update({ lu_admin: true }).ilike("email", x.email).eq("de", "vendeur").eq("lu_admin", false); x.non_lus = 0; }
+    })();
+    return d;
+  }
+  $("aboSetBtn").addEventListener("click", async function () {
+    var f = $("aboSet"), open = f.hidden; f.hidden = !open; this.setAttribute("aria-expanded", String(open)); if (!open) return;
+    var r = await sb.from("reglages_abonnements").select("*").eq("id", 1).maybeSingle();
+    if (r.error || !r.data) { $("asMsg").textContent = "Exécute d’abord le script v26."; return; }
+    $("asRap").value = (r.data.rappels || []).join(", "); $("asGrace").value = r.data.grace_jours; $("asOn").checked = r.data.rappels_actifs; $("asHide").checked = r.data.masquer_auto;
+  });
+  $("aboSet").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    var rap = $("asRap").value.split(/[^0-9]+/).filter(Boolean).map(Number).filter(function (n) { return n >= 0 && n <= 90; });
+    rap = rap.filter(function (n, i) { return rap.indexOf(n) === i; }).sort(function (a, b) { return b - a; });
+    var g = Math.max(0, Math.min(60, parseInt($("asGrace").value, 10) || 0));
+    var r = await sb.from("reglages_abonnements").update({ rappels: rap, grace_jours: g, rappels_actifs: $("asOn").checked, masquer_auto: $("asHide").checked }).eq("id", 1);
+    $("asMsg").textContent = r.error ? r.error.message : "Réglages enregistrés."; if (!r.error) { $("asRap").value = rap.join(", "); loadAbo(); }
+  });
 
   /* ---------- 14-day chart (grouped bars, one scale) ---------- */
   function renderChart() {
