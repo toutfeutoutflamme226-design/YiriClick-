@@ -56,7 +56,10 @@ async function vendorSupabase() {
    An old .html link still works; the address bar is tidied without reloading the page. */
 const CLEAN_URL = '<script>(function(){var p=location.pathname;if(/\\.html$/.test(p)&&!/\\/404\\.html$/.test(p)){try{history.replaceState(history.state,"",p.replace(/(^|\\/)index\\.html$/,"$1").replace(/\\.html$/,"")+location.search+location.hash)}catch(e){}}})();</script>';
 const FRAME_GUARD = '<script>if(window.top!==window.self){try{window.top.location=window.self.location}catch(e){document.documentElement.style.display="none"}}</script>';
+// Content Security Policy: scripts, connections and frames only from the site, Supabase, jsDelivr/cdnjs (libraries) and Cloudflare (anti-robot)
+const CSP = `<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://challenges.cloudflare.com; connect-src 'self' https://vtiakxfnechkoomagddl.supabase.co wss://vtiakxfnechkoomagddl.supabase.co https://challenges.cloudflare.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; frame-src https://challenges.cloudflare.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self' https://wa.me">`;
 function hardenHtml(html) {
+  if (!html.includes("Content-Security-Policy")) html = html.replace(/<head>/i, "<head>\n" + CSP);
   if (SB_LOCAL) html = html.split(SB_CDN).join("assets/vendor/supabase.min.js");
   if (!html.includes("window.top!==window.self")) html = html.replace(/<head>/i, "<head>\n" + FRAME_GUARD);
   if (!html.includes("history.replaceState(history.state,\"\",p.replace")) html = html.replace(/<head>/i, "<head>\n" + CLEAN_URL);

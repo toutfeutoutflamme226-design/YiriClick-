@@ -640,7 +640,7 @@ section.block { margin-top: 28px; }
     var box = $("tiles"); box.textContent = "";
     var tl = promos.filter(function (p) { return p.type === "tuile"; });
     if (tl.length) tl.forEach(function (p) {
-      var a = el("a", "tile c-" + (p.couleur || "sand") + (p.image ? " has-img" : "")); a.href = p.lien || "?all=1";
+      var a = el("a", "tile c-" + (p.couleur || "sand") + (p.image ? " has-img" : "")); a.href = p.lien && /^(https:\/\/|[a-z0-9#?\/._=&-]+$)/i.test(p.lien) ? p.lien : "?all=1";
       if (/^https?:/.test(p.lien || "")) { a.target = "_blank"; a.rel = "noopener"; }
       if (p.image) a.style.backgroundImage = "url(\"" + promoImg(p.image) + "\")";
       a.appendChild(el("h3", null, p.titre)); if (p.sous_titre) a.appendChild(el("p", null, p.sous_titre));

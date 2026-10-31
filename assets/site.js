@@ -52,8 +52,8 @@
     bar.id = "ycAnnonce"; bar.setAttribute("role", "region"); bar.setAttribute("aria-label", "Annonce");
     bar.style.cssText = "position:relative;z-index:50;background:#FF7A2E;color:#10232A;font:700 14px/1.35 Archivo,Arial,sans-serif;padding:10px 48px 10px 16px;text-align:center";
     bar.textContent = "";
-    var t = a.lien ? document.createElement("a") : document.createElement("span");
-    t.textContent = txt; if (a.lien) { t.href = a.lien; t.style.color = "inherit"; t.style.textDecoration = "underline"; }
+    var t = document.createElement("a");
+    t.textContent = txt; if (a.lien && /^(https:\/\/|[a-z0-9#?\/._=&-]+$)/i.test(a.lien)) { t.href = a.lien; t.style.color = "inherit"; t.style.textDecoration = "underline"; }
     var x = document.createElement("button"); x.type = "button"; x.textContent = "×"; x.setAttribute("aria-label", "Fermer");
     x.style.cssText = "position:absolute;right:4px;top:50%;transform:translateY(-50%);width:40px;height:40px;border:0;background:none;color:inherit;font-size:22px;cursor:pointer";
     x.addEventListener("click", function () { try { sessionStorage.setItem("yc-annonce-off", txt); } catch (e) {} bar.remove(); });
