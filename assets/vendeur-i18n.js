@@ -16,7 +16,7 @@ window.YCV = (function () {
     "Copié ✓": ["Copied ✓", "Copiado ✓", "Gekopieerd ✓"],
     " / semaine": [" / week", " / semana", " / week"],
     "Paiement trimestriel": ["Quarterly payment", "Pago trimestral", "Betaling per kwartaal"],
-    "prix fondateur garanti à vie": ["founder price guaranteed for life", "precio de fundador garantizado de por vida", "oprichtersprijs voor altijd gegarandeerd"],
+    "prix fondateur garanti jusqu’au ": ["founder price guaranteed until ", "precio de fundador garantizado hasta el ", "oprichtersprijs gegarandeerd tot "], "prix fondateur garanti 5 ans": ["founder price guaranteed for 5 years", "precio de fundador garantizado 5 años", "oprichtersprijs 5 jaar gegarandeerd"],
     "Parraine un vendeur, gagne des mois offerts": ["Refer a seller, earn free months", "Recomienda a un vendedor, gana meses gratis", "Verwijs een verkoper door, verdien gratis maanden"],
     "Inviter sur WhatsApp": ["Invite on WhatsApp", "Invitar por WhatsApp", "Uitnodigen via WhatsApp"],
     /* subscription, visibility, Boost, 100 % (base v26) */

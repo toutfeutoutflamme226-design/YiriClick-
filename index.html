@@ -99,6 +99,11 @@ section.block { margin-top: 28px; }
 .tile h3 { margin: 0; font-size: clamp(20px, 5vw, 28px); font-weight: 900; line-height: 1.02; letter-spacing: -.5px; text-wrap: balance; position: relative; }
 .tile p { margin: 0; font-size: 14px; position: relative; }
 .tile .ico { align-self: flex-end; width: 64px; height: 64px; border-radius: 50%; background: rgba(255, 255, 255, .6); display: flex; align-items: center; justify-content: center; position: relative; }
+.tile .pics { align-self: stretch; display: flex; justify-content: flex-end; align-items: flex-end; height: 46%; position: relative; }
+.tile .pics img { width: 58%; aspect-ratio: 1; object-fit: cover; border-radius: 14px; border: 3px solid #fff; box-shadow: 0 6px 16px rgba(16, 35, 42, .18); background: #fff; position: absolute; bottom: 0; }
+.tile .pics img:nth-child(1) { right: 0; z-index: 3; }
+.tile .pics img:nth-child(2) { right: 30%; bottom: 10%; width: 46%; transform: rotate(-7deg); z-index: 2; }
+.tile .pics img:nth-child(3) { right: 52%; bottom: 22%; width: 36%; transform: rotate(-14deg); z-index: 1; }
 .tile.has-img::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(255, 255, 255, .85), rgba(255, 255, 255, 0) 55%); }
 
 /* Deal of the day */
@@ -615,6 +620,22 @@ section.block { margin-top: 28px; }
   var TILE_COLORS = ["sand", "mint", "rose", "teal", "orange", "sand"];
   var FAM_ICON = { fam_mode: '<path d="M8 4l4 2 4-2 4 4-3 3v9H7v-9L4 8z"/>', fam_maison: '<path d="M3 11l9-7 9 7M5 10v10h14V10"/>', fam_tech: '<rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/>',
     fam_alim: '<path d="M5 11h14a7 7 0 0 1-14 0zM8 7c0-2 2-2 2-4M13 7c0-2 2-2 2-4"/>', fam_famille: '<circle cx="9" cy="7" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-4 3-6 6-6s6 2 6 6M15 20c0-3 1.5-5 4-5"/>', fam_pro: '<path d="M14 6l4 4-8 8H6v-4zM3 21h18"/>' };
+  /* Real product photos for each family tile (2 or 3 per tile), newest first */
+  var famPhotos = {};
+  function loadFamPhotos() {
+    Y.sb.from("produits").select("categorie,photos,boutique_id").eq("visible", true).eq("masque_admin", false).order("created_at", { ascending: false }).limit(300).then(function (r) {
+      if (r.error || !Array.isArray(r.data)) return;
+      var famOfCat = {}; Y.FAMILIES.forEach(function (f) { f[1].forEach(function (c) { famOfCat[c] = f[0]; }); });
+      var out = {}, seenShop = {};
+      r.data.forEach(function (p) {
+        var f = famOfCat[p.categorie], u = p.photos && p.photos[0]; if (!f || !u) return;
+        out[f] = out[f] || []; if (out[f].length >= 3) return;
+        var k = f + p.boutique_id; if ((seenShop[k] || 0) >= 2 && r.data.length > 20) return; seenShop[k] = (seenShop[k] || 0) + 1;   // mix shops when possible
+        out[f].push(u);
+      });
+      famPhotos = out; if (st.view === "home") renderTiles();
+    });
+  }
   function renderTiles() {
     var box = $("tiles"); box.textContent = "";
     var tl = promos.filter(function (p) { return p.type === "tuile"; });
@@ -630,7 +651,9 @@ section.block { margin-top: 28px; }
       b.appendChild(el("h3", null, t(f[0])));
       var n = srv && stats ? f[1].reduce(function (s, c) { return s + ((stats.cats || {})[c] || 0); }, 0) : items.filter(function (p) { return f[1].indexOf(p.categorie) >= 0; }).length;
       b.appendChild(el("p", null, n ? t("nProd", { n: n }) : t("tileSee")));
-      var ic = el("span", "ico"); ic.innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#10232A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + FAM_ICON[f[0]] + "</svg>"; b.appendChild(ic);
+      var ph = famPhotos[f[0]] || [];
+      if (ph.length) { var pics = el("span", "pics"); pics.setAttribute("aria-hidden", "true"); ph.slice(0, 3).forEach(function (u) { var im = el("img"); im.alt = ""; im.loading = "lazy"; im.decoding = "async"; im.src = Y.pub(u); im.onerror = function () { im.remove(); }; pics.appendChild(im); }); b.appendChild(pics); }
+      else { var ic = el("span", "ico"); ic.innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#10232A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + FAM_ICON[f[0]] + "</svg>"; b.appendChild(ic); }
       b.addEventListener("click", function () { go({ fam: f[0] }); });
       box.appendChild(b);
     });
@@ -932,7 +955,7 @@ section.block { margin-top: 28px; }
     parts.forEach(function (p) { if (!seen[p.id]) { seen[p.id] = 1; Y.sb.rpc("partenaire_compter", { p_id: p.id, p_type: "vue" }); } });
     try { sessionStorage.setItem("yc-pv", JSON.stringify(seen)); } catch (e) {}
   }
-  loadV20();
+  loadV20(); loadFamPhotos();
 
   function render() {
     Y.labels(); paintHeader();

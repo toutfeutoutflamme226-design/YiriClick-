@@ -382,7 +382,7 @@ main.site > *:not(.head):not(#loadErr):not(#siteView) { display: none !important
     </div>
     <div class="card">
       <h2>Prix des formules</h2>
-      <p class="notice">Les nouveaux prix s’affichent tout de suite sur la page Tarifs. Les vendeurs déjà abonnés gardent leur prix jusqu’à leur renouvellement, et les vendeurs fondateurs le gardent à vie.</p>
+      <p class="notice">Les nouveaux prix s’affichent tout de suite sur la page Tarifs. Les vendeurs déjà abonnés gardent leur prix jusqu’à leur renouvellement, et les vendeurs fondateurs le gardent 5 ans.</p>
       <div id="prixBox" style="display:flex;flex-direction:column;gap:14px"></div>
       <div class="savebar2"><button class="btn btn-ghost" type="button" id="prixCalc">Calculer trimestre (−5 %) et an (2 mois offerts) depuis le mensuel</button><button class="btn btn-orange" type="button" id="prixSave">Enregistrer les prix</button><span class="notice" id="prixMsg" aria-live="polite"></span></div>
     </div>
@@ -818,7 +818,7 @@ main.site > *:not(.head):not(#loadErr):not(#siteView) { display: none !important
   var SCRIPTS = { inscriptions: "Inscriptions (inscriptions.sql)", v2: "v2 · dossiers vendeurs, admin", v3: "v3 · boutiques et produits", v4: "v4 · promotions de la vitrine",
     v5: "v5 · boutiques personnalisables, statistiques", v6: "v6 · commandes et variantes", v7: "v7 · soldes, codes promo, avis", v8: "v8 · tailles pour toutes les formules",
     v9: "v9 · e-mails automatiques", v10: "v10 · essai gratuit immédiat", v11: "v11 · vitrine rapide", v12: "v12 · taux de change du jour",
-    v13: "v13 · formulaires pré-remplis", v14: "v14 · avis clients complets", v15: "v15 · demande d’avis après livraison", v16: "v16 · validation des boutiques, contact, état du site", v17: "v17 · taux de change à 7 h (Pays-Bas)", v18: "v18 · code admin, suppression de compte, ménage des données", v19: "v19 · protections anti-abus, surveillance des tâches", v20: "v20 · partenaires et vendeurs fondateurs", v21: "v21 · limites anti-spam (commandes, inscriptions)", v22: "v22 · promotions honnêtes, suivi des fondateurs", v23: "v23 · horaires des tâches planifiées", v24: "v24 · relances des nouveaux vendeurs", v25: "v25 · le néerlandais dans la base", v26: "v26 · abonnements, visibilité et Boost", v27: "v27 · prix, contenu du site, parrainage, codes promo" };
+    v13: "v13 · formulaires pré-remplis", v14: "v14 · avis clients complets", v15: "v15 · demande d’avis après livraison", v16: "v16 · validation des boutiques, contact, état du site", v17: "v17 · taux de change à 7 h (Pays-Bas)", v18: "v18 · code admin, suppression de compte, ménage des données", v19: "v19 · protections anti-abus, surveillance des tâches", v20: "v20 · partenaires et vendeurs fondateurs", v21: "v21 · limites anti-spam (commandes, inscriptions)", v22: "v22 · promotions honnêtes, suivi des fondateurs", v23: "v23 · horaires des tâches planifiées", v24: "v24 · relances des nouveaux vendeurs", v25: "v25 · le néerlandais dans la base", v26: "v26 · abonnements, visibilité et Boost", v27: "v27 · prix, contenu du site, parrainage, codes promo", v28: "v28 · prix fondateur garanti 5 ans" };
   async function loadEtat() {
     var sum = $("etatSum"), box = $("etatBox"), det = $("etatDet");
     var r = await sb.rpc("etat_site");
@@ -899,7 +899,7 @@ main.site > *:not(.head):not(#loadErr):not(#siteView) { display: none !important
     return (j ? j + " j " : "") + (j || h ? h + " h " : "") + String(m).padStart(2, "0") + " min " + String(s % 60).padStart(2, "0") + " s";
   }
   function fmtNext(d) { return d.toLocaleString("fr-FR", { timeZone: "Europe/Amsterdam", weekday: "short", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }); }
-  var TACHES = { "yiriclick-taux-demande": "Demande des taux de change", "yiriclick-taux-lecture": "Lecture des taux de change", "yiriclick-menage": "Ménage mensuel des données", "yiriclick-prix-menage": "Ménage de l’historique des prix", "yiriclick-abonnements": "Rappels des abonnements", "yiriclick-relances": "Relances e-mail des nouveaux vendeurs" };
+  var TACHES = { "yiriclick-taux-demande": "Demande des taux de change", "yiriclick-taux-lecture": "Lecture des taux de change", "yiriclick-menage": "Ménage mensuel des données", "yiriclick-prix-menage": "Ménage de l’historique des prix", "yiriclick-abonnements": "Rappels des abonnements", "yiriclick-fondateurs": "Rappel fin du prix fondateur", "yiriclick-relances": "Relances e-mail des nouveaux vendeurs" };
   var tachesTimer = null;
   function renderTaches(list, box) {
     var g = el("div"); g.appendChild(el("h3", null, "Tâches planifiées")); var ul = el("ul"); g.appendChild(ul);
@@ -1069,6 +1069,7 @@ main.site > *:not(.head):not(#loadErr):not(#siteView) { display: none !important
   }
   var BOOST = { avant: "Mise en avant", vedette: "Vedette de l’accueil", semaine: "Boutique de la semaine" };
   function fld(label, input) { var f = el("div", "field"), l = el("label", null, label); l.htmlFor = input.id = "f" + Math.random().toString(36).slice(2, 8); f.appendChild(l); f.appendChild(input); return f; }
+  function gar(x) { var d = x.dossier_id && data.dossiers.filter(function (y) { return y.id === x.dossier_id; })[0]; return d && d.prix_garanti_jusqu; }
   function aboDetail(x) {
     var d = el("div", "abo-det"), msg = el("p", "err"), ok = el("p", "notice"); ok.setAttribute("aria-live", "polite");
     async function run(fn, done) { msg.textContent = ""; try { var r = await fn(); if (r && r.error) throw r.error; ok.textContent = done || "C’est fait."; await loadAbo(); } catch (e) { msg.textContent = e.message || String(e); } }
@@ -1076,7 +1077,7 @@ main.site > *:not(.head):not(#loadErr):not(#siteView) { display: none !important
     // 1. Infos and subscription
     var b1 = el("div", "box"); b1.appendChild(el("h3", null, "Abonnement"));
     var kv = el("div", "kv"); [["Formule", (PLAN[x.formule] || x.formule) + (x.periode ? (x.periode === "an" ? " · annuel" : x.periode === "trimestre" ? " · trimestriel" : " · mensuel") : "")],
-      ["Prix", x.prix != null ? (x.zone === "af" ? Math.round(x.prix).toLocaleString("fr-FR") + " FCFA" : Number(x.prix).toFixed(2).replace(".", ",") + (x.zone === "eu" ? " €" : " $")) + (x.prix_a_vie ? " · verrouillé à vie (fondateur)" : " · verrouillé jusqu’au renouvellement") : "—"],
+      ["Prix", x.prix != null ? (x.zone === "af" ? Math.round(x.prix).toLocaleString("fr-FR") + " FCFA" : Number(x.prix).toFixed(2).replace(".", ",") + (x.zone === "eu" ? " €" : " $")) + (x.prix_a_vie ? " · prix fondateur garanti" + (gar(x) ? " jusqu’au " + fmtDate(gar(x)) : " 5 ans") : " · verrouillé jusqu’au renouvellement") : "—"],
       ["Code promo", x.code_promo ? x.code_promo + " (−" + x.remise_pct + " %)" : "—"], ["Parrain", x.parrain || "—"], ["Début", x.debut ? fmtDate(x.debut) : "—"], ["Fin", x.fin ? fmtDate(x.fin) + " (" + daysTxt(x.jours) + ")" : "—"], ["E-mail", x.email], ["WhatsApp", x.whatsapp || "—"], ["Boutique", x.boutique || "pas encore créée"]]
       .forEach(function (p) { kv.appendChild(el("span", null, p[0])); kv.appendChild(el("b", null, p[1])); }); b1.appendChild(kv);
     var acts = el("div", "acts");

@@ -1275,7 +1275,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
       var j = A.fin ? Math.ceil((new Date(A.fin + "T23:59:59") - new Date()) / 864e5) : null;
       info.appendChild(el("span", "big", L("Formule ") + (ABO_PLAN[A.formule] || A.formule)));
       info.appendChild(el("span", null, A.periode === "an" ? L("Paiement annuel") : A.periode === "trimestre" ? L("Paiement trimestriel") : L("Paiement mensuel")));
-      if (A.prix != null) info.appendChild(el("span", null, (A.zone === "af" ? Math.round(A.prix).toLocaleString("fr-FR") + " FCFA" : String(Number(A.prix).toFixed(2)).replace(".", ",") + (A.zone === "eu" ? " €" : " $")) + (A.prix_a_vie ? " · 🔒 " + L("prix fondateur garanti à vie") : "")));
+      if (A.prix != null) info.appendChild(el("span", null, (A.zone === "af" ? Math.round(A.prix).toLocaleString("fr-FR") + " FCFA" : String(Number(A.prix).toFixed(2)).replace(".", ",") + (A.zone === "eu" ? " €" : " $")) + (A.prix_a_vie ? " · 🔒 " + (A.garanti_jusqu ? L("prix fondateur garanti jusqu’au ") + fmtD(A.garanti_jusqu) : L("prix fondateur garanti 5 ans")) : "")));
       if (A.fin) info.appendChild(el("span", null, (j < 0 ? L("Terminé le ") : L("Jusqu’au ")) + fmtD(A.fin)));
       $("aboHint").textContent = j == null ? "" : j < 0 ? L("Renouvelle-le pour garder ta boutique ouverte") : j <= 14 ? (j <= 1 ? L("Se termine très bientôt") : j + L(" jours restants")) : "";
       $("aboHint").style.color = j != null && j <= 14 ? "var(--bad, #B3261E)" : "";

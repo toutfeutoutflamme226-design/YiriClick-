@@ -91,12 +91,12 @@
     editing = on;
     if (!css) { css = document.createElement("style"); css.textContent = ".yc-edit-on .yc-ed{outline:2px dashed #FF7A2E!important;outline-offset:2px;cursor:text!important}.yc-edit-on .yc-ed:hover{background:rgba(255,122,46,.15)!important}"; document.head.appendChild(css); }
     document.documentElement.classList.toggle("yc-edit-on", on); if (on) mark();
-    var b = document.getElementById("ycEditBtn"); if (b) b.textContent = on ? "✓ Terminer" : "✏️ Modifier";
+    var b = document.getElementById("ycEditBtn"); if (b) b.textContent = on ? "✓ Terminer" : "✏️";
   }
   function editBtn() {
     if (!isAdminHere() || document.getElementById("ycEditBtn")) return;
-    var b = document.createElement("button"); b.id = "ycEditBtn"; b.type = "button"; b.textContent = "✏️ Modifier";
-    b.style.cssText = "position:fixed;left:12px;bottom:max(12px,env(safe-area-inset-bottom));z-index:9997;background:#10232A;color:#fff;border:2px solid #FF7A2E;font:800 14px Archivo,Arial,sans-serif;padding:10px 14px;cursor:pointer;min-height:44px";
+    var b = document.createElement("button"); b.id = "ycEditBtn"; b.type = "button"; b.textContent = "✏️"; b.title = "Modifier les textes"; b.setAttribute("aria-label", "Modifier les textes");
+    b.style.cssText = "position:fixed;right:0;top:45%;z-index:9997;background:#10232A;color:#fff;border:2px solid #FF7A2E;border-right:0;font:800 14px Archivo,Arial,sans-serif;padding:10px 12px;cursor:pointer;min-height:44px;border-radius:12px 0 0 12px;box-shadow:0 4px 14px rgba(0,0,0,.25)";
     b.addEventListener("click", function () { toggleEdit(!editing); });
     document.body.appendChild(b);
     document.addEventListener("click", function (e) {

@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/icons/icon-192.png">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Comment commander · Yiriclick</title>
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="assets/shop.css">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<meta name="theme-color" content="#10232A">
+<meta name="description" content="Commander sur Yiriclick en 5 étapes : choisir, ajouter au panier, envoyer la commande, être contacté par le vendeur sur WhatsApp, recevoir et payer.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Yiriclick">
+<meta property="og:title" content="Comment commander · Yiriclick">
+<meta property="og:image" content="https://yiriclick.com/assets/og.png">
+<style>
+/* Buyer guide: hero, 5 numbered steps, payment & delivery, safety, tracking, FAQ, call to action */
+.co-hero { padding-block: 32px 8px; }
+.co-hero h1 { margin: 0; font-size: clamp(30px, 7vw, 46px); font-weight: 900; letter-spacing: -1.2px; line-height: 1.02; }
+.co-hero p { margin: 10px 0 0; color: var(--soft); max-width: 60ch; font-size: 17px; }
+.co-body { padding-block: 16px 56px; max-width: 880px; display: flex; flex-direction: column; gap: 36px; }
+.co-body h2 { margin: 0 0 14px; font-size: clamp(22px, 4.5vw, 28px); font-weight: 900; letter-spacing: -.5px; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; counter-reset: s; }
+.steps li { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 14px; align-items: start; background: var(--white, #fff); border: 1px solid var(--rule, #D5DEE0); border-radius: 18px; padding: 16px; }
+.steps .ic { width: 56px; height: 56px; border-radius: 16px; background: #FFF1E0; color: #10232A; display: flex; align-items: center; justify-content: center; position: relative; }
+.steps .ic svg { width: 28px; height: 28px; }
+.steps .ic b { position: absolute; top: -6px; left: -6px; width: 24px; height: 24px; border-radius: 50%; background: #FF7A2E; color: #10232A; font-size: 13px; font-weight: 900; display: flex; align-items: center; justify-content: center; }
+.steps h3 { margin: 2px 0 4px; font-size: 18px; font-weight: 800; }
+.steps p { margin: 0; color: var(--soft); }
+.duo { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.box { background: var(--white, #fff); border: 1px solid var(--rule, #D5DEE0); border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 8px; }
+.box h3 { margin: 0; font-size: 17px; font-weight: 800; }
+.box p { margin: 0; color: var(--soft); }
+.safe { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.safe li { display: flex; gap: 12px; align-items: flex-start; background: #E3F4EA; border-radius: 14px; padding: 12px 14px; }
+.safe li::before { content: "✓"; font-weight: 900; color: #1E7F4F; font-size: 18px; line-height: 1.2; }
+.faq details { background: var(--white, #fff); border: 1px solid var(--rule, #D5DEE0); border-radius: 14px; padding: 0 16px; margin-bottom: 8px; }
+.faq summary { cursor: pointer; font-weight: 800; padding: 14px 0; list-style: none; display: flex; justify-content: space-between; gap: 10px; }
+.faq summary::after { content: "+"; font-size: 22px; line-height: 1; color: #FF7A2E; }
+.faq details[open] summary::after { content: "−"; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq p { margin: 0 0 14px; color: var(--soft); }
+.cta { background: #10232A; color: #fff; border-radius: 22px; padding: 26px 20px; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
+.cta h2 { color: #fff; margin: 0; }
+.cta p { margin: 0; color: #CFE6E8; }
+.cta .row { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn-o, .btn-l { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 20px; border-radius: 14px; font-weight: 800; text-decoration: none; border: 2px solid transparent; cursor: pointer; font-family: inherit; font-size: 16px; }
+.btn-o { background: #FF7A2E; color: #10232A; }
+.btn-l { background: transparent; color: #fff; border-color: #3E5C64; }
+.track { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.track .btn-l { color: #10232A; border-color: var(--rule, #D5DEE0); background: #fff; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./" aria-label="Yiriclick">
+      <svg width="28" height="28" viewBox="0 0 160 160" aria-hidden="true"><path d="M76 146 V92 L34 40" fill="none" stroke="#4FC7CF" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/><path d="M76 92 L124 34" fill="none" stroke="#FF7A2E" stroke-width="22" stroke-linecap="round"/><path d="M96 30 H128 V62" fill="none" stroke="#FF7A2E" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="word"><span class="a">yiri</span><span class="b">click</span></span>
+    </a>
+    <div class="prefs">
+      <a href="./"><span aria-hidden="true">← </span><span data-t="showcase">Vitrine</span></a>
+      <select id="prefLang" data-ta="lang"><option value="fr">FR</option><option value="en">EN</option><option value="es">ES</option><option value="nl">NL</option></select>
+      <select id="prefCur" data-ta="cur"><option value="">—</option><option value="XOF">FCFA</option><option value="EUR">€</option><option value="USD">$</option></select>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap co-hero">
+    <h1 data-t="coT">Comment commander sur Yiriclick</h1>
+    <p data-t="coP">Commander prend 2 minutes, sans créer de compte. Le vendeur te contacte ensuite sur WhatsApp pour la livraison et le paiement.</p>
+  </div>
+  <div class="wrap co-body">
+    <section aria-labelledby="hSteps">
+      <h2 id="hSteps" data-t="coStepsH">Les 5 étapes</h2>
+      <ol class="steps">
+        <li><span class="ic"><b>1</b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span><div><h3 data-t="co1t">Trouve ton produit</h3><p data-t="co1p">Utilise la recherche, les catégories ou le filtre par pays pour voir les vendeurs près de chez toi.</p></div></li>
+        <li><span class="ic"><b>2</b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6h15l-1.5 9h-12z"/><path d="M6 6L5 3H2"/><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/></svg></span><div><h3 data-t="co2t">Choisis et ajoute au panier</h3><p data-t="co2p">Sur la fiche du produit, choisis la taille ou la couleur si besoin, puis touche « Ajouter au panier ». Tu peux commander chez plusieurs vendeurs à la fois.</p></div></li>
+        <li><span class="ic"><b>3</b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span><div><h3 data-t="co3t">Donne tes coordonnées</h3><p data-t="co3p">Ouvre le panier et indique ton nom, ton numéro de téléphone et ton adresse de livraison. Tu peux ajouter une note pour le vendeur.</p></div></li>
+        <li><span class="ic"><b>4</b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8.5 8.5 0 0 1-12.6 7.4L3 21l1.7-5.2A8.5 8.5 0 1 1 21 12z"/></svg></span><div><h3 data-t="co4t">Envoie la commande</h3><p data-t="co4p">Le vendeur la reçoit tout de suite. Il te contacte sur WhatsApp pour confirmer le prix total, la livraison et le mode de paiement.</p></div></li>
+        <li><span class="ic"><b>5</b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4M12 11v10"/></svg></span><div><h3 data-t="co5t">Reçois, paie, donne ton avis</h3><p data-t="co5p">Paie comme convenu avec le vendeur. Une fois le produit reçu, laisse un avis : il aide les autres clients à choisir.</p></div></li>
+      </ol>
+    </section>
+
+    <section aria-labelledby="hPay">
+      <h2 id="hPay" data-t="coPayH">Paiement et livraison</h2>
+      <div class="duo">
+        <div class="box"><h3 data-t="coPay1t">Le paiement</h3><p data-t="coPay1p">Pour l’instant, tu paies directement le vendeur : Mobile Money (Orange Money, Moov, Wave…), espèces à la livraison ou virement, selon ce qu’il propose. Yiriclick ne prend aucune commission sur ta commande.</p></div>
+        <div class="box"><h3 data-t="coPay2t">La livraison</h3><p data-t="coPay2p">Chaque boutique affiche ses zones, ses prix et ses délais de livraison dans l’onglet « Infos ». Le vendeur te confirme tout sur WhatsApp avant d’envoyer ton colis.</p></div>
+      </div>
+    </section>
+
+    <section aria-labelledby="hSafe">
+      <h2 id="hSafe" data-t="coSafeH">Acheter en toute sécurité</h2>
+      <ul class="safe">
+        <li data-t="coS1">Préfère les vendeurs avec le badge « Vendeur vérifié » : Yiriclick a contrôlé leur identité.</li>
+        <li data-t="coS2">Lis les avis des clients sur la page de la boutique.</li>
+        <li data-t="coS3">Ne paie qu’au numéro ou au compte de la boutique, jamais à un numéro inconnu.</li>
+        <li data-t="coS4">Pour une grosse commande, demande une photo du produit ou paie à la livraison.</li>
+        <li data-t="coS5">Un produit douteux ? Touche « Signaler ce produit » sur sa fiche : l’équipe Yiriclick vérifie.</li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="hTrack">
+      <h2 id="hTrack" data-t="coTrackH">Suivre ma commande</h2>
+      <div class="track"><p style="margin:0;color:var(--soft);flex:1 1 260px" data-t="coTrackP">Tes commandes passées depuis ce téléphone sont gardées dans « Mes commandes », avec leur statut : nouvelle, confirmée, expédiée, livrée.</p><button class="btn-l" type="button" id="goOrders" data-t="coTrackB">Voir mes commandes</button></div>
+    </section>
+
+    <section class="faq" aria-labelledby="hFaq">
+      <h2 id="hFaq" data-t="coFaqH">Questions fréquentes</h2>
+      <details><summary data-t="coQ1">Dois-je créer un compte ?</summary><p data-t="coA1">Non. Ton nom, ton téléphone et ton adresse suffisent pour commander.</p></details>
+      <details><summary data-t="coQ2">Comment annuler ma commande ?</summary><p data-t="coA2">Écris au vendeur sur WhatsApp le plus tôt possible, avant l’envoi du colis.</p></details>
+      <details><summary data-t="coQ3">Le produit ne me convient pas, que faire ?</summary><p data-t="coA3">Chaque boutique indique sa politique de retour dans l’onglet « Infos ». Contacte le vendeur avec une photo du produit.</p></details>
+      <details><summary data-t="coQ4">Le vendeur ne répond pas.</summary><p data-t="coA4">Attends 24 heures, puis écris-nous depuis la page Contact avec le numéro de ta commande : nous relançons le vendeur.</p></details>
+      <details><summary data-t="coQ5">Puis-je commander depuis l’Europe ?</summary><p data-t="coA5">Oui, si le vendeur livre dans ton pays : regarde ses zones de livraison, ou choisis ton pays en haut de la vitrine.</p></details>
+    </section>
+
+    <section class="cta">
+      <h2 data-t="coCtaT">Prêt à commander ?</h2>
+      <p data-t="coCtaP">Les produits des petits vendeurs d’Afrique et d’Europe t’attendent.</p>
+      <div class="row"><a class="btn-o" href="./" data-t="coCtaB">Voir la vitrine</a><a class="btn-l" href="contact" data-t="coCtaC">Une question ? Contacte-nous</a></div>
+    </section>
+  </div>
+</main>
+
+<footer class="site-foot"></footer>
+
+<div class="modal" id="pmodal" hidden>
+  <div class="modal-bg"></div>
+  <div class="mbox" role="dialog" aria-modal="true"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="assets/phone.js"></script>
+<script src="assets/nav.js"></script>
+<script src="assets/legal.js"></script>
+<script src="assets/site.js"></script>
+<script src="assets/shop.js"></script>
+<script src="assets/commander-i18n.js"></script>
+<script>
+(function () {
+  var Y = window.YC;
+  Y.extend(window.YCO);
+  function render() { Y.labels(); document.title = Y.t("coT") + " · Yiriclick"; }
+  Y.wirePrefs(render); render();
+  document.getElementById("goOrders").addEventListener("click", function () { Y.openOrders(); });
+})();
+</script>
+</body>
+</html>
