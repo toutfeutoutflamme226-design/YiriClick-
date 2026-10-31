@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/icons/icon-192.png">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Espace équipe Yiriclick</title>
+<link rel="stylesheet" href="assets/fonts.css">
+<meta name="theme-color" content="#10232A">
+<style>
+/* Team space: staff of an Entreprise shop handle orders and stock (base v32). Nothing else of the shop is reachable here. */
+:root {
+  --navy: #10232A; --navy-2: #172F37; --line: #2A3B42; --teal: #4FC7CF; --teal-deep: #0E6E78; --orange: #FF7A2E;
+  --bg: #F3F6F7; --white: #FFFFFF; --ink: #10232A; --soft: #4A5A5F; --rule: #D5DEE0; --tint: #E6F4F5;
+  --ok: #1E7F4F; --okbg: #E5F4EC; --warn: #8A5300; --warnbg: #FFF2DC; --bad: #B3261E; --badbg: #FCE8E6;
+  --font: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.45; }
+[hidden] { display: none !important; }
+button, input, select, textarea { font-family: var(--font); font-size: 16px; }
+:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
+img { max-width: 100%; }
+.wrap { max-width: 900px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.top { background: var(--navy); color: var(--white); padding-top: env(safe-area-inset-top, 0px); position: sticky; top: 0; z-index: 30; }
+.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 60px; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; }
+.word { font-size: 22px; font-weight: 900; letter-spacing: -1px; } .word .a { color: var(--orange); } .word .b { color: var(--teal); }
+.tag { font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--teal); border: 1px solid var(--line); padding: 3px 7px; }
+.top-acts { display: flex; gap: 8px; align-items: center; }
+.lang-sel { background: var(--navy-2); color: var(--white); border: 1px solid var(--line); min-height: 38px; padding: 0 8px; font-weight: 800; font-size: 14px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 16px; border: 2px solid transparent; font-weight: 800; cursor: pointer; text-decoration: none; font-size: 15px; }
+.btn-orange { background: var(--orange); color: var(--navy); } .btn-navy { background: var(--navy); color: var(--white); }
+.btn-line { background: transparent; color: var(--white); border-color: var(--line); }
+.btn-ghost { background: var(--white); color: var(--navy); border-color: var(--rule); }
+.btn-danger { background: var(--white); color: var(--bad); border-color: #E8B4B0; }
+.btn-sm { min-height: 38px; padding: 0 12px; font-size: 14px; }
+.btn:disabled { opacity: .55; cursor: not-allowed; }
+.box { max-width: 440px; margin: 40px auto; background: var(--white); padding: 26px 22px; border: 1px solid var(--rule); display: flex; flex-direction: column; gap: 14px; }
+.box h1 { margin: 0; font-size: 26px; font-weight: 900; } .box p { margin: 0; color: var(--soft); }
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.field > label { font-size: 14px; font-weight: 800; }
+.field input, .field select, .field textarea { padding: 12px; border: 2px solid var(--rule); background: var(--white); color: var(--ink); width: 100%; min-height: 48px; }
+.hint { font-size: 13px; color: var(--soft); }
+.err { margin: 0; color: var(--bad); font-size: 14px; } .err:empty { display: none; }
+.ok { margin: 0; color: var(--ok); font-size: 14px; font-weight: 700; } .ok:empty { display: none; }
+.link { background: none; border: 0; padding: 6px 0; color: var(--teal-deep); font-weight: 700; text-decoration: underline; cursor: pointer; }
+main { padding: 18px 0 60px; display: flex; flex-direction: column; gap: 14px; }
+h1.t { margin: 0; font-size: 26px; font-weight: 900; }
+.seg { display: inline-flex; border: 2px solid var(--navy); align-self: flex-start; }
+.seg button { border: 0; background: var(--white); color: var(--navy); font-weight: 800; min-height: 40px; padding: 0 16px; cursor: pointer; }
+.seg button[aria-selected="true"] { background: var(--navy); color: var(--white); }
+.fchips { display: flex; gap: 8px; flex-wrap: wrap; }
+.fchips button { min-height: 40px; padding: 0 14px; border: 2px solid var(--rule); background: var(--white); font-weight: 800; font-size: 14px; cursor: pointer; color: var(--ink); }
+.fchips button[aria-pressed="true"] { border-color: var(--navy); background: var(--navy); color: var(--white); }
+.notice { margin: 0; background: var(--warnbg); color: var(--warn); padding: 12px 14px; font-weight: 700; }
+input[type=search] { padding: 12px; border: 2px solid var(--rule); width: 100%; min-height: 48px; }
+.ocard { background: var(--white); border: 1px solid var(--rule); border-left: 5px solid var(--rule); padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.ocard.s-nouvelle { border-left-color: var(--orange); } .ocard.s-confirmee, .ocard.s-expediee { border-left-color: var(--teal-deep); } .ocard.s-livree { border-left-color: var(--ok); } .ocard.s-annulee { border-left-color: var(--bad); opacity: .8; }
+.otop { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+.otop .when { display: block; font-size: 13px; color: var(--soft); }
+.ostat { font-size: 12px; font-weight: 800; padding: 3px 8px; background: var(--tint); }
+.ocli { display: flex; flex-direction: column; } .ocli span { color: var(--soft); font-size: 14px; }
+.olines div { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; padding: 3px 0; border-bottom: 1px dashed var(--rule); }
+.olines .tot { font-weight: 900; border-bottom: 0; }
+.onote { background: var(--tint); padding: 8px 10px; font-size: 14px; }
+.oacts { display: flex; gap: 8px; flex-wrap: wrap; }
+.prow { background: var(--white); border: 1px solid var(--rule); padding: 12px; display: grid; grid-template-columns: 56px 1fr; gap: 12px; align-items: start; }
+.prow img, .prow .ph { width: 56px; height: 56px; object-fit: cover; background: var(--tint); }
+.prow b { display: block; }
+.srow { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 6px; }
+.srow label { font-size: 14px; font-weight: 700; min-width: 70px; }
+.srow input { width: 90px; padding: 8px; border: 2px solid var(--rule); min-height: 40px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./"><span class="word"><span class="a">yiri</span><span class="b">click</span></span><span class="tag">Équipe</span></a>
+    <div class="top-acts">
+      <select class="lang-sel" id="vLang" aria-label="Langue"><option value="fr">FR</option><option value="en">EN</option><option value="es">ES</option><option value="nl">NL</option></select>
+      <button class="btn btn-line btn-sm" type="button" id="logout" hidden>Déconnexion</button>
+    </div>
+  </div>
+</header>
+
+<section id="vLogin" hidden>
+  <div class="box">
+    <h1>Espace équipe</h1>
+    <p>Pour les employés d’une boutique Yiriclick. Connecte-toi avec l’adresse e-mail à laquelle tu as reçu l’invitation.</p>
+    <form id="fLogin" style="display:flex;flex-direction:column;gap:14px">
+      <div class="field"><label for="lEmail">E-mail</label><input id="lEmail" type="email" autocomplete="email" required></div>
+      <div class="field"><label for="lPass">Mot de passe</label><input id="lPass" type="password" autocomplete="current-password" required></div>
+      <p class="err" id="lErr"></p>
+      <button class="btn btn-orange" type="submit" id="lBtn">Se connecter</button>
+    </form>
+    <p class="hint">Première fois ? <a href="vendeur?equipe=%40" id="lNew">Crée ton accès</a> avec cette même adresse e-mail. Mot de passe oublié ? <a href="vendeur">Réinitialise-le ici</a>.</p>
+  </div>
+</section>
+
+<section id="vNone" hidden>
+  <div class="box">
+    <h1 id="nTitle">Aucune boutique</h1>
+    <p id="nText">Ton adresse n’est rattachée à aucune boutique. Demande au vendeur de t’ajouter dans son espace (Gestion › Équipe) avec cette adresse :</p>
+    <p class="hint" id="nMail"></p>
+    <button class="btn btn-navy" type="button" id="nRetry">Vérifier à nouveau</button>
+  </div>
+</section>
+
+<div class="wrap" id="vApp" hidden>
+  <main>
+    <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:end">
+      <div><p class="hint" style="margin:0" id="who"></p><h1 class="t" id="shopName"></h1></div>
+      <div class="field" id="shopPick" hidden style="min-width:200px"><label for="shopSel">Boutique</label><select id="shopSel"></select></div>
+    </div>
+    <p class="notice" id="paused" hidden>Cette boutique n’a plus la formule Entreprise : l’accès de l’équipe est suspendu. Le vendeur peut le réactiver en renouvelant sa formule.</p>
+    <div class="seg" role="tablist" aria-label="Affichage" id="segs">
+      <button type="button" role="tab" id="sgO" aria-selected="true">Commandes</button>
+      <button type="button" role="tab" id="sgS" aria-selected="false">Stock</button>
+    </div>
+    <div id="vO" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><div class="fchips" id="chips" role="group" aria-label="Filtrer par statut"></div><button class="btn btn-ghost btn-sm" type="button" id="refresh">Actualiser</button></div>
+      <label class="hint" for="q" style="position:absolute;left:-9999px">Rechercher</label><input id="q" type="search" placeholder="N° de commande, nom ou téléphone…">
+      <p class="err" id="oErr"></p>
+      <div id="oList" style="display:flex;flex-direction:column;gap:12px"></div>
+    </div>
+    <div id="vS" hidden style="display:flex;flex-direction:column;gap:10px">
+      <label class="hint" for="sq" style="position:absolute;left:-9999px">Rechercher un produit</label><input id="sq" type="search" placeholder="Nom du produit…">
+      <p class="hint" style="margin:0">Indique la quantité disponible et touche « Enregistrer ». Laisse vide si tu ne suis pas le stock de ce produit.</p>
+      <div id="sList" style="display:flex;flex-direction:column;gap:10px"></div>
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="assets/vendeur-i18n.js"></script>
+<script src="assets/captcha.js"></script>
+<script>
+  var L = YCV.L; YCV.tr(document.body); document.documentElement.lang = YCV.lang;
+  document.getElementById("vLang").value = YCV.lang;
+  document.getElementById("vLang").addEventListener("change", function () { try { localStorage.setItem("yc-lang", this.value); } catch (e) {} location.reload(); });
+(function () {
+  var URL_SB = "https://vtiakxfnechkoomagddl.supabase.co", KEY_SB = "sb_publishable_415c2KQSDRx0SMofnkHKQA_PJ2IrzBA";
+  var sb = window.supabase.createClient(URL_SB, KEY_SB);
+  var SITE = location.origin + location.pathname.replace(/equipe(\.html)?$/, "");
+  var CUR = { XOF: "FCFA", EUR: "€", USD: "$" };
+  var st = { user: null, shops: [], shop: null, orders: [], prods: [], filter: "nouvelle", seg: "o" };
+  var STL = { nouvelle: L("Nouvelle"), confirmee: L("Confirmée"), expediee: L("Expédiée"), livree: L("Livrée"), annulee: L("Annulée") };
+  function $(id) { return document.getElementById(id); }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function money(v, d) { var n = Number(v); var s = n.toLocaleString(YCV.loc, { minimumFractionDigits: d === "XOF" ? 0 : 2, maximumFractionDigits: d === "XOF" ? 0 : 2 }); return d === "XOF" ? s + " FCFA" : s + " " + (CUR[d] || d || ""); }
+  function when(d) { return new Date(d).toLocaleString(YCV.loc, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }); }
+  function pub(path) { return path ? URL_SB + "/storage/v1/object/public/boutiques/" + path.split("/").map(encodeURIComponent).join("/") : ""; }
+  function err(e) { var m = (e && e.message) || ""; if (/Failed to fetch|NetworkError/i.test(m)) return L("Connexion impossible. Vérifie ton réseau et réessaie."); if (/Invalid login/i.test(m)) return L("E-mail ou mot de passe incorrect."); if (/not confirmed/i.test(m)) return L("Confirme d’abord ton adresse e-mail : ouvre le lien reçu par e-mail."); return (m && L(m)) || L("Une erreur est survenue. Réessaie."); }
+  function view(v) { ["vLogin", "vNone", "vApp"].forEach(function (x) { $(x).hidden = x !== v; }); $("logout").hidden = v === "vLogin"; }
+
+  async function start() {
+    var s = await sb.auth.getSession();
+    if (!s.data.session) { view("vLogin"); return; }
+    st.user = s.data.session.user;
+    var r = await sb.rpc("equipe_mes_boutiques");
+    st.shops = r.error ? [] : (r.data || []);
+    if (!st.shops.length) {
+      $("nMail").textContent = st.user.email;
+      if (r.error) $("nText").textContent = L("L’espace équipe n’est pas encore disponible. Réessaie plus tard.");
+      view("vNone"); return;
+    }
+    var sel = $("shopSel"); sel.textContent = "";
+    st.shops.forEach(function (b, i) { var o = el("option", null, b.nom); o.value = i; sel.appendChild(o); });
+    $("shopPick").hidden = st.shops.length < 2;
+    var keep = 0; try { keep = Math.max(0, st.shops.findIndex(function (b) { return b.boutique_id === localStorage.getItem("yc-eq-shop"); })); } catch (e) {}
+    sel.value = keep; view("vApp"); pick(keep);
+  }
+  $("shopSel").addEventListener("change", function () { pick(+this.value); });
+  function pick(i) {
+    st.shop = st.shops[i]; try { localStorage.setItem("yc-eq-shop", st.shop.boutique_id); } catch (e) {}
+    $("shopName").textContent = st.shop.nom; $("who").textContent = L("Connecté : ") + st.user.email;
+    $("paused").hidden = st.shop.actif; $("segs").hidden = !st.shop.actif || st.shop.droits !== "commandes_stock";
+    if (!st.shop.actif) { $("vO").hidden = true; $("vS").hidden = true; return; }
+    setSeg("o"); loadOrders();
+  }
+  function setSeg(v) { st.seg = v; $("sgO").setAttribute("aria-selected", String(v === "o")); $("sgS").setAttribute("aria-selected", String(v === "s")); $("vO").hidden = v !== "o"; $("vS").hidden = v !== "s"; if (v === "s") loadProds(); }
+  $("sgO").addEventListener("click", function () { setSeg("o"); });
+  $("sgS").addEventListener("click", function () { setSeg("s"); });
+
+  /* Orders */
+  async function loadOrders() {
+    if (!st.shop || !st.shop.actif) return;
+    var r = await sb.rpc("equipe_commandes", { p_boutique: st.shop.boutique_id });
+    $("oErr").textContent = r.error ? err(r.error) : "";
+    if (!r.error) { st.orders = r.data || []; renderOrders(); }
+  }
+  setInterval(function () { if (st.seg === "o" && document.visibilityState === "visible" && !(document.activeElement && document.activeElement.closest && document.activeElement.closest("#oList"))) loadOrders(); }, 30000);
+  $("refresh").addEventListener("click", loadOrders);
+  $("q").addEventListener("input", function () { renderOrders(); });
+  var FIL = [["nouvelle", L("À traiter")], ["cours", L("En cours")], ["livree", L("Livrées")], ["annulee", L("Annulées")], ["all", L("Toutes")]];
+  function match(o, f) { return f === "all" || (f === "cours" ? (o.statut === "confirmee" || o.statut === "expediee") : o.statut === f); }
+  function renderOrders() {
+    var c = $("chips"); c.textContent = "";
+    FIL.forEach(function (f) { var b = el("button", null, f[1] + " (" + st.orders.filter(function (o) { return match(o, f[0]); }).length + ")"); b.type = "button"; b.setAttribute("aria-pressed", String(st.filter === f[0])); b.addEventListener("click", function () { st.filter = f[0]; renderOrders(); }); c.appendChild(b); });
+    var q = $("q").value.trim().toLowerCase(), list = $("oList"); list.textContent = "";
+    var O = st.orders.filter(function (o) { return match(o, st.filter) && (!q || [o.numero, o.client_nom, o.client_tel].join(" ").toLowerCase().indexOf(q) >= 0); });
+    if (!O.length) list.appendChild(el("p", "hint", L("Aucune commande ici.")));
+    O.forEach(function (o) { list.appendChild(card(o)); });
+  }
+  function total(o) { return o.total != null ? money(o.total, o.devise) : ""; }
+  function msg(o) {
+    var n = String(o.client_nom || "").split(" ")[0], s = st.shop.nom, num = o.numero, l = o.langue || "fr";
+    var T = { fr: ["Bonjour ", ", c’est ", " au sujet de votre commande ", "."], en: ["Hello ", ", this is ", " about your order ", "."], es: ["Hola ", ", le escribe ", " sobre su pedido ", "."], nl: ["Hallo ", ", hier is ", " over je bestelling ", "."] }[l] || ["Bonjour ", ", c’est ", " au sujet de votre commande ", "."];
+    return T[0] + n + T[1] + s + T[2] + num + T[3];
+  }
+  function card(o) {
+    var c = el("article", "ocard s-" + o.statut), top = el("div", "otop"), left = el("div");
+    left.appendChild(el("b", null, o.numero)); left.appendChild(el("span", "when", when(o.created_at)));
+    top.appendChild(left); top.appendChild(el("span", "ostat", STL[o.statut])); c.appendChild(top);
+    var cli = el("div", "ocli"); cli.appendChild(el("b", null, o.client_nom)); cli.appendChild(el("span", null, o.client_tel)); cli.appendChild(el("span", null, o.client_adresse)); c.appendChild(cli);
+    var lines = el("div", "olines");
+    (o.articles || []).forEach(function (a) { var d = el("div"); d.appendChild(el("span", null, a.qty + " × " + a.nom + (a.v && a.v.length ? " (" + a.v.join(" / ") + ")" : ""))); d.appendChild(el("span", null, money(a.prix * a.qty, a.devise || o.devise))); lines.appendChild(d); });
+    var tt = el("div", "tot"); tt.appendChild(el("span", null, L("Total"))); tt.appendChild(el("span", null, total(o))); lines.appendChild(tt); c.appendChild(lines);
+    if (o.client_note) c.appendChild(el("div", "onote", L("Message du client : ") + o.client_note));
+    var d = String(o.client_tel || "").replace(/\D/g, ""), contact = el("div", "oacts");
+    var wa = el("a", "btn btn-ghost btn-sm", L("Écrire au client (WhatsApp)")); wa.href = "https://wa.me/" + d + "?text=" + encodeURIComponent(msg(o)); wa.target = "_blank"; wa.rel = "noopener"; contact.appendChild(wa);
+    var call = el("a", "btn btn-ghost btn-sm", L("Appeler")); call.href = "tel:+" + d; contact.appendChild(call); c.appendChild(contact);
+    var acts = el("div", "oacts");
+    function act(label, cls, to, ask) { var b = el("button", "btn " + cls, label); b.type = "button"; b.addEventListener("click", async function () { if (ask && !window.confirm(ask)) return; b.disabled = true; await save(o, { p_statut: to }); }); acts.appendChild(b); }
+    if (o.statut === "nouvelle") { act(L("Confirmer la commande"), "btn-orange", "confirmee"); act(L("Annuler"), "btn-danger", "annulee", L("Annuler la commande ") + o.numero + " ?"); }
+    if (o.statut === "confirmee") { act(L("Marquer expédiée"), "btn-navy", "expediee"); act(L("Annuler"), "btn-danger", "annulee", L("Annuler la commande ") + o.numero + " ?"); }
+    if (o.statut === "expediee") { act(L("Marquer livrée"), "btn-navy", "livree"); act(L("Annuler"), "btn-danger", "annulee", L("Annuler la commande ") + o.numero + " ?"); }
+    if (o.statut === "annulee") act(L("Rouvrir la commande"), "btn-ghost", "nouvelle");
+    if (acts.children.length) c.appendChild(acts);
+    var det = el("details"), sm = el("summary", null, o.note_vendeur ? L("Note interne : ") + o.note_vendeur.slice(0, 40) + (o.note_vendeur.length > 40 ? "…" : "") : L("Ajouter une note interne"));
+    sm.style.cursor = "pointer"; sm.style.fontWeight = "700"; sm.style.fontSize = "14px"; det.appendChild(sm);
+    var f = el("div", "field"), ta = el("textarea"); ta.rows = 2; ta.maxLength = 1000; ta.value = o.note_vendeur || ""; ta.setAttribute("aria-label", L("Note interne"));
+    var sv = el("button", "btn btn-ghost btn-sm", L("Enregistrer la note")); sv.type = "button"; sv.style.alignSelf = "flex-start";
+    sv.addEventListener("click", async function () { sv.disabled = true; await save(o, { p_note: ta.value.trim() }); });
+    f.appendChild(ta); f.appendChild(sv); det.appendChild(f); c.appendChild(det);
+    return c;
+  }
+  async function save(o, args) {
+    args.p_commande = o.id;
+    var r = await sb.rpc("equipe_commande_maj", args);
+    if (r.error) { $("oErr").textContent = err(r.error); renderOrders(); return; }
+    $("oErr").textContent = ""; Object.assign(o, r.data); renderOrders();
+  }
+
+  /* Stock */
+  async function loadProds() {
+    var r = await sb.rpc("equipe_produits", { p_boutique: st.shop.boutique_id }), list = $("sList");
+    if (r.error) { list.textContent = ""; list.appendChild(el("p", "err", err(r.error))); return; }
+    st.prods = r.data || []; renderProds();
+  }
+  $("sq").addEventListener("input", function () { renderProds(); });
+  function renderProds() {
+    var q = $("sq").value.trim().toLowerCase(), list = $("sList"); list.textContent = "";
+    var P = st.prods.filter(function (p) { return !q || String(p.nom).toLowerCase().indexOf(q) >= 0; });
+    if (!P.length) list.appendChild(el("p", "hint", L("Aucun produit.")));
+    P.forEach(function (p) {
+      var row = el("div", "prow");
+      if (p.photo) { var im = el("img"); im.src = pub(p.photo); im.alt = ""; im.loading = "lazy"; row.appendChild(im); } else row.appendChild(el("div", "ph"));
+      var body = el("div"); body.appendChild(el("b", null, p.nom)); body.appendChild(el("span", "hint", money(p.prix, p.devise) + (p.visible ? "" : L(" · masqué"))));
+      var combis = p.variantes && p.variantes.combis && p.variantes.options && p.variantes.options.length ? p.variantes.combis : null;
+      if (combis) combis.forEach(function (c, i) { body.appendChild(stockRow(p, c.v.join(" / "), c.stock, i)); });
+      else body.appendChild(stockRow(p, L("Stock"), p.stock, null));
+      row.appendChild(body); list.appendChild(row);
+    });
+  }
+  function stockRow(p, label, val, idx) {
+    var r = el("div", "srow"), id = "s-" + p.id + "-" + (idx == null ? "x" : idx), lab = el("label", null, label), inp = el("input"), b = el("button", "btn btn-ghost btn-sm", L("Enregistrer")), ok = el("span", "ok");
+    lab.setAttribute("for", id); inp.id = id; inp.type = "number"; inp.min = "0"; inp.step = "1"; inp.inputMode = "numeric"; inp.value = val == null ? "" : val; b.type = "button";
+    b.addEventListener("click", async function () {
+      var v = inp.value === "" ? null : parseInt(inp.value, 10); ok.textContent = "";
+      if (v != null && (!isFinite(v) || v < 0)) { ok.className = "err"; ok.textContent = L("Le stock doit être un nombre positif."); return; }
+      b.disabled = true; var x = await sb.rpc("equipe_stock", { p_produit: p.id, p_stock: v, p_combi: idx }); b.disabled = false;
+      if (x.error) { ok.className = "err"; ok.textContent = err(x.error); return; }
+      p.stock = x.data.stock; p.variantes = x.data.variantes; ok.className = "ok"; ok.textContent = "✓";
+    });
+    r.appendChild(lab); r.appendChild(inp); r.appendChild(b); r.appendChild(ok); return r;
+  }
+
+  /* Login */
+  $("fLogin").addEventListener("submit", async function (e) {
+    e.preventDefault(); var b = $("lBtn"); $("lErr").textContent = ""; b.disabled = true;
+    var ct = window.YCaptcha ? await YCaptcha.get() : null;
+    var r = await sb.auth.signInWithPassword({ email: $("lEmail").value.trim(), password: $("lPass").value, options: ct ? { captchaToken: ct } : {} });
+    b.disabled = false; if (r.error) { $("lErr").textContent = err(r.error); return; } start();
+  });
+  $("lEmail").addEventListener("input", function () { var v = this.value.trim(); $("lNew").href = "vendeur?equipe=" + encodeURIComponent(v || "@"); });
+  $("logout").addEventListener("click", async function () { await sb.auth.signOut(); location.reload(); });
+  $("nRetry").addEventListener("click", start);
+  var pre = (new URLSearchParams(location.search).get("email") || "").trim();
+  if (pre) { $("lEmail").value = pre; $("lNew").href = "vendeur?equipe=" + encodeURIComponent(pre); }
+  start();
+})();
+</script>
+</body>
+</html>

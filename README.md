@@ -344,6 +344,18 @@ Si `schema-v12.sql` est relancé un jour, relancer ensuite `schema-v17.sql`.
 7. **Anti-usurpation des e-mails** : dans Cloudflare › DNS, enregistrement TXT `_dmarc` =
    `v=DMARC1; p=none; rua=mailto:admin@yiriclick.com` (passer à `p=quarantine` quand Resend est en place).
 
+## Outils Pro et Entreprise : finances, factures, marché, équipe (base v32)
+
+Nouvel onglet **Gestion** dans l'espace vendeur (6e onglet, en bas sur téléphone). Il apporte les fonctions promises sur la page tarifs :
+
+- **Finances** (Pro et Entreprise) : encaissé (commandes livrées), en cours, panier moyen, annulations, remises, mois par mois, produits qui rapportent le plus, valeur du stock, export CSV des commandes pour la comptabilité.
+- **Factures** (Pro et Entreprise) : coordonnées de facturation (nom légal, IFU / RCCM / KvK, TVA, taux de TVA, début des numéros, mention), numéro qui se suit par boutique et par année (`AWA-2026-0001`), facture imprimable ou en PDF. Bouton « Facture » aussi sur chaque commande confirmée.
+- **Marché** (Entreprise) : chiffres de toute la place de marché par catégorie (vues et tendance, ventes, prix médian comparé au prix du vendeur), pays des acheteurs, jours et heures de commande, conseils automatiques. Uniquement des totaux ; un prix médian n'apparaît que si 3 boutiques au moins vendent dans la catégorie.
+- **Équipe** (Entreprise) : jusqu'à 10 employés par e-mail, avec les droits « commandes et stock » ou « commandes seulement ». L'employé reçoit une invitation, crée son accès et travaille sur **yiriclick.com/equipe** (`equipe.html`) : commandes (confirmer, expédier, livrer, notes) et stock. Il ne voit ni les finances, ni l'abonnement, ni les réglages. Chaque action est notée dans « Ce que ton équipe a fait ». Si la boutique perd la formule Entreprise, l'accès de l'équipe est suspendu.
+- **Support prioritaire** (Entreprise) : chaque message d'un vendeur Entreprise envoie un e-mail à l'adresse admin, et ses messages non lus passent en tête dans l'admin avec l'étiquette « ⭐ Support prioritaire ».
+
+À installer : `supabase/schema-v32.sql` (prérequis v31). Sans lui, l'onglet Finances fonctionne déjà, les autres affichent un message.
+
 ## Avant le lancement : ce qui reste (mis à jour le 31 octobre 2026)
 
 Déjà fait : adresse de contact (contact@yiriclick.com), taux de change automatiques chaque matin (v12, v17),

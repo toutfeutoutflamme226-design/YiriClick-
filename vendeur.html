@@ -69,8 +69,8 @@ img { max-width: 100%; }
 
 /* Shell */
 .shell { display: grid; grid-template-columns: minmax(0, 1fr); }
-.side { position: fixed; left: 0; right: 0; bottom: 0; z-index: 25; background: var(--white); border-top: 1px solid var(--rule); display: grid; grid-template-columns: repeat(5, 1fr); padding-bottom: env(safe-area-inset-bottom, 0px); }
-.side button { position: relative; background: none; border: 0; min-height: var(--navh); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11.5px; letter-spacing: -.2px; font-weight: 800; color: var(--soft); cursor: pointer; padding: 6px 2px; }
+.side { position: fixed; left: 0; right: 0; bottom: 0; z-index: 25; background: var(--white); border-top: 1px solid var(--rule); display: grid; grid-template-columns: repeat(6, 1fr); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.side button { position: relative; background: none; border: 0; min-height: var(--navh); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 10.5px; letter-spacing: -.3px; font-weight: 800; color: var(--soft); cursor: pointer; padding: 6px 1px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .side button svg { width: 24px; height: 24px; }
 .side button[aria-current="page"] { color: var(--navy); box-shadow: inset 0 3px 0 var(--orange); }
 .side .side-extra { display: none; }
@@ -251,6 +251,26 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
 .seg { display: inline-flex; border: 2px solid var(--navy); align-self: flex-start; }
 .seg button { border: 0; background: var(--white); color: var(--navy); font-weight: 800; min-height: 40px; padding: 0 16px; cursor: pointer; }
 .seg button[aria-selected="true"] { background: var(--navy); color: var(--white); }
+/* Gestion */
+.gseg { flex-wrap: wrap; } .gseg button { padding: 0 12px; }
+.grid2 { display: grid; grid-template-columns: 1fr; gap: 0 14px; }
+@media (min-width: 700px) { .grid2 { grid-template-columns: 1fr 1fr; } }
+.lockc { border: 2px solid var(--orange); background: #FFF6EF; }
+.bars { display: flex; flex-direction: column; gap: 6px; }
+.bars .b { display: grid; grid-template-columns: 110px 1fr 54px; gap: 8px; align-items: center; font-size: 14px; }
+.bars .b i { display: block; height: 12px; background: var(--teal-deep); min-width: 2px; }
+.bars .b span:last-child { text-align: right; font-variant-numeric: tabular-nums; font-weight: 800; }
+.gtbl td, .gtbl th { padding: 8px 4px; font-size: 13px; } .gtbl td:first-child { white-space: normal; } .gtbl .btn { white-space: normal; overflow-wrap: anywhere; font-size: 13px; padding: 4px 8px; text-align: center; }
+@media (max-width: 520px) { .mbar { display: none !important; } }
+.mbar { display: inline-block; height: 8px; background: var(--teal); vertical-align: middle; margin-right: 6px; }
+.up2 { color: var(--ok); font-weight: 800; } .down2 { color: var(--bad); font-weight: 800; }
+.eqm { border: 1px solid var(--rule); padding: 12px; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; align-items: center; }
+.eqm b { display: block; } .eqm small { color: var(--soft); }
+#poster.po-inv { align-items: stretch; justify-content: flex-start; text-align: left; gap: 8px; font-size: 13px; }
+#poster.po-inv .ih { display: flex; justify-content: space-between; gap: 20px; }
+#poster.po-inv h1 { font-size: 22px; } #poster.po-inv h2 { font-size: 18px; margin: 10px 0 0; } #poster.po-inv p { font-size: 13px; margin: 0; }
+#poster.po-inv .tt { margin-left: auto; min-width: 260px; } #poster.po-inv .tt div { display: flex; justify-content: space-between; gap: 20px; padding: 3px 0; }
+#poster.po-inv .tt .g { font-weight: 900; font-size: 16px; border-top: 2px solid #000; }
 .fchips { display: flex; gap: 8px; flex-wrap: wrap; }
 .fchips button { flex: none; min-height: 40px; padding: 0 14px; border: 2px solid var(--rule); background: var(--white); font-weight: 800; font-size: 14px; cursor: pointer; color: var(--ink); }
 .fchips button[aria-pressed="true"] { border-color: var(--navy); background: var(--navy); color: var(--white); }
@@ -476,6 +496,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
   <form class="box" id="fSignup" novalidate hidden>
     <h1>Créer mon accès</h1>
     <p class="ok" id="signupLead" hidden>Ton essai gratuit est ouvert. Choisis ton mot de passe : tu recevras ensuite un e-mail pour confirmer ton adresse.</p>
+    <p class="ok" id="signupEq" hidden>Crée ton accès à l’espace équipe : choisis un mot de passe, puis confirme ton adresse avec l’e-mail reçu.</p>
     <p>Utilise <b>la même adresse e-mail</b> que dans ton inscription Yiriclick.</p>
     <div class="field"><label for="sEmail">Adresse e-mail</label><input id="sEmail" type="email" autocomplete="username" inputmode="email"></div>
     <div class="field"><label for="sPass">Mot de passe</label><input id="sPass" type="password" autocomplete="new-password"><span class="hint">10 caractères minimum.</span></div>
@@ -521,6 +542,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     <button type="button" data-tab="shop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l1.5-5h15L21 9M3 9v11h18V9M3 9h18M9 20v-6h6v6"/></svg>Boutique</button>
     <button type="button" data-tab="prod"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8"/></svg>Produits</button>
     <button type="button" data-tab="share"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>Marketing</button>
+    <button type="button" data-tab="gest"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Gestion</button>
     <div class="side-extra">
       <div class="plan"><b id="sidePlan"></b></div>
       <div class="meter" id="sideMeter"></div>
@@ -888,6 +910,104 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
         </div>
       </div>
     </section>
+
+    <!-- ===== Gestion (Pro: finances and invoices; Entreprise: market analysis and staff accounts) ===== -->
+    <section id="pGest" hidden>
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="phead"><div><h1>Gestion</h1><p>Finances, factures, analyse du marché et équipe.</p></div></div>
+        <div class="seg gseg" role="tablist" aria-label="Gestion">
+          <button type="button" role="tab" id="gsFin" aria-selected="true">Finances</button>
+          <button type="button" role="tab" id="gsFac" aria-selected="false">Factures</button>
+          <button type="button" role="tab" id="gsMar" aria-selected="false">Marché</button>
+          <button type="button" role="tab" id="gsEq" aria-selected="false">Équipe</button>
+        </div>
+        <p class="notice" id="gDb" hidden>Ces outils arrivent avec la mise à jour <b>schema-v32.sql</b> de la base Yiriclick.</p>
+        <div class="card lockc" id="gLock" hidden>
+          <h2 id="gLockT"></h2>
+          <p class="sub" style="margin:0" id="gLockP"></p>
+          <a class="btn btn-orange" id="gLockGo" style="align-self:flex-start"></a>
+        </div>
+
+        <div id="gFin" style="display:flex;flex-direction:column;gap:14px">
+          <div class="fchips" id="finPer" role="group" aria-label="Période"></div>
+          <div class="kpis" id="finKpis" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))"></div>
+          <p class="hint" id="finOther" style="margin:0" hidden></p>
+          <div class="card" style="overflow-x:auto">
+            <h2>Mois par mois</h2>
+            <table class="tbl gtbl"><thead><tr><th>Mois</th><th class="n">Commandes</th><th class="n">Livrées</th><th class="n">Encaissé</th><th class="n">En cours</th></tr></thead><tbody id="finMonths"></tbody></table>
+          </div>
+          <div class="card" style="overflow-x:auto">
+            <h2>Ce qui rapporte le plus</h2>
+            <table class="tbl"><thead><tr><th>Produit</th><th class="n">Vendus</th><th class="n">Montant</th></tr></thead><tbody id="finTop"></tbody></table>
+          </div>
+          <div class="card">
+            <h2>Stock</h2>
+            <div class="kpis" id="finStock" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))"></div>
+            <div id="finLow" style="display:flex;flex-direction:column;gap:6px"></div>
+            <button class="btn btn-ghost btn-sm" type="button" data-goto="prod" style="align-self:flex-start">Gérer mes produits</button>
+          </div>
+          <div class="card">
+            <h2>Pour ta comptabilité</h2>
+            <p class="sub" style="margin:0">Télécharge les commandes de la période (fichier tableur CSV, s’ouvre dans Excel ou Google Sheets).</p>
+            <button class="btn btn-orange" type="button" id="finCsv" style="align-self:flex-start">Télécharger les commandes</button>
+          </div>
+          <p class="hint" style="margin:0">Encaissé = commandes livrées. En cours = confirmées ou expédiées. Les montants viennent des commandes enregistrées sur Yiriclick : une vente faite en dehors du site n’est pas comptée.</p>
+        </div>
+
+        <div id="gFac" hidden style="display:flex;flex-direction:column;gap:14px">
+          <div class="card">
+            <h2>Tes coordonnées sur les factures</h2>
+            <div class="grid2">
+              <div class="field"><label for="fxNom">Nom légal ou raison sociale</label><input id="fxNom" maxlength="120" autocomplete="organization"></div>
+              <div class="field"><label for="fxId">Numéro d’identification</label><input id="fxId" maxlength="120" placeholder="IFU, RCCM, KvK, SIRET…"></div>
+              <div class="field"><label for="fxAdr">Adresse</label><input id="fxAdr" maxlength="200" autocomplete="street-address"></div>
+              <div class="field"><label for="fxTva">Numéro de TVA (si tu en as un)</label><input id="fxTva" maxlength="60"></div>
+              <div class="field"><label for="fxTaux">Taux de TVA inclus dans tes prix (%)</label><input id="fxTaux" type="number" min="0" max="30" step="0.1" inputmode="decimal" placeholder="0"></div>
+              <div class="field"><label for="fxPre">Début des numéros de facture</label><input id="fxPre" maxlength="8" placeholder="F"></div>
+            </div>
+            <div class="field"><label for="fxMention">Mention en bas de facture</label><textarea id="fxMention" rows="2" maxlength="400" placeholder="Ex. : Merci pour votre achat. Paiement à la livraison."></textarea></div>
+            <p class="err" id="fxErr"></p>
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button class="btn btn-orange" type="button" id="fxSave">Enregistrer</button><span class="hint" id="fxOk"></span></div>
+            <p class="hint" style="margin:0">Laisse le taux à 0 si tu ne factures pas de TVA. Les numéros se suivent automatiquement (F-2026-0001, F-2026-0002…) et ne peuvent pas être réutilisés.</p>
+          </div>
+          <div class="card" style="overflow-x:auto">
+            <h2>Factures des commandes</h2>
+            <p class="sub" style="margin:0">Une facture s’émet pour une commande confirmée, expédiée ou livrée. Touche « Facture » pour l’imprimer ou l’enregistrer en PDF.</p>
+            <table class="tbl gtbl"><thead><tr><th>Commande</th><th>Client</th><th class="n">Total</th><th>Facture</th></tr></thead><tbody id="fxList"></tbody></table>
+          </div>
+        </div>
+
+        <div id="gMar" hidden style="display:flex;flex-direction:column;gap:14px">
+          <div class="fchips" id="marPer" role="group" aria-label="Période"></div>
+          <div class="kpis" id="marKpis" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))"></div>
+          <div class="card" id="marTips"><h2>Ce que les chiffres te disent</h2><ul id="marTipList" style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px"></ul></div>
+          <div class="card" style="overflow-x:auto">
+            <h2>Catégories</h2>
+            <table class="tbl gtbl"><thead><tr><th>Catégorie</th><th class="n">Vues</th><th class="n">Prix médian</th><th class="n">Ton prix</th></tr></thead><tbody id="marCats"></tbody></table>
+          </div>
+          <div class="card"><h2>D’où viennent les acheteurs</h2><div id="marPays" class="bars"></div></div>
+          <div class="card"><h2>Quand les acheteurs commandent</h2><div id="marJours" class="bars"></div><p class="hint" id="marHeures" style="margin:0"></p></div>
+          <p class="hint" style="margin:0">Totaux de toute la place de marché Yiriclick, sans aucun nom de boutique ni de client. Un prix médian n’est affiché que si au moins 3 boutiques vendent dans la catégorie.</p>
+        </div>
+
+        <div id="gEq" hidden style="display:flex;flex-direction:column;gap:14px">
+          <div class="card">
+            <h2>Ajouter un employé</h2>
+            <p class="sub" style="margin:0">Ton employé reçoit un e-mail. Il crée son accès avec cette adresse, puis ouvre l’espace équipe. Il voit seulement les commandes (et le stock si tu le permets) : pas tes finances, ton abonnement ni les réglages de ta boutique.</p>
+            <div class="grid2">
+              <div class="field"><label for="eqMail">E-mail de l’employé</label><input id="eqMail" type="email" maxlength="200" autocomplete="off"></div>
+              <div class="field"><label for="eqNom">Prénom (pour t’y retrouver)</label><input id="eqNom" maxlength="80" autocomplete="off"></div>
+            </div>
+            <div class="field"><label for="eqDroits">Ce qu’il peut faire</label><select id="eqDroits"><option value="commandes_stock">Traiter les commandes et mettre le stock à jour</option><option value="commandes">Traiter les commandes seulement</option></select></div>
+            <p class="err" id="eqErr"></p>
+            <button class="btn btn-orange" type="button" id="eqAdd" style="align-self:flex-start">Ajouter</button>
+            <div class="share"><code id="eqUrl"></code><button class="btn btn-ghost btn-sm" type="button" id="eqCopy">Copier le lien</button></div>
+          </div>
+          <div class="card"><h2>Ton équipe</h2><div id="eqList" style="display:flex;flex-direction:column;gap:10px"></div><p class="hint" style="margin:0">Jusqu’à 10 employés.</p></div>
+          <div class="card"><h2>Ce que ton équipe a fait</h2><div id="eqAct" style="display:flex;flex-direction:column;gap:6px"></div></div>
+        </div>
+      </div>
+    </section>
   </main>
 </div>
 
@@ -1004,7 +1124,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     if (/rate limit|too many/i.test(m)) return L("Trop de demandes en peu de temps. Réessaie dans quelques minutes.");
     if (/password should be at least|password.*characters/i.test(m)) return L("Le mot de passe doit contenir au moins 10 caractères.");
     if (/invalid.*email|email.*invalid/i.test(m)) return L("Cette adresse e-mail n’est pas valide.");
-    return m || L("Une erreur est survenue. Réessaie.");
+    return (m && L(m)) || L("Une erreur est survenue. Réessaie.");
   }
   function missingCol(e) { return /column|schema cache|does not exist/i.test((e && e.message) || ""); }
   function shopUrl() { return st.shop ? SITE + "boutique?b=" + st.shop.slug : ""; }
@@ -1068,18 +1188,21 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
   function form(f) { ["fLogin", "fSignup", "fForgot", "fNewPass"].forEach(function (x) { $(x).hidden = x !== f; }); }
   document.querySelectorAll("[data-go]").forEach(function (b) { b.addEventListener("click", function () { form(b.getAttribute("data-go")); }); });
 
-  var inscrit = (new URLSearchParams(location.search).get("inscrit") || "").trim();
+  var inscrit = (new URLSearchParams(location.search).get("inscrit") || "").trim(), eqMail = (new URLSearchParams(location.search).get("equipe") || "").trim();
   async function boot() {
     var s = await sb.auth.getSession();
     if (!s.data.session) {
       view("vAuth");
-      if (inscrit) { form("fSignup"); $("sEmail").value = inscrit; $("signupLead").hidden = false; setTimeout(function () { $("sPass").focus(); }, 50); }
+      if (eqMail) { form("fSignup"); $("sEmail").value = eqMail.indexOf("@") > 0 ? eqMail : ""; $("signupEq").hidden = false; setTimeout(function () { $("sPass").focus(); }, 50); }
+      else if (inscrit) { form("fSignup"); $("sEmail").value = inscrit; $("signupLead").hidden = false; setTimeout(function () { $("sPass").focus(); }, 50); }
       else form("fLogin");
       return;
     }
     st.user = s.data.session.user;
     var f = await sb.rpc("vendeur_formule");
     if (f.error || !f.data) {
+      /* Staff of an Entreprise shop (base v32): their space is the team page */
+      if (!f.error) { var eq = await sb.rpc("equipe_mes_boutiques"); if (!eq.error && eq.data && eq.data.length) { location.replace(SITE + "equipe"); return; } }
       var acc = f.error ? null : await sb.rpc("mon_compte"), A = acc && !acc.error ? acc.data || {} : {};
       var dossierUrl = "vendre?email=" + encodeURIComponent(st.user.email) + "#dossier-" + (["basique", "pro", "entreprise"].indexOf(A.formule_souhaitee) >= 0 ? A.formule_souhaitee : "pro");
       var title = L("Compte pas encore activé"), text = L("Ton accès est bien créé, mais ta boutique n’est pas encore ouverte."), go = null;
@@ -1168,7 +1291,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
   $("recheck").addEventListener("click", boot);
 
   /* ---------- navigation ---------- */
-  var PANELS = { dash: "pDash", orders: "pOrders", shop: "pShop", prod: "pProd", share: "pShare" };
+  var PANELS = { dash: "pDash", orders: "pOrders", shop: "pShop", prod: "pProd", share: "pShare", gest: "pGest" };
   function confirmLeave() { return window.confirm(L("Tu as des modifications non enregistrées dans « Ma boutique ». Les abandonner ?")); }
   /* Tabs are steps in the browser history: Back returns to the previous tab (assets/nav.js) */
   var navReady = false;
@@ -1179,6 +1302,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     document.querySelectorAll(".side [data-tab]").forEach(function (b) { if (b.getAttribute("data-tab") === t) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
     if (t === "share") renderShare();
     if (t === "dash") renderDash();
+    if (t === "gest") renderGest();
     if (t === "orders") { renderOrders(); loadOrders(true); notifUI(); }
     if (!keepScroll) window.scrollTo(0, 0);
     if (!window.YNav) { try { history.replaceState(null, "", "#" + t); } catch (e) {} }
@@ -1203,7 +1327,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
       st.v7 = !st.products.length || "solde_prix" in st.products[0];
     } else st.products = [];
     rememberProfile();
-    await loadStats(); await loadOrders(true); await loadCodes(); await loadAvis(); if (seg === "ord") renderOrders();
+    await loadStats(); await loadOrders(true); await loadCodes(); await loadAvis(); if (hasPro()) await loadFactures(); if (seg === "ord") renderOrders();
     if (!st.products.length) st.v7 = st.codesOk;
     $("dbNotice").hidden = st.v5;
     fillShop(); renderHead(); renderProducts();
@@ -2031,6 +2155,7 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
       fix.appendChild(lab); fix.appendChild(sel); c.appendChild(fix);
     }
     var pr = el("button", "btn btn-ghost btn-sm", L("Bon de commande")); pr.type = "button"; pr.addEventListener("click", function () { printOrder(o); }); contact.appendChild(pr);
+    if (hasPro() && isSale(o)) { var fb = el("button", "btn btn-ghost btn-sm", G.fac[o.id] ? L("Facture ") + G.fac[o.id].numero : L("Facture")); fb.type = "button"; fb.addEventListener("click", function () { invoice(o, fb); }); contact.appendChild(fb); }
     c.appendChild(contact);
     var acts = el("div", "oacts");
     function act(label, cls, to, ask) {
@@ -2113,6 +2238,275 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     });
     $("ordGo").textContent = news ? L("Traiter ") + news + L(" nouvelle") + (news > 1 ? "s" : "") + L(" commande") + (news > 1 ? "s" : "") : L("Voir les commandes");
   }
+
+  /* ---------- Gestion: finances, invoices (Pro, Entreprise), market analysis and staff (Entreprise) — base v32 ---------- */
+  var G = { seg: "fin", per: "m0", marJ: 30, mar: null, eq: null, fac: {} };
+  function hasPro() { return st.plan === "pro" || st.plan === "entreprise"; }
+  function hasEnt() { return st.plan === "entreprise"; }
+  function gV32() { return !!(st.shop && "facturation" in st.shop); }
+  function dossierFor(f) { return "vendre?email=" + encodeURIComponent(st.user.email) + "#dossier-" + f; }
+  function setGSeg(v) {
+    G.seg = v;
+    [["fin", "gsFin", "gFin"], ["fac", "gsFac", "gFac"], ["mar", "gsMar", "gMar"], ["eq", "gsEq", "gEq"]].forEach(function (x) { $(x[1]).setAttribute("aria-selected", String(x[0] === v)); $(x[2]).hidden = true; });
+    renderGest();
+  }
+  [["fin", "gsFin"], ["fac", "gsFac"], ["mar", "gsMar"], ["eq", "gsEq"]].forEach(function (x) { $(x[1]).addEventListener("click", function () { setGSeg(x[0]); }); });
+  function renderGest() {
+    var need = G.seg === "fin" || G.seg === "fac" ? "pro" : "entreprise", ok = need === "pro" ? hasPro() : hasEnt();
+    var box = { fin: "gFin", fac: "gFac", mar: "gMar", eq: "gEq" }[G.seg];
+    $("gLock").hidden = ok; $("gDb").hidden = true;
+    ["gFin", "gFac", "gMar", "gEq"].forEach(function (x) { $(x).hidden = true; });
+    if (!st.shop) { $("gLock").hidden = false; $("gLockT").textContent = L("Crée d’abord ta boutique"); $("gLockP").textContent = L("Les outils de gestion s’ouvrent dès que ta boutique existe."); $("gLockGo").textContent = L("Créer ma boutique"); $("gLockGo").href = "#shop"; return; }
+    if (!ok) {
+      var T = { fin: [L("Suis ton argent avec la formule Pro"), L("Chiffre d’affaires mois par mois, panier moyen, produits qui rapportent le plus, valeur de ton stock et export pour ta comptabilité.")],
+                fac: [L("Des factures professionnelles avec la formule Pro"), L("Une facture numérotée pour chaque commande, avec tes coordonnées et ton numéro d’identification, prête à imprimer ou à envoyer en PDF.")],
+                mar: [L("L’analyse du marché, avec la formule Entreprise"), L("Ce qui se vend sur Yiriclick, à quel prix, d’où viennent les acheteurs et à quel moment ils commandent. Compare tes prix au marché.")],
+                eq: [L("Travaille en équipe avec la formule Entreprise"), L("Jusqu’à 10 employés traitent les commandes et mettent le stock à jour avec leur propre accès, sans voir tes finances.")] }[G.seg];
+      $("gLockT").textContent = T[0]; $("gLockP").textContent = T[1];
+      $("gLockGo").textContent = need === "pro" ? L("Passer à la formule Pro") : L("Passer à la formule Entreprise"); $("gLockGo").href = dossierFor(need);
+      return;
+    }
+    if (G.seg !== "fin" && !gV32()) { $("gDb").hidden = false; return; }
+    $(box).hidden = false;
+    if (G.seg === "fin") renderFin();
+    if (G.seg === "fac") renderFac();
+    if (G.seg === "mar") loadMar();
+    if (G.seg === "eq") loadEq();
+  }
+
+  /* Finances (computed from the orders already loaded: the 500 most recent) */
+  function monthKey(d) { var x = new Date(d); return x.getFullYear() + "-" + String(x.getMonth() + 1).padStart(2, "0"); }
+  function monthLabel(k) { var p = k.split("-"); return new Date(+p[0], +p[1] - 1, 1).toLocaleDateString(YCV.loc, { month: "short", year: "2-digit" }); }
+  function perRange(per) {
+    var n = new Date(), y = n.getFullYear(), m = n.getMonth();
+    if (per === "m0") return [new Date(y, m, 1), null];
+    if (per === "m1") return [new Date(y, m - 1, 1), new Date(y, m, 1)];
+    if (per === "m3") return [new Date(y, m - 2, 1), null];
+    if (per === "m12") return [new Date(y, m - 11, 1), null];
+    return [null, null];
+  }
+  function inPer(o, per) { var r = perRange(per), t = new Date(o.created_at); return (!r[0] || t >= r[0]) && (!r[1] || t < r[1]); }
+  function perOrders() { return st.orders.filter(function (o) { return inPer(o, G.per); }); }
+  function kpi(box, label, value, sub) {
+    var c = el("div", "kpi"); c.appendChild(el("span", "l", label)); var v = el("span", "v", value); if (value.length > 9) v.style.fontSize = "22px"; c.appendChild(v);
+    if (sub) c.appendChild(el("span", "d", sub)); box.appendChild(c);
+  }
+  function renderPerChips(boxId, list, cur, on) {
+    var b = $(boxId); b.textContent = "";
+    list.forEach(function (x) { var c = el("button", null, x[1]); c.type = "button"; c.setAttribute("aria-pressed", String(cur === x[0])); c.addEventListener("click", function () { on(x[0]); }); b.appendChild(c); });
+  }
+  function renderFin() {
+    renderPerChips("finPer", [["m0", L("Ce mois-ci")], ["m1", L("Mois dernier")], ["m3", L("3 mois")], ["m12", L("12 mois")], ["all", L("Tout")]], G.per, function (v) { G.per = v; renderFin(); });
+    var dev = st.shop.devise || "XOF", O = perOrders(), mine = O.filter(function (o) { return (o.devise || dev) === dev; });
+    var sum = function (arr) { return arr.reduce(function (s, o) { return s + Number(o.total || 0); }, 0); };
+    var liv = mine.filter(function (o) { return o.statut === "livree"; }), cours = mine.filter(function (o) { return o.statut === "confirmee" || o.statut === "expediee"; });
+    var valid = mine.filter(function (o) { return o.statut !== "annulee"; }), ann = O.filter(function (o) { return o.statut === "annulee"; }).length, sales = mine.filter(isSale);
+    var box = $("finKpis"); box.textContent = "";
+    kpi(box, L("Encaissé"), money(sum(liv), dev), liv.length + L(" commande(s) livrée(s)"));
+    kpi(box, L("En cours"), money(sum(cours), dev), cours.length + L(" à livrer"));
+    kpi(box, L("Commandes"), String(valid.length), O.filter(function (o) { return o.statut === "nouvelle"; }).length + L(" à confirmer"));
+    kpi(box, L("Panier moyen"), sales.length ? money(sum(sales) / sales.length, dev) : "–", "");
+    kpi(box, L("Annulations"), String(ann), O.length ? Math.round(ann / O.length * 100) + " %" : "");
+    var rem = sales.reduce(function (s, o) { return s + Number(o.remise || 0); }, 0);
+    if (rem > 0) kpi(box, L("Remises accordées"), money(rem, dev), L("codes promo"));
+    var others = {}; O.forEach(function (o) { if (o.devise && o.devise !== dev && o.statut === "livree") others[o.devise] = (others[o.devise] || 0) + Number(o.total || 0); });
+    var ok = Object.keys(others); $("finOther").hidden = !ok.length;
+    $("finOther").textContent = ok.length ? L("Encaissé dans d’autres monnaies : ") + ok.map(function (d) { return money(others[d], d); }).join(" · ") : "";
+    // month by month (last 12 months, whatever the period)
+    var months = [], n = new Date(), first = st.orders.reduce(function (m, o) { var k = monthKey(o.created_at); return k < m ? k : m; }, monthKey(n));
+    for (var i = 0; i < 12; i++) { var mk = monthKey(new Date(n.getFullYear(), n.getMonth() - i, 1)); if (mk < first) break; months.push(mk); }
+    var M = {}; months.forEach(function (k) { M[k] = { n: 0, l: 0, s: 0, c: 0 }; });
+    st.orders.forEach(function (o) { var k = monthKey(o.created_at); if (!M[k] || o.statut === "annulee" || (o.devise || dev) !== dev) return; M[k].n++; if (o.statut === "livree") { M[k].l++; M[k].s += Number(o.total || 0); } else if (isSale(o)) M[k].c += Number(o.total || 0); });
+    var max = Math.max.apply(null, months.map(function (k) { return M[k].s; }).concat([1])), tb = $("finMonths"); tb.textContent = "";
+    months.forEach(function (k) {
+      var r = M[k], tr = el("tr"); tr.appendChild(el("td", null, monthLabel(k))); tr.appendChild(el("td", "n", String(r.n))); tr.appendChild(el("td", "n", String(r.l)));
+      var td = el("td", "n"), bar = el("span", "mbar"); bar.style.width = Math.round(r.s / max * 60) + "px"; td.appendChild(bar); td.appendChild(document.createTextNode(money(r.s, dev))); tr.appendChild(td);
+      tr.appendChild(el("td", "n", r.c ? money(r.c, dev) : "–")); tb.appendChild(tr);
+    });
+    // best products over the period
+    var P = {}; sales.forEach(function (o) { (o.articles || []).forEach(function (a) { var k = a.produit_id || a.nom; P[k] = P[k] || { nom: a.nom, q: 0, s: 0 }; P[k].q += Number(a.qty || 0); P[k].s += Number(a.prix || 0) * Number(a.qty || 0); }); });
+    var top = Object.keys(P).map(function (k) { return P[k]; }).sort(function (a, b) { return b.s - a.s; }).slice(0, 8), tt = $("finTop"); tt.textContent = "";
+    if (!top.length) { var e = el("tr"), td0 = el("td", null, L("Pas encore de vente sur cette période.")); td0.colSpan = 3; e.appendChild(td0); tt.appendChild(e); }
+    top.forEach(function (p) { var tr = el("tr"); tr.appendChild(el("td", null, p.nom)); tr.appendChild(el("td", "n", String(p.q))); tr.appendChild(el("td", "n", money(p.s, dev))); tt.appendChild(tr); });
+    // stock
+    var val = {}, out = 0, low = [], none = 0;
+    st.products.forEach(function (p) { if (p.stock == null) { none++; return; } val[p.devise] = (val[p.devise] || 0) + p.stock * Number(p.prix || 0); if (p.stock === 0) out++; else if (p.stock <= 3) low.push(p); });
+    var sb2 = $("finStock"); sb2.textContent = "";
+    kpi(sb2, L("Valeur du stock"), Object.keys(val).length ? Object.keys(val).map(function (d) { return money(val[d], d); }).join(" + ") : "–", L("au prix de vente"));
+    kpi(sb2, L("En rupture"), String(out), ""); kpi(sb2, L("Stock bas (3 ou moins)"), String(low.length), "");
+    if (none) kpi(sb2, L("Sans stock indiqué"), String(none), "");
+    var lb = $("finLow"); lb.textContent = "";
+    low.slice(0, 6).forEach(function (p) { lb.appendChild(el("span", "hint", "• " + p.nom + " : " + p.stock)); });
+  }
+  function csvCell(v) { v = v == null ? "" : String(v); return /[";\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+  $("finCsv").addEventListener("click", async function () {
+    var O = perOrders(); await loadFactures();
+    var rows = [[L("Commande"), L("Date"), L("Statut"), L("Client"), L("Téléphone"), L("Adresse"), L("Articles"), L("Sous-total"), L("Remise"), L("Total"), L("Monnaie"), L("Facture")]];
+    O.forEach(function (o) { rows.push([o.numero, new Date(o.created_at).toISOString().slice(0, 16).replace("T", " "), STL[o.statut], o.client_nom, o.client_tel, o.client_adresse,
+      (o.articles || []).map(function (a) { return a.qty + " x " + a.nom + (a.v && a.v.length ? " (" + a.v.join(" / ") + ")" : ""); }).join(" | "),
+      o.sous_total != null ? o.sous_total : o.total, o.remise || 0, o.total, o.devise, G.fac[o.id] ? G.fac[o.id].numero : ""]); });
+    var csv = "﻿" + rows.map(function (r) { return r.map(csvCell).join(";"); }).join("\r\n");
+    var a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+    a.download = "yiriclick-commandes-" + (st.shop.slug || "boutique") + "-" + new Date().toISOString().slice(0, 10) + ".csv"; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  });
+
+  /* Invoices */
+  async function loadFactures() {
+    if (!gV32()) return;
+    var r = await sb.from("factures").select("commande_id,numero,emise_le").eq("boutique_id", st.shop.id);
+    G.fac = {}; (r.data || []).forEach(function (f) { G.fac[f.commande_id] = f; });
+  }
+  function fx() { return (st.shop && st.shop.facturation) || {}; }
+  function fillFx() { var f = fx(); $("fxNom").value = f.nom_legal || ""; $("fxId").value = f.identifiant || ""; $("fxAdr").value = f.adresse || ""; $("fxTva").value = f.tva || ""; $("fxTaux").value = f.taux || ""; $("fxPre").value = f.prefixe || ""; $("fxMention").value = f.mention || ""; }
+  async function renderFac() {
+    fillFx(); await loadFactures();
+    var tb = $("fxList"); tb.textContent = "";
+    var O = st.orders.filter(isSale).slice(0, 100);
+    if (!O.length) { var e = el("tr"), td0 = el("td", null, L("Aucune commande confirmée pour l’instant.")); td0.colSpan = 4; e.appendChild(td0); tb.appendChild(e); }
+    O.forEach(function (o) {
+      var tr = el("tr"), c1 = el("td"); c1.appendChild(el("b", null, o.numero)); c1.appendChild(el("div", "hint", when(o.created_at) + " · " + STL[o.statut])); tr.appendChild(c1);
+      tr.appendChild(el("td", null, o.client_nom)); tr.appendChild(el("td", "n", oTotal(o)));
+      var c4 = el("td"), b = el("button", "btn btn-ghost btn-sm", G.fac[o.id] ? G.fac[o.id].numero : L("Facture")); b.type = "button";
+      b.addEventListener("click", function () { invoice(o, b); }); c4.appendChild(b); tr.appendChild(c4); tb.appendChild(tr);
+    });
+  }
+  $("fxSave").addEventListener("click", async function () {
+    var taux = num($("fxTaux").value); $("fxErr").textContent = ""; $("fxOk").textContent = "";
+    if (taux != null && (taux < 0 || taux > 30)) { $("fxErr").textContent = L("Le taux de TVA doit être entre 0 et 30 %."); return; }
+    var f = { nom_legal: $("fxNom").value.trim(), identifiant: $("fxId").value.trim(), adresse: $("fxAdr").value.trim(), tva: $("fxTva").value.trim(), taux: taux || 0,
+      prefixe: $("fxPre").value.trim().replace(/[^A-Za-z0-9]/g, "").toUpperCase().slice(0, 8), mention: $("fxMention").value.trim() };
+    this.disabled = true; var r = await sb.from("boutiques").update({ facturation: f }).eq("id", st.shop.id).select().single(); this.disabled = false;
+    if (r.error) { $("fxErr").textContent = niceErr(r.error); return; }
+    st.shop = r.data; fillFx(); $("fxOk").textContent = L("Enregistré ✓");
+  });
+  async function invoice(o, btn) {
+    if (!gV32()) { alert(L("Ces outils arrivent avec la mise à jour schema-v32.sql de la base Yiriclick.")); return; }
+    if (btn) btn.disabled = true;
+    var r = await sb.rpc("facture_emettre", { p_commande: o.id }); if (btn) btn.disabled = false;
+    if (r.error) { alert(niceErr(r.error)); return; }
+    G.fac[o.id] = { numero: r.data.numero, emise_le: r.data.emise_le }; if (btn) btn.textContent = r.data.numero;
+    printInvoice(o, r.data);
+  }
+  function printInvoice(o, f) {
+    var x = fx(), p = $("poster"), dev = o.devise || st.shop.devise || "XOF"; p.textContent = ""; p.className = "po-inv";
+    var head = el("div", "ih"), sel = el("div"), meta = el("div");
+    sel.appendChild(el("h1", null, x.nom_legal || st.shop.nom));
+    if (x.nom_legal && x.nom_legal !== st.shop.nom) sel.appendChild(el("p", null, st.shop.nom));
+    [x.adresse || [st.shop.adresse, [st.shop.ville, st.shop.pays].filter(Boolean).join(", ")].filter(Boolean).join(", "), st.shop.whatsapp, x.identifiant, x.tva ? L("TVA : ") + x.tva : ""].filter(Boolean).forEach(function (t) { sel.appendChild(el("p", null, t)); });
+    meta.style.textAlign = "right"; meta.appendChild(el("h1", null, L("FACTURE")));
+    meta.appendChild(el("p", null, L("N° ") + f.numero)); meta.appendChild(el("p", null, L("Date : ") + new Date(f.emise_le).toLocaleDateString(YCV.loc)));
+    meta.appendChild(el("p", null, L("Commande ") + o.numero + L(" du ") + new Date(o.created_at).toLocaleDateString(YCV.loc)));
+    head.appendChild(sel); head.appendChild(meta); p.appendChild(head);
+    p.appendChild(el("h2", null, L("Client")));
+    p.appendChild(el("p", null, o.client_nom)); p.appendChild(el("p", null, o.client_tel)); p.appendChild(el("p", null, o.client_adresse));
+    var t = el("table"), th = el("tr"); [L("Article"), L("Qté"), L("Prix unitaire"), L("Total")].forEach(function (h) { th.appendChild(el("th", null, h)); }); t.appendChild(th);
+    (o.articles || []).forEach(function (a) { var tr = el("tr"); [a.nom + (a.v && a.v.length ? " (" + a.v.join(" / ") + ")" : ""), String(a.qty), money(a.prix, a.devise || dev), money(a.prix * a.qty, a.devise || dev)].forEach(function (v) { tr.appendChild(el("td", null, v)); }); t.appendChild(tr); });
+    p.appendChild(t);
+    var tt = el("div", "tt"), total = Number(o.total || 0), sub = o.sous_total != null ? Number(o.sous_total) : total, rem = Number(o.remise || 0), taux = Number(x.taux || 0);
+    function line(a, b, cls) { var d = el("div", cls); d.appendChild(el("span", null, a)); d.appendChild(el("span", null, b)); tt.appendChild(d); }
+    if (rem > 0) { line(L("Sous-total"), money(sub, dev)); line(L("Remise") + (o.code_promo ? " (" + o.code_promo + ")" : ""), "− " + money(rem, dev)); }
+    if (taux > 0) { var ht = total / (1 + taux / 100); line(L("Total HT"), money(ht, dev)); line(L("TVA ") + taux + " %", money(total - ht, dev)); line(L("Total TTC"), money(total, dev), "g"); }
+    else line(L("Total à payer"), money(total, dev), "g");
+    p.appendChild(tt);
+    if (x.mention) p.appendChild(el("p", null, x.mention));
+    p.appendChild(el("p", null, L("Facture émise via Yiriclick · yiriclick.com")));
+    window.print();
+  }
+
+  /* Market analysis (Entreprise) */
+  var CATN = {}; CATS.forEach(function (c) { CATN[c[0]] = c[1]; });
+  var PAYS = { BF: L("Burkina Faso"), ML: L("Mali"), NE: L("Niger"), TG: L("Togo"), SN: L("Sénégal"), GN: L("Guinée"), CI: L("Côte d’Ivoire"), BJ: L("Bénin"), CM: L("Cameroun"), GH: L("Ghana"), NG: L("Nigeria"), MR: L("Mauritanie"),
+    FR: L("France"), NL: L("Pays-Bas"), BE: L("Belgique"), DE: L("Allemagne"), ES: L("Espagne"), IT: L("Italie"), GB: L("Royaume-Uni"), CH: L("Suisse"), US: L("États-Unis"), XX: L("Autres pays") };
+  function pct(a, b) { if (!b) return a ? null : 0; return Math.round((a - b) / b * 100); }
+  function trendTxt(a, b) { var v = pct(a, b); if (v == null) return L("nouveau"); return (v > 0 ? "+" : "") + v + " %"; }
+  async function loadMar(force) {
+    renderPerChips("marPer", [[30, L("30 derniers jours")], [90, L("90 derniers jours")]], G.marJ, function (v) { G.marJ = v; G.mar = null; loadMar(); });
+    if (!G.mar || force) {
+      $("marKpis").textContent = ""; $("marKpis").appendChild(el("p", "hint", L("Chargement…")));
+      var r = await sb.rpc("marche_tendances", { p_jours: G.marJ });
+      if (r.error) { $("marKpis").textContent = ""; $("marKpis").appendChild(el("p", "err", niceErr(r.error))); return; }
+      G.mar = r.data;
+    }
+    renderMar();
+  }
+  function bars(boxId, rows) {
+    var b = $(boxId); b.textContent = ""; var max = Math.max.apply(null, rows.map(function (r) { return r[1]; }).concat([1]));
+    if (!rows.length) { b.appendChild(el("p", "hint", L("Pas encore assez de commandes sur la période."))); return; }
+    rows.forEach(function (r) { var d = el("div", "b"), w = el("span"), i = el("i"); i.style.width = Math.round(r[1] / max * 100) + "%"; w.appendChild(i); d.appendChild(el("span", null, r[0])); d.appendChild(w); d.appendChild(el("span", null, r[2] || String(r[1]))); b.appendChild(d); });
+  }
+  function renderMar() {
+    var M = G.mar, T = M.total, box = $("marKpis"); box.textContent = "";
+    kpi(box, L("Boutiques actives"), String(T.boutiques), ""); kpi(box, L("Produits en ligne"), String(T.produits), "");
+    kpi(box, L("Vues de produits"), String(T.vues), trendTxt(T.vues, T.vues_avant) + L(" vs période d’avant"));
+    kpi(box, L("Commandes"), String(T.commandes), trendTxt(T.commandes, T.commandes_avant) + L(" vs période d’avant"));
+    var tb = $("marCats"); tb.textContent = ""; var tips = [];
+    function pm(c) { return c.med_xof != null ? money(c.med_xof, "XOF") : c.med_eur != null ? money(c.med_eur, "EUR") : "–"; }
+    function mypm(m) { return m ? (m.med_xof != null ? money(m.med_xof, "XOF") : m.med_eur != null ? money(m.med_eur, "EUR") : "–") : ""; }
+    (M.categories || []).forEach(function (c) {
+      var tr = el("tr"), c1 = el("td"); c1.appendChild(el("b", null, CATN[c.categorie] || c.categorie)); c1.appendChild(el("div", "hint", c.boutiques + L(" boutique(s) · ") + c.ventes + L(" vendu(s)"))); tr.appendChild(c1);
+      var v = el("td", "n"); v.appendChild(document.createTextNode(String(c.vues))); var tv = pct(c.vues, c.vues_avant);
+      if (c.vues >= 5 && tv != null && tv !== 0) { v.appendChild(el("div", tv > 0 ? "up2" : "down2", (tv > 0 ? "▲ +" : "▼ ") + tv + " %")); }
+      tr.appendChild(v); tr.appendChild(el("td", "n", pm(c)));
+      var me = el("td", "n", mypm(c.moi)); if (c.moi) me.style.fontWeight = "800"; tr.appendChild(me); tb.appendChild(tr);
+      var name = CATN[c.categorie] || c.categorie;
+      if (c.vues >= 10 && tv != null && tv >= 25) tips.push([2, L("« {c} » est en hausse : +{n} % de vues. Si tu as ce type de produits, mets-les en avant.").replace("{c}", name).replace("{n}", tv)]);
+      if (c.moi) {
+        var mk = c.med_xof != null && c.moi.med_xof != null ? [c.moi.med_xof, c.med_xof] : c.med_eur != null && c.moi.med_eur != null ? [c.moi.med_eur, c.med_eur] : null;
+        if (mk && mk[1] > 0) { var gap = Math.round((mk[0] - mk[1]) / mk[1] * 100);
+          if (gap >= 25) tips.push([3, L("Dans « {c} », ton prix médian est {n} % au-dessus du marché. Mets en valeur la qualité (photos, description) ou propose une offre.").replace("{c}", name).replace("{n}", gap)]);
+          else if (gap <= -25) tips.push([2, L("Dans « {c} », ton prix médian est {n} % sous le marché : tu as peut-être de la marge pour augmenter un peu.").replace("{c}", name).replace("{n}", -gap)]); }
+        if (c.vues > 0) tips.push([1, L("Tu reçois {n} % des vues de « {c} ».").replace("{n}", Math.round(c.moi.vues / c.vues * 100)).replace("{c}", name)]);
+      }
+      if (c.ventes >= 3 && c.ruptures >= 2) tips.push([1, L("{r} produits « {c} » sont en rupture sur le site alors que la catégorie se vend : une occasion pour toi.").replace("{r}", c.ruptures).replace("{c}", name)]);
+    });
+    if (!(M.categories || []).length) { var e = el("tr"), td0 = el("td", null, L("Pas encore assez de données.")); td0.colSpan = 4; e.appendChild(td0); tb.appendChild(e); }
+    var tot = (M.pays || []).reduce(function (s, p) { return s + p.n; }, 0);
+    bars("marPays", (M.pays || []).slice(0, 8).map(function (p) { return [PAYS[p.pays] || p.pays, p.n, Math.round(p.n / tot * 100) + " %"]; }));
+    var dias = [L("Lundi"), L("Mardi"), L("Mercredi"), L("Jeudi"), L("Vendredi"), L("Samedi"), L("Dimanche")], J = {}; (M.jours_semaine || []).forEach(function (x) { J[x.j] = x.n; });
+    bars("marJours", (M.jours_semaine || []).length ? dias.map(function (d, i) { return [d, J[i + 1] || 0]; }) : []);
+    var H = {}; (M.heures || []).forEach(function (x) { H[x.h] = x.n; }); var best = -1, bn = 0;
+    for (var h = 0; h < 24; h++) { var s3 = (H[h] || 0) + (H[(h + 1) % 24] || 0) + (H[(h + 2) % 24] || 0); if (s3 > bn) { bn = s3; best = h; } }
+    $("marHeures").textContent = best >= 0 ? L("Les acheteurs commandent surtout entre {a} h et {b} h (heure GMT, celle de Ouagadougou). Publie tes statuts juste avant.").replace("{a}", best).replace("{b}", (best + 3) % 24) : "";
+    if (best >= 0) tips.push([1, $("marHeures").textContent]);
+    var abroad = (M.pays || []).filter(function (p) { return ["FR", "NL", "BE", "DE", "ES", "IT", "GB", "CH", "US"].indexOf(p.pays) >= 0; }).reduce(function (s, p) { return s + p.n; }, 0);
+    if (tot >= 5 && abroad / tot >= 0.2) tips.push([2, L("{n} % des commandes viennent de la diaspora (Europe, Amérique). Précise bien tes conditions d’envoi à l’étranger.").replace("{n}", Math.round(abroad / tot * 100))]);
+    var ul = $("marTipList"); ul.textContent = "";
+    tips.sort(function (a, b) { return b[0] - a[0]; }).slice(0, 6).forEach(function (t) { ul.appendChild(el("li", null, t[1])); });
+    $("marTips").hidden = !tips.length;
+  }
+
+  /* Staff accounts (Entreprise) */
+  var DROITS = { commandes_stock: L("Commandes et stock"), commandes: L("Commandes seulement") };
+  var ACTS = { statut: L("Statut changé"), note: L("Note ajoutée"), stock: L("Stock mis à jour") };
+  async function loadEq() {
+    $("eqUrl").textContent = SITE.replace(/^https?:\/\//, "") + "equipe";
+    var r = await sb.rpc("equipe_liste");
+    if (r.error) { $("eqList").textContent = ""; $("eqList").appendChild(el("p", "err", niceErr(r.error))); return; }
+    G.eq = r.data; renderEq();
+  }
+  function renderEq() {
+    var list = $("eqList"); list.textContent = ""; var M = G.eq.membres || [];
+    if (!M.length) list.appendChild(el("p", "hint", L("Personne pour l’instant. Ajoute ton premier employé ci-dessus.")));
+    M.forEach(function (m) {
+      var d = el("div", "eqm"), w = el("div"); w.appendChild(el("b", null, (m.nom ? m.nom + " · " : "") + m.email));
+      w.appendChild(el("small", null, DROITS[m.droits] + " · " + (m.vu_le ? L("dernière visite ") + when(m.vu_le) : m.inscrit ? L("accès créé, pas encore venu") : L("en attente : il doit créer son accès"))));
+      d.appendChild(w);
+      var x = el("button", "btn btn-danger btn-sm", L("Retirer")); x.type = "button";
+      x.addEventListener("click", async function () { if (!window.confirm(L("Retirer l’accès de ") + m.email + " ?")) return; x.disabled = true; var r = await sb.rpc("equipe_retirer", { p_id: m.id }); if (r.error) { alert(niceErr(r.error)); x.disabled = false; return; } loadEq(); });
+      d.appendChild(x); list.appendChild(d);
+    });
+    var act = $("eqAct"); act.textContent = ""; var A = G.eq.actions || [];
+    if (!A.length) act.appendChild(el("p", "hint", L("Rien pour l’instant.")));
+    A.forEach(function (a) { act.appendChild(el("span", "hint", when(a.created_at) + " · " + a.email + " · " + (ACTS[a.action] || a.action) + (a.detail ? " : " + a.detail.replace(/→ (\w+)$/, function (m, k) { return "→ " + (STL[k] || k); }) : ""))); });
+  }
+  $("eqAdd").addEventListener("click", async function () {
+    var e = $("eqMail").value.trim(); $("eqErr").textContent = "";
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)) { $("eqErr").textContent = L("Adresse e-mail invalide."); $("eqMail").focus(); return; }
+    this.disabled = true; var r = await sb.rpc("equipe_ajouter", { p_email: e, p_nom: $("eqNom").value.trim() || null, p_droits: $("eqDroits").value }); this.disabled = false;
+    if (r.error) { $("eqErr").textContent = niceErr(r.error); return; }
+    $("eqMail").value = ""; $("eqNom").value = ""; loadEq();
+  });
+  $("eqCopy").addEventListener("click", function () { copy(SITE + "equipe", this, L("Copier le lien")); });
 
   /* ---------- variants editor (Pro and Entreprise) ---------- */
   var vState = { options: [], combis: [] };

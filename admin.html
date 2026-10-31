@@ -818,7 +818,7 @@ main.site > *:not(.head):not(#loadErr):not(#siteView) { display: none !important
   var SCRIPTS = { inscriptions: "Inscriptions (inscriptions.sql)", v2: "v2 · dossiers vendeurs, admin", v3: "v3 · boutiques et produits", v4: "v4 · promotions de la vitrine",
     v5: "v5 · boutiques personnalisables, statistiques", v6: "v6 · commandes et variantes", v7: "v7 · soldes, codes promo, avis", v8: "v8 · tailles pour toutes les formules",
     v9: "v9 · e-mails automatiques", v10: "v10 · essai gratuit immédiat", v11: "v11 · vitrine rapide", v12: "v12 · taux de change du jour",
-    v13: "v13 · formulaires pré-remplis", v14: "v14 · avis clients complets", v15: "v15 · demande d’avis après livraison", v16: "v16 · validation des boutiques, contact, état du site", v17: "v17 · taux de change à 7 h (Pays-Bas)", v18: "v18 · code admin, suppression de compte, ménage des données", v19: "v19 · protections anti-abus, surveillance des tâches", v20: "v20 · partenaires et vendeurs fondateurs", v21: "v21 · limites anti-spam (commandes, inscriptions)", v22: "v22 · promotions honnêtes, suivi des fondateurs", v23: "v23 · horaires des tâches planifiées", v24: "v24 · relances des nouveaux vendeurs", v25: "v25 · le néerlandais dans la base", v26: "v26 · abonnements, visibilité et Boost", v27: "v27 · prix, contenu du site, parrainage, codes promo", v28: "v28 · prix fondateur garanti 5 ans", v29: "v29 · corrections de sécurité (audit)", v30: "v30 · prix à jour dans l’e-mail de fin d’essai", v31: "v31 · e-mails aux vendeurs dans leur langue" };
+    v13: "v13 · formulaires pré-remplis", v14: "v14 · avis clients complets", v15: "v15 · demande d’avis après livraison", v16: "v16 · validation des boutiques, contact, état du site", v17: "v17 · taux de change à 7 h (Pays-Bas)", v18: "v18 · code admin, suppression de compte, ménage des données", v19: "v19 · protections anti-abus, surveillance des tâches", v20: "v20 · partenaires et vendeurs fondateurs", v21: "v21 · limites anti-spam (commandes, inscriptions)", v22: "v22 · promotions honnêtes, suivi des fondateurs", v23: "v23 · horaires des tâches planifiées", v24: "v24 · relances des nouveaux vendeurs", v25: "v25 · le néerlandais dans la base", v26: "v26 · abonnements, visibilité et Boost", v27: "v27 · prix, contenu du site, parrainage, codes promo", v28: "v28 · prix fondateur garanti 5 ans", v29: "v29 · corrections de sécurité (audit)", v30: "v30 · prix à jour dans l’e-mail de fin d’essai", v31: "v31 · e-mails aux vendeurs dans leur langue", v32: "v32 · factures, comptes employés, analyse du marché" };
   async function loadEtat() {
     var sum = $("etatSum"), box = $("etatBox"), det = $("etatDet");
     var r = await sb.rpc("etat_site");
@@ -1047,6 +1047,8 @@ main.site > *:not(.head):not(#loadErr):not(#siteView) { display: none !important
     var f = FILTRES.filter(function (x) { return x[0] === abo.filtre; })[0][2], q = norm($("aboQ").value.trim());
     var rows = abo.rows.filter(f).filter(function (x) { return !q || norm([x.nom, x.email, x.boutique, x.whatsapp].join(" ")).indexOf(q) >= 0; });
     if (!rows.length) { list.appendChild(el("p", "notice", "Aucun vendeur dans cette liste.")); return; }
+    /* Entreprise sellers with unread messages first (priority support) */
+    rows = rows.map(function (x, i) { return [x, i]; }).sort(function (a, b) { var pa = a[0].formule === "entreprise" && a[0].non_lus > 0 ? 0 : 1, pb = b[0].formule === "entreprise" && b[0].non_lus > 0 ? 0 : 1; return pa - pb || a[1] - b[1]; }).map(function (x) { return x[0]; });
     rows.forEach(function (x) { list.appendChild(aboRow(x)); });
   }
   $("aboQ").addEventListener("input", renderAbo);
@@ -1062,6 +1064,7 @@ main.site > *:not(.head):not(#loadErr):not(#siteView) { display: none !important
     if (x.visible === false) tags.appendChild(el("span", "pill p-masque", "Boutique masquée" + (x.masquee_pour === "pause" ? " (pause)" : x.masquee_pour === "abonnement" ? " (abonnement)" : "")));
     if (x.demande) tags.appendChild(el("span", "pill p-en_attente", x.demande === "pause" ? "Demande de pause" : "Demande de réouverture"));
     if (x.non_lus > 0) tags.appendChild(el("span", "pill p-en_attente", x.non_lus + " message(s) non lu(s)"));
+    if (x.non_lus > 0 && x.formule === "entreprise") tags.appendChild(el("span", "pill p-boost", "⭐ Support prioritaire"));
     b.appendChild(who); b.appendChild(when); b.appendChild(tags); w.appendChild(b);
     b.addEventListener("click", function () { abo.ouvert = abo.ouvert === x.cle ? null : x.cle; renderAbo(); });
     if (abo.ouvert === x.cle) w.appendChild(aboDetail(x));

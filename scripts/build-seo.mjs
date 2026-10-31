@@ -155,7 +155,7 @@ async function main() {
   const xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
     urls.map((u) => `  <url><loc>${esc(u.loc)}</loc><lastmod>${String(u.lastmod).slice(0, 10)}</lastmod><priority>${u.pr}</priority></url>`).join("\n") + "\n</urlset>\n";
   await writeFile(join(OUT, "sitemap.xml"), xml);
-  await writeFile(join(OUT, "robots.txt"), "User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /avis-admin\nDisallow: /vendeur\nSitemap: " + SITE + "sitemap.xml\n");
+  await writeFile(join(OUT, "robots.txt"), "User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /avis-admin\nDisallow: /vendeur\nDisallow: /equipe\nSitemap: " + SITE + "sitemap.xml\n");
   console.log(`Site : ${SITE} · ${shops.length} boutiques · ${products.length} produits · ${urls.length} adresses dans le plan du site`);
 }
 
