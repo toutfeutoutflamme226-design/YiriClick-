@@ -344,19 +344,20 @@ Si `schema-v12.sql` est relancé un jour, relancer ensuite `schema-v17.sql`.
 7. **Anti-usurpation des e-mails** : dans Cloudflare › DNS, enregistrement TXT `_dmarc` =
    `v=DMARC1; p=none; rua=mailto:admin@yiriclick.com` (passer à `p=quarantine` quand Resend est en place).
 
-## À modifier avant le lancement
+## Avant le lancement : ce qui reste (mis à jour le 31 octobre 2026)
 
-- Remplacer `[ADRESSE E-MAIL]` (et ses traductions) par ton adresse de contact,
-  dans `index.html` (chercher `contact:`).
-- Mettre à jour les taux de change : objet `RATES` dans `index.html`
-  (taux de référence BCE du 23 octobre 2026). Sur la plateforme finale,
-  ils pourront être récupérés automatiquement chaque jour.
-- Ajouter les logos officiels dans `logos/`.
-- Relier le formulaire d'inscription à Supabase (voir la section ci-dessus).
-- Liste des villes : le site contient les principales villes de chaque pays (objet `CITIES` dans `index.html`).
-  Pour la plateforme finale, importer une base complète (par exemple GeoNames, gratuite) dans Supabase.
-- Textes juridiques (conditions générales, confidentialité, attestation, engagement) : version provisoire
-  dans l'objet `DOCS` de `index.html`. Les faire valider par un juriste et compléter les éléments entre crochets.
+Déjà fait : adresse de contact (contact@yiriclick.com), taux de change automatiques chaque matin (v12, v17),
+formulaires reliés à Supabase, textes juridiques complétés (`assets/legal-texts.js`, page `juridique`,
+et engagements du formulaire vendeur dans `vendre.html`, objet `DOCS`), site en 4 langues.
+
+Reste à faire :
+- **Paiements** : Stripe (carte) et paiements africains (Orange Money, Moov, Wave), puis compléter dans les conditions
+  vendeurs les frais et délais de versement.
+- **Logos officiels** des moyens de paiement dans `logos/` (voir `logos/LISEZMOI.md`), à récupérer dans les espaces marchands.
+- **Validation juridique** des textes par un juriste, et relecture du néerlandais par une personne dont c'est la langue.
+- **Numéro WhatsApp de Yiriclick** : admin › Contenu du site › contact.
+- Optionnel : liste complète des villes (objet `CITIES` de `vendre.html`, aujourd'hui les principales villes de chaque pays),
+  par exemple depuis GeoNames.
 
 ## Informations légales (juridique.html)
 
@@ -435,3 +436,7 @@ Si `schema-v12.sql` est relancé un jour, relancer ensuite `schema-v17.sql`.
 ## Base v30 : prix à jour dans l'e-mail de fin d'essai
 
 - `supabase/schema-v30.sql` (après v29) : l'e-mail du 12e jour d'essai lit le prix mensuel Basique réglé dans l'admin (au lieu de l'ancien 7 500 FCFA / 15 €).
+
+## Base v31 : e-mails aux vendeurs dans leur langue
+
+- `supabase/schema-v31.sql` (après v30) : l'e-mail « Nouvelle commande » part dans la langue du vendeur (FR, EN, ES, NL), celle de son dossier ou de son inscription. Le bas de chaque e-mail (relances d'essai, rappels d'abonnement, commandes) suit aussi la langue. Les e-mails pour l'admin restent en français.
