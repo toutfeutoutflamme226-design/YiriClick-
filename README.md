@@ -356,6 +356,15 @@ Nouvel onglet **Gestion** dans l'espace vendeur (6e onglet, en bas sur télépho
 
 À installer : `supabase/schema-v32.sql` (prérequis v31). Sans lui, l'onglet Finances fonctionne déjà, les autres affichent un message.
 
+## Suivi de commande et problèmes signalés (base v33)
+
+- **Suivre ma commande** (`suivi.html`, lien « Suivre ma commande » en bas de chaque page et sur chaque commande du panier) : le client tape le numéro (YC-…) et son téléphone, depuis n'importe quel appareil, sans compte. Il voit l'avancement (envoyée, confirmée, expédiée, livrée), les articles, peut écrire au vendeur ou donner son avis. Après 10 mauvais essais sur un numéro en une heure, la recherche est bloquée une heure.
+- **Signaler un problème** : pas reçu, en retard, abîmé, différent, incomplet, autre. Le vendeur reçoit un e-mail dans sa langue, voit le problème en rouge sur la commande et dans ses alertes, et répond depuis son espace (le client voit la réponse sur sa page de suivi).
+- **Médiation** : si le vendeur ne répond pas en 48 h, ou si la réponse ne suffit pas, le client demande l'aide de Yiriclick. L'admin reçoit un e-mail et traite le cas dans la carte « Problèmes signalés par les clients » de l'admin (WhatsApp client et vendeur, note interne, « Marquer comme réglé »).
+- Les messages WhatsApp du vendeur au client (commande confirmée, en route) contiennent le lien de suivi.
+
+À installer : `supabase/schema-v33.sql` (prérequis v32).
+
 ## Avant le lancement : ce qui reste (mis à jour le 31 octobre 2026)
 
 Déjà fait : adresse de contact (contact@yiriclick.com), taux de change automatiques chaque matin (v12, v17),

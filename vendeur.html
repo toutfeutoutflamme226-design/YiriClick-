@@ -251,6 +251,9 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
 .seg { display: inline-flex; border: 2px solid var(--navy); align-self: flex-start; }
 .seg button { border: 0; background: var(--white); color: var(--navy); font-weight: 800; min-height: 40px; padding: 0 16px; cursor: pointer; }
 .seg button[aria-selected="true"] { background: var(--navy); color: var(--white); }
+.pbbox { border: 2px solid #E8B4B0; background: #FFF7F6; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
+.pbbox.ok { border-color: #A8D5BC; background: #F2FAF5; }
+.pbq { margin: 0; white-space: pre-wrap; background: var(--white); border-left: 4px solid var(--rule); padding: 6px 10px; }
 /* Gestion */
 .gseg { flex-wrap: wrap; } .gseg button { padding: 0 12px; }
 .grid2 { display: grid; grid-template-columns: 1fr; gap: 0 14px; }
@@ -1615,6 +1618,8 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     if (st.shop && st.shop.visible === false) add("bad", L("Boutique masquée :"), L("les clients ne la voient pas. Réactive-la dans « Ma boutique »."));
     // base v16: a new trial shop enters the showcase after a quick check by the Yiriclick team
     if (st.shop && st.shop.approuvee === false && !st.shop.masque_admin) add("warn", L("En cours de vérification :"), L("ta boutique marche déjà avec ton lien, partage-le ! Elle apparaîtra aussi dans la vitrine Yiriclick dès que l’équipe l’aura vérifiée."));
+    var pbn = st.orders.filter(openPb).length;
+    if (pbn) { add("bad", pbn + L(" problème(s) signalé(s)"), L("par des clients. Réponds sous 48 heures.")); var lb = ul.lastChild, gb = el("button", "link", L("Voir")); gb.type = "button"; gb.style.marginLeft = "auto"; gb.style.padding = "0"; gb.addEventListener("click", function () { ordFilter = "pb"; tab("orders"); }); lb.appendChild(gb); }
     if (out) add("bad", out + L(" produit(s) en rupture"), L("de stock."), "out");
     if (low) add("warn", low + L(" produit(s)"), L("avec 3 pièces ou moins."), "low");
     if (nop) add("warn", nop + L(" produit(s) sans photo :"), L("ils se vendent beaucoup moins."), "nophoto");
@@ -2010,6 +2015,9 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     if (!st.shop) { st.orders = []; return; }
     var r = await sb.from("commandes").select("*").eq("boutique_id", st.shop.id).order("created_at", { ascending: false }).limit(500);
     if (r.error) { st.ordersOk = false; st.orders = []; } else { st.ordersOk = true; st.orders = r.data || []; }
+    /* Problems reported by customers (base v33) */
+    var rc = await sb.from("reclamations").select("*").eq("boutique_id", st.shop.id);
+    st.recl = {}; if (!rc.error) (rc.data || []).forEach(function (x) { st.recl[x.commande_id] = x; });
     var fresh = st.orders.filter(function (o) { return o.statut === "nouvelle"; });
     if (seenNew) { var arrived = fresh.filter(function (o) { return !seenNew[o.id]; }); if (arrived.length) alertNew(arrived); }
     seenNew = {}; fresh.forEach(function (o) { seenNew[o.id] = 1; });
@@ -2061,13 +2069,14 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
   $("oq").addEventListener("input", function () { renderOrders(); });
   $("cq").addEventListener("input", function () { renderOrders(); });
 
-  function matchOrd(o, f) { return f === "all" || (f === "cours" ? (o.statut === "confirmee" || o.statut === "expediee") : o.statut === f); }
+  function openPb(o) { var x = st.recl && st.recl[o.id]; return !!x && x.statut !== "resolue"; }
+  function matchOrd(o, f) { if (f === "pb") return openPb(o); return f === "all" || (f === "cours" ? (o.statut === "confirmee" || o.statut === "expediee") : o.statut === f); }
   function renderOrders() {
     $("ordNotice").hidden = st.ordersOk;
     if (seg === "cli") return renderClients();
     if (seg === "avis") return renderAvis();
     var chips = $("ordChips"); chips.textContent = "";
-    FILTERS.forEach(function (f) {
+    FILTERS.concat(st.orders.some(openPb) || ordFilter === "pb" ? [["pb", L("⚠ Problèmes")]] : []).forEach(function (f) {
       var n = st.orders.filter(function (o) { return matchOrd(o, f[0]); }).length;
       var b = el("button", null, f[1] + (f[0] !== "all" ? " (" + n + ")" : "")); b.type = "button"; b.setAttribute("aria-pressed", String(ordFilter === f[0]));
       b.addEventListener("click", function () { ordFilter = f[0]; renderOrders(); }); chips.appendChild(b);
@@ -2093,8 +2102,8 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
   function clientMsg(o) {
     var n = o.client_nom.split(" ")[0], s = st.shop.nom, num = o.numero;
     switch (o.statut) {
-      case "confirmee": return L("Bonjour ") + n + L(", votre commande ") + num + L(" chez ") + s + L(" est confirmée ✅\nTotal : ") + oTotal(o) + L("\nJe vous tiens au courant pour la livraison.");
-      case "expediee": return L("Bonjour ") + n + L(", votre commande ") + num + L(" chez ") + s + L(" est en route 🚚");
+      case "confirmee": return L("Bonjour ") + n + L(", votre commande ") + num + L(" chez ") + s + L(" est confirmée ✅\nTotal : ") + oTotal(o) + L("\nJe vous tiens au courant pour la livraison.") + "\n" + L("Suivi de votre commande : ") + SITE + "suivi?n=" + num;
+      case "expediee": return L("Bonjour ") + n + L(", votre commande ") + num + L(" chez ") + s + L(" est en route 🚚") + "\n" + L("Suivi de votre commande : ") + SITE + "suivi?n=" + num;
       case "livree": return L("Bonjour ") + n + L(", votre commande ") + num + L(" a été livrée. Merci pour votre confiance ! ") + s + "\n" + L("Donnez votre avis en 1 minute : ") + reviewLink(o);
       case "annulee": return L("Bonjour ") + n + L(", votre commande ") + num + L(" chez ") + s + L(" a été annulée. N’hésitez pas à me contacter.");
       default: return L("Bonjour ") + n + L(", merci pour votre commande ") + num + L(" chez ") + s + L(". Je vous confirme rapidement la disponibilité et la livraison.");
@@ -2129,11 +2138,31 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     }
     info(); return box;
   }
+  /* A problem reported by the customer (base v33): answer within 48 h, or the customer can ask Yiriclick to step in */
+  var PBM = { pas_recu: L("Commande pas reçue"), retard: L("Livraison en retard"), abime: L("Article abîmé"), different: L("Article différent de la description"), incomplet: L("Commande incomplète"), autre: L("Autre problème") };
+  var PBS = { ouverte: L("À toi de répondre"), repondue: L("Tu as répondu"), escaladee: L("Médiation Yiriclick en cours"), resolue: L("Réglé") };
+  function pbBox(o, x) {
+    var b = el("div", "pbbox" + (x.statut === "resolue" ? " ok" : ""));
+    var h = el("div", "otop"); h.appendChild(el("b", null, "⚠ " + L("Problème signalé : ") + (PBM[x.motif] || x.motif))); h.appendChild(el("span", "ostat", PBS[x.statut])); b.appendChild(h);
+    b.appendChild(el("p", "pbq", x.message)); b.appendChild(el("span", "hint", L("Signalé le ") + when(x.created_at)));
+    if (x.reponse_vendeur) { b.appendChild(el("b", null, L("Ta réponse :"))); b.appendChild(el("p", "pbq", x.reponse_vendeur)); }
+    if (x.statut === "ouverte") { var lim = new Date(new Date(x.created_at).getTime() + 48 * 3600e3); b.appendChild(el("p", "hint", L("Réponds avant le ") + when(lim) + L(" : sinon le client peut demander l’aide de Yiriclick."))); }
+    if (x.statut === "escaladee") b.appendChild(el("p", "hint", L("Le client a demandé l’aide de Yiriclick. L’équipe va te contacter.")));
+    if (x.statut !== "resolue") {
+      var f = el("div", "field"), ta = el("textarea"); ta.rows = 2; ta.maxLength = 1500; ta.setAttribute("aria-label", L("Ta réponse au client")); ta.placeholder = L("Ta réponse au client (il la voit sur sa page de suivi)");
+      var a = el("div", "oacts"), send = el("button", "btn btn-orange btn-sm", L("Envoyer la réponse")), done = el("button", "btn btn-ghost btn-sm", L("Marquer comme réglé")); send.type = done.type = "button";
+      async function go(res, btn) { if (!res && ta.value.trim().length < 2) { ta.focus(); return; } btn.disabled = true; var r = await sb.rpc("reclamation_repondre", { p_id: x.id, p_texte: ta.value.trim(), p_resolue: res }); btn.disabled = false; if (r.error) { alertErr(r.error); return; } st.recl[o.id] = r.data; renderOrders(); }
+      send.addEventListener("click", function () { go(false, send); }); done.addEventListener("click", function () { if (window.confirm(L("Marquer ce problème comme réglé ?"))) go(true, done); });
+      f.appendChild(ta); a.appendChild(send); a.appendChild(done); f.appendChild(a); b.appendChild(f);
+    }
+    return b;
+  }
   function orderCard(o) {
     var c = el("article", "ocard s-" + o.statut);
     var top = el("div", "otop"), left = el("div");
     left.appendChild(el("b", null, o.numero)); left.appendChild(el("span", "when", when(o.created_at)));
     top.appendChild(left); top.appendChild(el("span", "ostat s-" + o.statut, STL[o.statut])); c.appendChild(top);
+    if (st.recl && st.recl[o.id]) c.appendChild(pbBox(o, st.recl[o.id]));
     var cli = el("div", "ocli"); cli.appendChild(el("b", null, o.client_nom)); cli.appendChild(el("span", null, o.client_tel)); cli.appendChild(el("span", "addr", o.client_adresse)); c.appendChild(cli);
     var lines = el("div", "olines");
     (o.articles || []).forEach(function (a) { var d = el("div"); d.appendChild(el("span", null, a.qty + " × " + a.nom + (a.v && a.v.length ? " (" + a.v.join(" / ") + ")" : ""))); d.appendChild(el("span", null, money(a.prix * a.qty, a.devise))); lines.appendChild(d); });

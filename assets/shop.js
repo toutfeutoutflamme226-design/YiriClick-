@@ -26,7 +26,7 @@ window.YC = (function () {
       noProducts: "Aucun produit pour l’instant.", noMatch: "Aucun produit ne correspond à ta recherche.", stock: "En stock : {n}", outStock: "Rupture de stock",
       order: "Commander sur WhatsApp", noWa: "Ce vendeur n’a pas encore indiqué de numéro WhatsApp.", waMsg: "Bonjour, je suis intéressé(e) par « {p} » ({x}) vu sur votre boutique Yiriclick : {u}",
       approx: "≈ {v} au taux du {d}", close: "Fermer", verified: "Vendeur vérifié par Yiriclick", notFound: "Boutique introuvable", notFoundP: "Cette boutique n’existe pas ou n’est pas visible pour le moment.",
-      back: "Voir la vitrine Yiriclick", loading: "Chargement…", latest: "Les derniers produits des vendeurs Yiriclick", vitrineT: "La vitrine Yiriclick", see: "Voir la boutique", by: "Par {s}", foot: "Boutique propulsée par Yiriclick", openShop: "Ouvrir ma boutique sur Yiriclick", buy: "Commander", details: "Détails",
+      back: "Voir la vitrine Yiriclick", loading: "Chargement…", latest: "Les derniers produits des vendeurs Yiriclick", vitrineT: "La vitrine Yiriclick", see: "Voir la boutique", by: "Par {s}", foot: "Boutique propulsée par Yiriclick", fTrack: "Suivre ma commande", trackThis: "Suivi et problème", openShop: "Ouvrir ma boutique sur Yiriclick", buy: "Commander", details: "Détails",
       add: "Ajouter", addLong: "Ajouter au panier", added: "Ajouté au panier", viewCart: "Voir le panier", cart: "Panier", cartTitle: "Mon panier",
       cartEmpty: "Ton panier est vide. Ajoute des produits depuis la vitrine ou une boutique.", keepShopping: "Continuer mes achats",
       qty: "Quantité", less: "Retirer un", more: "Ajouter un", remove: "Retirer", subtotal: "Sous-total", total: "Total estimé", maxStock: "Stock maximum atteint",
@@ -42,7 +42,7 @@ window.YC = (function () {
       noProducts: "No products yet.", noMatch: "No product matches your search.", stock: "In stock: {n}", outStock: "Out of stock",
       order: "Order on WhatsApp", noWa: "This seller has not added a WhatsApp number yet.", waMsg: "Hello, I am interested in “{p}” ({x}) seen on your Yiriclick shop: {u}",
       approx: "≈ {v} at the {d} rate", close: "Close", verified: "Seller verified by Yiriclick", notFound: "Shop not found", notFoundP: "This shop does not exist or is not visible right now.",
-      back: "See the Yiriclick showcase", loading: "Loading…", latest: "The latest products from Yiriclick sellers", vitrineT: "The Yiriclick showcase", see: "See the shop", by: "By {s}", foot: "Shop powered by Yiriclick", openShop: "Open my shop on Yiriclick", buy: "Order", details: "Details",
+      back: "See the Yiriclick showcase", loading: "Loading…", latest: "The latest products from Yiriclick sellers", vitrineT: "The Yiriclick showcase", see: "See the shop", by: "By {s}", foot: "Shop powered by Yiriclick", fTrack: "Track my order", trackThis: "Tracking and problems", openShop: "Open my shop on Yiriclick", buy: "Order", details: "Details",
       add: "Add", addLong: "Add to cart", added: "Added to cart", viewCart: "View cart", cart: "Cart", cartTitle: "My cart",
       cartEmpty: "Your cart is empty. Add products from the showcase or a shop.", keepShopping: "Continue shopping",
       qty: "Quantity", less: "Remove one", more: "Add one", remove: "Remove", subtotal: "Subtotal", total: "Estimated total", maxStock: "Maximum stock reached",
@@ -58,7 +58,7 @@ window.YC = (function () {
       noProducts: "Todavía no hay productos.", noMatch: "Ningún producto coincide con tu búsqueda.", stock: "En stock: {n}", outStock: "Agotado",
       order: "Pedir por WhatsApp", noWa: "Este vendedor aún no ha indicado un número de WhatsApp.", waMsg: "Hola, me interesa «{p}» ({x}) visto en su tienda Yiriclick: {u}",
       approx: "≈ {v} al cambio del {d}", close: "Cerrar", verified: "Vendedor verificado por Yiriclick", notFound: "Tienda no encontrada", notFoundP: "Esta tienda no existe o no está visible por ahora.",
-      back: "Ver el escaparate de Yiriclick", loading: "Cargando…", latest: "Los últimos productos de los vendedores de Yiriclick", vitrineT: "El escaparate de Yiriclick", see: "Ver la tienda", by: "Por {s}", foot: "Tienda impulsada por Yiriclick", openShop: "Abrir mi tienda en Yiriclick", buy: "Pedir", details: "Detalles",
+      back: "Ver el escaparate de Yiriclick", loading: "Cargando…", latest: "Los últimos productos de los vendedores de Yiriclick", vitrineT: "El escaparate de Yiriclick", see: "Ver la tienda", by: "Por {s}", foot: "Tienda impulsada por Yiriclick", fTrack: "Seguir mi pedido", trackThis: "Seguimiento y problemas", openShop: "Abrir mi tienda en Yiriclick", buy: "Pedir", details: "Detalles",
       add: "Añadir", addLong: "Añadir al carrito", added: "Añadido al carrito", viewCart: "Ver el carrito", cart: "Carrito", cartTitle: "Mi carrito",
       cartEmpty: "Tu carrito está vacío. Añade productos desde el escaparate o una tienda.", keepShopping: "Seguir comprando",
       qty: "Cantidad", less: "Quitar uno", more: "Añadir uno", remove: "Quitar", subtotal: "Subtotal", total: "Total estimado", maxStock: "Stock máximo alcanzado",
@@ -73,7 +73,7 @@ window.YC = (function () {
       noProducts: "Nog geen producten.", noMatch: "Geen product komt overeen met je zoekopdracht.", stock: "Op voorraad: {n}", outStock: "Uitverkocht",
       order: "Bestellen via WhatsApp", noWa: "Deze verkoper heeft nog geen WhatsApp-nummer opgegeven.", waMsg: "Hallo, ik ben geïnteresseerd in “{p}” ({x}), gezien in je Yiriclick-winkel: {u}",
       approx: "≈ {v} tegen de koers van {d}", close: "Sluiten", verified: "Verkoper geverifieerd door Yiriclick", notFound: "Winkel niet gevonden", notFoundP: "Deze winkel bestaat niet of is op dit moment niet zichtbaar.",
-      back: "Bekijk de Yiriclick-etalage", loading: "Laden…", latest: "De nieuwste producten van de Yiriclick-verkopers", vitrineT: "De Yiriclick-etalage", see: "Bekijk de winkel", by: "Door {s}", foot: "Winkel mogelijk gemaakt door Yiriclick", openShop: "Open mijn winkel op Yiriclick", buy: "Bestellen", details: "Details",
+      back: "Bekijk de Yiriclick-etalage", loading: "Laden…", latest: "De nieuwste producten van de Yiriclick-verkopers", vitrineT: "De Yiriclick-etalage", see: "Bekijk de winkel", by: "Door {s}", foot: "Winkel mogelijk gemaakt door Yiriclick", fTrack: "Mijn bestelling volgen", trackThis: "Status en problemen", openShop: "Open mijn winkel op Yiriclick", buy: "Bestellen", details: "Details",
       add: "Toevoegen", addLong: "In winkelwagen", added: "Toegevoegd aan winkelwagen", viewCart: "Bekijk winkelwagen", cart: "Winkelwagen", cartTitle: "Mijn winkelwagen",
       cartEmpty: "Je winkelwagen is leeg. Voeg producten toe vanuit de etalage of een winkel.", keepShopping: "Verder winkelen",
       qty: "Aantal", less: "Eén minder", more: "Eén meer", remove: "Verwijderen", subtotal: "Subtotaal", total: "Geschat totaal", maxStock: "Maximale voorraad bereikt",
@@ -744,6 +744,7 @@ window.YC = (function () {
       o.items.forEach(function (i) { sec.appendChild(el("p", "cart-help", i.qty + " × " + i.nom + (i.v ? " (" + vLabel(i.v) + ")" : ""))); });
       sec.appendChild(el("p", "cart-help", t("waTotal") + " : " + o.total));
       if (o.statut !== "livree" && o.statut !== "annulee") waButton(sec, o, function () {});
+      var tk = el("a", "cart-help", "→ " + t("trackThis")); tk.href = "suivi?n=" + encodeURIComponent(o.numero); tk.style.fontWeight = "700"; sec.appendChild(tk);
       if (o.statut === "livree" && o.a_avis === false) reviewForm(sec, o);
       if (o.a_avis) sec.appendChild(el("p", "cart-help", "✓ " + t("revThanks")));
       p.appendChild(sec);
@@ -1125,7 +1126,7 @@ window.YC = (function () {
       var op = el("a", "sf-cta", t("fOpen")); op.href = "vendre"; op.setAttribute("data-t", "fOpen"); brand.appendChild(op);
       top.appendChild(brand);
       var cols = el("div", "sf-cols");
-      [["fBuy", [["fHelp1", "commander"], ["fOrders", "#orders"], ["fReviews", "avis"]]],
+      [["fBuy", [["fHelp1", "commander"], ["fOrders", "#orders"], ["fTrack", "suivi"], ["fReviews", "avis"]]],
        ["fSellH", [["fSell1", "vendre#tarifs"], ["fSell2", "vendeur"], ["fFounders", "vendre#fondateurs"]]],
        ["fHelp", [["svcBtn", "contact"], ["fReport", "contact?sujet=signalement"]]],
        ["fYiri", [["fAbout1", "vendre"], ["fPartners", "contact?sujet=partenariat"]]]].forEach(function (c) {

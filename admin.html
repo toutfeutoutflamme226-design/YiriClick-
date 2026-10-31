@@ -274,6 +274,13 @@ main.site > *:not(.head):not(#loadErr):not(#siteView) { display: none !important
     <div class="mlist" id="msgBox"></div>
   </div>
 
+  <div class="card" id="pbCard" hidden>
+    <div class="head" style="align-items:center"><h2>Problèmes signalés par les clients <span class="badge-n" id="cPb"></span></h2>
+      <div class="seg" role="group" aria-label="Filtrer les problèmes"><button type="button" id="pbOpen" aria-pressed="true">En cours</button><button type="button" id="pbAll" aria-pressed="false">Tous</button></div></div>
+    <p class="notice">Le vendeur a 48 h pour répondre. Les demandes de médiation (⚠) passent en premier : appelle le client et le vendeur, note ce qui est décidé, puis marque le problème comme réglé.</p>
+    <div class="mlist" id="pbBox"></div>
+  </div>
+
   <div class="card" id="etatCard">
     <div class="head" style="align-items:center"><h2>État du site</h2><span class="pill" id="etatSum">Vérification…</span></div>
     <details id="etatDet"><summary>Voir le détail</summary><div class="etat" id="etatBox"></div></details>
@@ -628,7 +635,7 @@ main.site > *:not(.head):not(#loadErr):not(#siteView) { display: none !important
     data.produits = (r[3].data || []).map(function (p) { p.statut = p.masque_admin ? "masque" : "visible"; p.boutique = p.boutiques ? p.boutiques.nom : ""; return p; });
     $("updated").textContent = "Mis à jour le " + fmtDate(new Date(), true);
     renderKpis(); renderChart(); renderBreakdowns(); renderTable(); loadPromos(); loadAvisAdm();
-    loadShops(); loadMessages(); loadEtat(); loadFond(); loadParts(); loadParcours(); loadAbo();
+    loadShops(); loadMessages(); loadPb(); loadEtat(); loadFond(); loadParts(); loadParcours(); loadAbo();
     if (location.hash === "#abonnements") setView("abo"); else if (location.hash === "#contenu") setView("site");
   }
 
@@ -784,6 +791,39 @@ main.site > *:not(.head):not(#loadErr):not(#siteView) { display: none !important
   }
   $("partNew").addEventListener("click", function () { partForm(null); });
 
+  /* ---------- Problems reported by customers (base v33) ---------- */
+  var pbAll = false, PBM = { pas_recu: "Commande pas reçue", retard: "Livraison en retard", abime: "Article abîmé", different: "Article différent de la description", incomplet: "Commande incomplète", autre: "Autre problème" };
+  var PBS = { ouverte: "En attente du vendeur", repondue: "Le vendeur a répondu", escaladee: "⚠ Médiation demandée", resolue: "Réglé" };
+  $("pbOpen").addEventListener("click", function () { pbAll = false; this.setAttribute("aria-pressed", "true"); $("pbAll").setAttribute("aria-pressed", "false"); loadPb(); });
+  $("pbAll").addEventListener("click", function () { pbAll = true; this.setAttribute("aria-pressed", "true"); $("pbOpen").setAttribute("aria-pressed", "false"); loadPb(); });
+  async function loadPb() {
+    var r = await sb.rpc("reclamations_admin", { p_tout: pbAll }), card = $("pbCard"), box = $("pbBox");
+    if (r.error) { card.hidden = true; return; }
+    card.hidden = false; box.textContent = "";
+    var L0 = r.data || [], esc = L0.filter(function (x) { return x.statut === "escaladee"; }).length;
+    $("cPb").textContent = pbAll ? "" : (L0.length ? L0.length : "");
+    if (!L0.length) { box.appendChild(el("p", "notice", pbAll ? "Aucun problème signalé pour l’instant." : "Aucun problème en cours.")); return; }
+    L0.forEach(function (x) {
+      var d = el("div", "mitem" + (x.statut === "resolue" ? " done" : "")), t = el("div", "mt");
+      t.appendChild(el("b", null, (x.statut === "escaladee" ? "⚠ " : "") + x.numero + " · " + x.boutique)); t.appendChild(el("span", "ms", PBS[x.statut] + " · " + fmtDate(x.created_at, true) + (x.langue ? " · " + x.langue.toUpperCase() : "")));
+      d.appendChild(t);
+      d.appendChild(el("span", "ms", PBM[x.motif] + " · client : " + x.client_nom + " · " + x.client_tel + " · commande " + x.commande_statut));
+      d.appendChild(el("p", null, "Client : " + x.message));
+      d.appendChild(el("p", null, x.reponse ? "Vendeur : " + x.reponse : "Le vendeur n’a pas encore répondu."));
+      var acts = el("div", "acts"), tel = String(x.client_tel || "").replace(/\D/g, ""), vw = String(x.boutique_wa || "").replace(/\D/g, "");
+      if (tel) { var a = el("a", "btn btn-navy", "WhatsApp client"); a.href = "https://wa.me/" + tel; a.target = "_blank"; a.rel = "noopener"; acts.appendChild(a); }
+      if (vw) { var b = el("a", "btn btn-ghost", "WhatsApp vendeur"); b.href = "https://wa.me/" + vw; b.target = "_blank"; b.rel = "noopener"; acts.appendChild(b); }
+      if (x.vendeur_email) { var m = el("a", "btn btn-ghost", "E-mail vendeur"); m.href = "mailto:" + encodeURIComponent(x.vendeur_email) + "?subject=" + encodeURIComponent("Commande " + x.numero + " : problème signalé"); acts.appendChild(m); }
+      d.appendChild(acts);
+      var f = el("div", "field"), ta = el("textarea"); ta.rows = 2; ta.maxLength = 2000; ta.value = x.note_admin || ""; ta.placeholder = "Note interne : ce qui a été décidé"; ta.setAttribute("aria-label", "Note interne");
+      var a2 = el("div", "acts"), sv = el("button", "btn btn-ghost", "Enregistrer la note"), ok = el("button", "btn btn-orange", "Marquer comme réglé"); sv.type = ok.type = "button";
+      async function save(res, btn) { btn.disabled = true; var q = await sb.rpc("reclamation_admin", { p_id: x.id, p_note: ta.value, p_resolue: res }); btn.disabled = false; if (q.error) { alert(q.error.message); return; } loadPb(); }
+      sv.addEventListener("click", function () { save(false, sv); }); ok.addEventListener("click", function () { if (window.confirm("Marquer ce problème comme réglé ?")) save(true, ok); });
+      a2.appendChild(sv); if (x.statut !== "resolue") a2.appendChild(ok); f.appendChild(ta); f.appendChild(a2); d.appendChild(f);
+      box.appendChild(d);
+    });
+  }
+
   /* ---------- Contact messages (base v16) ---------- */
   var msgFilter = "open", TOPIC = { acheteur: "Client", vendeur: "Vendeur", partenariat: "Partenariat", signalement: "Signalement", autre: "Autre" };
   $("msgOpen").addEventListener("click", function () { msgFilter = "open"; this.setAttribute("aria-pressed", "true"); $("msgAll").setAttribute("aria-pressed", "false"); loadMessages(); });
@@ -818,7 +858,7 @@ main.site > *:not(.head):not(#loadErr):not(#siteView) { display: none !important
   var SCRIPTS = { inscriptions: "Inscriptions (inscriptions.sql)", v2: "v2 · dossiers vendeurs, admin", v3: "v3 · boutiques et produits", v4: "v4 · promotions de la vitrine",
     v5: "v5 · boutiques personnalisables, statistiques", v6: "v6 · commandes et variantes", v7: "v7 · soldes, codes promo, avis", v8: "v8 · tailles pour toutes les formules",
     v9: "v9 · e-mails automatiques", v10: "v10 · essai gratuit immédiat", v11: "v11 · vitrine rapide", v12: "v12 · taux de change du jour",
-    v13: "v13 · formulaires pré-remplis", v14: "v14 · avis clients complets", v15: "v15 · demande d’avis après livraison", v16: "v16 · validation des boutiques, contact, état du site", v17: "v17 · taux de change à 7 h (Pays-Bas)", v18: "v18 · code admin, suppression de compte, ménage des données", v19: "v19 · protections anti-abus, surveillance des tâches", v20: "v20 · partenaires et vendeurs fondateurs", v21: "v21 · limites anti-spam (commandes, inscriptions)", v22: "v22 · promotions honnêtes, suivi des fondateurs", v23: "v23 · horaires des tâches planifiées", v24: "v24 · relances des nouveaux vendeurs", v25: "v25 · le néerlandais dans la base", v26: "v26 · abonnements, visibilité et Boost", v27: "v27 · prix, contenu du site, parrainage, codes promo", v28: "v28 · prix fondateur garanti 5 ans", v29: "v29 · corrections de sécurité (audit)", v30: "v30 · prix à jour dans l’e-mail de fin d’essai", v31: "v31 · e-mails aux vendeurs dans leur langue", v32: "v32 · factures, comptes employés, analyse du marché" };
+    v13: "v13 · formulaires pré-remplis", v14: "v14 · avis clients complets", v15: "v15 · demande d’avis après livraison", v16: "v16 · validation des boutiques, contact, état du site", v17: "v17 · taux de change à 7 h (Pays-Bas)", v18: "v18 · code admin, suppression de compte, ménage des données", v19: "v19 · protections anti-abus, surveillance des tâches", v20: "v20 · partenaires et vendeurs fondateurs", v21: "v21 · limites anti-spam (commandes, inscriptions)", v22: "v22 · promotions honnêtes, suivi des fondateurs", v23: "v23 · horaires des tâches planifiées", v24: "v24 · relances des nouveaux vendeurs", v25: "v25 · le néerlandais dans la base", v26: "v26 · abonnements, visibilité et Boost", v27: "v27 · prix, contenu du site, parrainage, codes promo", v28: "v28 · prix fondateur garanti 5 ans", v29: "v29 · corrections de sécurité (audit)", v30: "v30 · prix à jour dans l’e-mail de fin d’essai", v31: "v31 · e-mails aux vendeurs dans leur langue", v32: "v32 · factures, comptes employés, analyse du marché", v33: "v33 · suivi de commande et problèmes signalés" };
   async function loadEtat() {
     var sum = $("etatSum"), box = $("etatBox"), det = $("etatDet");
     var r = await sb.rpc("etat_site");

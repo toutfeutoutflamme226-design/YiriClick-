@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/icons/icon-192.png">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Suivre ma commande · Yiriclick</title>
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="assets/shop.css">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<meta name="theme-color" content="#10232A">
+<meta name="description" content="Retrouve ta commande Yiriclick avec son numéro et ton téléphone : où elle en est, et signale un problème si besoin.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Yiriclick">
+<meta property="og:title" content="Suivre ma commande · Yiriclick">
+<meta property="og:image" content="https://yiriclick.com/assets/og.png">
+<style>
+/* Order tracking page (base v33): number + phone, from any device. Status, items, and problem reports with the seller, then Yiriclick. */
+.sv { max-width: 640px; margin: 0 auto; padding-block: 24px 48px; display: flex; flex-direction: column; gap: 16px; }
+.sv h1 { margin: 0; font-size: clamp(26px, 6vw, 34px); font-weight: 900; letter-spacing: -1px; line-height: 1.1; }
+.sv-lead { margin: 0; color: var(--soft); }
+.sv-card { background: var(--white); border: 1px solid var(--rule); padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+.sv-f { display: flex; flex-direction: column; gap: 6px; }
+.sv-f label { font-weight: 800; font-size: 14px; }
+.sv-f input, .sv-f select, .sv-f textarea { font: inherit; font-size: 16px; padding: 12px; border: 2px solid var(--rule); background: var(--white); color: var(--ink); width: 100%; min-height: 48px; border-radius: 0; }
+.sv-f textarea { min-height: 110px; resize: vertical; }
+.sv-f input:focus, .sv-f select:focus, .sv-f textarea:focus { border-color: var(--teal-deep, #0E6E78); outline: none; }
+.sv-hint { font-size: 13px; color: var(--soft); }
+.sv-err { margin: 0; color: #B3261E; font-size: 14px; font-weight: 700; } .sv-err:empty { display: none; }
+.sv-top { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.sv-top a { font-weight: 800; color: var(--ink); }
+.steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin: 4px 0; }
+.steps div { display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 800; color: var(--soft); text-align: center; }
+.steps i { display: block; height: 6px; background: var(--rule); }
+.steps .on { color: var(--ink); } .steps .on i { background: #1E7F4F; }
+.lines div { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; padding: 5px 0; border-bottom: 1px dashed var(--rule); }
+.lines .tot { font-weight: 900; border-bottom: 0; }
+.pb { border: 2px solid #E8B4B0; background: #FFF7F6; }
+.pb.ok { border-color: #A8D5BC; background: #F2FAF5; }
+.pb.med { border-color: #E0A526; background: #FFF8E6; }
+.quote { background: var(--white); border-left: 4px solid var(--rule); padding: 8px 12px; white-space: pre-wrap; font-size: 15px; margin: 0; }
+.acts { display: flex; gap: 8px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./" aria-label="Yiriclick">
+      <svg width="28" height="28" viewBox="0 0 160 160" aria-hidden="true"><path d="M76 146 V92 L34 40" fill="none" stroke="#4FC7CF" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/><path d="M76 92 L124 34" fill="none" stroke="#FF7A2E" stroke-width="22" stroke-linecap="round"/><path d="M96 30 H128 V62" fill="none" stroke="#FF7A2E" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="word"><span class="a">yiri</span><span class="b">click</span></span>
+    </a>
+    <div class="prefs">
+      <a href="./"><span aria-hidden="true">← </span><span data-t="showcase">Vitrine</span></a>
+      <select id="prefLang" data-ta="lang"><option value="fr">FR</option><option value="en">EN</option><option value="es">ES</option><option value="nl">NL</option></select>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="sv" id="sv"></div>
+</main>
+
+<footer class="site-foot"></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="assets/phone.js"></script>
+<script src="assets/nav.js"></script>
+<script src="assets/legal.js"></script>
+<script src="assets/site.js"></script>
+<script src="assets/shop.js"></script>
+<script src="assets/suivi.js"></script>
+</body>
+</html>
