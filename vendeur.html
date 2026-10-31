@@ -380,6 +380,55 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
 .visstate i { width: 12px; height: 12px; border-radius: 50%; background: var(--ok, #1E7F4F); }
 .visstate.off i { background: var(--bad, #B3261E); }
 @media (prefers-reduced-motion: reduce) { #confetti { display: none; } }
+
+/* Seller entrance (welcome panel + sign-in card) */
+#vAuth { display: grid; grid-template-columns: minmax(0, 1fr); min-height: calc(100vh - 62px); min-height: calc(100dvh - 62px); }
+#vAuth[hidden] { display: none; }
+.ahero { position: relative; overflow: hidden; background: var(--navy); color: #fff; padding: 24px 20px 52px; }
+.ahero::before { content: ""; position: absolute; inset: -46px; opacity: .13; background:
+  radial-gradient(circle at 20% 30%, var(--orange) 0 6px, transparent 7px) 0 0 / 46px 46px,
+  radial-gradient(circle at 70% 70%, var(--teal) 0 10px, transparent 11px) 0 0 / 46px 46px,
+  repeating-linear-gradient(45deg, transparent 0 18px, rgba(255, 255, 255, .5) 18px 20px);
+  animation: waxmove 24s linear infinite; }
+@keyframes waxmove { to { transform: translate(46px, 46px); } }
+.ahero > * { position: relative; }
+.ahero .hi { font-size: 15px; color: var(--teal); font-weight: 800; }
+.ahero h2 { margin: 6px 0 8px; font-size: clamp(28px, 7vw, 50px); font-weight: 900; letter-spacing: -1.2px; line-height: 1.02; color: #fff; }
+.ahero h2 em { font-style: normal; color: var(--orange); display: block; }
+.ahero p { margin: 0; color: #CFE6E8; font-size: 16px; max-width: 42ch; }
+.ahero .perks { display: none; list-style: none; padding: 0; margin: 24px 0 0; gap: 12px; }
+.ahero .perks li { display: flex; gap: 12px; align-items: center; font-weight: 700; }
+.ahero .perks i { width: 40px; height: 40px; border-radius: 12px; background: rgba(255, 255, 255, .08); display: flex; align-items: center; justify-content: center; font-style: normal; font-size: 20px; flex: none; }
+.ahero .club { margin-top: 16px; display: inline-flex; align-items: center; gap: 8px; background: rgba(255, 122, 46, .16); border: 1px solid rgba(255, 122, 46, .5); padding: 8px 14px; border-radius: 999px; font-weight: 800; font-size: 14px; color: #fff; text-decoration: none; }
+.ahero .club b { color: var(--orange); }
+.ahero .shops { margin-top: 24px; display: none; }
+.ahero .shops small { color: #9FC3C7; font-weight: 800; letter-spacing: .5px; text-transform: uppercase; font-size: 11px; }
+.ahero .shops .row { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+.ahero .shops a, .ahero .shops span { width: 54px; height: 54px; border-radius: 50%; background: #fff center / cover no-repeat; color: var(--teal-deep); display: flex; align-items: center; justify-content: center; font-weight: 900; border: 3px solid var(--orange); text-decoration: none; }
+.ahero .shops a:nth-child(even) { border-color: var(--teal); }
+.ahero .shops span { background: rgba(255, 255, 255, .08); color: #9FC3C7; border: 2px dashed #3E5C64; font-size: 22px; }
+.aside { padding: 0 16px 40px; display: flex; flex-direction: column; align-items: center; }
+#vAuth .box { width: 100%; max-width: 440px; margin: -32px 0 0; border: 0; border-radius: 22px; box-shadow: 0 18px 50px rgba(16, 35, 42, .12); padding: 24px 20px; position: relative; }
+#vAuth .box input { border-radius: 14px; }
+#vAuth .box .btn { border-radius: 14px; min-height: 52px; }
+#vAuth .links2 { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+#vAuth .sep { display: flex; align-items: center; gap: 10px; color: var(--soft); font-size: 13px; margin: 2px 0; }
+#vAuth .sep::before, #vAuth .sep::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
+#vAuth .btn-new { background: #fff; color: var(--navy); border: 2px solid var(--navy); text-decoration: none; }
+.lback { display: flex; gap: 10px; align-items: center; background: var(--tint); border-radius: 14px; padding: 10px 12px; font-size: 14px; }
+.lback .av { width: 38px; height: 38px; border-radius: 50%; background: var(--teal-deep); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 900; flex: none; }
+.lback button { margin-left: auto; background: none; border: 0; color: var(--teal-deep); font-weight: 700; text-decoration: underline; cursor: pointer; font: inherit; font-weight: 700; min-height: 36px; }
+.atip { width: 100%; max-width: 440px; margin-top: 16px; background: #FFF6D6; border-radius: 16px; padding: 12px 14px; font-size: 14px; display: flex; gap: 10px; }
+.afoot { width: 100%; max-width: 440px; margin-top: 14px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--soft); flex-wrap: wrap; gap: 8px; }
+.afoot .wa { display: inline-flex; gap: 6px; align-items: center; background: #E3F4EA; color: #1E7F4F; font-weight: 800; padding: 8px 14px; border-radius: 999px; text-decoration: none; min-height: 40px; }
+@media (min-width: 900px) {
+  #vAuth { grid-template-columns: 1.05fr 1fr; }
+  .ahero { padding: 64px 56px; display: flex; flex-direction: column; justify-content: center; }
+  .ahero .perks { display: grid; } .ahero .shops { display: block; }
+  .aside { justify-content: center; padding: 40px; }
+  #vAuth .box { margin: 0; padding: 32px; }
+}
+@media (prefers-reduced-motion: reduce) { .ahero::before { animation: none; } }
 </style>
 </head>
 <body>
@@ -399,16 +448,30 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
 </header>
 
 <!-- Sign in / sign up / reset -->
-<section class="wrap" id="vAuth" hidden>
+<section id="vAuth" hidden>
+  <aside class="ahero">
+    <span class="hi" id="aHi">Bonjour 👋</span>
+    <h2>Ta boutique t’attend. <em>Tes clients aussi.</em></h2>
+    <p>Gère tes produits, tes commandes et tes ventes, depuis ton téléphone.</p>
+    <ul class="perks">
+      <li><i aria-hidden="true">💸</i><span>0 % de commission sur tes ventes</span></li>
+      <li><i aria-hidden="true">💬</i><span>Tes commandes arrivent sur WhatsApp</span></li>
+      <li><i aria-hidden="true">⚡</i><span>Une boutique prête en 10 minutes</span></li>
+    </ul>
+    <div><a class="club" id="aClub" href="vendre#fondateurs" hidden><span aria-hidden="true">🏅</span><span id="aClubTxt"></span></a></div>
+    <div class="shops" id="aShops" hidden><small>Ils vendent déjà sur Yiriclick</small><div class="row" id="aShopsRow"></div></div>
+  </aside>
+  <div class="aside">
   <form class="box" id="fLogin" novalidate>
     <h1>Espace vendeur</h1>
-    <p>Connecte-toi pour gérer ta boutique et tes produits.</p>
-    <div class="field"><label for="lEmail">Adresse e-mail</label><input id="lEmail" type="email" autocomplete="username" inputmode="email"></div>
+    <div class="lback" id="lBack" hidden><span class="av" id="lBackAv"></span><span id="lBackTxt"></span><button type="button" id="lNotMe">Pas toi ?</button></div>
+    <div class="field" id="lEmailF"><label for="lEmail">Adresse e-mail</label><input id="lEmail" type="email" autocomplete="username" inputmode="email"></div>
     <div class="field"><label for="lPass">Mot de passe</label><input id="lPass" type="password" autocomplete="current-password"></div>
     <p class="err" id="lErr"></p>
     <button class="btn btn-orange" type="submit" id="lBtn">Se connecter</button>
-    <button class="link" type="button" data-go="fSignup">Première connexion ? Créer mon mot de passe</button>
-    <button class="link" type="button" data-go="fForgot">Mot de passe oublié</button>
+    <div class="links2"><button class="link" type="button" data-go="fForgot">Mot de passe oublié</button><button class="link" type="button" data-go="fSignup">Première connexion</button></div>
+    <div class="sep">Pas encore de boutique ?</div>
+    <a class="btn btn-new" href="vendre#tarifs">Ouvrir ma boutique gratuitement</a>
   </form>
   <form class="box" id="fSignup" novalidate hidden>
     <h1>Créer mon accès</h1>
@@ -436,6 +499,9 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     <p class="err" id="nErr"></p>
     <button class="btn btn-orange" type="submit" id="nBtn">Enregistrer</button>
   </form>
+  <div class="atip"><span aria-hidden="true">💡</span><span><b>Astuce du jour :</b> <span id="aTip"></span></span></div>
+  <div class="afoot"><span>🔒 Connexion sécurisée · données protégées en Europe</span><a class="wa" id="aHelp" href="contact?sujet=vendeur">💬 Besoin d’aide ?</a></div>
+  </div>
 </section>
 
 <section class="wrap" id="vInactive" hidden>
@@ -973,7 +1039,32 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
   async function removeFiles(paths) { if (paths.length) await sb.storage.from("boutiques").remove(paths); }
 
   /* ---------- views and auth ---------- */
-  function view(v) { ["vAuth", "vInactive", "vApp"].forEach(function (x) { $(x).hidden = x !== v; }); $("logout").hidden = v === "vAuth"; if (v !== "vApp") $("topShop").hidden = true; }
+  function view(v) { ["vAuth", "vInactive", "vApp"].forEach(function (x) { $(x).hidden = x !== v; }); $("logout").hidden = v === "vAuth"; if (v !== "vApp") $("topShop").hidden = true; if (v === "vAuth") entrance(); }
+  /* Seller entrance: greeting by the hour, returning seller, founders counter, real shops, tip of the day, help on WhatsApp */
+  var TIPS = ["Une photo prise à la lumière du jour vend 2 fois mieux.", "Mets ton lien de boutique dans ton statut WhatsApp chaque semaine.", "Réponds aux commandes en moins d’une heure : les clients reviennent.", "Ajoute au moins 5 produits : ta boutique inspire plus confiance.", "Un avis client vaut plus que dix publicités : demande-le après chaque livraison.", "Indique clairement tes prix de livraison : moins de questions, plus de commandes."];
+  function lastSeller() { try { return JSON.parse(localStorage.getItem("yc-v-last") || "null"); } catch (e) { return null; } }
+  function entrance() {
+    var h = new Date().getHours(); $("aHi").textContent = h >= 5 && h < 18 ? L("Bonjour") + " 👋" : L("Bonsoir") + " 🌙";
+    var tip = TIPS[Math.floor(Math.random() * TIPS.length)]; $("aTip").textContent = L(tip);
+    var last = lastSeller();
+    if (last && last.email && !$("lEmail").value) {
+      $("lEmail").value = last.email; $("lEmailF").hidden = true; $("lBack").hidden = false;
+      var n = last.nom || last.email.split("@")[0]; $("lBackAv").textContent = n.charAt(0).toUpperCase();
+      $("lBackTxt").textContent = ""; $("lBackTxt").appendChild(document.createTextNode(L("Content de te revoir, "))); var b = el("b", null, n); $("lBackTxt").appendChild(b); $("lBackTxt").appendChild(document.createTextNode(YCV.lang === "fr" ? " !" : "!"));
+    }
+    if (entrance.done) return; entrance.done = true;
+    sb.rpc("fondateurs_places").then(function (r) { var f = r && !r.error && r.data; if (!f || f.prises >= f.total) return; $("aClubTxt").textContent = L("Club des fondateurs : plus que {n} places").replace("{n}", f.total - f.prises); $("aClub").hidden = false; });
+    sb.from("boutiques").select("nom,slug,logo").eq("visible", true).not("logo", "is", null).limit(7).then(function (r) {
+      var list = r && !r.error && Array.isArray(r.data) ? r.data : []; if (!list.length) return; var row = $("aShopsRow"); row.textContent = "";
+      list.forEach(function (b) { var a = el("a"); a.href = "boutique?b=" + encodeURIComponent(b.slug); a.target = "_blank"; a.rel = "noopener"; a.title = b.nom; a.setAttribute("aria-label", b.nom); a.style.backgroundImage = "url(\"" + pub(b.logo) + "\")"; row.appendChild(a); });
+      var plus = el("span", null, "+"); plus.setAttribute("aria-hidden", "true"); row.appendChild(plus); $("aShops").hidden = false;
+    });
+    sb.from("site_reglages").select("valeur").eq("cle", "contact").maybeSingle().then(function (r) {
+      var w = r && r.data && r.data.valeur && String(r.data.valeur.whatsapp || "").replace(/\D/g, "");
+      if (w && w.length >= 8) { $("aHelp").href = "https://wa.me/" + w + "?text=" + encodeURIComponent(L("Bonjour, j’ai besoin d’aide pour me connecter à mon espace vendeur Yiriclick.")); $("aHelp").target = "_blank"; $("aHelp").rel = "noopener"; }
+    });
+  }
+  $("lNotMe").addEventListener("click", function () { try { localStorage.removeItem("yc-v-last"); } catch (e) {} $("lEmail").value = ""; $("lEmailF").hidden = false; $("lBack").hidden = true; $("lEmail").focus(); });
   function form(f) { ["fLogin", "fSignup", "fForgot", "fNewPass"].forEach(function (x) { $(x).hidden = x !== f; }); }
   document.querySelectorAll("[data-go]").forEach(function (b) { b.addEventListener("click", function () { form(b.getAttribute("data-go")); }); });
 
@@ -1311,7 +1402,9 @@ main.content { padding-block: 22px calc(var(--navh) + 40px + env(safe-area-inset
     $("visMotif").value = ""; loadMonAbo(true);
   });
   $("visCancel").addEventListener("click", async function () { var r = await sb.rpc("demander_visibilite", { p_action: "annuler" }); if (r.error) { $("visErr").textContent = r.error.message; return; } loadMonAbo(true); });
+  function rememberSeller() { if (!st.user) return; try { localStorage.setItem("yc-v-last", JSON.stringify({ email: st.user.email, nom: (known().nom || "").trim().split(/\s+/)[0] })); } catch (e) {} }
   function renderDash() {
+    rememberSeller();
     renderPlanBar();
     $("dName").textContent = st.shop ? st.shop.nom : L("Mon espace");
     var h = new Date().getHours(); $("dHello").textContent = h < 5 || h >= 18 ? L("Bonsoir") : L("Bonjour");

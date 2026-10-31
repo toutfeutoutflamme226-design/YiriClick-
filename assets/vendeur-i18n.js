@@ -7,6 +7,30 @@ window.YCV = (function () {
   if (["fr", "en", "es", "nl"].indexOf(lang) < 0) lang = "fr";
   var LOC = { fr: "fr-FR", en: "en-GB", es: "es-ES", nl: "nl-NL" };
   var D = {
+    /* seller entrance */
+    "Une photo prise à la lumière du jour vend 2 fois mieux.": ["A photo taken in daylight sells twice as well.", "Una foto tomada con luz de día vende el doble.", "Een foto bij daglicht verkoopt twee keer zo goed."],
+    "Mets ton lien de boutique dans ton statut WhatsApp chaque semaine.": ["Put your shop link in your WhatsApp status every week.", "Pon el enlace de tu tienda en tu estado de WhatsApp cada semana.", "Zet je winkellink elke week in je WhatsApp-status."],
+    "Réponds aux commandes en moins d’une heure : les clients reviennent.": ["Answer orders within an hour: customers come back.", "Responde a los pedidos en menos de una hora: los clientes vuelven.", "Beantwoord bestellingen binnen een uur: klanten komen terug."],
+    "Ajoute au moins 5 produits : ta boutique inspire plus confiance.": ["Add at least 5 products: your shop looks more trustworthy.", "Añade al menos 5 productos: tu tienda inspira más confianza.", "Voeg minstens 5 producten toe: je winkel wekt meer vertrouwen."],
+    "Un avis client vaut plus que dix publicités : demande-le après chaque livraison.": ["One customer review is worth ten ads: ask for it after every delivery.", "Una opinión de cliente vale más que diez anuncios: pídela tras cada entrega.", "Eén klantbeoordeling is meer waard dan tien advertenties: vraag erom na elke levering."],
+    "Indique clairement tes prix de livraison : moins de questions, plus de commandes.": ["State your delivery prices clearly: fewer questions, more orders.", "Indica claramente tus precios de envío: menos preguntas, más pedidos.", "Vermeld je bezorgkosten duidelijk: minder vragen, meer bestellingen."],
+    "Content de te revoir, ": ["Welcome back, ", "Qué bueno verte de nuevo, ", "Fijn je weer te zien, "],
+    "Club des fondateurs : plus que {n} places": ["Founders’ Club: only {n} places left", "Club de fundadores: solo quedan {n} plazas", "Oprichtersclub: nog maar {n} plaatsen"],
+    "Bonjour, j’ai besoin d’aide pour me connecter à mon espace vendeur Yiriclick.": ["Hello, I need help signing in to my Yiriclick seller space.", "Hola, necesito ayuda para entrar en mi espacio de vendedor de Yiriclick.", "Hallo, ik heb hulp nodig om in te loggen op mijn Yiriclick-verkopersomgeving."],
+    "Ta boutique t’attend.": ["Your shop is waiting.", "Tu tienda te espera.", "Je winkel wacht op je."],
+    "Tes clients aussi.": ["So are your customers.", "Tus clientes también.", "Je klanten ook."],
+    "Gère tes produits, tes commandes et tes ventes, depuis ton téléphone.": ["Manage your products, orders and sales from your phone.", "Gestiona tus productos, pedidos y ventas desde tu teléfono.", "Beheer je producten, bestellingen en verkopen vanaf je telefoon."],
+    "0 % de commission sur tes ventes": ["0% commission on your sales", "0 % de comisión sobre tus ventas", "0% commissie op je verkopen"],
+    "Tes commandes arrivent sur WhatsApp": ["Your orders arrive on WhatsApp", "Tus pedidos llegan por WhatsApp", "Je bestellingen komen binnen via WhatsApp"],
+    "Une boutique prête en 10 minutes": ["A shop ready in 10 minutes", "Una tienda lista en 10 minutos", "Een winkel klaar in 10 minuten"],
+    "Ils vendent déjà sur Yiriclick": ["Already selling on Yiriclick", "Ya venden en Yiriclick", "Ze verkopen al op Yiriclick"],
+    "Pas toi ?": ["Not you?", "¿No eres tú?", "Niet jij?"],
+    "Première connexion": ["First sign-in", "Primer acceso", "Eerste keer inloggen"],
+    "Pas encore de boutique ?": ["No shop yet?", "¿Aún no tienes tienda?", "Nog geen winkel?"],
+    "Ouvrir ma boutique gratuitement": ["Open my shop for free", "Abrir mi tienda gratis", "Mijn winkel gratis openen"],
+    "Astuce du jour :": ["Tip of the day:", "Consejo del día:", "Tip van de dag:"],
+    "🔒 Connexion sécurisée · données protégées en Europe": ["🔒 Secure sign-in · data protected in Europe", "🔒 Acceso seguro · datos protegidos en Europa", "🔒 Veilig inloggen · gegevens beschermd in Europa"],
+    "💬 Besoin d’aide ?": ["💬 Need help?", "💬 ¿Necesitas ayuda?", "💬 Hulp nodig?"],
     /* referral, prices (base v27) */
     "Partage ce lien à un autre vendeur. Quand il prend un abonnement payant, tu reçois {n} mois offert(s), automatiquement.": ["Share this link with another seller. When they take a paid plan, you get {n} free month(s), automatically.", "Comparte este enlace con otro vendedor. Cuando contrate un plan de pago, recibes {n} mes(es) gratis, automáticamente.", "Deel deze link met een andere verkoper. Neemt die een betaald abonnement, dan krijg je automatisch {n} gratis maand(en)."],
     "J’ouvre ma boutique en ligne avec Yiriclick : 0 % de commission sur les ventes et 14 jours gratuits. Inscris-toi avec mon lien : ": ["I run my online shop with Yiriclick: 0% commission on sales and 14 days free. Sign up with my link: ", "Abro mi tienda en línea con Yiriclick: 0 % de comisión sobre las ventas y 14 días gratis. Inscríbete con mi enlace: ", "Ik heb mijn webwinkel bij Yiriclick: 0% commissie op verkopen en 14 dagen gratis. Schrijf je in via mijn link: "],
