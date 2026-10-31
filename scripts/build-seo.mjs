@@ -107,7 +107,7 @@ async function main() {
   await vendorSupabase();
   await copyTree(ROOT, OUT);
   const now = new Date().toISOString();
-  const urls = [{ loc: SITE, lastmod: now, pr: "1.0" }, { loc: SITE + "vendre", lastmod: now, pr: "0.8" }, { loc: SITE + "commander", lastmod: now, pr: "0.6" }];
+  const urls = [{ loc: SITE, lastmod: now, pr: "1.0" }, { loc: SITE + "vendre", lastmod: now, pr: "0.8" }, { loc: SITE + "commander", lastmod: now, pr: "0.6" }, { loc: SITE + "apropos", lastmod: now, pr: "0.5" }];
   let shops = [], products = [], reviews = [];
   try {
     const cols = "id,slug,nom,description,slogan,ville,pays,logo,couverture,updated_at", where = "&visible=eq.true&masque_admin=eq.false&limit=5000";

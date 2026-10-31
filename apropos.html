@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/icons/icon-192.png">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Qui sommes-nous · Yiriclick</title>
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="assets/shop.css">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<meta name="theme-color" content="#10232A">
+<meta name="description" content="Yiriclick relie l’Afrique et l’Europe : une place de marché pour les petits vendeurs, née entre le Burkina Faso et les Pays-Bas. 0 % de commission, vendeurs vérifiés, 4 langues.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Yiriclick">
+<meta property="og:title" content="Qui sommes-nous · Yiriclick">
+<meta property="og:image" content="https://yiriclick.com/assets/og.png">
+<style>
+/* About page: built in assets/apropos.js, four languages. Navy hero, story, mission, four commitments, two calls to action. */
+.ab-hero { background: var(--navy); color: var(--white); }
+.ab-hero .wrap { padding-block: 44px 48px; display: flex; flex-direction: column; gap: 14px; max-width: 900px; }
+.ab-kick { margin: 0; font-size: 13px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: var(--teal); }
+.ab-hero h1 { margin: 0; font-size: clamp(30px, 7vw, 52px); font-weight: 900; letter-spacing: -1.5px; line-height: 1.05; text-wrap: balance; }
+.ab-hero h1 span { color: var(--orange); }
+.ab-yiri { margin: 4px 0 0; font-size: 17px; color: #C9D6DA; max-width: 620px; }
+.ab-yiri b { color: var(--white); }
+.ab { max-width: 900px; margin: 0 auto; padding-block: 36px 56px; display: flex; flex-direction: column; gap: 36px; }
+.ab-sec { display: grid; grid-template-columns: 1fr; gap: 10px; }
+@media (min-width: 760px) { .ab-sec { grid-template-columns: 240px 1fr; gap: 28px; } }
+.ab-sec h2 { margin: 0; font-size: 22px; font-weight: 900; letter-spacing: -.5px; }
+.ab-sec p { margin: 0; font-size: 17px; line-height: 1.6; }
+.ab-sec p + p { margin-top: 12px; }
+.ab-mission { background: var(--white); border-left: 6px solid var(--orange); padding: 22px; font-size: clamp(19px, 4vw, 24px); font-weight: 800; line-height: 1.35; margin: 0; }
+.ab-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+@media (min-width: 640px) { .ab-grid { grid-template-columns: 1fr 1fr; } }
+.ab-card { background: var(--white); border: 1px solid var(--rule); padding: 20px; display: flex; flex-direction: column; gap: 8px; }
+.ab-card svg { width: 34px; height: 34px; color: var(--teal-deep, #0E6E78); }
+.ab-card h3 { margin: 0; font-size: 18px; font-weight: 900; }
+.ab-card p { margin: 0; color: var(--soft); line-height: 1.5; }
+.ab-cta { background: var(--white); border: 1px solid var(--rule); padding: 24px; display: flex; flex-direction: column; gap: 14px; align-items: flex-start; }
+.ab-cta h2 { margin: 0; font-size: 24px; font-weight: 900; }
+.ab-cta .acts { display: flex; gap: 10px; flex-wrap: wrap; }
+.ab-legal { margin: 0; font-size: 14px; color: var(--soft); }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./" aria-label="Yiriclick">
+      <svg width="28" height="28" viewBox="0 0 160 160" aria-hidden="true"><path d="M76 146 V92 L34 40" fill="none" stroke="#4FC7CF" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/><path d="M76 92 L124 34" fill="none" stroke="#FF7A2E" stroke-width="22" stroke-linecap="round"/><path d="M96 30 H128 V62" fill="none" stroke="#FF7A2E" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="word"><span class="a">yiri</span><span class="b">click</span></span>
+    </a>
+    <div class="prefs">
+      <a href="./"><span aria-hidden="true">← </span><span data-t="showcase">Vitrine</span></a>
+      <select id="prefLang" data-ta="lang"><option value="fr">FR</option><option value="en">EN</option><option value="es">ES</option><option value="nl">NL</option></select>
+    </div>
+  </div>
+</header>
+
+<section class="ab-hero"><div class="wrap" id="abHero"></div></section>
+<main class="wrap">
+  <div class="ab" id="ab"></div>
+</main>
+
+<footer class="site-foot"></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="assets/phone.js"></script>
+<script src="assets/nav.js"></script>
+<script src="assets/legal.js"></script>
+<script src="assets/site.js"></script>
+<script src="assets/shop.js"></script>
+<script src="assets/apropos.js"></script>
+</body>
+</html>

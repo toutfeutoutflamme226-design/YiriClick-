@@ -1129,7 +1129,7 @@ window.YC = (function () {
       [["fBuy", [["fHelp1", "commander"], ["fOrders", "#orders"], ["fTrack", "suivi"], ["fReviews", "avis"]]],
        ["fSellH", [["fSell1", "vendre#tarifs"], ["fSell2", "vendeur"], ["fFounders", "vendre#fondateurs"]]],
        ["fHelp", [["svcBtn", "contact"], ["fReport", "contact?sujet=signalement"]]],
-       ["fYiri", [["fAbout1", "vendre"], ["fPartners", "contact?sujet=partenariat"]]]].forEach(function (c) {
+       ["fYiri", [["fAbout1", "apropos"], ["fPartners", "contact?sujet=partenariat"]]]].forEach(function (c) {
         var col = el("div", "sf-col"), h = el("h2", null, t(c[0])); h.setAttribute("data-t", c[0]); col.appendChild(h);
         c[1].forEach(function (l) {
           var a = el("a", null, t(l[0])); a.href = l[1]; a.setAttribute("data-t", l[0]);
