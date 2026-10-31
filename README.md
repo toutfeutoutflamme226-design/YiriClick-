@@ -431,3 +431,7 @@ Si `schema-v12.sql` est relancé un jour, relancer ensuite `schema-v17.sql`.
 - **Codes promo d'abonnement** : `codes_abonnement`, vérifiés par `verifier_code_abonnement`.
 - **Mode édition** : `assets/site.js` remplace les textes `data-t` modifiés par l'admin (`admin_texte`), affiche le bandeau d'annonce et le bouton « ✏️ Modifier » pour l'admin connecté.
 
+
+## Base v30 : prix à jour dans l'e-mail de fin d'essai
+
+- `supabase/schema-v30.sql` (après v29) : l'e-mail du 12e jour d'essai lit le prix mensuel Basique réglé dans l'admin (au lieu de l'ancien 7 500 FCFA / 15 €).
